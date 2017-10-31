@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/header_container"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/navigation_header_height"
+    android:clickable="true">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary">
+
+        <ImageView
+            android:id="@+id/background_image_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|end|bottom"
+            android:clickable="true"
+            android:layout_margin="10dp"
+            android:src="@drawable/home_menu_bg_click"
+            android:tint="@color/nav_head_image_background" />
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/activity_vertical_margin">
+
+        <com.fanchen.imovie.view.CircleImageView
+            android:id="@+id/user_avatar_view"
+            android:layout_width="@dimen/navigation_avatar_size"
+            android:layout_height="@dimen/navigation_avatar_size"
+            android:layout_gravity="start|top"
+            android:layout_marginEnd="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:layout_marginTop="@dimen/default_grow_margin"
+            android:src="@drawable/ico_user_default"
+            app:border_color="@android:color/white"
+            app:border_width="1dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/default_grow_margin"
+            android:layout_marginTop="@dimen/default_grow_margin"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/iv_head_switch_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/default_grow_margin"
+                android:src="@drawable/ic_switch_night" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/subtitle_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_avatar_view"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="@dimen/default_general_margin"
+            android:background="?attr/selectableItemBackground"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/default_tiny_padding">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="@dimen/default_tiny_padding">
+
+                <TextView
+                    android:id="@+id/user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_user"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/default_small_text_size" />
+
+                <TextView
+                    android:id="@+id/tv_main_level"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/default_tiny_margin"
+                    android:background="@drawable/white_border"
+                    android:gravity="center"
+                    android:text="@string/level_text"
+                    android:textColor="@color/white"
+                    android:textSize="10sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_main_birthday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/default_tiny_margin"
+                android:background="@drawable/round_wihte_bg"
+                android:padding="@dimen/default_tiny_margin"
+                android:text="@string/birthday"
+                android:textColor="@color/nav_head_roung_text_background"
+                android:textSize="10sp" />
+
+        </LinearLayout>
+    </RelativeLayout>
+</FrameLayout>

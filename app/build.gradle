@@ -1,0 +1,105 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+//签名配置
+    signingConfigs {
+        debugConfig {
+            keyAlias "1"
+            keyPassword "happy1993_chen"
+            storeFile file("E:/workspace/androidStudio/happy1993_chen")
+            storePassword "happy1993_chen"
+        }
+        releaseConfig {
+            keyAlias "1"
+            keyPassword "happy1993_chen"
+            storeFile file("E:/workspace/androidStudio/happy1993_chen")
+            storePassword "happy1993_chen"
+        }
+    }
+
+
+    defaultConfig {
+        applicationId "com.fanchen.imovie"
+        minSdkVersion 19
+        targetSdkVersion 23
+        versionCode 20171028
+        versionName "1.10.28 bate"
+    }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debugConfig
+        }
+        release {
+            signingConfig signingConfigs.releaseConfig
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    /** *******下面是eventbus sdk 事件总线 *********/
+    compile 'org.greenrobot:eventbus:3.0.0'
+    /** *******下面是butterknife sdk ioc *********/
+    compile 'com.jakewharton:butterknife:5.1.1'
+    /** *******下面是support 支持库 *********/
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
+    compile 'com.android.support:gridlayout-v7:23.4.0'
+    compile 'com.android.support:cardview-v7:23.4.0'
+    compile('com.android.support:support-v4:23.4.0') {
+        force = true;
+    }
+    compile('com.android.support:recyclerview-v7:23.4.0') {
+        exclude module: 'support-v4'
+    }
+    compile 'com.android.support:support-v4:23.4.0'
+    /** *******下面是swipebackhelper 滑动返回 *********/
+    compile 'com.jude:swipebackhelper:3.1.2'
+    /** *******下面是gson json *********/
+    compile 'com.google.code.gson:gson:2.7'
+    /** *******下面是squareup 全家桶 *********/
+    compile 'com.squareup.okio:okio:1.8.0'
+    compile 'com.squareup.okhttp3:okhttp:3.3.1'
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    /** *******picasso 图片加载 *********/
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    /** *******aria 下载管理框架 *********/
+    compile 'com.arialyy.aria:aria-core:3.3.2'
+    annotationProcessor 'com.arialyy.aria:aria-compiler:3.3.2'
+    /** *******bugly 崩溃监测 *********/
+    compile files('libs/bugly_crash_release.jar')
+    /** *******jsoup html解析 *********/
+    compile files('libs/jsoup-1.8.1.jar')
+    /** ******* lite-orm orm框架 *********/
+    compile files('libs/lite-orm-1.9.2.jar')
+    /** ******* nineoldandroids 动画框架 *********/
+    compile files('libs/nineoldandroids-2.4.0.jar')
+    /** *******下面是友盟sdk *********/
+    compile files('libs/SocialSDK_QQ_Simplify.jar')
+    compile files('libs/SocialSDK_Sina_Simplify.jar')
+    compile files('libs/SocialSDK_WeChat_Simplify.jar')
+    compile files('libs/umeng_shareboard_widget.jar')
+    compile files('libs/umeng_social_api.jar')
+    compile files('libs/umeng_social_net.jar')
+    compile files('libs/umeng_social_shareboard.jar')
+    compile files('libs/umeng_social_shareview.jar')
+    compile files('libs/umeng_social_tool.jar')
+    /** *******下面是zxing sdk 二维码 *********/
+    compile files('libs/zxing.jar')
+    /** *******下面是迅雷sdk 云播 *********/
+    compile files('libs/lib_xunlei.jar')
+    /** *******下面是ijkplayer sdk 视频播放 *********/
+    compile files('libs/lib_ijkplayer.jar')
+    /** *******下面是SMSSDK 验证码 *********/
+    compile files('libs/SMSSDK-2.1.4.jar')
+    compile files('libs/MobCommons-2017.0321.1624.jar')
+    compile files('libs/MobTools-2017.0321.1624.jar')
+    /** *******下面是BmobSDK 后台数据库 *********/
+    compile files('libs/BmobSDK_V3.4.7_0527.jar')
+    compile files('libs/rhino-1.7.7.1.jar')
+}

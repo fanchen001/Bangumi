@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorPrimaryDark">
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/til_free_video"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_12"
+        android:layout_marginRight="@dimen/dp_12"
+        android:layout_marginTop="@dimen/dp_12">
+
+        <EditText
+            android:id="@+id/ed_free_video"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/free_video_hint"
+            android:paddingTop="@dimen/dp_8" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/btn_search"
+        style="@style/account_btn_textsize"
+        android:layout_width="fill_parent"
+        android:layout_height="45.0dip"
+        android:layout_below="@+id/til_free_video"
+        android:layout_marginLeft="@dimen/dp_12"
+        android:layout_marginRight="@dimen/dp_12"
+        android:layout_marginTop="@dimen/dp_8"
+        android:background="@drawable/login_btn_bg"
+        android:text="@string/free_video"
+        android:textSize="17.0sp" />
+
+    <ImageView
+        android:id="@+id/iv_reback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_search"
+        android:src="@drawable/ic_reback" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rlv_web_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/iv_reback"
+        android:layout_marginTop="@dimen/dp_8">
+
+    </android.support.v7.widget.RecyclerView>
+
+
+</RelativeLayout>
+

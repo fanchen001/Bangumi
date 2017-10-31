@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_top_bar"
+    style="?attr/toolbarStyle"
+    android:layout_width="fill_parent"
+    android:layout_height="?attr/actionBarSize"
+    app:layout_collapseMode="pin"
+    app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/iv_bar_back"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:src="@drawable/ic_ab_back_mtrl_am_alpha" />
+
+        <TextView
+            android:id="@+id/tv_bar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/default_long_margin"
+            android:text="@string/app_name"
+            android:textAppearance="@style/TextAppearance.App.Topbar.Title"
+            android:textColor="?actionMenuTextColor"
+            android:textSize="@dimen/default_big_text_size" />
+
+        <TextView
+            android:id="@+id/tv_bar_title_play"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:drawableLeft="@drawable/ic_fab_play"
+            android:gravity="center_vertical"
+            android:text="@string/string_play"
+            android:textAppearance="@style/TextAppearance.App.Topbar.Title"
+            android:textColor="@color/white"
+            android:visibility="gone" />
+    </RelativeLayout>
+</android.support.v7.widget.Toolbar>

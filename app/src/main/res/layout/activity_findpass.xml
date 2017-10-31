@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.fanchen.imovie.view.StatusBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/layout_toolbar"></include>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:background="@color/comm_background_color">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15.0dip"
+            android:layout_marginRight="15.0dip"
+            android:layout_marginTop="15.0dip"
+            android:background="@drawable/login_content_bg"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20.0dip"
+                android:layout_marginRight="20.0dip"
+                android:layout_marginTop="35.0dip"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/img_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:src="@drawable/phone_bg" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10.0dip"
+                    android:layout_toLeftOf="@+id/find_password_delete"
+                    android:layout_toRightOf="@+id/img_username">
+
+                    <EditText
+                        android:id="@+id/et_phonenumber"
+                        style="@style/account_editview_textsize"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#00000000"
+                        android:hint="输入手机号"
+                        android:maxLength="11"
+                        android:paddingTop="@dimen/dp_8"
+                        android:singleLine="true"
+                        android:textColorHint="@color/comm_text_hint_color" />
+                </android.support.design.widget.TextInputLayout>
+
+                <ImageView
+                    android:id="@+id/find_password_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/find_password_delete"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <com.fanchen.imovie.view.EditTextLineView
+                android:layout_width="fill_parent"
+                android:layout_height="2.0px"
+                android:layout_marginLeft="20.0dip"
+                android:layout_marginRight="20.0dip"
+                android:layout_marginTop="12.0dip" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20.0dip"
+                android:layout_marginRight="20.0dip"
+                android:layout_marginTop="25.0dip">
+
+                <ImageView
+                    android:id="@+id/img_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:src="@drawable/verification_bg" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10.0dip"
+                    android:layout_toLeftOf="@+id/btn_sendmessage"
+                    android:layout_toRightOf="@+id/img_password">
+
+                    <EditText
+                        android:id="@+id/et_verification"
+                        style="@style/account_editview_textsize"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#00000000"
+                        android:hint="输入验证码"
+                        android:paddingTop="@dimen/dp_8"
+                        android:singleLine="true"
+                        android:textColorHint="@color/comm_text_hint_color" />
+                </android.support.design.widget.TextInputLayout>
+
+                <com.fanchen.imovie.view.VerificationButton
+                    android:id="@+id/btn_sendmessage"
+                    android:layout_width="115.0dip"
+                    android:layout_height="40.0dip"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/login_btn_bg"
+                    android:text="@string/sendmessage"
+                    android:textColor="#ffffffff"
+                    android:textSize="14.0sp" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20.0dip"
+                android:layout_marginRight="20.0dip"
+                android:layout_marginTop="6.0dip"
+                android:orientation="horizontal">
+
+                <com.fanchen.imovie.view.EditTextLineView
+                    android:layout_width="0.0dip"
+                    android:layout_height="2.0px"
+                    android:layout_weight="1.0" />
+
+                <View
+                    android:layout_width="115.0dip"
+                    android:layout_height="2.0px" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_cannotverification"
+                style="@style/account_hint_textview_textsize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginRight="20.0dip"
+                android:paddingBottom="25.0dip"
+                android:paddingTop="25.0dip"
+                android:text="@string/cannot_verification" />
+
+            <Button
+                android:id="@+id/btn_next"
+                style="@style/account_btn_textsize"
+                android:layout_width="fill_parent"
+                android:layout_height="45.0dip"
+                android:layout_marginLeft="20.0dip"
+                android:layout_marginRight="20.0dip"
+                android:clickable="false"
+                android:editable="false"
+                android:enabled="false"
+                android:background="@drawable/login_btn_bg"
+                android:text="@string/find_pass" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="40.0dip"
+                android:layout_marginTop="15.0dip"
+                android:text="(本功能仅针对绑定手机号码的用户使用)"
+                android:textColor="@color/comm_warning_color"
+                android:textSize="12.0sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="20.0dip"
+            android:layout_marginRight="20.0dip"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="55.0dip"
+                android:layout_marginRight="55.0dip">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="1.0px"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/hiti_text"
+                    android:background="@color/comm_text_disable_color" />
+
+                <TextView
+                    android:id="@+id/hiti_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginLeft="30.0dip"
+                    android:layout_marginRight="30.0dip"
+                    android:text="人工客服"
+                    android:textColor="@color/comm_text_disable_color"
+                    android:textSize="15.0sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="1.0px"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/hiti_text"
+                    android:background="@color/comm_text_disable_color" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/hintcontext_ll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20.0dip"
+                android:orientation="vertical"
+                android:paddingBottom="40.0dip">
+
+                <TextView
+                    android:id="@+id/tv_callphone_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:text="1.请联系客服客服QQ群：541361788(周一至周日8:30-22:00);"
+                    android:textColor="@color/comm_text_disable_color"
+                    android:textSize="14.0sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2.请将您的账户信息提供给客服人员,进行身份验证;"
+                    android:textColor="@color/comm_text_disable_color"
+                    android:textSize="14.0sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3.身份验证后,客服人员将为您重置密码。"
+                    android:textColor="@color/comm_text_disable_color"
+                    android:textSize="14.0sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</com.fanchen.imovie.view.StatusBarLayout>
+

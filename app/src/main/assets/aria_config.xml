@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<aria>
+
+    <!--注意，修改该配置文件中的属性会覆盖代码中所设置的属性-->
+    <download>
+
+        <!--设置下载线程，线程下载数改变后，新的下载任务才会生效，如果任务大小小于1m，该设置也不会生效-->
+        <threadNum value="3"/>
+
+        <!--设置下载队列最大任务数， 默认为2-->
+        <maxTaskNum value="1"/>
+
+        <!--设置下载失败，重试次数，默认为10-->
+        <reTryNum value="10"/>
+
+        <!--设置重试间隔，单位为毫秒，默认2000毫秒-->
+        <reTryInterval value="5000"/>
+
+        <!--设置url连接超时时间，单位为毫秒，默认5000毫秒-->
+        <connectTimeOut value="3000"/>
+
+        <!--设置IO流读取时间，单位为毫秒，默认20000毫秒，该时间不能少于10000毫秒-->
+        <iOTimeOut value="10000"/>
+
+        <!--设置写文件buff大小，该数值大小不能小于2048，数值变小，下载速度会变慢-->
+        <buffSize value="8192"/>
+
+        <!--设置https ca 证书信息；path 为assets目录下的CA证书完整路径，name 为CA证书名-->
+        <ca name="" path=""/>
+
+        <!--是否需要转换速度单位，转换完成后为：1b/s、1kb/s、1mb/s、1gb/s、1tb/s，如果不需要将返回byte长度-->
+        <convertSpeed value="true"/>
+
+        <!--执行队列类型，见com.arialyy.aria.core.QueueMod，默认类型为wait-->
+        <queueMod value="wait"/>
+
+    </download>
+
+    <upload>
+        <!--是否需要转换速度单位，转换完成后为：1b/s、1kb/s、1mb/s、1gb/s、1tb/s，如果不需要将返回byte长度-->
+        <convertSpeed value="true"/>
+
+        <!--设置上传队列最大任务数， 默认为2-->
+        <maxTaskNum value="2"/>
+
+        <!--设置上传失败，重试次数，默认为10-->
+        <reTryNum value="10"/>
+
+        <!--设置重试间隔，单位为毫秒-->
+        <reTryInterval value="2000"/>
+
+        <!--设置url连接超时时间，单位为毫秒，默认5000毫秒-->
+        <connectTimeOut value="5000"/>
+
+        <!--执行队列类型，见com.arialyy.aria.core.QueueMod，默认类型为wait-->
+        <queueMod value="wait"/>
+    </upload>
+
+</aria>

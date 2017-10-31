@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.fanchen.imovie.view.StatusBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/layout_toolbar"></include>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:background="@color/comm_background_color">
+
+        <TextView
+            android:id="@+id/tv_username_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15.0dip"
+            android:layout_marginTop="20.0dip"
+            android:text="@string/username_text"
+            android:textColor="@color/comm_text_tip_color"
+            android:textSize="13.0sp" />
+
+        <TextView
+            android:id="@+id/tv_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/tv_username_text"
+            android:layout_toRightOf="@+id/tv_username_text"
+            android:textColor="@color/comm_text_tip_color"
+            android:textSize="13.0sp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_username_text"
+            android:layout_marginLeft="15.0dip"
+            android:layout_marginRight="15.0dip"
+            android:layout_marginTop="15.0dip"
+            android:background="@drawable/login_content_bg"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20.0dip"
+                android:layout_marginRight="20.0dip"
+                android:layout_marginTop="35.0dip">
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/til_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/btn_password_visible">
+
+                    <EditText
+                        android:id="@+id/et_password"
+                        style="@style/account_editview_textsize"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#00000000"
+                        android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLIMNOPQRSTUVWXYZ"
+                        android:hint="6-16位字母、数字或组合"
+                        android:inputType="textPassword"
+                        android:maxLength="16"
+                        android:paddingTop="@dimen/dp_8"
+                        android:singleLine="true"
+                        android:textColorHint="@color/comm_text_hint_color" />
+                </android.support.design.widget.TextInputLayout>
+
+                <ImageButton
+                    android:id="@+id/btn_password_visible"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:layout_alignBottom="@+id/til_password"
+                    android:layout_alignParentRight="true"
+                    android:background="@null"
+                    android:paddingRight="15.0dip"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/login_pss_invisable" />
+            </RelativeLayout>
+
+            <com.fanchen.imovie.view.EditTextLineView
+                android:layout_width="fill_parent"
+                android:layout_height="2.0px"
+                android:layout_marginLeft="20.0dip"
+                android:layout_marginRight="20.0dip"
+                android:layout_marginTop="12.0dip" />
+
+            <Button
+                android:id="@+id/btn_finish"
+                style="@style/account_btn_textsize"
+                android:layout_width="fill_parent"
+                android:layout_height="45.0dip"
+                android:layout_marginBottom="40.0dip"
+                android:layout_marginLeft="20.0dip"
+                android:layout_marginRight="20.0dip"
+                android:layout_marginTop="25.0dip"
+                android:background="@drawable/login_btn_bg"
+                android:clickable="false"
+                android:editable="false"
+                android:enabled="false"
+                android:text="完成" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</com.fanchen.imovie.view.StatusBarLayout>
+

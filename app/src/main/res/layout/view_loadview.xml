@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools">
+
+    <com.fanchen.imovie.view.ShapeLoadingView
+        android:id="@+id/shapeLoadingView"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp" />
+
+    <ImageView
+        android:id="@+id/indication"
+        android:layout_width="23dp"
+        android:layout_height="3dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="56dp"
+        android:src="@drawable/view_shadow" />
+
+    <TextView
+        android:id="@+id/promptTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="18dp"
+        android:textColor="#757575"
+        android:textSize="14sp"
+        android:visibility="gone"
+        tool:visibility="visible" />
+
+</merge>

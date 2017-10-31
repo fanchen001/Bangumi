@@ -1,0 +1,275 @@
+<resources>
+    <string name="app_name">次元番</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+
+    <string name="giraffe_player_url_empty">请指定播放视频的地址</string>
+    <string name="small_problem">出了点小问题,稍后重试\n(如果多次重试仍然错误,请尝试用浏览器观看)</string>
+    <string name="can_not_play">不能播放此视频</string>
+    <string name="not_support">播放器不支持此设备</string>
+    <string name="permission_tip">您拒绝了权限请求,该功能不能使用</string>
+    <string name="player_not_wifi">您正在使用移动网络播放视频\n可能产生较高流量费用</string>
+
+    <string name="default_user">未登录</string>
+    <string name="level_text">等级</string>
+    <string name="birthday">生日</string>
+
+    <string name="pref_title_vibrate">Vibrate</string>
+    <string name="not_watch">尚未观看</string>
+    <string name="search_hint">请输入需要搜索的关键词</string>
+    <string name="home_more_search">大家都在搜</string>
+    <string name="collect_hit">是否收藏《 %s 》</string>
+    <string name="setting_about">设置与关于</string>
+    <string name="bangumi_list">番剧列表</string>
+    <string name="delete_error">删除失败</string>
+    <string name="delete_history">是否清空播放记录</string>
+    <string name="collect_clear">是否清空记录</string>
+
+    <string name="def_url">http://www.baidu.com</string>
+    <string name="def_title">来《次元番》的分享</string>
+    <string name="def_content">次元番,专为二次元爱好者量身打造的番剧平台</string>
+    <!-- Navigation Items -->
+    <string name="item_home">主页</string>
+    <string name="item_downloaded">离线缓存</string>
+    <string name="item_live">电视直播</string>
+    <string name="item_favourite">我的收藏</string>
+    <string name="item_history">历史记录</string>
+    <string name="item_settings">设置与帮助</string>
+    <string name="item_app">应用推荐</string>
+    <string name="new_bangumi">新番连载</string>
+    <string name="more_bangmi">更多番剧</string>
+    <string name="bangumi_class">番剧分类</string>
+    <string name="bangumi_episode">番剧剧集</string>
+    <string name="bangumi_details">番剧详情</string>
+    <string name="week_date">7月7日</string>
+    <string name="search_mart">搜索：%s</string>
+    <string name="search_list">搜索结果列表</string>
+
+    <string name="week_0">今天</string>
+    <string name="week_1">周一</string>
+    <string name="week_2">周二</string>
+    <string name="week_3">周三</string>
+    <string name="week_4">周四</string>
+    <string name="week_5">周五</string>
+    <string name="week_6">周六</string>
+    <string name="week_7">周日</string>
+
+    <string name="text_area">地区：%s</string>
+    <string name="text_pf">评分：%s</string>
+    <string name="text_type">类型：%s</string>
+    <string name="text_info">备注：%s</string>
+
+    <string name="string_play">立即播放</string>
+    <string name="more_info">查看更多信息</string>
+    <string name="more_info_sq">收起</string>
+    <string name="pack_name">包名:</string>
+    <string name="updatetime">更新时间:</string>
+    <string name="update_nfo">更新内容:</string>
+    <string name="image_cat">相关截图</string>
+    <string name="back_hit">再按一次退出</string>
+    <string name="player_history">播放历史</string>
+    <string name="error_hit">请求网络数据出错</string>
+    <string name="collect_success">收藏成功</string>
+    <string name="collect_error">收藏失败</string>
+    <string name="collect_repetition">请勿重复收藏</string>
+    <string name="loading">正在努力加载中...</string>
+    <string name="has_dixian">我是有底线的</string>
+    <string name="collect">收藏</string>
+    <string name="download">下载管理</string>
+    <string name="share">分享</string>
+    <string name="juji">剧集</string>
+    <string name="more_juji">更多剧集</string>
+    <string name="more_jianjie">更多简介</string>
+    <string name="close_more_jianjie">收起简介</string>
+    <string name="jianjie">简介</string>
+    <string name="fanjutuijian">番剧推荐</string>
+    <string name="apk">应用排行</string>
+    <string name="game">游戏推荐</string>
+    <string name="game_pc">游戏评测</string>
+    <string name="acg_tree">ACG小队</string>
+    <string name="load_hit_error">加载失败,请重试(｀・ω・´)</string>
+    <string name="load_hit_empty">什么也没有(╯︵╰)</string>
+    <string name="forget_password">忘记密码？</string>
+    <string name="register_agreement">《用户协议》</string>
+    <string name="sendmessage">获取验证码</string>
+    <string name="cannot_verification">无法获取验证码？</string>
+    <string name="menu_about_emailadress">happy1993_chen@sina.cn</string>
+    <string name="menu_about_phonenumber">暂无</string>
+    <string name="menu_about_qq">541361788</string>
+    <string name="menu_about_web">暂无</string>
+    <string name="menu_web">微信客服</string>
+    <string name="menu_qqnumber">QQ群</string>
+    <string name="menu_phonenumber">客服电话</string>
+    <string name="menu_emailadress">邮箱地址</string>
+    <string name="menu_about_workingtime">工作时间：暂不确定</string>
+    <string name="app_version">v1.0.0.2</string>
+
+    <string name="menu_subapp_about_detailed">专为二次元爱好者量身打造的番剧平台，这里不仅包含时下最热门的番剧内容，更有好玩有趣的二次元游戏、应用，供你与二次元的小伙伴交流互动！次元番，欢迎喜欢二次元的你！</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_social_recommendations">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations">Recommendations for people to contact
+        based on your message history
+    </string>
+
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string-array name="pref_example_list_titles">
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>1任务</item>
+        <item>2任务</item>
+        <item>3任务</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+
+    <string name="pref_title_new_message_notifications">New message notifications</string>
+
+    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_ringtone_silent">Silent</string>
+    <string name="login_hit">用户名密码不能为空</string>
+    <string name="login_user">用户登录</string>
+    <string name="register_user">用户注册</string>
+    <string name="input_code">输入验证码</string>
+    <string name="find_pass">找回密码</string>
+    <string name="username_text">注册账号：</string>
+    <string name="set_pwd">设置密码</string>
+    <string name="about">关于</string>
+    <string name="qq_group"><![CDATA[mqqapi://card/show_pslcard?src_type=internal&version=1&uin=541361788&card_type=group&source=qrcode]]></string>
+    <string name="activity_not_found">未找到对应第三方应用</string>
+    <string name="version_format">v_%s</string>
+    <string name="feedback">意见反馈</string>
+    <string name="code_scan">条码扫描</string>
+    <string name="current_live">正在播放：%s</string>
+    <string name="next_live">即将播放：%s</string>
+    <string name="could_player">磁力云播</string>
+    <string name="item_could">磁力云播</string>
+    <string name="input_word">请输入需要搜索的关键字</string>
+    <string name="search">搜索</string>
+    <string name="colud_search_hint">支持磁力链和迅雷链接</string>
+    <string name="word_notnull">搜索关键字不能为空</string>
+    <string name="player">播放</string>
+    <string name="finish_hit">再按一次退出应用</string>
+    <string name="ranking">全站排行</string>
+    <string name="time_line">播放时间表</string>
+    <string name="not_more">没有更多了</string>
+    <string name="item_short">短视频</string>
+    <string name="s80">80s电影</string>
+    <string name="bumimi">布米米</string>
+    <string name="jiren">吉人动漫</string>
+    <string name="biaoqing">标清</string>
+    <string name="non_recom">暂无推荐视频</string>
+    <string name="error_non">获取数据失败</string>
+    <string name="clipboard">复制成功</string>
+    <string name="clear_ok">清除成功</string>
+    <string name="clear_non">无缓存需要清理</string>
+    <string name="error_token">获取token失败</string>
+    <string name="dm5">五弹幕</string>
+    <string name="error_play_conn">获取播放地址失败</string>
+    <string name="download_add">添加下载成功</string>
+    <string name="not_download">该视频不支持下载</string>
+    <string name="non_episode">该视频可能已经下架</string>
+    <string name="video_xunlei">该视频需要使用迅雷观看或下载</string>
+    <string name="apk_not_install">应用未安装</string>
+    <string name="login_error">授期过程出错</string>
+    <string name="login_cancel">取消授权</string>
+    <string name="login_start">正在启动应用授权</string>
+    <string name="bangumi_vodeo">次元番分享专用</string>
+    <string name="error_phone">手机号码有误</string>
+    <string name="user_agreement">请您仔细阅读以下条款，如果您对本协议的任何条款表示异议，您可以选择停止使用[次元番]。当您注册成功，无论是进入[次元番]，还是在[次元番]上发布或下载任何内容，均意味着您（即「用户」）完全接受本协议项下的全部条款。\n\n  1、用户凡注册或使用[次元番]，即同意遵守[次元番]关于内容发布与使用的全部要求。\n 2、用户注册成功后，[次元番]将给予每个用户一个用户帐号及相应的密码，该用户帐号和密码由用户负责保管；用户应当对以其用户帐号进行的所有活动和事件负法律责任。\n 3、用户须对在[次元番]的注册信息的真实性、合法性、有效性承担全部责任，用户不得冒充他人；不得利用他人的名义发布任何信息；不得恶意使用注册帐户导致其他用户误认；否则[次元番]有权立即停止提供服务，收回其帐号并由用户独自承担由此而产生的一切法律责任。\n 4、用户直接或通过各类方式间接使用[次元番]服务和素材资源的行为，都将被视作已无条件接受本协议全部内容；若用户对本协议的任何条款存在异议，请停止使用[次元番]所提供的全部服务。\n 5、[次元番]是一个原创资源发布、及供下载获取的平台，用户通过正规渠道在本站获取的信息或素材资源，仅供个人使用，不得擅自传播，或以任何方式进行盗链、复制、转载、销售等；否则[次元番]有权立即停止提供服务，收回其帐号并由用户独自承担由此而产生的一切法律责任。\n 6、用户承诺不得以任何方式利用[次元番]直接或间接从事违反法律、以及社会公德的行为，[次元番]有权对违反上述承诺的行为采取一切必要的措施（包括但不限于暂停或终止用户使用[次元番]的权利）。 \n7、[次元番]有权对用户使用本站的情况进行审查和监督，如用户在使用[次元番]时违反任何上述规定，[次元番]或其授权的人有权要求用户改正或直接采取一切必要的措施（包括但不限于暂停或终止用户使用[次元番]的权利）以减轻用户不当行为造成的影响。   个人隐私条款 尊重用户个人隐私信息的私有性是[次元番]的一贯原则，[次元番]将通过技术手段、强化内部管理等办法充分保护用户的个人隐私信息，除法律或有法律赋予权限的政府部门要求或事先得到用户明确授权等原因外，[次元番]保证不对外公开或向第三方透露用户个人隐私信息，或用户在使用服务时存储的非公开内容。同时，为了运营和改善[次元番]的技术与服务，用户同意[次元番]收集使用或向第三方提供用户的非个人隐私信息，这将有助于[次元番]向用户提供更好的用户体验和服务质量。     \n\n协议修改 \n1、根据互联网的发展和有关法律、法规及规范性文件的变化，或者因业务发展需要，[次元番]有权对本协议的条款作出修改或变更，一旦本协议的内容发生变动，[次元番]将会直接在[次元番]官方网站公布修改之后的协议内容，该公布行为视为[次元番]已经通知用户修改内容。 \n2、如果不同意[次元番]对本协议相关条款所做的修改，用户有权并应当停止使用[次元番]。如果用户继续使用[次元番]，则视为用户接受[次元番]对本协议相关条款所做的修改。   \n\n用户承诺 \n在开始注册或使用[次元番]之前，我已逐一阅读并同意本协议及有关声明的全部内容。  \n\n免责声明 \n[次元番]所有资源来源于网上公开索引资源，本应用(网站)不存储任何资源。如遇资源侵权，请联系开发者happy1993_chen@sina.cn删除</string>
+    <string name="non_verification">验证码不能为空</string>
+    <string name="get_code_success">获取验证码成功</string>
+    <string name="error_null">验证码和手机不能为空</string>
+    <string name="register_success">注册成功</string>
+    <string name="error_phone_pwd">手机号或密码格式不正确</string>
+    <string name="login_success">登录成功</string>
+    <string name="login_ing">正在登录...</string>
+    <string name="register_ing">正在注册...</string>
+    <string name="find_pass_ing">正在获取密码...</string>
+    <string name="find_pass_error">找回密码失败</string>
+    <string name="error_download_type">该类型不支持下载</string>
+    <string name="error_download_non">没有选中要下载的视频</string>
+    <string name="download_ing">正在下载...</string>
+    <string name="delete_file">是否删除该下载任务?</string>
+    <string name="task_exists">任务已经存在</string>
+    <string name="hack">视频黑科技</string>
+    <string name="player_hit">如果播放按钮是灰色状态,点击播放后长时间不能播放,或播放中途卡住.请点击右上角选择使用浏览器打开(推荐使用UC或者QQ)</string>
+    <string name="not_say">不要再说了</string>
+    <string name="ok_say">继续提醒我</string>
+    <string name="please_login">请先登录再进行操作</string>
+    <string name="my_space">我的空间</string>
+    <string name="my_info">我的资料</string>
+    <string name="bind_phone">绑定手机</string>
+    <string name="bind_account">账号绑定</string>
+    <string name="change_password">修改密码</string>
+    <string name="chang_account">切换账号</string>
+    <string name="logout_hit">是否退出登录?</string>
+    <string name="not_login">未登录</string>
+    <string name="free_video">立即播放</string>
+    <string name="free_video_hint">复制视频网站播放地址↓↓点击立即播放！</string>
+    <string name="biliplus_hint">输入:投稿号(如:AV221107)/Bili播放页面地址</string>
+    <string name="gan_bei">, ( ゜- ゜)つロ 乾杯~</string>
+    <string name="biliplus">BiliPlus</string>
+    <string name="get_info">获取信息</string>
+    <string name="player_video">播放视频</string>
+    <string name="download_video">下载视频</string>
+    <string name="bilijj_info">这是一个基于web,用于下载bilibili视频的在线应用程序,它能够下载99%bilibili官方视频</string>
+    <string name="get_download">获取下载地址</string>
+    <string name="new_video">最新视频</string>
+    <string name="new_music">最新音频</string>
+    <string name="bilijj_hint">输入B站视频ID或地址</string>
+    <string name="url_error_hit">请输入正确的播放地址</string>
+    <string name="get_video_info_error">获取视频信息失败</string>
+    <string name="plase_select">请选择</string>
+    <string name="video_not_play">该视频不支持在线播放</string>
+    <string name="av_error_hit">投稿号/Bili页面不正确</string>
+    <string name="error_feedback_null">反馈内容不能为空</string>
+    <string name="could">磁力云播</string>
+    <string name="gril_live">妹子直播</string>
+    <string name="item_girl">妹子直播</string>
+    <string name="xiu169">169秀</string>
+    <string name="nv2">NV视频</string>
+    <string name="your_pwd">您的密码:</string>
+    <string name="admin">管理员</string>
+    <string name="svip">SVIP</string>
+    <string name="vip">VIP</string>
+    <string name="user_non">普通用户</string>
+    <string name="qqqun">客服QQ群 541361788</string>
+    <string name="more_hit">[更多]里面包含其他番剧源以及一些视频黑科技,首页搜不到的番剧视频可在[更多]里面寻找！！！</string>
+    <string name="w_4k">4K影院</string>
+    <string name="zz_player_network_invalid">网络异常，请检查后再试</string>
+</resources>

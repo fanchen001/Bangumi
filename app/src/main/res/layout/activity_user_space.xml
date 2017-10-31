@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.fanchen.imovie.view.StatusBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/layout_toolbar"></include>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:background="@color/comm_background_color"
+        android:scrollbarThumbVertical="@drawable/btn_dialog_scrollbar_thumb">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="116.0dip"
+                android:background="@drawable/user_space_top_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20.0dip">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <View
+                        android:layout_width="75.0dip"
+                        android:layout_height="75.0dip"
+                        android:layout_centerInParent="true"
+                        android:background="@drawable/user_space_icon_bg" />
+
+                    <com.fanchen.imovie.view.CircleImageView
+                        android:id="@+id/iv_user_iconset"
+                        android:layout_width="65.0dip"
+                        android:layout_height="65.0dip"
+                        android:layout_centerInParent="true"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ico_user_default" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15.0dip"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_user_username"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/comm_text_h1_color"
+                        android:textSize="15.0dip" />
+
+                    <Button
+                        android:id="@+id/btn_user_birthday"
+                        android:layout_width="28.0dip"
+                        android:layout_height="13.0dip"
+                        android:layout_marginTop="10.0dip"
+                        android:background="@drawable/mine_level_btn_bg"
+                        android:textColor="@color/white"
+                        android:textSize="9.0sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0.0dip"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1.0" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="10.0dip"
+                android:background="@color/comm_background_color" />
+
+            <RelativeLayout
+                android:id="@+id/rl_user_profile"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/dialog_content_list_height"
+                android:background="@drawable/layout_item_bg"
+                android:paddingLeft="20.0dip"
+                android:paddingRight="20.0dip">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="@string/my_info"
+                    android:textColor="@color/comm_text_h1_color"
+                    android:textSize="@dimen/user_space_content_fontsize" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/user_space_arrow" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1.0px"
+                android:background="@color/comm_divider_color" />
+
+            <RelativeLayout
+                android:id="@+id/rl_user_bindphone"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/dialog_content_list_height"
+                android:background="@drawable/layout_item_bg"
+                android:paddingLeft="20.0dip"
+                android:paddingRight="20.0dip">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="@string/bind_phone"
+                    android:textColor="@color/comm_text_h1_color"
+                    android:textSize="@dimen/user_space_content_fontsize" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/user_space_arrow" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1.0px"
+                android:background="@color/comm_divider_color" />
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/dialog_content_list_height"
+                android:background="@drawable/layout_item_bg"
+                android:paddingLeft="20.0dip"
+                android:paddingRight="15.0dip">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="@string/bind_account"
+                    android:textColor="@color/comm_text_h1_color"
+                    android:textSize="@dimen/user_space_content_fontsize" />
+
+                <ImageView
+                    android:id="@+id/iv_bindaccount_sina"
+                    android:layout_width="30.0dip"
+                    android:layout_height="30.0dip"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="3.0dip"
+                    android:src="@drawable/user_space_bindaccount_sina_bg" />
+
+                <ImageView
+                    android:id="@+id/iv_bindaccount_tencent"
+                    android:layout_width="30.0dip"
+                    android:layout_height="30.0dip"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10.0dip"
+                    android:layout_toLeftOf="@+id/iv_bindaccount_sina"
+                    android:src="@drawable/user_space_bindaccount_tencent_bg" />
+
+                <ImageView
+                    android:id="@+id/iv_bindaccount_weixin"
+                    android:layout_width="30.0dip"
+                    android:layout_height="30.0dip"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10.0dip"
+                    android:layout_toLeftOf="@+id/iv_bindaccount_tencent"
+                    android:src="@drawable/user_space_bindaccount_weixin_bg" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1.0px"
+                android:background="@color/comm_divider_color" />
+
+            <RelativeLayout
+                android:id="@+id/rl_user_changepassword"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/dialog_content_list_height"
+                android:background="@drawable/layout_item_bg"
+                android:paddingLeft="20.0dip"
+                android:paddingRight="20.0dip">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="@string/change_password"
+                    android:textColor="@color/comm_text_h1_color"
+                    android:textSize="@dimen/user_space_content_fontsize" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/user_space_arrow" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="10.0dip"
+                android:background="@color/comm_background_color" />
+
+            <TextView
+                android:id="@+id/tv_user_logout"
+                android:layout_width="fill_parent"
+                android:layout_height="50.0dip"
+                android:layout_gravity="center"
+                android:background="@color/white"
+                android:gravity="center"
+                android:text="@string/chang_account"
+                android:textColor="@color/comm_warning_color"
+                android:textSize="14.0sp" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="20.0dip"
+                android:background="@color/comm_background_color" />
+        </LinearLayout>
+    </ScrollView>
+</com.fanchen.imovie.view.StatusBarLayout>

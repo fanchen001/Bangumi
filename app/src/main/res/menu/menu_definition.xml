@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <item
+        android:id="@+id/action_ordinary"
+        android:orderInCategory="90"
+        android:title="标清"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_high"
+        android:orderInCategory="90"
+        android:title="高清"
+        app:showAsAction="never"/>
+</menu>

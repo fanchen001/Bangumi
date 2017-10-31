@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_player"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <com.fanchen.zzplayer.view.ZZVideoView
+        android:id="@+id/zzvv_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:background="@android:color/black" />
+
+    <com.fanchen.zzplayer.view.PlayerTitleBar
+        android:id="@+id/pt_title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/normal_bar_height"
+        android:layout_alignParentTop="true" />
+
+    <com.fanchen.zzplayer.view.PlayerController
+        android:id="@+id/pc_controller"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
+
+
+    <FrameLayout
+        android:id="@+id/fl_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateDrawable="@drawable/zz_player_loading_rotate"
+            android:maxHeight="38dp"
+            android:maxWidth="38dp"
+            android:minHeight="38dp"
+            android:minWidth="38dp" />
+
+    </FrameLayout>
+
+</RelativeLayout>

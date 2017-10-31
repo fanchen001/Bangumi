@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.fanchen.imovie.view.StatusBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/layout_toolbar"></include>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:background="@color/comm_background_color"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_10"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="30.0px"
+                android:paddingRight="30.0px">
+
+                <View
+                    android:layout_width="5.0px"
+                    android:layout_height="30.0px"
+                    android:background="@drawable/deawable_vertical_line" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20.0px"
+                    android:text="问题类型"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp_30"
+                android:layout_marginRight="@dimen/dp_30"
+                android:background="@drawable/drawable_line_rect_border">
+
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:id="@+id/btn_comic_cache"
+                        android:layout_width="0.0dip"
+                        android:layout_height="80dp"
+                        android:layout_weight="1.0"
+                        android:background="?selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/iv_comic_cache"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="@dimen/dp_20"
+                            android:src="@drawable/ic_trouble_other" />
+
+                        <TextView
+                            android:id="@+id/tv_comic_cache"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/iv_comic_cache"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="@dimen/dp_8"
+                            android:text="其他问题" />
+
+                        <View
+                            android:layout_width="1.0px"
+                            android:layout_height="79dp"
+                            android:layout_alignParentRight="true"
+                            android:background="@color/line" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/btn_chapter_pictures"
+                        android:layout_width="0.0dip"
+                        android:layout_height="80dp"
+                        android:layout_weight="1.0"
+                        android:background="?selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/iv_chapter_pictures"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="@dimen/dp_20"
+                            android:src="@drawable/ic_trouble_lack" />
+
+                        <TextView
+                            android:id="@+id/tv_chapter_pictures"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/iv_chapter_pictures"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="@dimen/dp_8"
+                            android:text="产品建议" />
+
+                        <View
+                            android:layout_width="1.0px"
+                            android:layout_height="79dp"
+                            android:layout_alignParentRight="true"
+                            android:background="@color/line" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/btn_product_bug"
+                        android:layout_width="0.0dip"
+                        android:layout_height="80dp"
+                        android:layout_weight="1.0"
+                        android:background="?selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/iv_product_bug"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="@dimen/dp_20"
+                            android:src="@drawable/ic_trouble_product" />
+
+                        <TextView
+                            android:id="@+id/tv_product_bug"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/iv_product_bug"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="@dimen/dp_8"
+                            android:text="产品BUG" />
+
+                    </RelativeLayout>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_10"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="30.0px"
+                android:paddingRight="30.0px">
+
+                <View
+                    android:layout_width="5.0px"
+                    android:layout_height="30.0px"
+                    android:background="@drawable/deawable_vertical_line" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20.0px"
+                    android:text="反馈内容"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <android.support.v7.widget.AppCompatEditText
+                android:id="@+id/et_feedback"
+                android:layout_width="fill_parent"
+                android:layout_height="120dp"
+                android:layout_marginLeft="30.0px"
+                android:layout_marginRight="30.0px"
+                android:background="@drawable/drawable_line_rect_border"
+                android:gravity="start|center|top"
+                android:maxLength="800"
+                android:padding="2dp"
+                android:paddingTop="@dimen/dp_10"
+                android:scrollbars="vertical" />
+
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_10"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="30.0px"
+                android:paddingRight="30.0px">
+
+                <View
+                    android:layout_width="5.0px"
+                    android:layout_height="30.0px"
+                    android:background="@drawable/deawable_vertical_line" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20.0px"
+                    android:text="联系邮箱"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="80.0px"
+                android:layout_marginLeft="30.0px"
+                android:layout_marginRight="30.0px"
+                android:focusableInTouchMode="true">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_feedback_email" />
+
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/et_contact"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="32dp"
+                    android:background="@drawable/drawable_line_rect_border"
+                    android:maxLines="1"
+                    android:padding="2dp" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/btn_complete"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="@dimen/dp_30"
+                android:layout_marginLeft="30.0px"
+                android:layout_marginRight="30.0px"
+                android:layout_marginTop="50.0px"
+                android:background="@drawable/login_btn_bg"
+                android:gravity="center"
+                android:text="提交反馈"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+    </ScrollView>
+
+</com.fanchen.imovie.view.StatusBarLayout>
+

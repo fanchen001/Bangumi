@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.fanchen.imovie.view.StatusBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_material_light">
+
+    <include layout="@layout/layout_toolbar" />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="96dp">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycle_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:descendantFocusability="beforeDescendants"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:overScrollMode="never"
+            android:scrollbars="none" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <com.fanchen.imovie.view.CustomEmptyView
+        android:id="@+id/cev_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="?attr/actionBarSize" />
+
+    <com.fanchen.imovie.view.dropdown.DropdownLayout
+        android:id="@+id/dl_category"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?attr/actionBarSize"
+        app:ddl_item_height="36dp"
+        app:ddl_item_selected__drawable="@drawable/ic_task_status_list_check"
+        app:ddl_item_text_gravity="left"
+        app:ddl_item_text_size="5sp"
+        app:ddl_list_max_height="320dp"
+        app:ddl_top_btn_noraml_drawable="@drawable/ic_dropdown_normal"
+        app:ddl_top_btn_selected_drawable="@drawable/ic_dropdown_actived"
+        app:ddl_top_height="40dp" />
+
+
+</com.fanchen.imovie.view.StatusBarLayout>

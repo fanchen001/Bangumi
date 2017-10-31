@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.fanchen.imovie.view.NestedCoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/abl_game"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/ctl_game"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:contentScrim="?colorPrimary"
+            app:layout_scrollFlags="exitUntilCollapsed|scroll">
+
+            <com.fanchen.imovie.view.video.SuperPlayerView
+                android:id="@+id/spv_video"
+                android:layout_width="match_parent"
+                android:layout_height="205dp"
+                android:fitsSystemWindows="true"
+                app:layout_collapseMode="parallax"
+                app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed" />
+
+            <ImageView
+                android:id="@+id/iv_game_cover"
+                android:layout_width="match_parent"
+                android:layout_height="205dp"
+                android:background="@drawable/image_load_pre"
+                android:fitsSystemWindows="true"
+                android:scaleType="centerCrop"
+                app:layout_collapseMode="parallax"
+                app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed" />
+
+            <include layout="@layout/layout_player_toolbar"></include>
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <com.fanchen.imovie.view.EnabledScrollView
+        android:id="@+id/nsv_game"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="?attr/colorControlNormal"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="92.0dip">
+
+                <ImageView
+                    android:id="@+id/iv_icon"
+                    android:layout_width="64.0dip"
+                    android:layout_height="64.0dip"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="@dimen/item_spacing"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/bili_default_image_tv" />
+
+                <TextView
+                    android:id="@+id/tv_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/iv_icon"
+                    android:layout_margin="@dimen/item_spacing"
+                    android:layout_toRightOf="@+id/iv_icon"
+                    android:gravity="bottom"
+                    android:singleLine="true"
+                    android:text="次元翻"
+                    android:textAppearance="@style/TextAppearance.App.Title"
+                    android:textColor="?android:textColorPrimary"
+                    android:textSize="16.0sp" />
+
+                <TextView
+                    android:id="@+id/tv_intor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_title"
+                    android:layout_margin="@dimen/item_spacing"
+                    android:layout_toRightOf="@+id/iv_icon"
+                    android:gravity="top"
+                    android:singleLine="true"
+                    android:text="10.1MB"
+                    android:textAppearance="@style/TextAppearance.App.Subtitle"
+                    android:textColor="?android:textColorTertiary"
+                    android:textSize="12.0sp" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1.0dip"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="12.0dip"
+                    android:layout_marginRight="12.0dip"
+                    android:background="@color/gray_light" />
+
+            </RelativeLayout>
+
+
+            <TextView
+                android:id="@+id/tv_app_description"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/default_info_height"
+                android:layout_margin="@dimen/item_spacing"
+                android:ellipsize="marquee"
+                android:textSize="12sp"></TextView>
+
+            <TextView
+                android:id="@+id/tv_app_more_info"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/item_spacing"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="@string/more_info"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14.0sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:background="@color/divider" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5.0dip"
+                android:layout_marginLeft="@dimen/item_spacing"
+                android:layout_marginRight="@dimen/item_spacing"
+                android:layout_marginTop="@dimen/item_spacing"
+                android:text="@string/pack_name"
+                android:textColor="#ff383838"
+                android:textSize="13.0sp" />
+
+            <TextView
+                android:id="@+id/tv_app_package_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5.0dip"
+                android:layout_marginLeft="@dimen/item_spacing"
+                android:layout_marginRight="@dimen/item_spacing" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5.0dip"
+                android:layout_marginLeft="@dimen/item_spacing"
+                android:layout_marginRight="@dimen/item_spacing"
+                android:text="@string/updatetime"
+                android:textColor="#ff383838"
+                android:textSize="13.0sp" />
+
+            <TextView
+                android:id="@+id/tv_app_update_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5.0dip"
+                android:layout_marginLeft="@dimen/item_spacing"
+                android:layout_marginRight="@dimen/item_spacing" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5.0dip"
+
+                android:layout_marginLeft="@dimen/item_spacing"
+                android:layout_marginRight="@dimen/item_spacing"
+                android:text="@string/update_nfo"
+                android:textColor="#ff0099cc" />
+
+            <TextView
+                android:id="@+id/tv_app_mark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5.0dip"
+                android:layout_marginLeft="@dimen/item_spacing"
+                android:layout_marginRight="@dimen/item_spacing"
+                android:textColor="#aa0099cc"
+                android:textSize="13.0sp" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/divider"
+                android:padding="@dimen/item_spacing"
+                android:text="@string/image_cat"
+                android:textColor="@color/text_black"
+                android:textSize="12.0sp" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_screen"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white" />
+        </LinearLayout>
+    </com.fanchen.imovie.view.EnabledScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_apk_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16.0dip"
+        android:elevation="4dp"
+        android:src="@drawable/ic_play_arrow_white_24dp"
+        android:visibility="gone"
+        app:layout_anchor="@+id/abl_game"
+        app:layout_anchorGravity="end|bottom|center" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_apk_download"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center|right"
+        android:layout_margin="16.0dip"
+        android:elevation="4dp"
+        android:src="@drawable/ic_toolbar_menu_download"
+        app:layout_anchorGravity="end|bottom|center" />
+
+
+    <com.fanchen.imovie.view.MaterialProgressBar
+        android:id="@+id/progressbar_apk"
+        android:layout_width="@dimen/mpb_width"
+        android:layout_height="@dimen/mpb_width"
+        android:layout_gravity="center"
+        app:barWidth="5dp"
+        app:circleRadius="28dp"
+        app:rimWidth="3dp" />
+
+
+</com.fanchen.imovie.view.NestedCoordinatorLayout>
+

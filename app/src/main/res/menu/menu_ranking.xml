@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item
+        android:id="@+id/action_day"
+        android:orderInCategory="90"
+        android:title="日排行"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_week"
+        android:orderInCategory="90"
+        android:title="周排行"
+        app:showAsAction="never" />
+
+</menu>

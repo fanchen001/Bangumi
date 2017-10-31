@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.fanchen.imovie.view.StatusBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/layout_toolbar"></include>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:background="@color/comm_background_color"
+        android:scrollbars="none">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TextView
+                android:id="@+id/icon_view"
+                android:layout_width="80.0dip"
+                android:layout_height="80.0dip"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30.0dip"
+                android:background="@drawable/ic_launcher"
+                android:contentDescription="@string/app_name" />
+
+            <TextView
+                android:id="@+id/app_description"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/icon_view"
+                android:layout_marginTop="10.0dip"
+                android:gravity="center_horizontal"
+                android:text="@string/app_name"
+                android:textColor="@color/comm_text_h1_color"
+                android:textSize="17.0sp" />
+
+            <TextView
+                android:id="@+id/tv_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/app_description"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="15.0dip"
+                android:gravity="center"
+                android:text="@string/app_version"
+                android:textColor="@color/comm_text_h2_color"
+                android:textSize="13.0sp" />
+
+            <TextView
+                android:id="@+id/content_text"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_version"
+                android:layout_marginBottom="30.0dip"
+                android:layout_marginLeft="15.0dip"
+                android:layout_marginRight="15.0dip"
+                android:layout_marginTop="30.0dip"
+                android:lineSpacingExtra="3.0dip"
+                android:text="@string/menu_subapp_about_detailed"
+                android:textColor="#ff666666"
+                android:textSize="13.0sp" />
+
+            <LinearLayout
+                android:id="@+id/message_all"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/content_text"
+                android:background="@color/white"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/rl_btn_web"
+                    android:layout_width="fill_parent"
+                    android:layout_height="@dimen/dialog_content_list_height">
+
+                    <TextView
+                        style="@style/push_setting_textview"
+                        android:text="@string/menu_web" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="15.0dip"
+                        android:gravity="center_vertical"
+                        android:text="@string/menu_about_web"
+                        android:textColor="#ff3aa8fe"
+                        android:textSize="11.0sp" />
+                </RelativeLayout>
+
+                <TextView style="@style/divider_style" />
+
+                <RelativeLayout
+                    android:id="@+id/rl_btn_qqnum"
+                    android:layout_width="fill_parent"
+                    android:layout_height="@dimen/dialog_content_list_height">
+
+                    <TextView
+                        style="@style/push_setting_textview"
+                        android:text="@string/menu_qqnumber" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="15.0dip"
+                        android:gravity="center_vertical"
+                        android:text="@string/menu_about_qq"
+                        android:textColor="#ff3aa8fe"
+                        android:textSize="11.0sp" />
+                </RelativeLayout>
+
+                <TextView style="@style/divider_style" />
+
+                <RelativeLayout
+                    android:id="@+id/rl_btn_phonenum"
+                    android:layout_width="fill_parent"
+                    android:layout_height="@dimen/dialog_content_list_height">
+
+                    <TextView
+                        style="@style/push_setting_textview"
+                        android:text="@string/menu_phonenumber" />
+
+                    <TextView
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="15.0dip"
+                        android:gravity="center_vertical"
+                        android:text="@string/menu_about_phonenumber"
+                        android:textColor="#ff3aa8fe"
+                        android:textSize="11.0sp" />
+                </RelativeLayout>
+
+                <TextView style="@style/divider_style" />
+
+                <RelativeLayout
+                    android:id="@+id/rl_btn_emailadress"
+                    android:layout_width="fill_parent"
+                    android:layout_height="@dimen/dialog_content_list_height">
+
+                    <TextView
+                        style="@style/push_setting_textview"
+                        android:text="@string/menu_emailadress" />
+
+                    <TextView
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="15.0dip"
+                        android:gravity="center_vertical"
+                        android:text="@string/menu_about_emailadress"
+                        android:textColor="#ff3aa8fe"
+                        android:textSize="11.0sp" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/about_layout_worktime"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/message_all"
+                android:layout_marginLeft="15.0dip"
+                android:layout_marginTop="10.0dip"
+                android:text="@string/menu_about_workingtime"
+                android:textColor="#ff999999"
+                android:textSize="11.0sp" />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="20.0dip"
+                android:layout_below="@+id/about_layout_worktime" />
+        </RelativeLayout>
+    </ScrollView>
+
+</com.fanchen.imovie.view.StatusBarLayout>
+

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="98.0dip"
+    android:background="?android:attr/selectableItemBackground">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cv_live_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="5.0dip"
+        android:layout_marginLeft="8.0dip"
+        android:layout_marginTop="5.0dip"
+        android:foreground="?attr/selectableItemBackground"
+        android:padding="2dp"
+        app:cardCornerRadius="@dimen/card_corner_radius">
+
+        <ImageView
+            android:id="@+id/iv_live_image"
+            android:layout_width="130.0dip"
+            android:layout_height="85.0dip"
+            android:scaleType="centerCrop" />
+    </android.support.v7.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="8.0dip"
+        android:layout_marginLeft="13.0dip"
+        android:layout_marginRight="30.0dip"
+        android:layout_marginTop="8.0dip"
+        android:layout_toRightOf="@+id/cv_live_image"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_text"
+            android:layout_width="wrap_content"
+            android:layout_height="0.0dip"
+            android:layout_weight="1.0"
+            android:maxLines="2"
+            android:textColor="@color/loading_bg"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_current"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_5"
+            android:singleLine="true"
+            android:textColor="@color/primary_text"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_5"
+            android:singleLine="true"
+            android:textColor="@color/primary_text"
+            android:textSize="14.0dip" />
+    </LinearLayout>
+
+</RelativeLayout>

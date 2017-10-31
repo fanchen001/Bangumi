@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.fanchen.imovie.view.StatusBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/layout_toolbar"></include>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:background="@color/comm_background_color"
+        android:scrollbars="none">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <ImageView
+                android:id="@+id/iv_login_eyes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:paddingRight="11.0dip"
+                android:src="@drawable/login_icon_eyes_open" />
+
+            <LinearLayout
+                android:id="@+id/ll_login_all"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/iv_login_eyes"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="15.0dip"
+                android:layout_marginRight="15.0dip"
+                android:layout_marginTop="-6.0dip"
+                android:background="@drawable/login_content_bg"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20.0dip"
+                    android:layout_marginRight="20.0dip"
+                    android:layout_marginTop="25.0dip"
+                    android:gravity="bottom"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/phone_bg" />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/et_login_username"
+                            style="@style/account_editview_textsize"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10.0dip"
+                            android:background="#00000000"
+                            android:cursorVisible="true"
+                            android:gravity="center_vertical"
+                            android:hint="输入账号/手机号"
+                            android:paddingTop="8dp"
+                            android:singleLine="true"
+                            android:textColorHint="@color/comm_text_hint_color" />
+                    </android.support.design.widget.TextInputLayout>
+                </LinearLayout>
+
+                <com.fanchen.imovie.view.EditTextLineView
+                    android:layout_width="fill_parent"
+                    android:layout_height="2.0px"
+                    android:layout_marginLeft="20.0dip"
+                    android:layout_marginRight="20.0dip"
+                    android:layout_marginTop="12.0dip" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20.0dip"
+                    android:layout_marginRight="20.0dip"
+                    android:layout_marginTop="15.0dip"
+                    android:gravity="bottom">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/password_bg" />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="0.0dip"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.0">
+
+                        <EditText
+                            android:id="@+id/et_login_password"
+                            style="@style/account_editview_textsize"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_marginLeft="10.0dip"
+                            android:background="#00000000"
+                            android:cursorVisible="true"
+                            android:hint="输入密码"
+                            android:inputType="textPassword"
+                            android:maxLength="16"
+                            android:paddingTop="8dp"
+                            android:singleLine="true"
+                            android:textColorHint="@color/comm_text_hint_color" />
+                    </android.support.design.widget.TextInputLayout>
+
+                    <ImageButton
+                        android:id="@+id/btn_password_visible"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:background="@null"
+                        android:paddingRight="15.0dip"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/login_pss_invisable" />
+                </LinearLayout>
+
+                <com.fanchen.imovie.view.EditTextLineView
+                    android:layout_width="fill_parent"
+                    android:layout_height="2.0px"
+                    android:layout_marginLeft="20.0dip"
+                    android:layout_marginRight="20.0dip"
+                    android:layout_marginTop="12.0dip" />
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20.0dip"
+                    android:layout_marginRight="20.0dip">
+
+                    <TextView
+                        android:id="@+id/tv_forgetpassword"
+                        style="@style/account_hint_textview_textsize"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:paddingBottom="25.0dip"
+                        android:paddingTop="25.0dip"
+                        android:text="@string/forget_password" />
+
+                    <TextView
+                        android:id="@+id/tv_registeraccount"
+                        style="@style/account_hint_textview_textsize"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:paddingBottom="25.0dip"
+                        android:paddingTop="25.0dip"
+                        android:text="注册新账号" />
+                </RelativeLayout>
+
+                <Button
+                    android:id="@+id/btn_login"
+                    style="@style/account_btn_textsize"
+                    android:layout_width="fill_parent"
+                    android:layout_height="45.0dip"
+                    android:layout_marginBottom="40.0dip"
+                    android:layout_marginLeft="20.0dip"
+                    android:layout_marginRight="20.0dip"
+                    android:background="@drawable/login_btn_bg"
+                    android:clickable="false"
+                    android:editable="false"
+                    android:enabled="false"
+                    android:text="登 录"
+                    android:textSize="17.0sp" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/rl_third_login_text"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ll_login_all"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="55.0dip"
+                android:layout_marginRight="55.0dip"
+                android:layout_marginTop="40.0dip">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="1.0px"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/hiti_text"
+                    android:background="@color/comm_text_disable_color" />
+
+                <TextView
+                    android:id="@+id/hiti_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginLeft="13.0dip"
+                    android:layout_marginRight="13.0dip"
+                    android:text="其他方式登录"
+                    android:textColor="@color/comm_text_disable_color"
+                    android:textSize="15.0sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="1.0px"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/hiti_text"
+                    android:background="@color/comm_text_disable_color" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rl_third_linearlayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rl_third_login_text"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="50.0dip"
+                android:layout_marginRight="50.0dip"
+                android:layout_marginTop="40.0dip">
+
+                <LinearLayout
+                    android:id="@+id/ll_wechat_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/trends_guide_weixin_logo" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12.0sp"
+                        android:gravity="center_horizontal"
+                        android:text="微信"
+                        android:textColor="#ff666666"
+                        android:textSize="12.0sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_tencent_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/trends_guide_tencent_logo" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12.0sp"
+                        android:gravity="center_horizontal"
+                        android:text="腾讯QQ"
+                        android:textColor="#ff666666"
+                        android:textSize="12.0sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_sina_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/trends_guide_sina_logo" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12.0sp"
+                        android:gravity="center_horizontal"
+                        android:text="新浪微博"
+                        android:textColor="#ff666666"
+                        android:textSize="12.0sp" />
+                </LinearLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
+
+</com.fanchen.imovie.view.StatusBarLayout>
+

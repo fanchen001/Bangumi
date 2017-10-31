@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.fanchen.imovie.view.StatusBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/layout_toolbar"></include>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:background="@color/comm_background_color">
+
+        <LinearLayout
+            android:id="@+id/ll_register_content_all"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="15.0dip"
+            android:layout_marginRight="15.0dip"
+            android:layout_marginTop="15.0dip"
+            android:background="@drawable/login_content_bg"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20.0dip"
+                android:layout_marginRight="20.0dip"
+                android:layout_marginTop="35.0dip"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:background="@drawable/phone_bg"
+                    android:gravity="center_vertical" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="0.0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10.0dip"
+                    android:layout_weight="1.0">
+
+                    <EditText
+                        android:id="@+id/et_phonenumber"
+                        style="@style/account_editview_textsize"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="#00000000"
+                        android:gravity="center_vertical"
+                        android:hint="请输入你的手机号码"
+                        android:inputType="numberSigned"
+                        android:maxLength="11"
+                        android:editable="false"
+                        android:clickable="false"
+                        android:paddingTop="8dp"
+                        android:singleLine="true"
+                        android:textColorHint="@color/comm_text_hint_color" />
+                </android.support.design.widget.TextInputLayout>
+
+                <ImageView
+                    android:id="@+id/img_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_gravity="bottom"
+                    android:gravity="center_vertical"
+                    android:src="@drawable/find_password_delete"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <com.fanchen.imovie.view.EditTextLineView
+                android:layout_width="fill_parent"
+                android:layout_height="2.0px"
+                android:layout_marginLeft="20.0dip"
+                android:layout_marginRight="20.0dip"
+                android:layout_marginTop="12.0dip" />
+
+            <Button
+                android:id="@+id/btn_next"
+                style="@style/account_btn_textsize"
+                android:layout_width="fill_parent"
+                android:layout_height="45.0dip"
+                android:layout_marginBottom="40.0dip"
+                android:layout_marginLeft="20.0dip"
+                android:layout_marginRight="20.0dip"
+                android:layout_marginTop="25.0dip"
+                android:background="@drawable/login_btn_bg"
+                android:clickable="false"
+                android:editable="false"
+                android:enabled="false"
+                android:text="下一步" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ll_register_content_all"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20.0dip"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10.0dip"
+                android:text="点击下一步，代表同意"
+                android:textColor="#ff666666"
+                android:textSize="12.0sp" />
+
+            <TextView
+                android:id="@+id/tv_forgetpassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10.0dip"
+                android:text="@string/register_agreement"
+                android:textColor="#ff3aa8fe"
+                android:textSize="12.0sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</com.fanchen.imovie.view.StatusBarLayout>
+

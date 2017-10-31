@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorPrimaryDark">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/dp_10"
+            android:text="@string/bilijj_info"
+            android:textColor="?attr/colorPrimary" />
+
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/til_bilijj"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_12"
+            android:layout_marginRight="@dimen/dp_12"
+            android:layout_marginTop="@dimen/dp_12">
+
+            <EditText
+                android:id="@+id/ed_bilijj"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/bilijj_hint"
+                android:paddingTop="@dimen/dp_8" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/btn_get_down"
+            style="@style/account_btn_textsize"
+            android:layout_width="fill_parent"
+            android:layout_height="45.0dip"
+            android:layout_below="@+id/til_search"
+            android:layout_marginLeft="@dimen/dp_12"
+            android:layout_marginRight="@dimen/dp_12"
+            android:layout_marginTop="@dimen/dp_10"
+            android:background="@drawable/login_btn_bg"
+            android:text="@string/get_download"
+            android:textSize="17.0sp" />
+
+        <Button
+            android:id="@+id/btn_new_video"
+            style="@style/account_btn_textsize"
+            android:layout_width="fill_parent"
+            android:layout_height="45.0dip"
+            android:layout_below="@+id/til_search"
+            android:layout_marginLeft="@dimen/dp_12"
+            android:layout_marginRight="@dimen/dp_12"
+            android:layout_marginTop="@dimen/dp_10"
+            android:background="@drawable/login_btn_bg"
+            android:text="@string/new_video"
+            android:textSize="17.0sp" />
+
+        <Button
+            android:id="@+id/btn_new_music"
+            style="@style/account_btn_textsize"
+            android:layout_width="fill_parent"
+            android:layout_height="45.0dip"
+            android:layout_below="@+id/til_search"
+            android:layout_marginLeft="@dimen/dp_12"
+            android:layout_marginRight="@dimen/dp_12"
+            android:layout_marginTop="@dimen/dp_10"
+            android:background="@drawable/login_btn_bg"
+            android:text="@string/new_music"
+            android:textSize="17.0sp" />
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>
+
+
+
