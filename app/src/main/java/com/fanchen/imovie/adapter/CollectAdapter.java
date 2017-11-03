@@ -13,6 +13,7 @@ import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.entity.bmob.VideoCollect;
 import com.fanchen.imovie.picasso.PicassoWrap;
+import com.fanchen.imovie.picasso.download.RefererDownloader;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -57,13 +58,21 @@ public class CollectAdapter extends BaseAdapter {
             }
             itemViewHolder.titleTextView.setText(videoCollect.getTitle());
             itemViewHolder.timeTextView.setText(videoCollect.getTime());
-            picasso.loadVertical(videoCollect.getCover(), CollectTabActivity.class,itemViewHolder.imageView);
+            if(!TextUtils.isEmpty(videoCollect.getCoverReferer())){
+                new PicassoWrap(new Picasso.Builder(context).downloader(new RefererDownloader(context, videoCollect.getCoverReferer())).build()).loadVertical(videoCollect.getCover(), CollectTabActivity.class,itemViewHolder.imageView);
+            }else{
+                picasso.loadVertical(videoCollect.getCover(), CollectTabActivity.class,itemViewHolder.imageView);
+            }
         }else{
             HItemViewHolder itemViewHolder = (HItemViewHolder) holder;
             itemViewHolder.startTextView.setText(videoCollect.getExtras());
             itemViewHolder.titleTextView.setText(videoCollect.getTitle());
             itemViewHolder.endTextView.setText(videoCollect.getTime());
-            picasso.loadVertical(videoCollect.getCover(), CollectTabActivity.class,itemViewHolder.imageView);
+            if(!TextUtils.isEmpty(videoCollect.getCoverReferer())){
+                new PicassoWrap(new Picasso.Builder(context).downloader(new RefererDownloader(context, videoCollect.getCoverReferer())).build()).loadVertical(videoCollect.getCover(), CollectTabActivity.class,itemViewHolder.imageView);
+            }else{
+                picasso.loadVertical(videoCollect.getCover(), CollectTabActivity.class,itemViewHolder.imageView);
+            }
         }
     }
 

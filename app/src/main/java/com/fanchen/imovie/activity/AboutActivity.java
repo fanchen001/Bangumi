@@ -2,7 +2,6 @@ package com.fanchen.imovie.activity;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,6 @@ import com.fanchen.imovie.base.BaseToolbarActivity;
 import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.SystemUtil;
 
-import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 

@@ -11,6 +11,7 @@ import java.util.Map;
 public class KmaoPlayUrl implements IPlayUrls {
     private boolean success;
     private String message;
+    private int urlType = URL_M3U8;
     private int playType = IVideoEpisode.PLAY_TYPE_VIDEO;
     private Map<String, String> urls;
 
@@ -22,6 +23,16 @@ public class KmaoPlayUrl implements IPlayUrls {
     @Override
     public int getPlayType() {
         return playType;
+    }
+
+    @Override
+    public int getUrlType() {
+        return urlType;
+    }
+
+    @Override
+    public String getReferer() {
+        return null;
     }
 
     @Override
@@ -48,5 +59,9 @@ public class KmaoPlayUrl implements IPlayUrls {
 
     public void setPlayType(int playType) {
         this.playType = playType;
+    }
+
+    public void setUrlType(int urlType) {
+        this.urlType = urlType;
     }
 }

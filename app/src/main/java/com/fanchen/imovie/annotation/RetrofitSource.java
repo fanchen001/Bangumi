@@ -86,4 +86,8 @@ public enum RetrofitSource {
      */
     KMAO_API,
 
+    /**
+     *
+     */
+    A4DY_API
 }

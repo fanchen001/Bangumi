@@ -34,11 +34,11 @@ import com.fanchen.imovie.entity.apk.ApkParamData;
 import com.fanchen.imovie.entity.apk.ApkParamUser;
 import com.fanchen.imovie.entity.apk.ApkRoot;
 import com.fanchen.imovie.entity.apk.ApkVideo;
-import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.retrofit.callback.RetrofitCallback;
 import com.fanchen.imovie.retrofit.service.MoeapkService;
 import com.fanchen.imovie.util.DisplayUtil;
+import com.fanchen.imovie.view.CustomEmptyView;
 import com.fanchen.imovie.view.EnabledScrollView;
 import com.fanchen.imovie.view.MaterialProgressBar;
 import com.fanchen.imovie.view.callback.AppBarStateChangeListener;
@@ -105,8 +105,13 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
     protected FloatingActionButton mDownloadButton;
     @InjectView(R.id.progressbar_apk)
     protected MaterialProgressBar mProgressbar;
+    @InjectView(R.id.cev_empty)
+    CustomEmptyView mEmptyView;
+    @InjectView(R.id.abl_game)
+    View mAblView;
 
     protected View mainView;
+
 
     private ApkItem apkItem;
     private ApkDetails mApkDetails;
@@ -126,11 +131,6 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
-    protected boolean isSwipeActivity() {
-        return false;
-    }
-
-    @Override
     protected int getLayout() {
         return R.layout.activity_apk_details;
     }
@@ -147,8 +147,8 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
         mRecyclerView.setAdapter(mApkScreenAdapter);
         mSuperPlayerView.setNetChangeListener(true);
         mSuperPlayerView.setShowTopControl(false);
-        mSuperPlayerView.setScaleType(SuperPlayerView.SCALETYPE_FITXY);
-        mSuperPlayerView.setPlayerWH(0, mSuperPlayerView.getMeasuredHeight());//设置竖屏的时候屏幕的高度，如果不设置会切换后按照16:9的高度重置
+        mSuperPlayerView.setScaleType(SuperPlayerView.SCALETYPE_FILLPARENT);
+        mSuperPlayerView.setPlayerWH(mSuperPlayerView.getMeasuredWidth(), mSuperPlayerView.getMeasuredHeight());//设置竖屏的时候屏幕的高度，如果不设置会切换后按照16:9的高度重置
         //加载数据
         getRetrofitManager().enqueue(MoeapkService.class, detailsCallback, "details", createBody());
     }
@@ -156,6 +156,7 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
     @Override
     protected void setListener() {
         super.setListener();
+        mEmptyView.setOnClickListener(this);
         mMoreTextView.setOnClickListener(this);
         mBackView.setOnClickListener(this);
         mPlayFab.setOnClickListener(this);
@@ -217,12 +218,12 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
         this.mApkDetails = details;
         mBarTitleTextView.setText(details.getTitle());
         mSuperPlayerView.setTitle(details.getTitle());
-        if(!TextUtils.isEmpty(details.getCover()))
+        if (!TextUtils.isEmpty(details.getCover()))
             picasso.load(details.getCover())
                     .config(Bitmap.Config.RGB_565)
                     .placeholder(R.drawable.image_load_pre)
                     .error(R.drawable.image_load_error).into(mCoverImageView);//背景
-        if(!TextUtils.isEmpty(details.getIco()))
+        if (!TextUtils.isEmpty(details.getIco()))
             picasso.load(details.getIco()).config(Bitmap.Config.RGB_565)
                     .placeholder(R.drawable.image_load_icon_pre)
                     .error(R.drawable.image_load_icon_error).into(mIconImageView);//图标
@@ -271,18 +272,21 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.cev_empty:
+                getRetrofitManager().enqueue(MoeapkService.class, detailsCallback, "details", createBody());
+                break;
             case R.id.fab_apk_play:
                 playVideo();
                 break;
             case R.id.fab_apk_download:
-                if(mApkDetails == null)return;
+                if (mApkDetails == null) return;
                 String format = String.format("https://api.moeapk.com/client/app/downloadApk?package=%s", mApkDetails.getPackagename());
                 File dir = new File(Environment.getExternalStorageDirectory() + "/android/data/" + getPackageName() + "/download/apk/");
-                if(!dir.exists())dir.mkdirs();
-                if(Aria.download(appliction).taskExists(format)){
+                if (!dir.exists()) dir.mkdirs();
+                if (Aria.download(appliction).taskExists(format)) {
                     showSnackbar(getString(R.string.task_exists));
-                }else{
-                    Aria.download(appliction).load(format).setDownloadPath(new File(dir,mApkDetails.getPackagename() + ".apk").getAbsolutePath()).start();
+                } else {
+                    Aria.download(appliction).load(format).setDownloadPath(new File(dir, mApkDetails.getPackagename() + ".apk").getAbsolutePath()).start();
                     showSnackbar(getString(R.string.download_add));
                 }
                 break;
@@ -351,6 +355,11 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
+    protected boolean isSwipeActivity() {
+        return false;
+    }
+
+    @Override
     public void onBackPressed() {
         if (mSuperPlayerView != null && mSuperPlayerView.onBackPressed()) {
             return;
@@ -394,7 +403,7 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
 
         @Override
         public void onStateChange(int state) {
-            if (DisplayUtil.isScreenChange(ApkDetailsActivity.this)) return;
+            if (DisplayUtil.isScreenChange(ApkDetailsActivity.this))return;
             if (state == SuperPlayerView.STATUS_PLAYING) {
                 //播放状态下按钮不可见，视图不可以滚动
                 mPlayFab.setVisibility(View.GONE);
@@ -444,6 +453,12 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
         @Override
         public void onStart(int enqueueKey) {
             mProgressbar.setVisibility(View.VISIBLE);
+            if(mEmptyView != null)
+                mEmptyView.setEmptyType(CustomEmptyView.TYPE_NON);
+            if(mAblView != null)
+                mAblView.setVisibility(View.VISIBLE);
+            if(mNestedScrollView != null)
+                mNestedScrollView.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -454,6 +469,12 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
         @Override
         public void onFailure(int enqueueKey, String throwable) {
             if (isFinishing()) return;
+            if(mEmptyView != null)
+                mEmptyView.setEmptyType(CustomEmptyView.TYPE_ERROR);
+            if(mAblView != null)
+                mAblView.setVisibility(View.GONE);
+            if(mNestedScrollView != null)
+                mNestedScrollView.setVisibility(View.GONE);
             showSnackbar(throwable);
         }
 

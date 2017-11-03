@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.fanchen.imovie.view.StatusBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/layout_toolbar"></include>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_height="fill_parent"
+        android:background="@color/comm_background_color"
+        android:scrollbarThumbVertical="@drawable/btn_dialog_scrollbar_thumb">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+            <View style="@style/divider_style" />
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/dialog_content_list_height"
+                android:paddingLeft="20.0dip"
+                android:paddingRight="20.0dip">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="头像"
+                    android:textColor="@color/comm_text_h1_color"
+                    android:textSize="@dimen/dialog_content_common_textSize" />
+
+                <ImageView
+                    android:id="@+id/user_profile_iconset_arrow_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/user_space_arrow" />
+
+                <com.fanchen.imovie.view.CircleImageView
+                    android:id="@+id/user_profile_iconset_iv"
+                    android:layout_width="40.0dip"
+                    android:layout_height="40.0dip"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="14.0dip"
+                    android:layout_toLeftOf="@+id/user_profile_iconset_arrow_iv"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/mine_login_icon" />
+            </RelativeLayout>
+
+            <View style="@style/divider_style" />
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/dialog_content_list_height"
+                android:paddingLeft="20.0dip"
+                android:paddingRight="20.0dip">
+
+                <TextView
+                    android:id="@+id/user_profile_nickname_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="昵称"
+                    android:textColor="@color/comm_text_h1_color"
+                    android:textSize="@dimen/dialog_content_common_textSize" />
+
+                <FrameLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="36.0dip"
+                    android:layout_toRightOf="@+id/user_profile_nickname_tv">
+
+                    <EditText
+                        android:id="@+id/user_profile_nickname_et"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:background="@null"
+                        android:hint="2-10个中英文字符、数字和下划线组成"
+                        android:imeOptions="actionNext"
+                        android:singleLine="true"
+                        android:textColor="@color/comm_text_h2_color"
+                        android:textColorHint="@color/comm_text_hint_color"
+                        android:textSize="12.0sp"/>
+
+                </FrameLayout>
+            </RelativeLayout>
+
+            <View style="@style/divider_style" />
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/dialog_content_list_height"
+                android:paddingLeft="20.0dip"
+                android:paddingRight="20.0dip">
+
+                <TextView
+                    android:id="@+id/user_profile_email_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="邮箱"
+                    android:textColor="@color/comm_text_h1_color"
+                    android:textSize="@dimen/dialog_content_common_textSize" />
+
+
+                <FrameLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="36.0dip"
+                    android:layout_toRightOf="@+id/user_profile_email_tv">
+
+                    <EditText
+                        android:id="@+id/user_profile_email_et"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:background="@null"
+                        android:hint="例：example@tadu.com"
+                        android:inputType="textEmailAddress"
+                        android:singleLine="true"
+                        android:textColor="@color/comm_text_h2_color"
+                        android:textColorHint="@color/comm_text_hint_color"
+                        android:textSize="14.0sp"/>
+
+                </FrameLayout>
+            </RelativeLayout>
+
+            <View style="@style/divider_style" />
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/dialog_content_list_height"
+                android:paddingLeft="20.0dip"
+                android:paddingRight="20.0dip">
+
+                <TextView
+                    android:id="@+id/user_profile_birth_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="生日"
+                    android:textColor="@color/comm_text_h1_color"
+                    android:textSize="@dimen/dialog_content_common_textSize" />
+
+                <TextView
+                    android:id="@+id/user_profile_birth_textview"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="36.0dip"
+                    android:layout_toRightOf="@+id/user_profile_birth_tv"
+                    android:gravity="center_vertical"
+                    android:hint="\ 19800101"
+                    android:singleLine="true"
+                    android:textColor="@color/comm_text_h2_color"
+                    android:textColorHint="@color/comm_text_hint_color"
+                    android:textSize="12.0sp" />
+            </RelativeLayout>
+
+            <View style="@style/divider_style" />
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/dialog_content_list_height"
+                android:paddingLeft="20.0dip"
+                android:paddingRight="20.0dip">
+
+                <TextView
+                    android:id="@+id/user_profile_sex_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="性别"
+                    android:textColor="@color/comm_text_h1_color"
+                    android:textSize="@dimen/dialog_content_common_textSize" />
+
+                <RadioGroup
+                    android:id="@+id/user_profile_sex_rg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="36.0dip"
+                    android:layout_toRightOf="@+id/user_profile_sex_tv"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/user_profile_sex_male"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/user_profile_sex_male_bg"
+                        android:button="@null"
+                        android:checked="true" />
+
+                    <RadioButton
+                        android:id="@+id/user_profile_sex_female"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/user_profile_sex_female_bg"
+                        android:button="@null" />
+                </RadioGroup>
+            </RelativeLayout>
+
+            <View style="@style/divider_style" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@color/comm_background_color"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingBottom="18.0dip"
+                android:paddingTop="18.0dip">
+
+                <Button
+                    android:id="@+id/user_profile_btn_save"
+                    android:layout_width="fill_parent"
+                    android:layout_height="40.0dip"
+                    android:layout_marginLeft="20.0dip"
+                    android:layout_marginRight="20.0dip"
+                    android:background="@drawable/login_btn_border_def"
+                    android:gravity="center"
+                    android:text="保存"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/dialog_content_common_textSize" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</com.fanchen.imovie.view.StatusBarLayout>
+

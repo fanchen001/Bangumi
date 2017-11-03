@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.DisplayMetrics;
+import android.view.WindowManager;
 
 /**
  * Created by aaron on 16/8/3.
@@ -44,6 +45,13 @@ public class DisplayUtil {
         activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
         int screenWidth = dm.widthPixels;
         return screenWidth;
+    }
+
+    public static int getHeightDensity(Context activity) {
+        DisplayMetrics dm = new DisplayMetrics();
+        ((WindowManager)activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(dm);
+        int screenWidth = dm.widthPixels;
+        return (int) (screenWidth / dm.density);
     }
 
     /**

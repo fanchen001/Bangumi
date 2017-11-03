@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fanchen.imovie.R;
+import com.fanchen.imovie.util.LogUtil;
 
 /**
  * 自定义EmptyView
@@ -58,6 +59,7 @@ public class CustomEmptyView extends FrameLayout {
         if (this.type == TYPE_ERROR && type == TYPE_EMPTY)
             return;
         this.type = type;
+        LogUtil.e("setEmptyType","" + this.type);
         if (TYPE_EMPTY == this.type) {
             mEmptyImg.setImageResource(R.drawable.ic_load_empty);
             mEmptyText.setText(R.string.load_hit_empty);
@@ -77,7 +79,7 @@ public class CustomEmptyView extends FrameLayout {
         super.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (type == TYPE_ERROR && l != null) {
+                if ((type == TYPE_ERROR || type == TYPE_EMPTY) && l != null) {
                     l.onClick(v);
                 }
             }

@@ -11,6 +11,8 @@ import java.util.Map;
 public class XiaokanbaPlayUrl implements IPlayUrls {
     private boolean success;
     private String message;
+    private int playType = IVideoEpisode.PLAY_TYPE_VIDEO;
+    private int urlType = URL_M3U8;
     private Map<String, String> urls;
 
     @Override
@@ -20,7 +22,17 @@ public class XiaokanbaPlayUrl implements IPlayUrls {
 
     @Override
     public int getPlayType() {
-        return IVideoEpisode.PLAY_TYPE_VIDEO;
+        return playType;
+    }
+
+    @Override
+    public int getUrlType() {
+        return urlType;
+    }
+
+    @Override
+    public String getReferer() {
+        return null;
     }
 
     @Override
@@ -43,5 +55,13 @@ public class XiaokanbaPlayUrl implements IPlayUrls {
 
     public void setUrls(Map<String, String> urls) {
         this.urls = urls;
+    }
+
+    public void setUrlType(int urlType) {
+        this.urlType = urlType;
+    }
+
+    public void setPlayType(int playType) {
+        this.playType = playType;
     }
 }

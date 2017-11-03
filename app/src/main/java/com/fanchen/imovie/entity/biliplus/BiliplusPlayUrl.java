@@ -26,6 +26,16 @@ public class BiliplusPlayUrl implements IPlayUrls{
     }
 
     @Override
+    public int getUrlType() {
+        return URL_FILE;
+    }
+
+    @Override
+    public String getReferer() {
+        return null;
+    }
+
+    @Override
     public boolean isSuccess() {
         return success;
     }

@@ -106,7 +106,7 @@ public class SuperPlayerView extends RelativeLayout {
     private int mMaxVolume;
     private boolean playerSupport;
     private String url;
-    private String errorUrl;
+    private  String errorUrl;
     private Query $;
     public static int STATUS_ERROR = -1;
     public static int STATUS_IDLE = 0;
@@ -534,7 +534,6 @@ public class SuperPlayerView extends RelativeLayout {
                 }
             }
         });
-
         seekBar = (SeekBar) contentView.findViewById(R.id.app_video_seekBar);
         seekBar.setMax(1000);
         seekBar.setOnSeekBarChangeListener(mSeekListener);
@@ -664,6 +663,11 @@ public class SuperPlayerView extends RelativeLayout {
                 hideAll(false);
             }
         }
+//        if(shadeView != null && newStatus == STATUS_PAUSE && videoView != null && videoView.getCurrentPosition() > 0){
+//            shadeView.setVisibility(View.GONE);
+//        }else if(shadeView != null){
+//            shadeView.setVisibility(View.VISIBLE);
+//        }
         if (onPlayStateChangeListener != null) {
             onPlayStateChangeListener.onStateChange(newStatus);
         }
@@ -783,7 +787,13 @@ public class SuperPlayerView extends RelativeLayout {
 
                         setLayoutParams(layoutParams);
                         requestLayout();
-
+                        if(videoView != null && videoView.getLayoutParams() != null){
+                            ViewGroup.LayoutParams params = videoView.getLayoutParams();
+                            params.width = layoutParams.width;
+                            params.height = layoutParams.height;
+                            videoView.setLayoutParams(params);
+                            videoView.requestLayout();
+                        }
                         Log.e("==>", "height." + layoutParams.height + ".width" + layoutParams.width);
                     } else {
                         int heightPixels = activity.getResources().getDisplayMetrics().heightPixels;
@@ -792,13 +802,18 @@ public class SuperPlayerView extends RelativeLayout {
                         layoutParams.height = heightPixels;
                         layoutParams.width = widthPixels;
                         setLayoutParams(layoutParams);
-
+                        requestLayout();
+                        if(videoView != null && videoView.getLayoutParams() != null){
+                            ViewGroup.LayoutParams params = videoView.getLayoutParams();
+                            params.width = widthPixels;
+                            params.height = heightPixels;
+                            videoView.setLayoutParams(params);
+                            videoView.requestLayout();
+                        }
                         Log.e("==>", "height." + layoutParams.height + ".width" + layoutParams.width);
                     }
                     updateFullScreenButton();
-
                     statusChange(isPlaying() ? STATUS_PLAYING : STATUS_PAUSE);
-
                 }
             });
             orientationEventListener.enable();

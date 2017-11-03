@@ -2,6 +2,7 @@ package com.fanchen.imovie.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -12,6 +13,7 @@ import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.entity.bmob.VideoHistory;
 import com.fanchen.imovie.picasso.PicassoWrap;
+import com.fanchen.imovie.picasso.download.RefererDownloader;
 import com.fanchen.imovie.util.DateUtil;
 import com.squareup.picasso.Picasso;
 
@@ -48,7 +50,11 @@ public class HistoryAdapter extends BaseAdapter {
         viewHolder.titleTextView.setText(history.getTitle());
         viewHolder.timeTextView.setText(String.format("播放时间:%s", history.getTime()));
         viewHolder.positionTextView.setText(String.format("上次播放:%s", DateUtil.secToTime((int)(history.getPlayPosition() / 1000))));
-        picasso.loadHorizontal(history.getCover(), HistoryActivity.class,viewHolder.imageView);
+        if(!TextUtils.isEmpty(history.getCoverReferer())){
+            new PicassoWrap(new Picasso.Builder(context).downloader(new RefererDownloader(context, history.getCoverReferer())).build()).loadHorizontal(history.getCover(), HistoryActivity.class, viewHolder.imageView);
+        }else{
+            picasso.loadHorizontal(history.getCover(), HistoryActivity.class, viewHolder.imageView);
+        }
     }
 
     @Override

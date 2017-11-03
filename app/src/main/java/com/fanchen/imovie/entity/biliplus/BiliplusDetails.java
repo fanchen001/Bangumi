@@ -129,6 +129,11 @@ public class BiliplusDetails implements IVideoDetails,Parcelable{
     }
 
     @Override
+    public String getCoverReferer() {
+        return null;
+    }
+
+    @Override
     public String getTitle() {
         return title;
     }

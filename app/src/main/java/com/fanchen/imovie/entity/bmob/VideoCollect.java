@@ -43,6 +43,7 @@ public class VideoCollect extends VideoHistory implements Parcelable {
         setId(videoItem.getId());
         setCover(videoItem.getCover());
         setTime(videoItem.getLast());
+        setCoverReferer(videoItem.getCoverReferer());
         setServiceClassName(videoItem.getServiceClassName());
     }
 

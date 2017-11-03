@@ -2,20 +2,16 @@ package com.fanchen.imovie.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 
-import com.arialyy.aria.core.Aria;
 import com.arialyy.aria.core.download.DownloadEntity;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.base.BaseActivity;
-import com.fanchen.imovie.db.LiteOrmManager;
 import com.fanchen.imovie.dialog.BaseAlertDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
 import com.fanchen.imovie.entity.face.IPlayUrls;
@@ -35,15 +31,11 @@ import com.fanchen.imovie.util.DateUtil;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.view.video.SuperPlayerView;
-import com.litesuits.orm.LiteOrm;
 import com.litesuits.orm.db.assit.QueryBuilder;
 import com.vbyte.p2p.old.Vbyte;
 import com.xunlei.downloadlib.parameter.TorrentFileInfo;
 
-import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.InjectView;
 
@@ -84,6 +76,7 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
         intent.putExtra(LOCAL_VIDEO, body);
         context.startActivity(intent);
     }
+
     /**
      * @param context
      * @param body
@@ -178,7 +171,6 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
         videoUrl = getIntent().getStringExtra(VIDEO_URL);
         videoTitle = getIntent().getStringExtra(VIDEO_TITLE);
         mTorrentFile = getIntent().getParcelableExtra(MAGNET);
-
         mSuperPlayerView.setNetChangeListener(true);
         mSuperPlayerView.setScaleType(SuperPlayerView.SCALETYPE_FITPARENT);
         mSuperPlayerView.setLive(getIntent().getBooleanExtra(ISLIVE,false));
@@ -360,7 +352,7 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
         }
 
         @Override
-        public void onSuccess(int enqueueKey, IPlayUrls response) {
+        public void onSuccess(int enqueueKey, final IPlayUrls response) {
             if (isFinishing() || response == null ) return;
             if(response.isSuccess() && response.getUrls() != null && !response.getUrls().isEmpty() && !TextUtils.isEmpty(response.getUrls().entrySet().iterator().next().getValue())){
                 final String value = response.getUrls().entrySet().iterator().next().getValue();
@@ -369,7 +361,7 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
                         @Override
                         public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
                             if (btn == OnButtonClickListener.RIGHT){
-                                WebPlayerActivity.startActivity(VideoPlayerActivity.this, value);
+                                WebPlayerActivity.startActivity(VideoPlayerActivity.this, value,response.getReferer());
                                 VideoPlayerActivity.this.finish();
                             }
                             dialog.dismiss();

@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.arialyy.aria.core.Aria;
@@ -20,6 +21,7 @@ import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.entity.face.IViewType;
+import com.fanchen.imovie.picasso.download.RefererDownloader;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.retrofit.callback.RetrofitCallback;
@@ -41,8 +43,10 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
     public static final String HAS_LOAD = "load";
     public static final String ISLIVE = "isLive";
     public static final String ISZERO = "isZero";
+    public static final String REFERER = "referer";
 
     private String path;
+    private String referer;
     private String className;
     private int multiple = 1;
     private String serializeKey;
@@ -57,17 +61,22 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
      * @param multiple
      * @return
      */
-    public static Fragment newInstance(String path, String className, int multiple, boolean hasLoad, boolean isLive,boolean isZero) {
+    public static Fragment newInstance(String path, String className, int multiple, boolean hasLoad, boolean isLive, boolean isZero, String referer) {
         Fragment fragment = new VideoListFragment();
         Bundle args = new Bundle();
         args.putString(PATH, path);
         args.putInt(MULTIPLE, multiple);
         args.putBoolean(HAS_LOAD, hasLoad);
+        args.putString(REFERER, referer);
         args.putBoolean(ISZERO, isZero);
         args.putString(CLASS_NAME, className);
         args.putBoolean(ISLIVE, isLive);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public static Fragment newInstance(String path, String className, int multiple, boolean hasLoad, boolean isLive, boolean isZero) {
+        return newInstance(path, className, multiple, hasLoad, isLive, isZero,null);
     }
 
     /**
@@ -76,7 +85,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
      * @return
      */
     public static Fragment newInstance(String path, String className) {
-        return newInstance(path, className, 1, false, false,false);
+        return newInstance(path, className, 1, false, false, false);
     }
 
     /**
@@ -86,7 +95,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
      * @return
      */
     public static Fragment newInstance(String path, String className, int multiple) {
-        return newInstance(path, className, multiple, true, false,false);
+        return newInstance(path, className, multiple, true, false, false);
     }
 
     @Override
@@ -102,6 +111,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
         hasLoad = getArguments().getBoolean(HAS_LOAD);
         isZero = getArguments().getBoolean(ISZERO);
         isLive = getArguments().getBoolean(ISLIVE, false);
+        referer = getArguments().getString(REFERER);
         serializeKey = getClass().getSimpleName() + "_" + path + "_" + className;
         super.initFragment(savedInstanceState, args);
     }
@@ -119,6 +129,9 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
 
     @Override
     public BaseAdapter getAdapter(Picasso picasso) {
+        if (!TextUtils.isEmpty(referer)) {
+            picasso = new Picasso.Builder(activity).downloader(new RefererDownloader(activity, referer)).build();
+        }
         return mVideoListAdapter = new VideoListAdapter(activity, picasso, hasLoad);
     }
 
@@ -149,7 +162,8 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position || !(datas.get(position) instanceof IVideo)) return;
+        if (datas == null || datas.size() <= position || !(datas.get(position) instanceof IVideo))
+            return;
         IVideo video = (IVideo) datas.get(position);
         if (video.hasVideoDetails()) {
             VideoDetailsActivity.startActivity(activity, video);
@@ -160,12 +174,13 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
 
     @Override
     public boolean onItemLongClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position || !(datas.get(position) instanceof IVideo)) return true;
+        if (datas == null || datas.size() <= position || !(datas.get(position) instanceof IVideo))
+            return true;
         IVideo video = (IVideo) datas.get(position);
         if (video.hasVideoDetails()) {
-            DialogUtil.showOperationDialog(this, video,(List<IVideo>)datas,position);
-        } else if(!isLive){
-            DialogUtil.showDownloadOperationDialog(this, video,(List<IVideo>)datas,position,downloadCallback);
+            DialogUtil.showOperationDialog(this, video, (List<IVideo>) datas, position);
+        } else if (!isLive) {
+            DialogUtil.showDownloadOperationDialog(this, video, (List<IVideo>) datas, position, downloadCallback);
         }
         return true;
     }
@@ -177,10 +192,10 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
     private void enqueue(RetrofitManager retrofit, int page) {
         if (hasLoad) {
             Integer integer = page;
-            if(page == 1 && isZero){
+            if (page == 1 && isZero) {
                 integer = 0;
-            }else{
-                integer = page == 1 ? 1: multiple > 1 ?Integer.valueOf((page-1) * multiple + 1) :Integer.valueOf(page * multiple);
+            } else {
+                integer = page == 1 ? 1 : multiple > 1 ? Integer.valueOf((page - 1) * multiple + 1) : Integer.valueOf(page * multiple);
             }
             retrofit.enqueue(className, callback, "home", path, integer);
         } else {
@@ -268,10 +283,10 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
                         if (!dir.exists())
                             dir.mkdirs();
                         Aria.download(activity.appliction).load(value).setDownloadPath(new File(dir, "video_" + System.currentTimeMillis() + ".mp4").getAbsolutePath()).start();
-                    }else{
+                    } else {
                         showSnackbar(getString(R.string.task_exists));
                     }
-                }else{
+                } else {
                     showSnackbar(getString(R.string.error_download_type));
                 }
             } else {

@@ -16,6 +16,8 @@ import android.widget.RelativeLayout;
 
 import com.fanchen.imovie.R;
 
+import java.util.Map;
+
 /**
  * 带下拉刷新的WebView
  *
@@ -204,6 +206,11 @@ public class SwipeWebView extends RelativeLayout implements SwipeRefreshLayout.O
 
     public void loadUrl(String url){
         webView.loadUrl(url);
+        count ++;
+    }
+
+    public void loadUrl(String url,Map<String,String> map){
+        webView.loadUrl(url,map);
         count ++;
     }
 

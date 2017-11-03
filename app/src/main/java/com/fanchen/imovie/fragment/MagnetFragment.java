@@ -7,7 +7,9 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.fanchen.imovie.R;
+import com.fanchen.imovie.activity.VideoPlayerActivity;
 import com.fanchen.imovie.base.BaseFragment;
+import com.fanchen.imovie.util.DialogUtil;
 import com.xunlei.downloadlib.XLDownloadUtil;
 import com.xunlei.downloadlib.parameter.TorrentFileInfo;
 
@@ -41,7 +43,6 @@ public class MagnetFragment extends BaseFragment implements View.OnClickListener
         mSearchButton.setOnClickListener(this);
     }
 
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -49,6 +50,7 @@ public class MagnetFragment extends BaseFragment implements View.OnClickListener
                 String word = getEditTextString(mSearchWordEditText);
                 if (TextUtils.isEmpty(word)) {
                     showSnackbar("请输入FTP或者磁力链");
+                    return;
                 }
                 if (word.startsWith("magnet")) {
                     XLDownloadUtil.addMagentTask(activity, word, magentTaskListener);
@@ -58,6 +60,7 @@ public class MagnetFragment extends BaseFragment implements View.OnClickListener
                     showToast("请输入正确的链接.");
                     return;
                 }
+                DialogUtil.showProgressDialog(activity,getString(R.string.loading));
                 XLDownloadUtil.addThunderTask(activity, word, thunderTaskListener);
                 break;
         }
@@ -67,10 +70,13 @@ public class MagnetFragment extends BaseFragment implements View.OnClickListener
 
         @Override
         public void onSuccess(String title, String url) {
+            VideoPlayerActivity.startActivity(activity,url);
+            DialogUtil.closeProgressDialog();
         }
 
         @Override
         public void onError(Throwable arg0) {
+            DialogUtil.closeProgressDialog();
             showToast("解析视频文件失败");
         }
 
@@ -80,10 +86,13 @@ public class MagnetFragment extends BaseFragment implements View.OnClickListener
 
         @Override
         public void onSuccess(TorrentFileInfo fileInfo, List<TorrentFileInfo> fileInfos, String arg2) {
+            VideoPlayerActivity.startActivity(activity,fileInfo);
+            DialogUtil.closeProgressDialog();
         }
 
         @Override
         public void onError(Throwable arg0) {
+            DialogUtil.closeProgressDialog();
             showToast("解析种子文件失败");
         }
 

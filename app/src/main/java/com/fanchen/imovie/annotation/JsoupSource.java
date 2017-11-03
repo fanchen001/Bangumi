@@ -49,6 +49,11 @@ public enum JsoupSource {
     /**
      *
      */
-    KMAO
+    KMAO,
+
+    /**
+     *
+     */
+    A4DY
 
 }

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="title_blue">#ff41b7ff</color>
+    <color name="common_gray_33">#ff333333</color>
+    <color name="common_gray_63">#ff636363</color>
+    <color name="trend_desc_text">#ff939393</color>
+    <color name="common_gray_93">#ff939393</color>
+    <color name="dialog_bg">#bc000000</color>
     <color name="zz_player_progress_bg">#FF6669</color>
     <color name="zz_player_progress_first">#373938</color>
     <color name="zz_player_progress_second">#666666</color>
@@ -72,7 +78,7 @@
 
     <color name="shadow">#25808080</color>
 
-    <color name="dialog_bg">#f5f5f5</color>
+    <color name="dialog_bg_">#f5f5f5</color>
     <color name="black_333333">#333333</color>
     <color name="black">#000000</color>
 

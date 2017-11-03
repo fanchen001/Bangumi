@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,10 +25,14 @@ import com.fanchen.imovie.R;
 import com.fanchen.imovie.base.BaseActivity;
 import com.fanchen.imovie.dialog.BaseAlertDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
+import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.ShareUtil;
 import com.fanchen.imovie.util.SystemUtil;
 import com.fanchen.imovie.view.webview.SwipeWebView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.InjectView;
 
@@ -38,6 +43,7 @@ import butterknife.InjectView;
 public class WebPlayerActivity extends BaseActivity{
 
     public static final String URL = "url";
+    public static final String REFERER = "referer";
 
     @InjectView(R.id.toolbar_top)
     protected Toolbar mToolbar;
@@ -49,8 +55,19 @@ public class WebPlayerActivity extends BaseActivity{
      * @param url
      */
     public static void startActivity(Context context,String url) {
+        startActivity(context,url,null);
+    }
+
+    /**
+     * @param context
+     * @param url
+     */
+    public static void startActivity(Context context,String url,String referer) {
         Intent intent = new Intent(context, WebPlayerActivity.class);
         intent.putExtra(URL, url);
+        if(!TextUtils.isEmpty(referer)){
+            intent.putExtra(REFERER, referer);
+        }
         context.startActivity(intent);
     }
 
@@ -98,15 +115,25 @@ public class WebPlayerActivity extends BaseActivity{
         settings.setLoadWithOverviewMode(true);// 调整到适合webview大小
         settings.setBlockNetworkImage(true);// 提高网页加载速度，暂时阻塞图片加载，然后网页加载好了，在进行加载图片
         settings.setAppCacheEnabled(true);// 开启缓存机制
-        settings.setUserAgentString(" Mozilla/5.0 (iPhone; U; CPU iPhone OS 5_0 like Mac OS X; en-us) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3\n");
+//        settings.setUserAgentString(" Mozilla/5.0 (iPhone; U; CPU iPhone OS 5_0 like Mac OS X; en-us) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3\n");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
         settings.setJavaScriptEnabled(true);
         webView.setWebViewClient(webViewClient);
         registerForContextMenu(webView);
+
         if(getIntent().hasExtra(URL)){
-            mWebview.loadUrl(getIntent().getStringExtra(URL));
+            if(getIntent().hasExtra(REFERER)){
+                Map<String,String> map = new HashMap<>();
+                map.put("Referer", getIntent().getStringExtra(REFERER));
+                map.put("User-Agent","Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36");
+                map.put("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+                map.put("Accept-Encoding","gzip, deflate");
+                mWebview.loadUrl(getIntent().getStringExtra(URL),map);
+            }else{
+                mWebview.loadUrl(getIntent().getStringExtra(URL));
+            }
         }
     }
 

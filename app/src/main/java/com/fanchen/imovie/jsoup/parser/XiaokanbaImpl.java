@@ -6,6 +6,7 @@ import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoDetails;
+import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.entity.xiaokanba.XiaokanbaDetails;
 import com.fanchen.imovie.entity.xiaokanba.XiaokanbaEpisode;
 import com.fanchen.imovie.entity.xiaokanba.XiaokanbaPlayUrl;
@@ -250,10 +251,18 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                             videoUrl = new JSONObject(videoUrl.substring(18,videoUrl.length()-1)).getJSONObject("data").getJSONArray("stream").getJSONObject(0).getString("m3u8_url");
                         }
                     }
-                    Map<String, String> playMap = new HashMap<>();
-                    playMap.put("标清", videoUrl);
-                    playUrl.setSuccess(true);
-                    playUrl.setUrls(playMap);
+                    if(!TextUtils.isEmpty(videoUrl)){
+                        Map<String, String> playMap = new HashMap<>();
+                        playMap.put("标清", videoUrl);
+                        if(videoUrl.contains("response-content-type=video/mp4") || videoUrl.contains(".mp4")){
+                            playUrl.setUrlType(IPlayUrls.URL_FILE);
+                        }
+                        if(videoUrl.startsWith("http://cn-")){
+                            playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_ZZPLAYER);
+                        }
+                        playUrl.setSuccess(true);
+                        playUrl.setUrls(playMap);
+                    }
                 }
             }
         } catch (Exception e) {

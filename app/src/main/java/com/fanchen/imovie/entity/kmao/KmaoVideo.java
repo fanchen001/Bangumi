@@ -82,6 +82,11 @@ public class KmaoVideo implements IVideo,Parcelable{
     }
 
     @Override
+    public String getCoverReferer() {
+        return null;
+    }
+
+    @Override
     public String getTitle() {
         return title;
     }

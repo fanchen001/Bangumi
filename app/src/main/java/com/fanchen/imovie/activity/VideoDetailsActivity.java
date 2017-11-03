@@ -32,6 +32,7 @@ import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.entity.bmob.VideoCollect;
+import com.fanchen.imovie.picasso.download.RefererDownloader;
 import com.fanchen.imovie.picasso.trans.BlurTransform;
 import com.fanchen.imovie.picasso.PicassoWrap;
 import com.fanchen.imovie.retrofit.RetrofitManager;
@@ -40,9 +41,11 @@ import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.DisplayUtil;
+import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.SecurityUtil;
 import com.fanchen.imovie.util.ShareUtil;
 import com.fanchen.imovie.util.SystemUtil;
+import com.fanchen.imovie.view.CustomEmptyView;
 import com.fanchen.imovie.view.MaterialProgressBar;
 import com.fanchen.imovie.view.RoundCornerImageView;
 import com.google.gson.Gson;
@@ -108,6 +111,12 @@ public class VideoDetailsActivity extends BaseActivity implements
     TextView mNonTextView;
     @InjectView(R.id.tv_non_episode)
     TextView mNonEpisodeTextView;
+    @InjectView(R.id.cev_empty)
+    CustomEmptyView mEmptyView;
+    @InjectView(R.id.abl_root)
+    View mAblView;
+    @InjectView(R.id.nsv_root)
+    View mNsvView;
 
     private IVideo mVideo;
     private VideoCollect mVideoCollect;
@@ -172,6 +181,7 @@ public class VideoDetailsActivity extends BaseActivity implements
     @Override
     protected void setListener() {
         super.setListener();
+        mEmptyView.setOnClickListener(this);
         mCollectLinearLayout.setOnClickListener(this);
         mShareLinearLayout.setOnClickListener(this);
         mDownloadLinearLayout.setOnClickListener(this);
@@ -245,6 +255,14 @@ public class VideoDetailsActivity extends BaseActivity implements
 
     @Override
     public void onClick(View v) {
+        if(v.getId() == R.id.cev_empty){
+            String path = mVideo == null ? mVideoCollect == null ? vid : mVideoCollect.getId() : mVideo.getId();
+            getRetrofitManager().enqueue(className,callback,"details",path);
+            return;
+        }else if(v.getId() == R.id.iv_top_back){
+            finish();
+            return;
+        }
         if (details == null) return;
         switch (v.getId()) {
             case R.id.tv_bangumi_more_episode:
@@ -281,9 +299,6 @@ public class VideoDetailsActivity extends BaseActivity implements
                     layoutParams.height = dip2px;
                 }
                 mInfoTextView.setLayoutParams(layoutParams);
-                break;
-            case R.id.iv_top_back:
-                finish();
                 break;
         }
     }
@@ -324,6 +339,13 @@ public class VideoDetailsActivity extends BaseActivity implements
         @Override
         public void onStart(int enqueueKey) {
             if (isFinishing()) return;
+            LogUtil.e("RefreshCallback","onStart");
+            if(mEmptyView != null)
+                mEmptyView.setEmptyType(CustomEmptyView.TYPE_NON);
+            if(mAblView != null)
+                mAblView.setVisibility(View.VISIBLE);
+            if(mNsvView != null)
+                mNsvView.setVisibility(View.VISIBLE);
             mMaterialProgressBar.setVisibility(View.VISIBLE);
         }
 
@@ -336,6 +358,12 @@ public class VideoDetailsActivity extends BaseActivity implements
         @Override
         public void onFailure(int enqueueKey, String throwable) {
             if (isFinishing()) return;
+            if(mEmptyView != null)
+                mEmptyView.setEmptyType(CustomEmptyView.TYPE_ERROR);
+            if(mAblView != null)
+                mAblView.setVisibility(View.GONE);
+            if(mNsvView != null)
+                mNsvView.setVisibility(View.GONE);
             showSnackbar(throwable);
         }
 
@@ -343,6 +371,10 @@ public class VideoDetailsActivity extends BaseActivity implements
         public void onSuccess(int enqueueKey, IVideoDetails response) {
             if (isFinishing() || response == null) return;
             details = mVideo == null ? mVideoCollect == null ? response : response.setVideo(mVideoCollect) : response.setVideo(mVideo);
+            if(!TextUtils.isEmpty(response.getCoverReferer())){
+                picasso = new PicassoWrap(new Picasso.Builder(getApplicationContext()).downloader(new RefererDownloader(getApplicationContext(),response.getCoverReferer())).build());
+                mRecomAdapter.setPicasso(picasso);
+            }
             picasso.loadVertical(response.getCover(), VideoDetailsActivity.class, mRoundImageView);
             if(!TextUtils.isEmpty(response.getCover())){
                 picasso.getPicasso().load(response.getCover()).transform(new BlurTransform()).into(mBackgroudImageView);

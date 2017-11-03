@@ -1,14 +1,20 @@
 package com.fanchen.imovie.activity;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.arialyy.aria.core.Aria;
@@ -16,6 +22,7 @@ import com.arialyy.aria.core.download.DownloadEntity;
 import com.arialyy.aria.core.inf.IEntity;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.base.BaseActivity;
+import com.fanchen.imovie.dialog.PermissionDialog;
 import com.fanchen.imovie.entity.bmob.SplashScreen;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListener;
@@ -102,10 +109,24 @@ public class SplashActivity extends BaseActivity {
             Aria.download(appliction).resumeAllTask();
             AsyTaskQueue.newInstance().execute(taskListener);
         }
-        // 延时1s加载top图片
-        mHandler.sendEmptyMessageDelayed(LOAD_TOP_IMAGE, 1000);
-        // 延时3s加载主界面
-        mHandler.sendEmptyMessageDelayed(LOAD_SUCCESS, 3500);
+        if (Build.VERSION.SDK_INT >= 23) {
+            String[] checkPermission = checkPermission();
+            if (checkPermission == null || checkPermission.length == 0) {
+                // 延时1s加载top图片
+                mHandler.sendEmptyMessageDelayed(LOAD_TOP_IMAGE, 1000);
+                // 延时3s加载主界面
+                mHandler.sendEmptyMessageDelayed(LOAD_SUCCESS, 3500);
+            } else {
+                if(!isFinishing()){
+                    new PermissionDialog(this).setOnClickListener(clickListener).show();
+                }
+            }
+        } else {
+            // 延时1s加载top图片
+            mHandler.sendEmptyMessageDelayed(LOAD_TOP_IMAGE, 1000);
+            // 延时3s加载主界面
+            mHandler.sendEmptyMessageDelayed(LOAD_SUCCESS, 3500);
+        }
     }
 
     @Override
@@ -121,8 +142,7 @@ public class SplashActivity extends BaseActivity {
         SharedPreferences pf = getPreferences(Context.MODE_PRIVATE);
         if (!pf.getString(APP_VERSION, "").equals(versionName)) {
             pf.edit().putString(APP_VERSION, versionName).commit();
-            // 如果是第一次进入页面
-            // 加载引导界面
+            // 如果是第一次进入页面加载引导界面
             startActivity(MainActivity.class);
         } else {
             // 如果不是，加载主界面
@@ -130,6 +150,76 @@ public class SplashActivity extends BaseActivity {
         }
         finish();
     }
+
+    /**
+     *
+     * @return
+     */
+    private String[] checkPermission() {
+        ArrayList<String> localArrayList = new ArrayList<>();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != 0)
+            localArrayList.add(Manifest.permission.READ_PHONE_STATE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != 0)
+            localArrayList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != 0)
+            localArrayList.add(Manifest.permission.CAMERA);
+        if (localArrayList.size() > 0) {
+            String[] arrayOfString = new String[localArrayList.size()];
+            localArrayList.toArray(arrayOfString);
+            return arrayOfString;
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @param paramArrayOfInt
+     * @return
+     */
+    private boolean checkPermissionsResult(int[] paramArrayOfInt) {
+        if(paramArrayOfInt==null || paramArrayOfInt.length == 0)return true;
+        int j = paramArrayOfInt.length;
+        int i = 0;
+        while (i < j) {
+            if (paramArrayOfInt[i] == -1)
+                return false;
+            i += 1;
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int paramInt,String[] paramArrayOfString, int[] paramArrayOfInt) {
+        super.onRequestPermissionsResult(paramInt, paramArrayOfString,paramArrayOfInt);
+        if ((paramInt == 1024) && checkPermissionsResult(paramArrayOfInt)) {
+            loadMainUI();
+            return;
+        }
+        showToast("应用缺少必要的权限！请点击\"权限\"，打开所需要的所有权限。");
+        try {
+            Intent mIntent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS");
+            mIntent.setData(Uri.parse("package:" + getPackageName()));
+            startActivity(mIntent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            finish();
+        }
+    }
+
+    private View.OnClickListener clickListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            String[] permission = checkPermission();
+            if(permission != null && permission.length > 0){
+                if (Build.VERSION.SDK_INT >= 23){
+                    requestPermissions(permission, 1024);
+                }
+            }
+        }
+
+    };
 
     private AsyTaskListener<List<DownloadEntity>> taskListener = new AsyTaskListenerImpl<List<DownloadEntity>>() {
 

@@ -25,6 +25,16 @@ public class TucaoPlayUrls implements IPlayUrls{
     }
 
     @Override
+    public int getUrlType() {
+        return URL_FILE;
+    }
+
+    @Override
+    public String getReferer() {
+        return null;
+    }
+
+    @Override
     public boolean isSuccess() {
         return success;
     }
@@ -45,4 +55,6 @@ public class TucaoPlayUrls implements IPlayUrls{
     public void setUrls(Map<String, String> urls) {
         this.urls = urls;
     }
+
+
 }

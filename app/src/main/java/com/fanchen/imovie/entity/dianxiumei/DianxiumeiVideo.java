@@ -50,6 +50,11 @@ public class DianxiumeiVideo implements IVideo{
     }
 
     @Override
+    public String getCoverReferer() {
+        return null;
+    }
+
+    @Override
     public String getLast() {
         return info;
     }

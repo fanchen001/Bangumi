@@ -44,6 +44,8 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
     private int type;
     @Column("playType")
     private int playType;
+    @Column("coverReferer")
+    private String coverReferer;
     @Column("extend")
     //扩展的字段，用来存放一些信息
     private String extend;
@@ -72,6 +74,7 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
         playPosition = positon;
         playType = episode.getPlayerType();
         type = TYPE_VIDEO;
+        coverReferer = video.getCoverReferer();
         User loginUser = User.getLoginUser();
         if(loginUser != null)
             userId = loginUser.getObjectId();
@@ -88,6 +91,7 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
         playPosition = positon;
         playType = IVideoEpisode.PLAY_TYPE_VIDEO;
         type = TYPE_VIDEO;
+        coverReferer = video.getCoverReferer();
         User loginUser = User.getLoginUser();
         if(loginUser != null)
             userId = loginUser.getObjectId();
@@ -124,6 +128,7 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
         type = in.readInt();
         extend = in.readString();
         userId = in.readString();
+        coverReferer = in.readString();
     }
 
     public static final Creator<VideoHistory> CREATOR = new Creator<VideoHistory>() {
@@ -210,6 +215,7 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
         dest.writeInt(type);
         dest.writeString(extend);
         dest.writeString(userId);
+        dest.writeString(coverReferer);
     }
 
     public String getServiceClassName() {
@@ -252,4 +258,11 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
         this.userId = userId;
     }
 
+    public String getCoverReferer() {
+        return coverReferer;
+    }
+
+    public void setCoverReferer(String coverReferer) {
+        this.coverReferer = coverReferer;
+    }
 }

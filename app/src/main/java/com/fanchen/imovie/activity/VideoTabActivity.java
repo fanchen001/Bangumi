@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.fanchen.imovie.R;
+import com.fanchen.imovie.adapter.pager.A4dyPagerAdapter;
 import com.fanchen.imovie.adapter.pager.BumimiPagerAdapter;
 import com.fanchen.imovie.adapter.pager.Dm5PagerAdapter;
 import com.fanchen.imovie.adapter.pager.JrenPagerAdapter;
@@ -36,6 +37,7 @@ public class VideoTabActivity extends BaseTabActivity implements SearchDialogFra
     public static final int XIU169 = 5;
     public static final int XIAOKANBA = 6;
     public static final int W4K = 7;
+    public static final int A4DY = 8;
 
     public static final String TYPE = "type";
     public static final String TITLE = "title";
@@ -98,6 +100,8 @@ public class VideoTabActivity extends BaseTabActivity implements SearchDialogFra
             mPagerAdapter = new XiaokabaPagerAdapter(fm);
         }else if(type == W4K){
             mPagerAdapter = new KmaoPagerAdapter(fm);
+        }else if(type == A4DY){
+            mPagerAdapter = new A4dyPagerAdapter(fm);
         }else {
             mPagerAdapter = new JrenPagerAdapter(fm);
         }

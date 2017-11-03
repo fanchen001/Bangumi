@@ -138,6 +138,12 @@ public class BumimiVideo implements IVideo,Parcelable{
     public boolean hasVideoDetails() {
         return true;
     }
+
+    @Override
+    public String getCoverReferer() {
+        return null;
+    }
+
     @Override
     public int describeContents() {
         return 0;

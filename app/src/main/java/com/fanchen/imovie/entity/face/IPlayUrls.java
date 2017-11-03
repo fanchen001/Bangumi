@@ -6,6 +6,12 @@ import java.util.Map;
  * Created by fanchen on 2017/9/28.
  */
 public interface IPlayUrls extends IRoot{
+    /***这个不支持下载*/
+    int URL_M3U8 = 0;
+    /***这个不支持下载*/
+    int URL_WEB = 1;
+    /*** 支持下载*/
+    int URL_FILE = 2;
 
     /**
      *
@@ -18,4 +24,17 @@ public interface IPlayUrls extends IRoot{
      * @return
      */
     int getPlayType();
+
+    /**
+     *
+     * @return
+     */
+    int getUrlType();
+
+    /**
+     * URL_WEB
+     * 有些使用web播放的视频需要这个参数
+     * @return
+     */
+    String getReferer();
 }

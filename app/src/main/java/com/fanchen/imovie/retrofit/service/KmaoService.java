@@ -51,7 +51,7 @@ public interface KmaoService {
     @RetrofitType(RetrofitSource.KMAO_API)
     @MethodType(value = MethodSource.SEARCH)
     @JsoupType(JsoupSource.KMAO)
-    Call<IBangumiMoreRoot> search(@Path("keyword")String keyword,@Path("page")Integer page);
+    Call<IBangumiMoreRoot> search(@Path("page")Integer page,@Path("keyword")String keyword);
 
     /**
      *

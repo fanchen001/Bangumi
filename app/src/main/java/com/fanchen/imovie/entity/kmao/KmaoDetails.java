@@ -101,7 +101,7 @@ public class KmaoDetails extends KmaoVideo implements IVideoDetails{
 
     @Override
     public boolean canDownload() {
-        return false;
+        return true;
     }
 
     public void setSuccess(boolean success) {

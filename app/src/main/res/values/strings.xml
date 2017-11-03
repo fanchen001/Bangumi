@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">次元番</string>
-
+    <string name="dynamic_total_guide_title">次元番需要下列权限才可正常使用</string>
+    <string name="dynamic_phone_guide_title">手机/电话权限</string>
+    <string name="dynamic_phone_guide_desc">校验IMEI&amp;IMSI码，防止帐号被盗。</string>
+    <string name="dynamic_storage_guide_title">存储权限</string>
+    <string name="dynamic_storage_guide_desc">缓存图片和视频，降低流量消耗。</string>
+    <string name="dynamic_open_pm_desc">路径: 设置>应用>爱搜云>权限</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
 
@@ -272,4 +277,7 @@
     <string name="more_hit">[更多]里面包含其他番剧源以及一些视频黑科技,首页搜不到的番剧视频可在[更多]里面寻找！！！</string>
     <string name="w_4k">4K影院</string>
     <string name="zz_player_network_invalid">网络异常，请检查后再试</string>
+    <string name="bindphone">绑定手机</string>
+    <string name="error_bind">该账户已经绑定手机号</string>
+    <string name="a4dy">A4电影</string>
 </resources>

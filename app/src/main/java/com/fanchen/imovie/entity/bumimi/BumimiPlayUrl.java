@@ -25,6 +25,16 @@ public class BumimiPlayUrl implements IPlayUrls{
     }
 
     @Override
+    public int getUrlType() {
+        return URL_WEB;
+    }
+
+    @Override
+    public String getReferer() {
+        return null;
+    }
+
+    @Override
     public boolean isSuccess() {
         return success;
     }

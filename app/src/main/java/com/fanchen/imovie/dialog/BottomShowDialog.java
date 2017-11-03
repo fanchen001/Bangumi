@@ -72,6 +72,7 @@ public class BottomShowDialog extends BottomBaseDialog<BottomShowDialog> impleme
                     String url = "mqqapi://card/show_pslcard?src_type=internal&version=1&uin=541361788&card_type=group&source=qrcode";
                     SystemUtil.startThreeApp((BaseActivity)context,url);
                 }
+                dismiss();
                 break;
             case R.id.btn_cancle:
                 dismiss();

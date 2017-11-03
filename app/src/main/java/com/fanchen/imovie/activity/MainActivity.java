@@ -60,7 +60,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public void onCreate(Bundle savedInstanceState) {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        AppCompatDelegate.setDefaultNightMode(mSharedPreferences.getBoolean("swith_mode", false) ? AppCompatDelegate.MODE_NIGHT_NO : AppCompatDelegate.MODE_NIGHT_YES);
+        AppCompatDelegate.setDefaultNightMode(mSharedPreferences.getBoolean("swith_mode", true) ? AppCompatDelegate.MODE_NIGHT_NO : AppCompatDelegate.MODE_NIGHT_YES);
         super.onCreate(savedInstanceState);
     }
 
@@ -84,7 +84,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
-        if (mSharedPreferences.getBoolean("swith_mode", false)) {
+        if (mSharedPreferences.getBoolean("swith_mode", true)) {
             mSwitchMode.setImageResource(R.drawable.ic_switch_daily);
         } else {
             mSwitchMode.setImageResource(R.drawable.ic_switch_night);
@@ -227,7 +227,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * 日夜间模式切换
      */
     private void togoNightMode() {
-        if (mSharedPreferences.getBoolean("swith_mode", false)) {// 日间模式
+        if (mSharedPreferences.getBoolean("swith_mode", true)) {// 日间模式
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             mSharedPreferences.edit().putBoolean("swith_mode", false).commit();
         } else { // 夜间模式

@@ -109,4 +109,5 @@
     <dimen name="dp_180">180dp</dimen>
     <dimen name="dp_34">34dp</dimen>
     <dimen name="dp25">25dp</dimen>
+    <dimen name="dialog_content_common_textSize">16sp</dimen>
 </resources>

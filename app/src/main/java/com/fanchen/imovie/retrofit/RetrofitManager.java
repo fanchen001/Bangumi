@@ -55,6 +55,7 @@ public class RetrofitManager {
         retrofitMap.put(RetrofitSource.DIANXIUMEI_API, new Retrofit.Builder().baseUrl("http://www.dianxiumei.com/").addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.XIAOKANBA_API, new Retrofit.Builder().baseUrl("http://xiaokanba.com/").addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.KMAO_API, new Retrofit.Builder().baseUrl("http://m.kkkkmao.com/").addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.A4DY_API, new Retrofit.Builder().baseUrl("http://m.aaccy.com/").addConverterFactory(animFactory).build());
     }
 
     /**

@@ -5,6 +5,7 @@ import com.fanchen.imovie.annotation.MethodSource;
 import com.fanchen.imovie.jsoup.IBangumiParser;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
 import com.fanchen.imovie.jsoup.IVideoParser;
+import com.fanchen.imovie.jsoup.parser.A4dyImpl;
 import com.fanchen.imovie.jsoup.parser.BiliplusImpl;
 import com.fanchen.imovie.jsoup.parser.BumimiImpl;
 import com.fanchen.imovie.jsoup.parser.DianxiumeiImpl;
@@ -37,6 +38,7 @@ public class JsoupResponseCoverter extends StringResponseConverter {
         map.put(JsoupSource.DIANXIUMEI, new DianxiumeiImpl());
         map.put(JsoupSource.XIAOKANBA, new XiaokanbaImpl());
         map.put(JsoupSource.KMAO, new KmaoImpl());
+        map.put(JsoupSource.A4DY, new A4dyImpl());
     }
 
     private MethodSource method;

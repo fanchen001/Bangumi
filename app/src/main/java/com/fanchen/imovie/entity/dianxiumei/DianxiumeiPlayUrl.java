@@ -24,6 +24,16 @@ public class DianxiumeiPlayUrl implements IPlayUrls{
     }
 
     @Override
+    public int getUrlType() {
+        return URL_FILE;
+    }
+
+    @Override
+    public String getReferer() {
+        return null;
+    }
+
+    @Override
     public boolean isSuccess() {
         return success;
     }

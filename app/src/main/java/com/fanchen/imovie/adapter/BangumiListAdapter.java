@@ -2,6 +2,7 @@ package com.fanchen.imovie.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -12,6 +13,8 @@ import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.picasso.PicassoWrap;
+import com.fanchen.imovie.picasso.download.RefererDownloader;
+import com.fanchen.imovie.util.LogUtil;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -21,16 +24,17 @@ import java.util.List;
  */
 public class BangumiListAdapter extends BaseAdapter {
 
-    private PicassoWrap picasso;
+    private Picasso picasso;
+    private PicassoWrap picassoWrap;
 
     public BangumiListAdapter(Context context, List<IViewType> mList, Picasso pic) {
         super(context, mList);
-        picasso = new PicassoWrap(pic);
+        picasso = pic;
     }
 
     public BangumiListAdapter(Context context, Picasso pic) {
         super(context);
-        picasso = new PicassoWrap(pic);
+        picasso = pic;
     }
 
     @Override
@@ -47,19 +51,27 @@ public class BangumiListAdapter extends BaseAdapter {
     public void bindViewHolder(RecyclerView.ViewHolder holder, List<IViewType> datas, int viewType, int position) {
         if (viewType != IViewType.TYPE_NORMAL) return;
         IVideo videoItem = (IVideo) datas.get(position);
+        if(picassoWrap == null){
+            if(!TextUtils.isEmpty(videoItem.getCoverReferer())){
+                Context application = context.getApplicationContext();
+                picassoWrap = new PicassoWrap(new Picasso.Builder(application).downloader(new RefererDownloader(application,videoItem.getCoverReferer())).build());
+            }else{
+                picassoWrap = new PicassoWrap(picasso);
+            }
+        }
         VideoViewHolder videoViewHolder = (VideoViewHolder) holder;
         videoViewHolder.titletTextView.setText(videoItem.getTitle());
         videoViewHolder.playTextView.setText(videoItem.getExtras());
         videoViewHolder.upTextView.setText(videoItem.getLast());
         if (videoItem.getDrawable() > 0) {
             videoViewHolder.rankImageView.setVisibility(View.VISIBLE);
-            picasso.load(videoItem.getDrawable(), BangumiListActivity.class, videoViewHolder.rankImageView);
+            picassoWrap.load(videoItem.getDrawable(), BangumiListActivity.class, videoViewHolder.rankImageView);
         }else{
             videoViewHolder.rankImageView.setVisibility(View.GONE);
         }
         videoViewHolder.danmakuTextView.setVisibility(View.VISIBLE);
         videoViewHolder.danmakuTextView.setText(videoItem.getDanmaku());
-        picasso.loadHorizontal(videoItem.getCover(), BangumiListActivity.class, videoViewHolder.imageView);
+        picassoWrap.loadHorizontal(videoItem.getCover(), BangumiListActivity.class, videoViewHolder.imageView);
     }
 
     @Override

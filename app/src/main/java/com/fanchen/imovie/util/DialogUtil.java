@@ -429,7 +429,11 @@ public class DialogUtil {
             String id = item == null ? String.valueOf(liveBody.getVideoId()) : item.getId();
             List<VideoCollect> query = baseActivity.getLiteOrm().query(new QueryBuilder<>(VideoCollect.class).where("id = ?", id));
             if (query == null || query.size() == 0) {
-                baseActivity.getLiteOrm().insert(new VideoCollect(item));
+                if(item != null){
+                    baseActivity.getLiteOrm().insert(new VideoCollect(item));
+                }else if(liveBody != null){
+                    baseActivity.getLiteOrm().insert(new VideoCollect(liveBody));
+                }
                 return SUCCESS;
             }
             return REPETITION;

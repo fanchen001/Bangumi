@@ -43,9 +43,9 @@ public class KmaoImpl implements IVideoMoreParser {
             for (Node n : node.list("ul#resize_list > li")){
                 String title = n.text("a > div > label.name");
                 String cover = n.attr("a > div > img", "src");
-                String clazz = n.text("div.list_info > p", 0);
-                String type = n.text("div.list_info > p",1);
-                String author = n.text("div.list_info > p",2);
+                String clazz = n.textAt("div.list_info > p", 0);
+                String type = n.textAt("div.list_info > p", 1);
+                String author = n.textAt("div.list_info > p", 2);
                 String url = "http://m.kkkkmao.com" + n.attr("a","href");
                 String id = n.attr("a","href","/",2);
                 KmaoVideo video = new KmaoVideo();
@@ -77,7 +77,7 @@ public class KmaoImpl implements IVideoMoreParser {
                 home.setList(titles);
                 for (Node n : list){
                     String topTitle = n.text("h2");
-                    String topUrl = "" + n.attr("i > a", "href");
+                    String topUrl = n.attr("i > a", "href");
                     String topId = n.attr("i > a", "href","/",1);
                     List<KmaoVideo> videos = new ArrayList<>();
                     KmaoTitle kmaoTitle = new KmaoTitle();
@@ -247,9 +247,12 @@ public class KmaoImpl implements IVideoMoreParser {
                 }
                 if(!TextUtils.isEmpty(pUrl)){
                     Map<String,String> mapUrl = new HashMap<>();
-                    mapUrl.put("标清",pUrl);
+                    mapUrl.put("标清", pUrl);
                     playUrl.setUrls(mapUrl);
-                    playUrl.setPlayType(pUrl.startsWith("http://cn-") ? IVideoEpisode.PLAY_TYPE_ZZPLAYER : IVideoEpisode.PLAY_TYPE_VIDEO);
+                    if(pUrl.startsWith("http://cn-")  || pUrl.contains("response-content-type=video/mp4") || pUrl.contains(".mp4")){
+                        playUrl.setUrlType(IPlayUrls.URL_FILE);
+                        playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_ZZPLAYER);
+                    }
                     playUrl.setSuccess(true);
                 }
             }

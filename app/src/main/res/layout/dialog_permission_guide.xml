@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:layout_width="270.0dip"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" >
+
+        <TextView
+            android:id="@+id/dialogTitle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="50.0dip"
+            android:layout_marginRight="50.0dip"
+            android:layout_marginTop="24.0dip"
+            android:gravity="center_horizontal"
+            android:text="@string/dynamic_total_guide_title"
+            android:textColor="@color/common_gray_33"
+            android:textSize="18.0dip" />
+
+        <LinearLayout
+            android:id="@+id/group_permissions"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/dialogTitle"
+            android:layout_marginTop="23.0dip" >
+
+            <LinearLayout
+                android:id="@+id/ly_permissions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:id="@+id/ly_shouji"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="19.0dip"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="17.5dip"
+                        android:layout_marginRight="6.5dip"
+                        android:src="@drawable/shouji" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="3.0dip"
+                            android:text="@string/dynamic_phone_guide_title"
+                            android:textColor="@color/common_gray_63"
+                            android:textSize="16.0dip" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="23.0dip"
+                            android:lineSpacingMultiplier="1.1"
+                            android:text="@string/dynamic_phone_guide_desc"
+                            android:textColor="@color/trend_desc_text"
+                            android:textSize="14.0dip" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ly_cunchu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="28.0dip"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="17.5dip"
+                        android:layout_marginRight="6.5dip"
+                        android:src="@drawable/cuncu" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="3.0dip"
+                            android:text="@string/dynamic_storage_guide_title"
+                            android:textColor="@color/common_gray_63"
+                            android:textSize="16.0dip" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="26.5dip"
+                            android:lineSpacingMultiplier="1.1"
+                            android:text="@string/dynamic_storage_guide_desc"
+                            android:textColor="@color/trend_desc_text"
+                            android:textSize="14.0dip" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_open"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:background="@drawable/main_logout_make"
+                    android:gravity="center"
+                    android:paddingBottom="10.0dip"
+                    android:paddingTop="10.0dip"
+                    android:text="开启"
+                    android:textColor="@color/white"
+                    android:textSize="18.0sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

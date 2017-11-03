@@ -19,6 +19,7 @@ import com.fanchen.imovie.entity.AppEvent;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.KeyBoardUtils;
 
+import butterknife.InjectView;
 import cn.smssdk.EventHandler;
 import cn.smssdk.SMSSDK;
 
@@ -28,10 +29,14 @@ import cn.smssdk.SMSSDK;
  */
 public class RegisterActivity extends BaseToolbarActivity implements View.OnClickListener, TextWatcher {
 
-    private EditText mPhoneEditText;
-    private ImageView mDeleteImageView;
-    private Button mNextButton;
-    private TextView mForgetTextView;
+    @InjectView(R.id.et_phonenumber)
+    protected EditText mPhoneEditText;
+    @InjectView(R.id.img_delete)
+    protected ImageView mDeleteImageView;
+    @InjectView(R.id.btn_next)
+    protected Button mNextButton;
+    @InjectView(R.id.tv_forgetpassword)
+    protected TextView mForgetTextView;
 
     /**
      * @param context
@@ -62,16 +67,6 @@ public class RegisterActivity extends BaseToolbarActivity implements View.OnClic
     public String getActivityTitle() {
         return getString(R.string.register_user);
     }
-
-    @Override
-    protected void findView(View view) {
-        super.findView(view);
-        mPhoneEditText = (EditText) findViewById(R.id.et_phonenumber);
-        mDeleteImageView = (ImageView) findViewById(R.id.img_delete);
-        mNextButton = (Button) findViewById(R.id.btn_next);
-        mForgetTextView = (TextView) findViewById(R.id.tv_forgetpassword);
-    }
-
 
     @Override
     protected void setListener() {

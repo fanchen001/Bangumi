@@ -13,6 +13,7 @@ import com.fanchen.imovie.adapter.EpisodeAdapter;
 import com.fanchen.imovie.base.BaseActivity;
 import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.retrofit.RetrofitManager;
@@ -26,7 +27,7 @@ import java.util.List;
  * Created by fanchen on 2017/10/8.
  */
 public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
-        BaseAdapter.OnItemClickListener, View.OnClickListener, RefreshCallback<IPlayUrls>{
+        BaseAdapter.OnItemClickListener, View.OnClickListener, RefreshCallback<IPlayUrls> {
 
     private RecyclerView mRecyclerView;
     private Button mAllButton;
@@ -95,7 +96,7 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
                 if (mDownloads == null || mDownloads.size() == 0) {
                     activity.showToast(R.string.error_download_non);
                 } else {
-                    DialogUtil.showProgressDialog(activity,activity.getString(R.string.download_ing));
+                    DialogUtil.showProgressDialog(activity, activity.getString(R.string.download_ing));
                     download(mDownloads.remove(0));
                 }
                 break;
@@ -136,11 +137,18 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
 
     @Override
     public void onFinish(int enqueueKey) {
-        if(mEpisodeAdapter != null)
+        if (mEpisodeAdapter != null)
             mEpisodeAdapter.notifyDataSetChanged();
         if (mDownloads != null && mDownloads.size() > 0) {
             download(mDownloads.remove(0));
         } else {
+            if (mEpisodeAdapter != null) {
+                for (IVideoEpisode episode : (List<IVideoEpisode>) mEpisodeAdapter.getList()) {
+                    if (episode.getDownloadState() == IVideoEpisode.DOWNLOAD_SELECT) {
+                        episode.setDownloadState(IVideoEpisode.DOWNLOAD_NON);
+                    }
+                }
+            }
             dismiss();
             DialogUtil.closeProgressDialog();
         }
@@ -149,12 +157,17 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
     @Override
     public void onSuccess(int enqueueKey, IPlayUrls response) {
         Aria.download(this).stopAllTask();
-        if (mDownload != null && response != null && response.getPlayType() == IVideoEpisode.PLAY_TYPE_VIDEO && response.getUrls() != null && !response.getUrls().isEmpty()
-                && !TextUtils.isEmpty(response.getUrls().entrySet().iterator().next().getValue())) {
-            String value = response.getUrls().entrySet().iterator().next().getValue();
-            String fileNmae = mVideoDetails.getTitle() + "_" + mDownload.getTitle() + ".mp4";
-            Aria.download(activity.appliction).load(value).setDownloadPath(mDownloadDir + fileNmae).start();
-            mDownload.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
+        if (mDownload == null || mVideoDetails == null || response == null) return;
+        if (response != null && response.getUrls() != null && !TextUtils.isEmpty(response.getUrls().entrySet().iterator().next().getValue())) {
+            if (response.getUrlType() != IPlayUrls.URL_FILE) {
+                String value = response.getUrls().entrySet().iterator().next().getValue();
+                String fileNmae = mVideoDetails.getTitle() + "_" + mDownload.getTitle() + ".mp4";
+                Aria.download(activity.appliction).load(value).setDownloadPath(mDownloadDir + fileNmae).start();
+                mDownload.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
+                activity.showToast(mVideoDetails.getTitle() + "_" + mDownload.getTitle() + "添加下载成功");
+            } else {
+                activity.showToast(mVideoDetails.getTitle() + "_" + mDownload.getTitle() + "下载失败");
+            }
         }
     }
 

@@ -71,4 +71,7 @@ public class RecomAdapter extends BaseAdapter {
 
     }
 
+    public void setPicasso(PicassoWrap picasso) {
+        this.picasso = picasso;
+    }
 }

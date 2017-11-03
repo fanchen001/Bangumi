@@ -23,6 +23,7 @@ import com.fanchen.imovie.adapter.pager.ShortVideoPagerAdapter;
 import com.fanchen.imovie.base.BaseRecyclerFragment;
 import com.fanchen.imovie.base.BaseTabActivity;
 import com.fanchen.imovie.entity.dytt.DyttShortVideo;
+import com.fanchen.imovie.util.DisplayUtil;
 import com.fanchen.imovie.view.video.IjkVideoView;
 import com.fanchen.imovie.view.video.SuperPlayerManage;
 import com.fanchen.imovie.view.video.SuperPlayerView;
@@ -71,11 +72,6 @@ public class ShortVideoTabActivity extends BaseTabActivity implements ShortVideo
     @Override
     protected PagerAdapter getAdapter(FragmentManager fm) {
         return new ShortVideoPagerAdapter(fm);
-    }
-
-    @Override
-    protected boolean isSwipeActivity() {
-        return false;
     }
 
     @Override
@@ -194,6 +190,11 @@ public class ShortVideoTabActivity extends BaseTabActivity implements ShortVideo
     }
 
     @Override
+    protected boolean isSwipeActivity() {
+        return false;
+    }
+
+    @Override
     public void onBackPressed() {
         if (mSuperPlayerView != null && mSuperPlayerView.onBackPressed()) {
             return;
@@ -203,7 +204,6 @@ public class ShortVideoTabActivity extends BaseTabActivity implements ShortVideo
 
     @Override
     public void onItemPlay(List<?> datas, int position, RelativeLayout view) {
-        view.setVisibility(View.GONE);
         if (mSuperPlayerView == null || mSuperPlayerView.isPlaying() && lastPosition == position) {
             return;
         }
@@ -227,6 +227,7 @@ public class ShortVideoTabActivity extends BaseTabActivity implements ShortVideo
         mSuperPlayerView.setTitle(video.getTitle());
         mSuperPlayerView.play(video.getPlayurl());
         lastPosition = position;
+        view.setVisibility(View.GONE);
     }
 
     /**

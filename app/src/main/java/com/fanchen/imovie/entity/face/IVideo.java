@@ -42,4 +42,10 @@ public interface IVideo extends IBaseVideo{
      * @return
      */
     boolean hasVideoDetails();
+
+    /**
+     *
+     * @return
+     */
+    String getCoverReferer();
 }

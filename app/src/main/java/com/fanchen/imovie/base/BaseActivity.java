@@ -48,6 +48,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /****/
     private long preTime = System.currentTimeMillis();
     private LiteOrm mLiteOrm;
+    private SwipeBackPage mBackPage;
     private RetrofitManager mRetrofitManager;
 
     @Override
@@ -101,13 +102,24 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected boolean isRegisterEventBus() {
         return false;
     }
+
     /**
-     * 设置是否可滑动
+     * 默认是否可滑动返回
      *
      * @return
      */
     protected boolean isSwipeActivity() {
         return true;
+    }
+
+    /**
+     *
+     * 设置是否可滑动返回
+     */
+    public void setBackEnable(boolean enable){
+        if(mBackPage != null){
+            mBackPage.setSwipeBackEnable(enable);
+        }
     }
 
     /**
@@ -172,13 +184,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         if(isRegisterEventBus())
             EventBus.getDefault().register(this);
         SwipeBackHelper.onCreate(this);
-        SwipeBackPage backPage = SwipeBackHelper.getCurrentPage(this);// 获取当前页面
-        backPage.setSwipeBackEnable(isSwipeActivity());// 设置是否可滑动
-        backPage.setSwipeEdgePercent(getEdgePercent());// 可滑动的范围。百分比。0.2表示为左边20%的屏幕
-        backPage.setSwipeSensitivity(getSensitivity());// 对横向滑动手势的敏感程度。0为迟钝 1为敏感
-        backPage.setClosePercent(getClosePercent());// 触发关闭Activity百分比
-        backPage.setSwipeRelateEnable(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);// 是否与下一级activity联动(微信效果)仅限5.0以上机器
-        backPage.setDisallowInterceptTouchEvent(false);
+        mBackPage = SwipeBackHelper.getCurrentPage(this);// 获取当前页面
+        mBackPage.setSwipeBackEnable(isSwipeActivity());// 设置是否可滑动
+        mBackPage.setSwipeEdgePercent(getEdgePercent());// 可滑动的范围。百分比。0.2表示为左边20%的屏幕
+        mBackPage.setSwipeSensitivity(getSensitivity());// 对横向滑动手势的敏感程度。0为迟钝 1为敏感
+        mBackPage.setClosePercent(getClosePercent());// 触发关闭Activity百分比
+        mBackPage.setSwipeRelateEnable(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);// 是否与下一级activity联动(微信效果)仅限5.0以上机器
+        mBackPage.setDisallowInterceptTouchEvent(false);
         int layout = getLayout();
         if (layout <= 0)
             return;

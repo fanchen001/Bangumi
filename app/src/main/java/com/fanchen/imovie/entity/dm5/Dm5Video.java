@@ -146,6 +146,11 @@ public class Dm5Video implements IVideo{
     }
 
     @Override
+    public String getCoverReferer() {
+        return null;
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }

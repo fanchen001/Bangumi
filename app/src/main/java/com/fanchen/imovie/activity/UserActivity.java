@@ -110,8 +110,16 @@ public class UserActivity extends BaseToolbarActivity implements View.OnClickLis
             case R.id.iv_user_iconset:
                 break;
             case R.id.rl_user_profile:
+                UserInfoActivity.startActivity(this);
                 break;
             case R.id.rl_user_bindphone:
+                if(getLoginUser() != null){
+                    if( !TextUtils.isEmpty(getLoginUser().getPhone())){
+                        showSnackbar(getString(R.string.error_bind));
+                    }else{
+                        BindPhoneActivity.startActivity(this);
+                    }
+                }
                 break;
             case R.id.rl_user_changepassword:
                 break;

@@ -75,7 +75,8 @@ public class IMovieFactory extends Converter.Factory {
                || animValue == RetrofitSource.BILIPLUS_API
                || animValue == RetrofitSource.DIANXIUMEI_API
                || animValue == RetrofitSource.XIAOKANBA_API
-               || animValue == RetrofitSource.KMAO_API){
+               || animValue == RetrofitSource.KMAO_API
+               || animValue == RetrofitSource.A4DY_API){
             if (method == null || jsoup == null)
                 throw new NullPointerException("jsoupAnnotation == null");
             converter = new JsoupResponseCoverter(method.value(),jsoup.value());

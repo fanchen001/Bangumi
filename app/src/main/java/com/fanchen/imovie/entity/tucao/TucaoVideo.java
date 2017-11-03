@@ -119,6 +119,12 @@ public class TucaoVideo extends TucaoBaseVideo implements IVideo, Parcelable {
     public boolean hasVideoDetails() {
         return true;
     }
+
+    @Override
+    public String getCoverReferer() {
+        return null;
+    }
+
     @Override
     public String getDanmaku() {
         return String.format("弹幕:%s",danmaku);

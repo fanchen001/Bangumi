@@ -95,6 +95,8 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
     protected LinearLayout mNV2View;
     @InjectView(R.id.ll_4k)
     protected LinearLayout m4KView;
+    @InjectView(R.id.ll_a4dy)
+    protected LinearLayout mA4dyView;
     @InjectView(R.id.tv_word_error)
     protected TextView mErrorTextView;
 
@@ -136,6 +138,7 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
     @Override
     protected void setListener() {
         super.setListener();
+        mA4dyView.setOnClickListener(this);
         m4KView.setOnClickListener(this);
         mNV2View.setOnClickListener(this);
         m169View.setOnClickListener(this);
@@ -177,6 +180,9 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
                 break;
             case R.id.ll_game_pc:
                 ApkEvaluatActivity.startActivity(activity);
+                break;
+            case R.id.ll_a4dy:
+                VideoTabActivity.startActivity(activity, getString(R.string.a4dy), VideoTabActivity.A4DY);
                 break;
             case R.id.ll_4k:
                 VideoTabActivity.startActivity(activity, getString(R.string.w_4k), VideoTabActivity.W4K);
