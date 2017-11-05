@@ -65,7 +65,7 @@ public class FreeVideoFragment extends BaseFragment implements
     protected void initFragment(@Nullable Bundle savedInstanceState, Bundle args) {
         super.initFragment(savedInstanceState, args);
         mWebRecyclerView.setLayoutManager(new GridLayoutManager(activity, 3));
-        mVideoAdapter = new FreeVideoAdapter(activity, Picasso.with(activity));
+        mVideoAdapter = new FreeVideoAdapter(activity, getPicasso());
         mWebRecyclerView.setAdapter(mVideoAdapter);
         try {
             String json = new String(StreamUtil.stream2bytes(activity.getAssets().open("free_video.json")));

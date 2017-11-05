@@ -51,7 +51,7 @@ public class HistoryAdapter extends BaseAdapter {
         viewHolder.timeTextView.setText(String.format("播放时间:%s", history.getTime()));
         viewHolder.positionTextView.setText(String.format("上次播放:%s", DateUtil.secToTime((int)(history.getPlayPosition() / 1000))));
         if(!TextUtils.isEmpty(history.getCoverReferer())){
-            new PicassoWrap(new Picasso.Builder(context).downloader(new RefererDownloader(context, history.getCoverReferer())).build()).loadHorizontal(history.getCover(), HistoryActivity.class, viewHolder.imageView);
+            new PicassoWrap(context,new RefererDownloader(context, history.getCoverReferer())).loadHorizontal(history.getCover(), HistoryActivity.class, viewHolder.imageView);
         }else{
             picasso.loadHorizontal(history.getCover(), HistoryActivity.class, viewHolder.imageView);
         }

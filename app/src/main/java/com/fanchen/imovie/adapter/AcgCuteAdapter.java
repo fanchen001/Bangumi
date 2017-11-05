@@ -25,14 +25,14 @@ public class AcgCuteAdapter extends BaseAdapter {
     private static final String REFERER = "https://acg12.com/category/acg-game/android-game/";
     private PicassoWrap picasso;
 
-    public AcgCuteAdapter(Context context, Picasso picasso) {
+    public AcgCuteAdapter(Context context) {
         super(context);
-        this.picasso = new PicassoWrap(new Picasso.Builder(context).downloader(new RefererDownloader(context,REFERER)).build());
+        this.picasso = new PicassoWrap(context,new RefererDownloader(context,REFERER));
     }
 
-    public AcgCuteAdapter(Context context, Picasso picasso, List<IViewType> mList) {
+    public AcgCuteAdapter(Context context, List<IViewType> mList) {
         super(context, mList);
-        this.picasso = new PicassoWrap(new Picasso.Builder(context).downloader(new RefererDownloader(context,REFERER)).build());
+        this.picasso = new PicassoWrap(context,new RefererDownloader(context,REFERER));
     }
 
     @Override

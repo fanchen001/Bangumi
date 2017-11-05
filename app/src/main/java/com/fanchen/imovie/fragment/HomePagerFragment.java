@@ -99,9 +99,9 @@ public class HomePagerFragment extends BaseFragment implements Toolbar.OnMenuIte
         if(user != null){
             mNameTextView.setText(user.getNickName());
             if(!TextUtils.isEmpty(user.getHeaderUrl()) && activity != null && activity.appliction != null){
-                new PicassoWrap(Picasso.with(activity.appliction)).loadVertical(user.getHeaderUrl(),mCircleImageView);
+                new PicassoWrap(getPicasso()).loadVertical(user.getHeaderUrl(),mCircleImageView);
             }else if(user.getHeader() != null && activity != null && activity.appliction != null){
-                new PicassoWrap(Picasso.with(activity.appliction)).loadVertical(user.getHeader().getFileUrl(activity.appliction),mCircleImageView);
+                new PicassoWrap(getPicasso()).loadVertical(user.getHeader().getFileUrl(activity.appliction),mCircleImageView);
             }
         }else{
             mNameTextView.setText(getString(R.string.not_login));
@@ -120,6 +120,8 @@ public class HomePagerFragment extends BaseFragment implements Toolbar.OnMenuIte
             setLoginInfo((User) event.data);
         }else if(UserActivity.class.getName().equals(event.from) && AppEvent.LOGOUT == event.what){
             setLoginInfo(null);
+        }else if( AppEvent.UPDATE == event.what && activity != null){
+            setLoginInfo(activity.getLoginUser());
         }
     }
 

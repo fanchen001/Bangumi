@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 
 import com.arialyy.annotations.Download;
 import com.arialyy.aria.core.Aria;
@@ -22,11 +23,15 @@ import com.arialyy.aria.core.download.DownloadTask;
 import com.arialyy.aria.core.inf.IEntity;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
+import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.NetworkUtil;
+import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.picasso.Picasso;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;
 
+import java.io.File;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +40,8 @@ import java.util.Map;
 
 import cn.bmob.v3.Bmob;
 import cn.smssdk.SMSSDK;
+import okhttp3.Cache;
+import okhttp3.OkHttpClient;
 
 /**
  * 整个应用上下文
@@ -50,6 +57,9 @@ public class IMovieAppliction extends Application {
     private List<Fragment> mFragments = new ArrayList<>();
 
     private SoftReference<OnTaskRuningListener> runingListener;
+    private Picasso picasso;
+    //全局下载管理器
+    private DownloadReceiver downloadReceiver;
     public static IMovieAppliction app = null;
     public boolean isFristNetwork = true;
     public String mAcg12Token = "";
@@ -74,9 +84,10 @@ public class IMovieAppliction extends Application {
     };
 
     static {
-        PlatformConfig.setWeixin("wx11d8a2cfc060c228", "192e21d10c008f952823d0809e24871f");
-        PlatformConfig.setSinaWeibo("3553472100", "bb22aa0b924586301609c10c7ad1afc3", "http://sns.whalecloud.com/sina2/callback");
-        PlatformConfig.setQQZone("1106461216", "hUIMorZnPWKdiOYG");
+        //配置你自己申请到的key
+        PlatformConfig.setWeixin("", "");
+        PlatformConfig.setSinaWeibo("", "", "http://sns.whalecloud.com/sina2/callback");
+        PlatformConfig.setQQZone("", "");
     }
 
     @Override
@@ -88,17 +99,20 @@ public class IMovieAppliction extends Application {
         strategy.setAppVersion(getVersion()); // App的版本
         strategy.setAppReportDelay(100); // 设置SDK处理延时，毫秒
         strategy.setCrashHandleCallback(new AppCrashHandleCallback());
-        CrashReport.initCrashReport(this, "7110e4106c", false, strategy); // 自定义策略生效，必须在初始化SDK前调用
-        UMShareAPI.init(this,"5978868307fe65109c0002fd");
-        SMSSDK.initSDK(this, "216b8e0cd94ee", "81a4a9361ea6a111657619b8d613f8f8");
-        Bmob.initialize(this, "0b1a20f9d304da48959020d40655ee3d");
+        //配置你自己申请到的key
+        CrashReport.initCrashReport(this, "", false, strategy); // 自定义策略生效，必须在初始化SDK前调用
+        UMShareAPI.init(this, "");
+        SMSSDK.initSDK(this, "", "");
+        Bmob.initialize(this, "");
         //网络改变
         isFristNetwork = true;
         registerReceiver(mNetworkReceiver, new IntentFilter(NET_ACTION));
-        try{
-            Aria.download(this).register();
-            Aria.get(this).getDownloadConfig().setMaxTaskNum(Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getString("multithreading", "1")));
-        }catch (Exception e){
+
+        getDownloadReceiver().register();
+        try {
+            int num = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getString("multithreading", "1"));
+            Aria.get(this).getDownloadConfig().setMaxTaskNum(num);
+        }catch (NumberFormatException e){
             e.printStackTrace();
         }
     }
@@ -106,9 +120,45 @@ public class IMovieAppliction extends Application {
     @Override
     public void onTerminate() {
         super.onTerminate();
-        Aria.download(this).unRegister();
+        getDownloadReceiver().unRegister();
         unregisterReceiver(mNetworkReceiver);
     }
+
+    /**
+     * 获取全局下载管理器
+     * @return
+     */
+    public DownloadReceiver getDownloadReceiver(){
+        if(downloadReceiver == null){
+            synchronized (IMovieAppliction.class){
+                if(downloadReceiver == null){
+                    downloadReceiver = Aria.download(this);
+                }
+            }
+        }
+        return downloadReceiver;
+    }
+
+    /**
+     * 获取全局图片加载器
+     * @return
+     */
+    public Picasso getPicasso() {
+        if(picasso == null){
+            synchronized (IMovieAppliction.class){
+                if(picasso == null){
+                    File cacheDir = AppUtil.getExternalCacheDir(this);
+                    if (!cacheDir.exists())  cacheDir.mkdirs();
+                    //64Mb的缓存
+                    OkHttpClient client = new OkHttpClient.Builder().cache(new Cache(cacheDir, 64 * 1024 * 1024)).build();
+                    picasso = new Picasso.Builder(this).downloader(new OkHttp3Downloader(client)).build();
+                }
+            }
+        }
+        return picasso;
+    }
+
+
 
     public void setRuningListener(OnTaskRuningListener runingListener) {
         this.runingListener = new SoftReference<>(runingListener);
@@ -290,18 +340,17 @@ public class IMovieAppliction extends Application {
 
         @Override
         public List<DownloadEntity> onTaskBackground() {
-            DownloadReceiver download = Aria.download(IMovieAppliction.this);
             if(isWifiConnected){
-                download.resumeAllTask();
+                getDownloadReceiver().resumeAllTask();
                 List<DownloadEntity> list = new ArrayList<>();
-                for (DownloadEntity entity : download.getSimpleTaskList()){
+                for (DownloadEntity entity : getDownloadReceiver().getSimpleTaskList()){
                     if(entity.getState() == IEntity.STATE_RUNNING || entity.getState() == IEntity.STATE_WAIT){
                         list.add(entity);
                     }
                 }
                 return  list;
             }else{
-                download.stopAllTask();
+                getDownloadReceiver().stopAllTask();
             }
             return null;
         }
@@ -310,7 +359,9 @@ public class IMovieAppliction extends Application {
         public void onTaskSuccess(List<DownloadEntity> data) {
             if(isWifiConnected){
                 for (DownloadEntity entity : data){
-                    Aria.download(IMovieAppliction.this).load(entity.getUrl()).start();
+                    if(!TextUtils.isEmpty(entity.getUrl())){
+                        getDownloadReceiver().load(entity).start();
+                    }
                 }
             }
         }

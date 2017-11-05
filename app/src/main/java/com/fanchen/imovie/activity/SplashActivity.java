@@ -13,11 +13,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.arialyy.aria.core.Aria;
 import com.arialyy.aria.core.download.DownloadEntity;
 import com.arialyy.aria.core.inf.IEntity;
 import com.fanchen.imovie.R;
@@ -106,7 +106,7 @@ public class SplashActivity extends BaseActivity {
         }
         if (preferences.getBoolean("auto_download", true)) {
             //开启未完成任务自动下载
-            Aria.download(appliction).resumeAllTask();
+            getDownloadReceiver().resumeAllTask();
             AsyTaskQueue.newInstance().execute(taskListener);
         }
         if (Build.VERSION.SDK_INT >= 23) {
@@ -227,7 +227,7 @@ public class SplashActivity extends BaseActivity {
         public List<DownloadEntity> onTaskBackground() {
             if (appliction == null) return null;
             List<DownloadEntity> list = new ArrayList<>();
-            List<DownloadEntity> simpleTaskList = Aria.download(appliction).getSimpleTaskList();
+            List<DownloadEntity> simpleTaskList = getDownloadReceiver().getSimpleTaskList();
             if(simpleTaskList != null){
                 for (DownloadEntity entity : simpleTaskList) {
                     if (entity.getState() == IEntity.STATE_RUNNING || entity.getState() == IEntity.STATE_WAIT) {
@@ -242,7 +242,9 @@ public class SplashActivity extends BaseActivity {
         public void onTaskSuccess(List<DownloadEntity> simpleTaskList) {
             if (simpleTaskList == null) return;
             for (DownloadEntity entity : simpleTaskList) {
-                Aria.download(appliction).load(entity.getUrl()).start();
+                if(!TextUtils.isEmpty(entity.getUrl())){
+                    getDownloadReceiver().load(entity).start();
+                }
             }
         }
 

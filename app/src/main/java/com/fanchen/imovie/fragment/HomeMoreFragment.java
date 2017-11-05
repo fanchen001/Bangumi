@@ -25,7 +25,10 @@ import com.fanchen.imovie.base.BaseFragment;
 import com.fanchen.imovie.db.LiteOrmManager;
 import com.fanchen.imovie.entity.face.ISearchWord;
 import com.fanchen.imovie.entity.JsonSerialize;
-import com.fanchen.imovie.entity.xiaoma.XiaomaWordIndex;
+import com.fanchen.imovie.entity.xiaoma.XiaomaIndex;
+import com.fanchen.imovie.entity.xiaoma.XiaomaSearchResult;
+import com.fanchen.imovie.entity.xiaoma.XiaomaWord;
+import com.fanchen.imovie.entity.xiaoma.XiaomaWordResult;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.retrofit.service.XiaomaService;
@@ -36,10 +39,12 @@ import com.fanchen.imovie.util.DisplayUtil;
 import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.view.FlowLayout;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.litesuits.orm.LiteOrm;
 import com.litesuits.orm.db.assit.QueryBuilder;
 import com.litesuits.orm.db.assit.WhereBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.InjectView;
@@ -54,7 +59,6 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
     public static final int DIP_96 = 96;
     public static final int DIP_192 = 192;
     public static final String INDEX = "index";
-
 
 
     protected SwipeRefreshLayout mSwipeRefreshLayout;
@@ -100,7 +104,7 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
     @InjectView(R.id.tv_word_error)
     protected TextView mErrorTextView;
 
-    private XiaomaWordIndex mSaveWordIndex;
+    private XiaomaIndex<XiaomaWordResult> mSaveWordIndex;
     private String serializeKey;
     private LiteOrm liteOrm;
 
@@ -127,10 +131,10 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
         TypedValue typedValue = new TypedValue();
         activity.getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
         mSwipeRefreshLayout.setColorSchemeColors(typedValue.data);
-        if(savedInstanceState != null && (mSaveWordIndex = savedInstanceState.getParcelable(INDEX)) != null){
+        if (savedInstanceState != null && (mSaveWordIndex = savedInstanceState.getParcelable(INDEX)) != null) {
             mHotFlowLayout.removeAllViews();
-            mHotFlowLayout.addDataList2TextView(mSaveWordIndex.getListData());
-        }else{
+            mHotFlowLayout.addDataList2TextView(getListData(mSaveWordIndex.getResult()));
+        } else {
             AsyTaskQueue.newInstance().execute(new QueryTaskListener(getRetrofitManager()));
         }
     }
@@ -237,8 +241,8 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if(mSaveWordIndex != null){
-            outState.putParcelable(INDEX,mSaveWordIndex);
+        if (mSaveWordIndex != null) {
+            outState.putParcelable(INDEX, mSaveWordIndex);
         }
         super.onSaveInstanceState(outState);
     }
@@ -273,49 +277,60 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
         }
     }
 
+    public List<String> getListData(XiaomaWordResult result) {
+        List<String> all = new ArrayList<>();
+        if (result == null)
+            return all;
+        for (XiaomaWord w : result.getHotKeyword()) {
+            if (w.getKeywords() != null)
+                all.addAll(w.getKeywords().subList(0, w.getKeywords().size() / 4));
+        }
+        return all;
+    }
+
     /**
      *
      */
-    private void loadDate(RetrofitManager retrofitManager){
+    private void loadDate(RetrofitManager retrofitManager) {
         String deviceId = DeviceUtil.getDeviceId(activity);
         retrofitManager.enqueue(XiaomaService.class, callback, "loadHotword", deviceId);
     }
 
-    private RefreshCallback<XiaomaWordIndex> callback = new RefreshCallback<XiaomaWordIndex>() {
+    private RefreshCallback<XiaomaIndex<XiaomaWordResult>> callback = new RefreshCallback<XiaomaIndex<XiaomaWordResult>>() {
 
         @Override
         public void onStart(int enqueueKey) {
-            if(isDetached())return;
+            if (isDetached()) return;
             mErrorTextView.setVisibility(View.GONE);
             mSwipeRefreshLayout.setRefreshing(true);
         }
 
         @Override
         public void onFinish(int enqueueKey) {
-            if(isDetached())return;
+            if (isDetached()) return;
             mSwipeRefreshLayout.setRefreshing(false);
         }
 
         @Override
         public void onFailure(int enqueueKey, String throwable) {
-            if(isDetached())return;
+            if (isDetached()) return;
             mErrorTextView.setVisibility(View.VISIBLE);
             showSnackbar(throwable);
         }
 
         @Override
-        public void onSuccess(int enqueueKey, XiaomaWordIndex response) {
+        public void onSuccess(int enqueueKey, XiaomaIndex<XiaomaWordResult> response) {
             mSaveWordIndex = response;
             if (mHotFlowLayout != null && response != null && !isDetached()) {
                 mHotFlowLayout.removeAllViews();
-                mHotFlowLayout.addDataList2TextView(response.getListData());
+                mHotFlowLayout.addDataList2TextView(getListData(response.getResult()));
                 AsyTaskQueue.newInstance().execute(new SaveTaskListener(response));
             }
         }
 
     };
 
-    private class QueryTaskListener extends AsyTaskListenerImpl<XiaomaWordIndex> {
+    private class QueryTaskListener extends AsyTaskListenerImpl<XiaomaIndex<XiaomaWordResult>> {
 
         private RetrofitManager retrofit;
 
@@ -332,55 +347,52 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
         }
 
         @Override
-        public XiaomaWordIndex onTaskBackground() {
+        public XiaomaIndex<XiaomaWordResult> onTaskBackground() {
             List<JsonSerialize> query = liteOrm.query(new QueryBuilder<>(JsonSerialize.class).where("key = ?", serializeKey));
-            if(query != null && query.size() > 0){
+            if (query != null && query.size() > 0) {
                 JsonSerialize jsonSerialize = query.get(0);
-                if(!jsonSerialize.isStale() && jsonSerialize.isRawType()){
+                if (!jsonSerialize.isStale()) {
                     //数据未过期
-                    try{
-                        Class<?> forName = Class.forName(jsonSerialize.getClazz());
-                        return (XiaomaWordIndex)new Gson().fromJson(jsonSerialize.getJson(), forName);
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
+                    return new Gson().fromJson(jsonSerialize.getJson(), new TypeToken<XiaomaIndex<XiaomaWordResult>>() {
+                    }.getType());
                 }
             }
             return null;
         }
 
         @Override
-        public void onTaskSuccess(XiaomaWordIndex data) {
-            if (isDetached() ) return;
+        public void onTaskSuccess(XiaomaIndex<XiaomaWordResult> data) {
+            if (isDetached()) return;
             mSaveWordIndex = data;
-            if(data != null){
+            if (data != null) {
                 //加载本地数据
                 LogUtil.d(HomeMoreFragment.class, "加载本地数据");
-                mHotFlowLayout.addDataList2TextView(data.getListData());
+                mHotFlowLayout.addDataList2TextView(getListData(data.getResult()));
                 mSwipeRefreshLayout.setRefreshing(false);
-            }else{
+            } else {
                 //没有缓存数据或者数据已经过期，加载网络数据
-                LogUtil.d(HomeMoreFragment.class,"加载网络数据");
+                LogUtil.d(HomeMoreFragment.class, "加载网络数据");
                 loadDate(retrofit);
             }
         }
 
 
+    }
 
-    } ;
+    ;
 
-    private class  SaveTaskListener extends AsyTaskListenerImpl<Void>{
+    private class SaveTaskListener extends AsyTaskListenerImpl<Void> {
 
-        private XiaomaWordIndex response;
+        private XiaomaIndex<XiaomaWordResult> response;
 
-        public SaveTaskListener(XiaomaWordIndex response) {
+        public SaveTaskListener(XiaomaIndex<XiaomaWordResult> response) {
             this.response = response;
         }
 
         @Override
         public Void onTaskBackground() {
             //保存key
-            liteOrm.delete(new WhereBuilder(JsonSerialize.class,"key = ?",new Object[]{serializeKey}));
+            liteOrm.delete(new WhereBuilder(JsonSerialize.class, "key = ?", new Object[]{serializeKey}));
             liteOrm.insert(new JsonSerialize(response, serializeKey));
             return null;
         }

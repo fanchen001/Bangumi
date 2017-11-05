@@ -28,7 +28,6 @@ import com.fanchen.imovie.fragment.HomePagerFragment;
 import com.fanchen.imovie.picasso.PicassoWrap;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.view.CircleImageView;
-import com.squareup.picasso.Picasso;
 
 import butterknife.InjectView;
 import cn.bmob.v3.update.BmobUpdateAgent;
@@ -117,6 +116,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
+
     @Override
     protected void setListener() {
         mNavigationView.setNavigationItemSelectedListener(this);
@@ -190,9 +190,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             mUserBirthday.setVisibility(View.VISIBLE);
             mUserName.setText(user.getNickName());
             if (!TextUtils.isEmpty(user.getHeaderUrl()) && appliction != null) {
-                new PicassoWrap(Picasso.with(appliction)).loadVertical(user.getHeaderUrl(), mUserAvatarView);
+                new PicassoWrap(getPicasso()).loadVertical(user.getHeaderUrl(), mUserAvatarView);
             } else if (user.getHeader() != null && appliction != null) {
-                new PicassoWrap(Picasso.with(appliction)).loadVertical(user.getHeader().getFileUrl(appliction), mUserAvatarView);
+                new PicassoWrap(getPicasso()).loadVertical(user.getHeader().getFileUrl(appliction), mUserAvatarView);
             }
         } else {
             mUserName.setText(getString(R.string.not_login));
@@ -259,6 +259,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             setLoginInfo((User) event.data);
         } else if (UserActivity.class.getName().equals(event.from) && AppEvent.LOGOUT == event.what) {
             setLoginInfo(null);
+        }else if( AppEvent.UPDATE == event.what){
+            setLoginInfo(getLoginUser());
         }
     }
 

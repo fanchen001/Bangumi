@@ -1,8 +1,11 @@
 package com.fanchen.imovie.base;
 
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,8 +16,10 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.arialyy.aria.core.download.DownloadReceiver;
 import com.fanchen.imovie.IMovieAppliction;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.LoginActivity;
@@ -25,6 +30,7 @@ import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.jude.swipbackhelper.SwipeBackHelper;
 import com.jude.swipbackhelper.SwipeBackPage;
 import com.litesuits.orm.LiteOrm;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -147,6 +153,28 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected float getClosePercent() {
         return 0.4f;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public DownloadReceiver getDownloadReceiver(){
+        if(appliction != null){
+            return appliction.getDownloadReceiver();
+        }else if(IMovieAppliction.app != null){
+            IMovieAppliction.app.getDownloadReceiver();
+        }
+        return null;
+    }
+
+    public Picasso getPicasso(){
+        if(appliction != null){
+            return appliction.getPicasso();
+        }else if(IMovieAppliction.app != null){
+            IMovieAppliction.app.getPicasso();
+        }
+        return null;
     }
 
     /**
@@ -369,6 +397,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         return editText.getText().toString().trim();
     }
 
+    public String getTextViewString(TextView editText) {
+        if (editText == null) return "";
+        return editText.getText().toString().trim();
+    }
+
     /**
      * 获取当前用户可见Fragment
      *
@@ -534,6 +567,35 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     private void makeSnackbar(View view, CharSequence c, int len, CharSequence title, View.OnClickListener l) {
         Snackbar.make(view, c, len).setAction(title, l).show();
+    }
+
+    @Override
+    public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
+        try {
+            return super.registerReceiver(receiver, filter);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission, Handler scheduler) {
+        try {
+            return super.registerReceiver(receiver, filter, broadcastPermission, scheduler);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void unregisterReceiver(BroadcastReceiver receiver) {
+        try {
+            super.unregisterReceiver(receiver);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**

@@ -91,6 +91,11 @@ public class TucaoEpisode implements IVideoEpisode,Parcelable{
     }
 
     @Override
+    public void setFilePath(String path) {
+        this.url = path;
+    }
+
+    @Override
     public int getViewType() {
         return 0;
     }

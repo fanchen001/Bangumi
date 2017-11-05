@@ -10,10 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.arialyy.aria.core.download.DownloadReceiver;
 import com.fanchen.imovie.IMovieAppliction;
 import com.fanchen.imovie.entity.AppEvent;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.litesuits.orm.LiteOrm;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -52,7 +54,11 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        activity = (BaseActivity) getActivity();
+        if(context instanceof BaseActivity){
+            activity = (BaseActivity) context;
+        }else{
+            activity = (BaseActivity) getActivity();
+        }
         appliction = activity.appliction;
     }
 
@@ -99,6 +105,30 @@ public abstract class BaseFragment extends Fragment {
         super.onDestroy();
         if (isRegisterEventBus())
             EventBus.getDefault().unregister(this);
+    }
+
+    /**
+     * @return
+     */
+    public Picasso getPicasso() {
+        if (activity == null)
+            return activity.getPicasso();
+        if(IMovieAppliction.app != null)
+            return IMovieAppliction.app.getPicasso();
+        return null;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public DownloadReceiver getDownloadReceiver(){
+        if (activity != null){
+            return activity.getDownloadReceiver();
+        }else if(IMovieAppliction.app != null){
+            IMovieAppliction.app.getDownloadReceiver();
+        }
+        return null;
     }
 
     public LiteOrm getLiteOrm(){

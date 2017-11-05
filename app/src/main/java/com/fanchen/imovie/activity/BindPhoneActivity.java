@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.base.BaseToolbarActivity;
+import com.fanchen.imovie.entity.bmob.User;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.KeyBoardUtils;
 import com.fanchen.imovie.util.SmsUtil;
@@ -99,13 +100,14 @@ public class BindPhoneActivity extends BaseToolbarActivity implements View.OnCli
                     //获取验证码
                     SmsUtil.getVerificationCode(phone, msmListener);
                 } else {
+                    mSendButton.setStopDown(true);
                     showSnackbar(getString(R.string.error_phone));
                 }
                 break;
             case R.id.tv_cannotverification:
                 DialogUtil.showBottomCancleDialog(this);
                 break;
-            case R.id.btn_next:
+            case R.id.btn_bind:
                 KeyBoardUtils.closeKeyboard(this, mPhoneEditText);
                 KeyBoardUtils.closeKeyboard(this, mVerificationEditText);
                 String phoneNamber = getEditTextString(mPhoneEditText);
@@ -172,6 +174,9 @@ public class BindPhoneActivity extends BaseToolbarActivity implements View.OnCli
             if (event == SMSSDK.EVENT_SUBMIT_VERIFICATION_CODE) {
                 // 验证成功回调
                 String phone = getEditTextString(mPhoneEditText);
+                User loginUser = getLoginUser();
+                loginUser.setPhone(phone);
+                loginUser.update(updateListener);
             } else {
                 showSnackbar(getString(R.string.get_code_success));
             }
@@ -184,4 +189,29 @@ public class BindPhoneActivity extends BaseToolbarActivity implements View.OnCli
 
     };
 
+    private User.OnUpdateListener updateListener = new User.OnUpdateListener() {
+
+        @Override
+        public void onStart() {
+            DialogUtil.showProgressDialog(BindPhoneActivity.this,getString(R.string.loading));
+        }
+
+        @Override
+        public void onFinish() {
+            DialogUtil.closeProgressDialog();
+        }
+
+        @Override
+        public void onSuccess() {
+            mPhoneEditText.setText("");
+            mVerificationEditText.setText("");
+            showSnackbar(getString(R.string.bind_success));
+        }
+
+        @Override
+        public void onFailure(int i, String s) {
+            showSnackbar(s);
+        }
+
+    };
 }

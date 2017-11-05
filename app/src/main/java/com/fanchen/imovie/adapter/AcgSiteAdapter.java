@@ -29,14 +29,14 @@ public class AcgSiteAdapter extends BaseAdapter {
 
     private PicassoWrap picasso;
 
-    public AcgSiteAdapter(Context context, Picasso picasso) {
+    public AcgSiteAdapter(Context context) {
         super(context);
-        this.picasso = new PicassoWrap(new Picasso.Builder(context).downloader(new RefererDownloader(context,REFERER)).build());
+        this.picasso = new PicassoWrap(context,new RefererDownloader(context,REFERER));
     }
 
-    public AcgSiteAdapter(Context context, Picasso picasso, List<IViewType> mList) {
+    public AcgSiteAdapter(Context context, List<IViewType> mList) {
         super(context, mList);
-        this.picasso = new PicassoWrap(new Picasso.Builder(context).downloader(new RefererDownloader(context,REFERER)).build());
+        this.picasso = new PicassoWrap(context,new RefererDownloader(context,REFERER));
     }
 
     @Override

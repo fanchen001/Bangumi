@@ -38,7 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="top|right"
-            app:backgroundColor="@color/myPrimaryColor"
+            app:backgroundColor="@color/colorPrimary"
             app:corner="rightTop"
             app:labelBottomPadding="5dp"
             app:labelCenterPadding="0dp"

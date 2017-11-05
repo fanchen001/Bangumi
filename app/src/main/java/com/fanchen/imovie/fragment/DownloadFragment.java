@@ -19,6 +19,7 @@ import com.fanchen.imovie.base.BaseRecyclerFragment;
 import com.fanchen.imovie.entity.DownloadEntityWrap;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.thread.AsyTaskQueue;
+import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.SystemUtil;
 import com.squareup.picasso.Picasso;
 
@@ -95,12 +96,14 @@ public class DownloadFragment extends BaseRecyclerFragment {
 
         @Override
         public List<DownloadEntity> onTaskBackground() {
+            LogUtil.e("onTaskBackground", "onTaskBackground");
             if (activity == null || activity.appliction == null) return null;
-            return Aria.download(activity.appliction).getSimpleTaskList();
+            return getDownloadReceiver().getSimpleTaskList();
         }
 
         @Override
         public void onTaskSuccess(List<DownloadEntity> data) {
+            LogUtil.e("onTaskSuccess","onTaskSuccess");
             if (mDownloadAdapter == null) return;
             mDownloadAdapter.addAll(data, suffix);
         }
@@ -108,6 +111,7 @@ public class DownloadFragment extends BaseRecyclerFragment {
         @Override
         public void onTaskFinish() {
             super.onTaskFinish();
+            LogUtil.e("onTaskFinish", "onTaskFinish");
             getSwipeRefreshLayout().setEnabled(false);
         }
     };

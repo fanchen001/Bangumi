@@ -44,7 +44,7 @@ public class AcgCuteFragment extends BaseRecyclerFragment {
 
     @Override
     public BaseAdapter getAdapter(Picasso picasso) {
-        return mCuteAdapter = new AcgCuteAdapter(activity,picasso);
+        return mCuteAdapter = new AcgCuteAdapter(activity);
     }
 
     @Override

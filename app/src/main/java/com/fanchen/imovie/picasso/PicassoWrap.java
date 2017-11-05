@@ -6,7 +6,15 @@ import android.text.TextUtils;
 import android.widget.ImageView;
 
 import com.fanchen.imovie.R;
+import com.fanchen.imovie.util.AppUtil;
+import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.picasso.Downloader;
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
+
+import okhttp3.Cache;
+import okhttp3.OkHttpClient;
 
 /**
  * Created by fanchen on 2017/9/18.
@@ -24,7 +32,20 @@ public class PicassoWrap {
      * @param context
      */
     public PicassoWrap(Context context){
-        picasso = Picasso.with(context);
+        File cacheDir = AppUtil.getExternalCacheDir(context);
+        if (!cacheDir.exists())  cacheDir.mkdirs();
+        //64Mb的缓存
+        OkHttpClient client = new OkHttpClient.Builder().cache(new Cache(cacheDir, 64 * 1024 * 1024)).build();
+        picasso = new Picasso.Builder(context).downloader(new OkHttp3Downloader(client)).build();
+    }
+
+    /**
+     *
+     * @param context
+     * @param downloader
+     */
+    public PicassoWrap(Context context,Downloader downloader){
+        picasso = new Picasso.Builder(context).downloader(downloader).build();
     }
 
     public PicassoWrap(Picasso picasso){

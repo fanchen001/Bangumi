@@ -63,7 +63,7 @@ public class VerificationButton extends Button implements View.OnClickListener{
             text = getText();
             Message message = Message.obtain();
             message.what = MESSAGE_COUNTDOWN;
-            message.obj = 60;
+            message.obj = 30;
             mEventHandler.sendMessageDelayed(message,1000);
         }
     }

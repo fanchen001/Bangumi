@@ -280,4 +280,9 @@
     <string name="bindphone">绑定手机</string>
     <string name="error_bind">该账户已经绑定手机号</string>
     <string name="a4dy">A4电影</string>
+    <string name="name_4">昵称不能小于4位</string>
+    <string name="brithday_null">生日不能为空</string>
+    <string name="success">保存成功</string>
+    <string name="bind_success">绑定成功</string>
+    <string name="send_success">反馈成功</string>
 </resources>

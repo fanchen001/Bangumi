@@ -49,6 +49,8 @@ public class UserActivity extends BaseToolbarActivity implements View.OnClickLis
     RelativeLayout mChangeRelativeLayout;
     @InjectView(R.id.tv_user_logout)
     TextView mLogoutTextView;
+    @InjectView(R.id.tv_bind_phone)
+    TextView mBindTextView;
 
     /**
      *
@@ -71,20 +73,18 @@ public class UserActivity extends BaseToolbarActivity implements View.OnClickLis
             finish();
             return;
         }
-        User loginUser = getLoginUser();
-        mNameTextView.setText(loginUser.getNickName());
-        mBirthdayButton.setText(loginUser.getBirthday());
-        if(loginUser.isAuthQQ()){
-            mTencentRelativeLayout.setSelected(true);
-        }else if(loginUser.isAuthWB()){
-            mSinaRelativeLayout.setSelected(true);
-        }else if(loginUser.isAuthWX()){
-            mWeixinImageView.setSelected(true);
-        }
-        if(!TextUtils.isEmpty(loginUser.getHeaderUrl()) && appliction != null){
-            new PicassoWrap(Picasso.with(appliction)).loadVertical(loginUser.getHeaderUrl(), mIconsetImageView);
-        }else if(loginUser.getHeader() != null && appliction != null){
-            new PicassoWrap(Picasso.with(appliction)).loadVertical(loginUser.getHeader().getFileUrl(appliction),mIconsetImageView);
+        setUserInfo(getLoginUser());
+    }
+
+    @Override
+    protected boolean isRegisterEventBus() {
+        return true;
+    }
+
+    @Override
+    public void onMainEvent(AppEvent event) {
+        if( AppEvent.UPDATE == event.what){
+            setUserInfo(getLoginUser());
         }
     }
 
@@ -136,6 +136,25 @@ public class UserActivity extends BaseToolbarActivity implements View.OnClickLis
                     }
                 });
                 break;
+        }
+    }
+
+    private void setUserInfo(User loginUser){
+        if(loginUser == null)return;
+        mNameTextView.setText(loginUser.getNickName());
+        mBirthdayButton.setText(loginUser.getBirthday());
+        if(loginUser.isAuthQQ()){
+            mTencentRelativeLayout.setSelected(true);
+        }else if(loginUser.isAuthWB()){
+            mSinaRelativeLayout.setSelected(true);
+        }else if(loginUser.isAuthWX()){
+            mWeixinImageView.setSelected(true);
+        }
+        mBindTextView.setText(TextUtils.isEmpty(loginUser.getPhone()) ? "未绑定" : loginUser.getPhone());
+        if(!TextUtils.isEmpty(loginUser.getHeaderUrl()) && appliction != null){
+            new PicassoWrap(getPicasso()).loadVertical(loginUser.getHeaderUrl(), mIconsetImageView);
+        }else if(loginUser.getHeader() != null && appliction != null){
+            new PicassoWrap(getPicasso()).loadVertical(loginUser.getHeader().getFileUrl(appliction),mIconsetImageView);
         }
     }
 }

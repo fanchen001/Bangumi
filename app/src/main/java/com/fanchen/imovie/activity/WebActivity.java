@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,18 +17,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.fanchen.imovie.IMovieAppliction;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.base.BaseToolbarActivity;
 import com.fanchen.imovie.entity.apk.ApkEvaluat;
+import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.ShareUtil;
 import com.fanchen.imovie.util.SystemUtil;
 import com.fanchen.imovie.view.ContextMenuTitleView;
 import com.fanchen.imovie.view.webview.SwipeWebView;
+import com.fanchen.zzplayer.view.VideoPlayer;
+import com.xigua.p2p.P2PManager;
+import com.xigua.p2p.StorageUtils;
 
 import butterknife.InjectView;
 
@@ -49,7 +56,7 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
      * @param context
      * @param url
      */
-    public static void startActivity(Context context, String title,String url) {
+    public static void startActivity(Context context, String title, String url) {
         Intent intent = new Intent(context, WebActivity.class);
         intent.putExtra(URL, url);
         intent.putExtra(TITLE, title);
@@ -57,12 +64,11 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
     }
 
     /**
-     *
      * @param context
      * @param url
      */
-    public static void startActivity(Context context,String url) {
-        startActivity(context,null,url);
+    public static void startActivity(Context context, String url) {
+        startActivity(context, null, url);
     }
 
     @Override
@@ -94,7 +100,7 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
         settings.setJavaScriptEnabled(true);
         webView.setWebViewClient(webViewClient);
         registerForContextMenu(webView);
-        if(getIntent().hasExtra(URL)){
+        if (getIntent().hasExtra(URL)) {
             mWebview.loadUrl(getIntent().getStringExtra(URL));
         }
     }
@@ -143,13 +149,13 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_share:
-                ShareUtil.share(this,mWebview.getWebView().getTitle(),mWebview.getWebView().getUrl());
+                ShareUtil.share(this, mWebview.getWebView().getTitle(), mWebview.getWebView().getUrl());
                 break;
             case R.id.action_start:
-                SystemUtil.startThreeApp(this,mWebview.getWebView().getUrl());
+                SystemUtil.startThreeApp(this, mWebview.getWebView().getUrl());
                 break;
             case R.id.action_copy:
-                SystemUtil.putText2Clipboard(this,mWebview.getWebView().getUrl());
+                SystemUtil.putText2Clipboard(this, mWebview.getWebView().getUrl());
                 showToast(getString(R.string.clipboard));
                 break;
             default:
@@ -171,11 +177,24 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
      */
     private WebViewClient webViewClient = new WebViewClient() {
 
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        public boolean shouldOverrideUrlLoading(WebView view, final String url) {
             Uri localUri = Uri.parse(url);
             String scheme = localUri.getScheme();
             if (scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https")) {
                 view.loadUrl(url);
+            } else if (scheme.equalsIgnoreCase("xg") && IMovieAppliction.app != null) {
+                StorageUtils.init(IMovieAppliction.app);
+                P2PManager.getInstance().init(IMovieAppliction.app);
+                P2PManager.getInstance().setAllow3G(true);
+                DialogUtil.showProgressDialog(WebActivity.this, getString(R.string.loading));
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        DialogUtil.closeProgressDialog();
+                        VideoPlayerActivity.startActivity(WebActivity.this, url);
+                    }
+                }, 2000);
             } else {
                 SystemUtil.startThreeApp(WebActivity.this, url);
             }
@@ -196,9 +215,9 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
         public void onPageFinished(WebView view, String url) {
             if (isFinishing()) return;
             view.setLayerType(View.LAYER_TYPE_NONE, null);
-            if(mWebview.getWebView().getUrl().equals(getIntent().getStringExtra(URL)) && getIntent().hasExtra(TITLE)){
+            if (getIntent().getStringExtra(URL).equals(mWebview.getWebView().getUrl()) && getIntent().hasExtra(TITLE)) {
                 getTitleView().setText(getIntent().getStringExtra(TITLE));
-            }else{
+            } else {
                 getTitleView().setText(mWebview.getWebView().getTitle());
             }
             view.getSettings().setBlockNetworkImage(false);

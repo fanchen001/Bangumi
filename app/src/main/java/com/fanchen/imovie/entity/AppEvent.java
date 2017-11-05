@@ -4,6 +4,7 @@ package com.fanchen.imovie.entity;
  * Created by fanchen on 2017/10/11.
  */
 public class AppEvent {
+    public static final int UPDATE = -1;
     public static final int LOGIN = 0;
     public static final int LOGOUT = 1;
     public static final int REGISTER_SUCCESS = 2;
@@ -42,6 +43,10 @@ public class AppEvent {
 
     public AppEvent(String from, int what) {
         this.from = from;
+        this.what = what;
+    }
+
+    public AppEvent(int what) {
         this.what = what;
     }
 

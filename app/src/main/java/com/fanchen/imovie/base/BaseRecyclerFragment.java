@@ -44,9 +44,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
     @InjectView(R.id.empty_layout)
     protected CustomEmptyView mCustomEmptyView;
 
-
     private int page = 1;
-    private Picasso picasso;
 
     private BaseAdapter mAdapter;
     private  Bundle savedInstanceState;
@@ -61,13 +59,12 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
         super.initFragment(savedInstanceState, args);
         this.savedInstanceState = savedInstanceState;
         setHasOptionsMenu(true);
-        picasso = getPicasso();
         TypedValue typedValue = new TypedValue();
         activity.getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
         mSwipeRefreshLayout.setColorSchemeColors(typedValue.data);
         mSwipeRefreshLayout.setEnabled(hasRefresh());
         mRecyclerView.setLayoutManager(getLayoutManager());
-        mRecyclerView.setAdapter(mAdapter = getAdapter(picasso));
+        mRecyclerView.setAdapter(mAdapter = getAdapter(getPicasso()));
         if (useLocalStorage() && savedInstanceState == null) {
             loadLocalData(AsyTaskQueue.newInstance());
         } else {
@@ -86,15 +83,6 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
         mAdapter.setOnItemClickListener(this);
         mCustomEmptyView.setOnClickListener(this);
         mRecyclerView.addOnScrollListener(scrollListener);
-    }
-
-    /**
-     * @return
-     */
-    public Picasso getPicasso() {
-        if (picasso == null)
-            picasso = Picasso.with(activity);
-        return picasso;
     }
 
     public RecyclerView getRecyclerView() {
@@ -214,10 +202,13 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
 
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                picasso.resumeTag(BaseRecyclerFragment.class);
-            } else {
-                picasso.pauseTag(BaseRecyclerFragment.class);
+            Picasso picasso = getPicasso();
+            if(picasso != null){
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    picasso.resumeTag(BaseRecyclerFragment.class);
+                } else {
+                    picasso.pauseTag(BaseRecyclerFragment.class);
+                }
             }
         }
 

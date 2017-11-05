@@ -124,7 +124,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:background="@null"
-                        android:hint="例：example@tadu.com"
+                        android:hint="例：example@qq.com"
                         android:inputType="textEmailAddress"
                         android:singleLine="true"
                         android:textColor="@color/comm_text_h2_color"

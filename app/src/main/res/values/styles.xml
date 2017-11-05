@@ -108,6 +108,8 @@
 
     <dimen name="text_size_xlarge">16dp</dimen>
     <dimen name="push_setting_marginLeft">15dp</dimen>
+    <dimen name="user_space_content_fontsize2">12sp</dimen>
+
     <dimen name="user_space_content_fontsize">16sp</dimen>
 
     <style name="TextAppearance.App.Subtitle" parent="@style/TextAppearance.App.Medium" />

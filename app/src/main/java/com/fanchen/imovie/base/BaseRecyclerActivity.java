@@ -33,7 +33,6 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
 
     private int page = 1;
     private BaseAdapter mAdapter;
-    private Picasso picasso;
 
     @Override
     protected int getLayout() {
@@ -43,12 +42,11 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
     @Override
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
-        picasso = getPicasso();
         TypedValue typedValue = new TypedValue();
         getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
         mSwipeRefreshLayout.setColorSchemeColors(typedValue.data);
         mRecyclerView.setLayoutManager(getLayoutManager());
-        mRecyclerView.setAdapter(mAdapter = getAdapter(picasso));
+        mRecyclerView.setAdapter(mAdapter = getAdapter(getPicasso()));
         loadData(getRetrofitManager(), page = 1);
     }
 
@@ -95,16 +93,6 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
     /**
      * @return
      */
-    public Picasso getPicasso() {
-        if (picasso == null)
-            picasso = Picasso.with(this);
-        return picasso;
-    }
-
-
-    /**
-     * @return
-     */
     protected boolean isRefresh() {
         return page <= 1;
     }
@@ -139,10 +127,13 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
-            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                picasso.resumeTag(BaseRecyclerActivity.class);
-            } else {
-                picasso.pauseTag(BaseRecyclerActivity.class);
+            Picasso picasso = getPicasso();
+            if(picasso != null){
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    picasso.resumeTag(BaseRecyclerActivity.class);
+                } else {
+                    picasso.pauseTag(BaseRecyclerActivity.class);
+                }
             }
         }
 

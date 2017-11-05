@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import com.arialyy.aria.core.Aria;
+import com.arialyy.aria.core.download.DownloadEntity;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.VideoDetailsActivity;
 import com.fanchen.imovie.activity.VideoPlayerActivity;
@@ -278,11 +279,11 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
             if (response.isSuccess() && response.getUrls() != null && !response.getUrls().isEmpty()) {
                 final String value = response.getUrls().entrySet().iterator().next().getValue();
                 if (response.getPlayType() == IVideoEpisode.PLAY_TYPE_VIDEO) {
-                    if (!Aria.download(activity.appliction).load(value).taskExists()) {
+                    if (!TextUtils.isEmpty(value) && !getDownloadReceiver().load(value).taskExists()) {
                         File dir = new File(Environment.getExternalStorageDirectory() + "/android/data/" + activity.getPackageName() + "/download/video/");
                         if (!dir.exists())
                             dir.mkdirs();
-                        Aria.download(activity.appliction).load(value).setDownloadPath(new File(dir, "video_" + System.currentTimeMillis() + ".mp4").getAbsolutePath()).start();
+                        getDownloadReceiver().load(value).setDownloadPath(new File(dir, "video_" + System.currentTimeMillis() + ".mp4").getAbsolutePath()).start();
                     } else {
                         showSnackbar(getString(R.string.task_exists));
                     }

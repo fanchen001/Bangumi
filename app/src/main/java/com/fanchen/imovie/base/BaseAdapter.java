@@ -1,6 +1,8 @@
 package com.fanchen.imovie.base;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -26,6 +28,7 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
     private boolean isLoad = true;
     private boolean isLoading = false;
     private OnLoadListener onLoadListener;
+    private Handler handler = new Handler(Looper.getMainLooper());
     private List<IViewType> mList = new ArrayList<>();
     private BaseAdapter.OnItemClickListener itemClickListener;
     private BaseAdapter.OnItemLongClickListener itemLongClickListener;
@@ -148,9 +151,19 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
     public void add(IViewType viewType) {
         if (mList == null)
             mList = new ArrayList<>();
-        int size = mList.size() == 0 ? 0 : mList.size() - 1;
+        final int size = mList.size() == 0 ? 0 : mList.size() - 1;
         mList.add(viewType);
-        notifyItemRangeChanged(size, mList.size());
+        if(Thread.currentThread().getName().equals("main")){
+            notifyItemRangeChanged(size, mList.size());
+        }else{
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyItemRangeChanged(size, mList.size());
+                }
+            });
+        }
+
     }
 
     /**
@@ -160,10 +173,21 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
         if(all == null)return;
         if (mList == null)
             mList = new ArrayList<>();
-        int size = mList.size() == 0 ? 0 : mList.size() - 1;
+        final int size = mList.size() == 0 ? 0 : mList.size() - 1;
         mList.addAll(all);
-        if(load)
-            notifyItemRangeChanged(size, mList.size());
+        if(load){
+            if(Thread.currentThread().getName().equals("main")){
+                notifyItemRangeChanged(size, mList.size());
+            }else{
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        notifyItemRangeChanged(size, mList.size());
+                    }
+                });
+            }
+        }
+
     }
 
     public void addAll(List<? extends IViewType> all) {
@@ -193,19 +217,48 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
         if (mList == null)
             return;
         mList.clear();
-        notifyDataSetChanged();
+        if(Thread.currentThread().getName().equals("main")){
+            notifyDataSetChanged();
+        }else{
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyDataSetChanged();
+                }
+            });
+        }
+
     }
 
     public void remove(int position){
         if (mList == null)
             return;
         mList.remove(position);
-        notifyDataSetChanged();
+        if(Thread.currentThread().getName().equals("main")){
+            notifyDataSetChanged();
+        }else{
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyDataSetChanged();
+                }
+            });
+        }
     }
 
     public void setLoad(boolean isLoad) {
         this.isLoad = isLoad;
-        notifyDataSetChanged();
+        if(Thread.currentThread().getName().equals("main")){
+            notifyDataSetChanged();
+        }else{
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyDataSetChanged();
+                }
+            });
+        }
+
     }
 
     /**
@@ -298,6 +351,8 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
         }
         return mList == null ? 0 : mList.size();
     }
+
+
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {

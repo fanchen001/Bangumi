@@ -17,7 +17,6 @@ import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.base.BaseFragment;
 import com.fanchen.imovie.entity.xiaobo.XiaoboRoot;
 import com.fanchen.imovie.entity.xiaobo.XiaoboVodBody;
-import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.retrofit.service.XiaoboService;
 import com.fanchen.imovie.util.DialogUtil;
@@ -53,7 +52,7 @@ public class CouldFragment extends BaseFragment implements View.OnClickListener,
 
     @Override
     protected int getLayout() {
-        return R.layout.fragment_could;
+        return R.layout.fragment_recycler_search;
     }
 
     @Override

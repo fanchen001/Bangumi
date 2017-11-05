@@ -59,7 +59,7 @@ public class CollectAdapter extends BaseAdapter {
             itemViewHolder.titleTextView.setText(videoCollect.getTitle());
             itemViewHolder.timeTextView.setText(videoCollect.getTime());
             if(!TextUtils.isEmpty(videoCollect.getCoverReferer())){
-                new PicassoWrap(new Picasso.Builder(context).downloader(new RefererDownloader(context, videoCollect.getCoverReferer())).build()).loadVertical(videoCollect.getCover(), CollectTabActivity.class,itemViewHolder.imageView);
+                new PicassoWrap(context,new RefererDownloader(context, videoCollect.getCoverReferer())).loadVertical(videoCollect.getCover(), CollectTabActivity.class,itemViewHolder.imageView);
             }else{
                 picasso.loadVertical(videoCollect.getCover(), CollectTabActivity.class,itemViewHolder.imageView);
             }
@@ -69,7 +69,7 @@ public class CollectAdapter extends BaseAdapter {
             itemViewHolder.titleTextView.setText(videoCollect.getTitle());
             itemViewHolder.endTextView.setText(videoCollect.getTime());
             if(!TextUtils.isEmpty(videoCollect.getCoverReferer())){
-                new PicassoWrap(new Picasso.Builder(context).downloader(new RefererDownloader(context, videoCollect.getCoverReferer())).build()).loadVertical(videoCollect.getCover(), CollectTabActivity.class,itemViewHolder.imageView);
+                new PicassoWrap(context,new RefererDownloader(context, videoCollect.getCoverReferer())).loadVertical(videoCollect.getCover(), CollectTabActivity.class,itemViewHolder.imageView);
             }else{
                 picasso.loadVertical(videoCollect.getCover(), CollectTabActivity.class,itemViewHolder.imageView);
             }

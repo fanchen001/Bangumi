@@ -173,6 +173,8 @@ public class IjkVideoView extends FrameLayout implements
 		return mMediaPlayer;
 	}
 
+
+
 	public void setRenderView(IRenderView renderView) {
 		if (mRenderView != null) {
 			if (mMediaPlayer != null)

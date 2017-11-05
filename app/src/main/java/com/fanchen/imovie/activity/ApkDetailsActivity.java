@@ -22,7 +22,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.arialyy.aria.core.Aria;
+import com.arialyy.aria.core.download.DownloadEntity;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.adapter.ApkScreenAdapter;
 import com.fanchen.imovie.base.BaseActivity;
@@ -142,7 +142,7 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
         mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
         apkItem = getIntent().getParcelableExtra(APK_ITEM);
-        mApkScreenAdapter = new ApkScreenAdapter(this, picasso = Picasso.with(this));
+        mApkScreenAdapter = new ApkScreenAdapter(this, picasso = getPicasso());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         mRecyclerView.setAdapter(mApkScreenAdapter);
         mSuperPlayerView.setNetChangeListener(true);
@@ -283,11 +283,13 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
                 String format = String.format("https://api.moeapk.com/client/app/downloadApk?package=%s", mApkDetails.getPackagename());
                 File dir = new File(Environment.getExternalStorageDirectory() + "/android/data/" + getPackageName() + "/download/apk/");
                 if (!dir.exists()) dir.mkdirs();
-                if (Aria.download(appliction).taskExists(format)) {
-                    showSnackbar(getString(R.string.task_exists));
-                } else {
-                    Aria.download(appliction).load(format).setDownloadPath(new File(dir, mApkDetails.getPackagename() + ".apk").getAbsolutePath()).start();
-                    showSnackbar(getString(R.string.download_add));
+                if(!TextUtils.isEmpty(format)){
+                    if (getDownloadReceiver().taskExists(format)) {
+                        showSnackbar(getString(R.string.task_exists));
+                    } else {
+                        getDownloadReceiver().load(format).setDownloadPath(new File(dir, mApkDetails.getPackagename() + ".apk").getAbsolutePath()).start();
+                        showSnackbar(getString(R.string.download_add));
+                    }
                 }
                 break;
             case R.id.iv_bar_back:

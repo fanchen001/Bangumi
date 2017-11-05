@@ -1,5 +1,6 @@
 package com.fanchen.imovie.entity.bmob;
 
+import android.content.Context;
 import android.os.Environment;
 import android.text.TextUtils;
 
@@ -21,6 +22,7 @@ import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 /**
  * Created by fanchen on 2017/10/8.
@@ -256,6 +258,70 @@ public class User extends BmobObj {
             }
         }
     }
+
+    /**
+     *
+     * @param listener
+     */
+    public void update(final OnUpdateListener listener) {
+        if(listener == null)return;
+        super.update(new OnUpdateListener() {
+
+            @Override
+            public void onStart() {
+                listener.onStart();
+            }
+
+            @Override
+            public void onFinish() {
+                listener.onFinish();
+            }
+
+            @Override
+            public void onSuccess() {
+                save2File(loginUser);
+                listener.onSuccess();
+            }
+
+            @Override
+            public void onFailure(int i, String s) {
+                listener.onFailure(i, s);
+            }
+        });
+    }
+
+    /**
+     *
+     * @param objectId
+     * @param listener
+     */
+    public void update(String objectId,final OnUpdateListener listener) {
+        if(listener == null)return;
+        super.update(objectId, new OnUpdateListener() {
+            @Override
+            public void onStart() {
+                listener.onStart();
+            }
+
+            @Override
+            public void onFinish() {
+                listener.onFinish();
+            }
+
+            @Override
+            public void onSuccess() {
+                save2File(loginUser);
+                listener.onSuccess();
+            }
+
+            @Override
+            public void onFailure(int i, String s) {
+                listener.onFailure(i,s);
+            }
+        });
+    }
+
+
 
     public static final void logout(){
         loginUser = null;

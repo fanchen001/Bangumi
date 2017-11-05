@@ -54,7 +54,7 @@ public class BangumiListAdapter extends BaseAdapter {
         if(picassoWrap == null){
             if(!TextUtils.isEmpty(videoItem.getCoverReferer())){
                 Context application = context.getApplicationContext();
-                picassoWrap = new PicassoWrap(new Picasso.Builder(application).downloader(new RefererDownloader(application,videoItem.getCoverReferer())).build());
+                picassoWrap = new PicassoWrap(context,new RefererDownloader(application,videoItem.getCoverReferer()));
             }else{
                 picassoWrap = new PicassoWrap(picasso);
             }

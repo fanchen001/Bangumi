@@ -128,7 +128,7 @@ public class ApkDetails implements Parcelable {
     }
 
     public String getIntro() {
-        return intro;
+        return intro == null ? "" : intro;
     }
 
     public void setRecentchanges(String recentchanges) {
@@ -136,7 +136,7 @@ public class ApkDetails implements Parcelable {
     }
 
     public String getRecentchanges() {
-        return recentchanges;
+        return recentchanges == null ? "" : recentchanges;
     }
 
     public void setDescription(String description) {
@@ -144,7 +144,7 @@ public class ApkDetails implements Parcelable {
     }
 
     public String getDescription() {
-        return description;
+        return description == null ?"":description;
     }
 
     public void setTranslatedescription(String translatedescription) {

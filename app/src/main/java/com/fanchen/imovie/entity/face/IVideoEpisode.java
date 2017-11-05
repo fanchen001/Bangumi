@@ -88,4 +88,9 @@ public interface IVideoEpisode extends IViewType,Parcelable{
      * @param state
      */
     void setDownloadState(int state);
+
+    /**
+     * 本地文件
+     */
+    void setFilePath(String path);
 }

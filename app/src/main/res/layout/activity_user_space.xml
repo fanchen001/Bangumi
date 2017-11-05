@@ -61,7 +61,7 @@
 
                     <Button
                         android:id="@+id/btn_user_birthday"
-                        android:layout_width="28.0dip"
+                        android:layout_width="wrap_content"
                         android:layout_height="13.0dip"
                         android:layout_marginTop="10.0dip"
                         android:background="@drawable/mine_level_btn_bg"
@@ -125,6 +125,16 @@
                     android:text="@string/bind_phone"
                     android:textColor="@color/comm_text_h1_color"
                     android:textSize="@dimen/user_space_content_fontsize" />
+
+                <TextView
+                    android:id="@+id/tv_bind_phone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/dp_30"
+                    android:textColor="@color/comm_text_tip_color"
+                    android:textSize="@dimen/user_space_content_fontsize2" />
 
                 <ImageView
                     android:layout_width="wrap_content"

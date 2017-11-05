@@ -289,6 +289,12 @@
         <activity
             android:name="cn.bmob.v3.update.UpdateDialogActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
+
+        <service
+            android:name="com.xigua.p2p.P2PService"
+            android:label="P2P服务"
+            android:process=":p2p" />
+
     </application>
 
 </manifest>

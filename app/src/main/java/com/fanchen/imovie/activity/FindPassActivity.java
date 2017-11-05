@@ -21,6 +21,7 @@ import com.fanchen.imovie.entity.bmob.User;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.KeyBoardUtils;
 import com.fanchen.imovie.util.SmsUtil;
+import com.fanchen.imovie.view.VerificationButton;
 
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class FindPassActivity extends BaseToolbarActivity implements TextWatcher
     @InjectView(R.id.et_verification)
     protected EditText mVerificationEditText;
     @InjectView(R.id.btn_sendmessage)
-    protected Button mMessageButton;
+    protected VerificationButton mMessageButton;
     @InjectView(R.id.tv_cannotverification)
     protected TextView mCannotTextView;
     @InjectView(R.id.btn_next)
@@ -104,6 +105,7 @@ public class FindPassActivity extends BaseToolbarActivity implements TextWatcher
                     //获取验证码
                     SmsUtil.getVerificationCode(phone, msmListener);
                 } else {
+                    mMessageButton.setStopDown(true);
                     showSnackbar(getString(R.string.error_phone));
                 }
                 break;

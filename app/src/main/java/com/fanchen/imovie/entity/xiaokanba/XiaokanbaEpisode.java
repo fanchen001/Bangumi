@@ -84,6 +84,11 @@ public class XiaokanbaEpisode implements IVideoEpisode{
     }
 
     @Override
+    public void setFilePath(String path) {
+        this.url = path;
+    }
+
+    @Override
     public int getViewType() {
         return IViewType.TYPE_NORMAL;
     }

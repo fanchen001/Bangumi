@@ -230,7 +230,7 @@ public class VideoDetailsActivity extends BaseActivity implements
         mEpisodeAdapter = new EpisodeAdapter(this);
         mEpisodeRecyclerView.setAdapter(mEpisodeAdapter);
         mEpisodeRecyclerView.setNestedScrollingEnabled(false);
-        mRecomAdapter = new RecomAdapter(this, picasso = new PicassoWrap(Picasso.with(this)));
+        mRecomAdapter = new RecomAdapter(this, picasso = new PicassoWrap(getPicasso()));
         mRecomRecyclerView.setAdapter(mRecomAdapter);
         mRecomRecyclerView.setNestedScrollingEnabled(false);
 
@@ -372,7 +372,7 @@ public class VideoDetailsActivity extends BaseActivity implements
             if (isFinishing() || response == null) return;
             details = mVideo == null ? mVideoCollect == null ? response : response.setVideo(mVideoCollect) : response.setVideo(mVideo);
             if(!TextUtils.isEmpty(response.getCoverReferer())){
-                picasso = new PicassoWrap(new Picasso.Builder(getApplicationContext()).downloader(new RefererDownloader(getApplicationContext(),response.getCoverReferer())).build());
+                picasso = new PicassoWrap(VideoDetailsActivity.this,new RefererDownloader(getApplicationContext(),response.getCoverReferer()));
                 mRecomAdapter.setPicasso(picasso);
             }
             picasso.loadVertical(response.getCover(), VideoDetailsActivity.class, mRoundImageView);

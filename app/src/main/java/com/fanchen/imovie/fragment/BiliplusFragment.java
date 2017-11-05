@@ -122,9 +122,8 @@ public class BiliplusFragment extends BaseFragment implements View.OnClickListen
             String s = valus.get(key);
             File dir = new File(Environment.getExternalStorageDirectory() + "/android/data/" + activity.getPackageName() + "/download/video/");
             if (!dir.exists()) dir.mkdirs();
-            DownloadReceiver download = Aria.download(activity.appliction);
-            if (!download.taskExists(s)) {
-                download.load(s).setDownloadPath(dir + "/" + key + "_" + System.currentTimeMillis() + ".mp4").start();
+            if (!TextUtils.isEmpty(s) && !getDownloadReceiver().taskExists(s)) {
+                getDownloadReceiver().load(s).setDownloadPath(dir + "/" + key + "_" + System.currentTimeMillis() + ".mp4").start();
                 showSnackbar(getString(R.string.download_add));
             } else {
                 showSnackbar(getString(R.string.task_exists));

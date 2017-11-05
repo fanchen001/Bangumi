@@ -40,17 +40,19 @@ public class RetrofitManager {
 
     static {
         Converter.Factory animFactory = IMovieFactory.create();
-        retrofitMap.put(RetrofitSource.XIAOBO_API, new Retrofit.Builder().baseUrl("http://vod.xiaokanba.com/").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.ACG12_API, new Retrofit.Builder().baseUrl("https://acg12.com/").addConverterFactory(animFactory).build());
+        //由于部分URL/API为非公开的，这里去掉一些
+        retrofitMap.put(RetrofitSource.DM5_API, new Retrofit.Builder().baseUrl("").addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.XIAOBO_API, new Retrofit.Builder().baseUrl("").addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.ACG12_API, new Retrofit.Builder().baseUrl("").addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.DYTT_API, new Retrofit.Builder().baseUrl("").addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.MOEAPK_API, new Retrofit.Builder().baseUrl("").addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.XIAOMA_API, new Retrofit.Builder().baseUrl("").addConverterFactory(animFactory).build());
+
         retrofitMap.put(RetrofitSource.TUCAO_API, new Retrofit.Builder().baseUrl("http://www.tucao.tv/").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.DYTT_API, new Retrofit.Builder().baseUrl("http://101.37.135.113/").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.MOEAPK_API, new Retrofit.Builder().baseUrl("https://api.moeapk.com/").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.XIAOMA_API, new Retrofit.Builder().baseUrl("http://nav.api.sbxia.com/").addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.BAIDU_API, new Retrofit.Builder().baseUrl("https://sp0.baidu.com/").addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.S80_API, new Retrofit.Builder().baseUrl("http://m.80s.tw/").addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.BUMIMI_API, new Retrofit.Builder().baseUrl("http://m.bumimi.com/").addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.JREN_API, new Retrofit.Builder().baseUrl("https://jren100.moe/").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.DM5_API, new Retrofit.Builder().baseUrl("http://www.5dm.tv/").addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.BILIPLUS_API, new Retrofit.Builder().baseUrl("https://www.biliplus.com/").addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.DIANXIUMEI_API, new Retrofit.Builder().baseUrl("http://www.dianxiumei.com/").addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.XIAOKANBA_API, new Retrofit.Builder().baseUrl("http://xiaokanba.com/").addConverterFactory(animFactory).build());
@@ -266,12 +268,12 @@ public class RetrofitManager {
             String proHost = android.net.Proxy.getDefaultHost();
             int proPort = android.net.Proxy.getDefaultPort();
             //简单的防Fiddler抓包检测
-//            if (!TextUtils.isEmpty(proHost) && (proHost.startsWith("192") || proHost.startsWith("127")) && proPort != -1) {
-//                if (isRefreshCallback) {
-//                    ((RefreshCallback) callback).onFailure(enqueueKey, "请勿使用抓包工具,谢谢");
-//                    ((RefreshCallback) callback).onFinish(enqueueKey);
-//                }
-//            } else {
+            if (!TextUtils.isEmpty(proHost) && (proHost.startsWith("192") || proHost.startsWith("127")) && proPort != -1) {
+                if (isRefreshCallback) {
+                    ((RefreshCallback) callback).onFailure(enqueueKey, "请勿使用抓包工具,谢谢");
+                    ((RefreshCallback) callback).onFinish(enqueueKey);
+                }
+            } else {
                 Call<T> invoke = (Call<T>) enqueueMethod.invoke(o, args);
                 if (NetworkUtil.isNetWorkAvailable(appContext)) {
                     if (isRefreshCallback)
@@ -284,7 +286,7 @@ public class RetrofitManager {
                         ((RefreshCallback) callback).onFinish(enqueueKey);
                     }
                 }
-//            }
+            }
         } catch (Throwable e) {
             e.printStackTrace();
             if (isRefreshCallback) {

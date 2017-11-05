@@ -69,4 +69,14 @@
         android:textSize="12sp"
         android:visibility="visible" />
 
+    <TextView
+        android:id="@+id/tv_speed"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_margin="@dimen/dp_12"
+        android:text="0.0kb/s"
+        android:visibility="gone"
+        android:textColor="@color/white" />
+
 </RelativeLayout>

@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.SystemClock;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ListPopupWindow;
@@ -32,6 +33,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -103,10 +105,12 @@ public class SuperPlayerView extends RelativeLayout {
     private IjkVideoView videoView;
     private SeekBar seekBar;
     private AudioManager audioManager;
+    private RelativeLayout mRelativeLayout;
+    private TextView mTextView;
     private int mMaxVolume;
     private boolean playerSupport;
     private String url;
-    private  String errorUrl;
+    private String errorUrl;
     private Query $;
     public static int STATUS_ERROR = -1;
     public static int STATUS_IDLE = 0;
@@ -121,7 +125,7 @@ public class SuperPlayerView extends RelativeLayout {
     private boolean isHideControl = false;//是否隐藏视频控制栏
     private boolean isShowTopControl = true;//是否显示头部显示栏，true：竖屏也显示 false：竖屏不显示，横屏显示
     private boolean isSupportGesture = false;//是否至此手势操作，false ：小屏幕的时候不支持，全屏的支持；true : 小屏幕还是全屏都支持
-//    private boolean isPrepare = false;// 是否已经初始化播放
+    //    private boolean isPrepare = false;// 是否已经初始化播放
     private boolean isNetListener = true;// 是否添加网络监听 (默认是监听)
     // 网络监听回调
     private NetChangeReceiver netChangeReceiver;
@@ -135,7 +139,7 @@ public class SuperPlayerView extends RelativeLayout {
 
     private int initWidth = 0;
     private int initHeight = 0;
-
+    private boolean isDestroy = false;
     private boolean isShowing;
     private boolean portrait;
     private float brightness = -1;
@@ -208,7 +212,7 @@ public class SuperPlayerView extends RelativeLayout {
             } else if (v.getId() == R.id.view_jky_player_tv_continue) {
                 isNetListener = false;// 取消网络的监听
                 $.id(R.id.view_jky_player_tip_control).gone();
-                play(url, currentPosition,null);
+                play(url, currentPosition, null);
             }
         }
     };
@@ -309,8 +313,8 @@ public class SuperPlayerView extends RelativeLayout {
      * @param timeout
      */
     private void show(int timeout) {
-        Log.e("isHideControl","=>" + isHideControl);
-        Log.e("isShowing","=>" + isShowing);
+        Log.e("isHideControl", "=>" + isHideControl);
+        Log.e("isShowing", "=>" + isShowing);
         if (isHideControl) {
             showBottomControl(false);
             showCenterControl(false);
@@ -472,6 +476,8 @@ public class SuperPlayerView extends RelativeLayout {
         $ = new Query(activity);
         contentView = View.inflate(context, R.layout.view_super_player, this);
         videoView = (IjkVideoView) contentView.findViewById(R.id.video_view);
+        mTextView = (TextView) contentView.findViewById(R.id.tv_speed);
+        mRelativeLayout = (RelativeLayout) contentView.findViewById(R.id.app_video_loading);
         videoView
                 .setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
                     @Override
@@ -499,11 +505,6 @@ public class SuperPlayerView extends RelativeLayout {
                         break;
                     case IMediaPlayer.MEDIA_INFO_BUFFERING_END:
                         statusChange(STATUS_PLAYING);
-                        break;
-                    case IMediaPlayer.MEDIA_INFO_NETWORK_BANDWIDTH:
-                        // 显示 下载速度
-                        // Toast.makeText(activity,"download rate:" +
-                        // extra,Toast.LENGTH_SHORT).show();
                         break;
                     case IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
                         statusChange(STATUS_PLAYING);
@@ -604,6 +605,41 @@ public class SuperPlayerView extends RelativeLayout {
         }
     }
 
+    /**
+     *
+     * @param show
+     */
+    public void setAutoSpeend(boolean show){
+        if(show){
+            setShowSpeed(VISIBLE);
+            if(!isDestroy){
+                new Thread(speedRunnable).start();
+            }
+        }else{
+            setShowSpeed(GONE);
+            isDestroy = false;
+        }
+    }
+
+    /**
+     *
+     * @param visible
+     */
+    public void setShowSpeed(int visible){
+        if(mTextView != null)
+            mTextView.setVisibility(visible);
+    }
+
+    /**
+     *
+     * @param speed
+     */
+    public void setSpeed(String speed){
+        setShowSpeed(VISIBLE);
+        if(mTextView != null)
+            mTextView.setText(speed);
+    }
+
     private View getViewParent(View v) {
         if (v == null) return null;
         if (v.getParent() != null) {
@@ -700,7 +736,7 @@ public class SuperPlayerView extends RelativeLayout {
         $.id(R.id.app_video_loading).gone();
         $.id(R.id.view_jky_player_fullscreen).invisible();
         $.id(R.id.view_jky_player_tip_control).gone();
-        if(!isFrist){
+        if (!isFrist) {
             showBottomControl(false);
             showTopControl(false);
         }
@@ -772,8 +808,8 @@ public class SuperPlayerView extends RelativeLayout {
                     if (portrait) {
                         int screenWidth = getScreenWidth(activity);
                         ViewGroup.LayoutParams layoutParams = getLayoutParams();
-                        if(layoutParams == null){
-                            layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
+                        if (layoutParams == null) {
+                            layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                         }
                         activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                         layoutParams.height = initHeight;
@@ -787,7 +823,7 @@ public class SuperPlayerView extends RelativeLayout {
 
                         setLayoutParams(layoutParams);
                         requestLayout();
-                        if(videoView != null && videoView.getLayoutParams() != null){
+                        if (videoView != null && videoView.getLayoutParams() != null) {
                             ViewGroup.LayoutParams params = videoView.getLayoutParams();
                             params.width = layoutParams.width;
                             params.height = layoutParams.height;
@@ -803,7 +839,7 @@ public class SuperPlayerView extends RelativeLayout {
                         layoutParams.width = widthPixels;
                         setLayoutParams(layoutParams);
                         requestLayout();
-                        if(videoView != null && videoView.getLayoutParams() != null){
+                        if (videoView != null && videoView.getLayoutParams() != null) {
                             ViewGroup.LayoutParams params = videoView.getLayoutParams();
                             params.width = widthPixels;
                             params.height = heightPixels;
@@ -874,6 +910,7 @@ public class SuperPlayerView extends RelativeLayout {
      * 在activity中的onDestroy中需要回调
      */
     public void onDestroy() {
+        isDestroy = true;
         unregisterNetReceiver();// 取消网络变化的监听
         orientationEventListener.disable();
         handler.removeCallbacksAndMessages(null);
@@ -908,10 +945,10 @@ public class SuperPlayerView extends RelativeLayout {
      * @param url 播放视频的地址
      */
     public void play(String url) {
-        if(TextUtils.isEmpty(url))return;
+        if (TextUtils.isEmpty(url)) return;
         this.url = url;
         $.id(R.id.app_video_loading).visible();
-        play(url, 0,null);
+        play(url, 0, null);
     }
 
     public void playUrl(String url) {
@@ -919,7 +956,7 @@ public class SuperPlayerView extends RelativeLayout {
     }
 
     public void play() {
-        play(url, 0,null);
+        play(url, 0, null);
     }
 
     /**
@@ -927,7 +964,7 @@ public class SuperPlayerView extends RelativeLayout {
      * @param currentPosition 指定位置的大小(0-1000)
      * @see （一般用于记录上次播放的位置或者切换视频源）
      */
-    public void play(String url, int currentPosition,Map<String,String> header) {
+    public void play(String url, int currentPosition, Map<String, String> header) {
         this.url = url;
         if (!isNetListener) {// 如果设置不监听网络的变化，则取消监听网络变化的广播
             unregisterNetReceiver();
@@ -966,7 +1003,7 @@ public class SuperPlayerView extends RelativeLayout {
         if (videoView.isPlaying()) {
             getCurrentPosition();
         }
-        play(url, (int) currentPosition,null);
+        play(url, (int) currentPosition, null);
     }
 
     /**
@@ -1795,4 +1832,38 @@ public class SuperPlayerView extends RelativeLayout {
         void onStateChange(int state);
 
     }
+
+    private Runnable speedRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            while (!isDestroy) {
+                if (mRelativeLayout != null && mTextView != null && videoView != null) {
+                    IMediaPlayer mediaPlayer = videoView.getMediaPlayer();
+                    if (mediaPlayer != null && mediaPlayer instanceof IjkMediaPlayer) {
+                        long tcpSpeed = ((IjkMediaPlayer) mediaPlayer).getTcpSpeed();
+                        final String size = getSize(tcpSpeed);
+                        mTextView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mTextView.setVisibility(View.VISIBLE);
+                                mTextView.setText(size);
+                            }
+                        });
+                    }
+                }
+                SystemClock.sleep(1500);
+            }
+
+        }
+
+        public String getSize(long var1) {
+            long var4 = var1;
+            if (var1 == 0L) {
+                var4 = 1L;
+            }
+            float var3 = (float) var4;
+            return var3 == 0.0F ? "-- KB" : (var3 < 1048576.0F ? (float) Math.round(var3 / 1024.0F * 10.0F) / 10.0F + " KB" : (var3 >= 1048576.0F && var3 < 1.07374195E9F ? (float) Math.round(var3 / 1024.0F / 1024.0F * 10.0F) / 10.0F + " MB" : (var3 >= 1.07374195E9F ? (float) Math.round(var3 / 1024.0F / 1024.0F / 1024.0F * 100.0F) / 100.0F + " GB" : "-- KB")));
+        }
+    };
 }

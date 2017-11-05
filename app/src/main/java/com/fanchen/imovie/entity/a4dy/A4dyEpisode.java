@@ -85,6 +85,10 @@ public class A4dyEpisode implements IVideoEpisode,Parcelable {
     }
 
     @Override
+    public void setFilePath(String path) {
+    }
+
+    @Override
     public int getViewType() {
         return IViewType.TYPE_NORMAL;
     }

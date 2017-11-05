@@ -32,13 +32,16 @@ import java.util.List;
 public class DownloadAdapter extends BaseAdapter {
 
     private boolean isDeleteMode;
+    private BaseActivity baseActivity;
 
-    public DownloadAdapter(Context context) {
+    public DownloadAdapter(BaseActivity context) {
         super(context);
+        this.baseActivity = context;
     }
 
-    public DownloadAdapter(Context context, List<IViewType> mList) {
+    public DownloadAdapter(BaseActivity context, List<IViewType> mList) {
         super(context, mList);
+        this.baseActivity = context;
     }
 
     @Override
@@ -138,7 +141,6 @@ public class DownloadAdapter extends BaseAdapter {
     }
 
     public void update(DownloadTask task) {
-        long time = System.currentTimeMillis();
         if (task == null || getList() == null) return;
         for (DownloadEntityWrap e : (List<DownloadEntityWrap>) getList()) {
             if (task.getDownloadUrl().equals(e.getEntity().getDownloadUrl())) {
@@ -198,18 +200,18 @@ public class DownloadAdapter extends BaseAdapter {
         @Override
         public void onClick(View v) {
             DownloadEntity entity = (DownloadEntity) v.getTag();
-            if (entity == null) return;
+            if (entity == null || TextUtils.isEmpty(entity.getUrl())) return;
             switch (v.getId()) {
                 case R.id.downloadControl:
                     switch (entity.getState()) {
                         case IEntity.STATE_STOP:
                         case IEntity.STATE_FAIL:
-                            Aria.download(((BaseActivity) context).appliction).load(entity.getUrl()).start();
+                            baseActivity.getDownloadReceiver().load(entity.getUrl()).start();
                             entity.setState(IEntity.STATE_RUNNING);
                             break;
                         case IEntity.STATE_WAIT:
                         case IEntity.STATE_RUNNING:
-                            Aria.download(((BaseActivity) context).appliction).load(entity.getUrl()).stop();
+                            baseActivity.getDownloadReceiver().load(entity.getUrl()).stop();
                             entity.setState(IEntity.STATE_STOP);
                             break;
                     }
@@ -239,8 +241,8 @@ public class DownloadAdapter extends BaseAdapter {
 
         @Override
         public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
-            if (btn == OnButtonClickListener.RIGHT) {
-                Aria.download(((BaseActivity) context).appliction).load(entity.getUrl()).cancel(true);
+            if (btn == OnButtonClickListener.RIGHT && !TextUtils.isEmpty(entity.getUrl())) {
+                baseActivity.getDownloadReceiver().load(entity.getUrl()).cancel(true);
                 remove(entity);
             }
             dialog.dismiss();

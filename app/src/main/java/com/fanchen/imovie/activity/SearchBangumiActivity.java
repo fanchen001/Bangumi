@@ -75,7 +75,7 @@ public class SearchBangumiActivity extends BaseToolbarActivity implements Dropdo
         TypedValue typedValue = new TypedValue();
         getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
         mSwipeRefreshLayout.setColorSchemeColors(typedValue.data);
-        mVideoListAdapter = new BangumiListAdapter(this, Picasso.with(appliction));
+        mVideoListAdapter = new BangumiListAdapter(this, getPicasso());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(mVideoListAdapter);
         mDropdownLayout.setDropdownList(new String[][]{TIDKEYS, ORDERKEYS}, new String[][]{TIDVALUES, ORDERVALUES});

@@ -54,7 +54,7 @@ public class AcgSiteFragment extends BaseRecyclerFragment {
 
     @Override
     public BaseAdapter getAdapter(Picasso picasso) {
-        return mSiteAdapter = new AcgSiteAdapter(activity,picasso);
+        return mSiteAdapter = new AcgSiteAdapter(activity);
     }
 
     @Override

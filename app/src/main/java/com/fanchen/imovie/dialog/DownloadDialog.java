@@ -7,13 +7,12 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 
-import com.arialyy.aria.core.Aria;
+import com.arialyy.aria.core.download.DownloadEntity;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.adapter.EpisodeAdapter;
 import com.fanchen.imovie.base.BaseActivity;
 import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.entity.face.IPlayUrls;
-import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.retrofit.RetrofitManager;
@@ -46,7 +45,7 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
         this.activity = activity;
         this.mVideoDetails = mVideoDetails;
         mRetrofitManager = RetrofitManager.with(context);
-        mEpisodeAdapter = new EpisodeAdapter(context, false, true);
+        mEpisodeAdapter = new EpisodeAdapter(activity, false, true);
         mEpisodeAdapter.addAll(mVideoDetails.getEpisodes());
         mDownloadDir = new File(Environment.getExternalStorageDirectory() + "/android/data/" + context.getPackageName() + "/download/video/");
         if (!mDownloadDir.exists()) mDownloadDir.mkdirs();
@@ -105,9 +104,12 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
 
     private void download(IVideoEpisode select) {
         this.mDownload = select;
-        if (IVideoEpisode.PLAY_TYPE_VIDEO == select.getPlayerType()) {
+        if (IVideoEpisode.PLAY_TYPE_VIDEO == select.getPlayerType() && !TextUtils.isEmpty(select.getUrl())) {
             String fileNmae = mVideoDetails.getTitle() + "_" + select.getTitle() + ".mp4";
-            Aria.download(activity.appliction).load(select.getUrl()).setDownloadPath(mDownloadDir + fileNmae).start();
+            DownloadEntity downloadEntity = new DownloadEntity();
+            downloadEntity.setUrl(select.getUrl());
+            downloadEntity.setMd5Code(select.getUrl());
+            activity.getDownloadReceiver().load(downloadEntity).setDownloadPath(mDownloadDir + fileNmae).start();
             mDownload.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
             onFinish(-1);
         } else if (IVideoEpisode.PLAY_TYPE_URL == select.getPlayerType()) {
@@ -156,13 +158,15 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
 
     @Override
     public void onSuccess(int enqueueKey, IPlayUrls response) {
-        Aria.download(this).stopAllTask();
         if (mDownload == null || mVideoDetails == null || response == null) return;
-        if (response != null && response.getUrls() != null && !TextUtils.isEmpty(response.getUrls().entrySet().iterator().next().getValue())) {
-            if (response.getUrlType() != IPlayUrls.URL_FILE) {
+        if (response != null && response.getUrls() != null && !response.getUrls().isEmpty() && !TextUtils.isEmpty(response.getUrls().entrySet().iterator().next().getValue())) {
+            if (response.getUrlType() == IPlayUrls.URL_FILE) {
                 String value = response.getUrls().entrySet().iterator().next().getValue();
                 String fileNmae = mVideoDetails.getTitle() + "_" + mDownload.getTitle() + ".mp4";
-                Aria.download(activity.appliction).load(value).setDownloadPath(mDownloadDir + fileNmae).start();
+                DownloadEntity downloadEntity = new DownloadEntity();
+                downloadEntity.setMd5Code(mDownload.getUrl());
+                downloadEntity.setUrl(value);
+                activity.getDownloadReceiver().load(downloadEntity).setDownloadPath(mDownloadDir +"/" + fileNmae).start();
                 mDownload.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
                 activity.showToast(mVideoDetails.getTitle() + "_" + mDownload.getTitle() + "添加下载成功");
             } else {

@@ -24,7 +24,7 @@ public class Dm5PlayUrl implements IPlayUrls{
 
     @Override
     public int getUrlType() {
-        return URL_FILE;
+        return IPlayUrls.URL_FILE;
     }
 
     @Override
