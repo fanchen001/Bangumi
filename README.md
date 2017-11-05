@@ -28,11 +28,15 @@
 软件截图
 =======
 
- ![image](https://github.com/fanchen001/Bangumi/blob/master/screenshots/Screenshot1.png)
- ![image](https://github.com/fanchen001/Bangumi/blob/master/screenshots/Screenshot2.png)
- ![image](https://github.com/fanchen001/Bangumi/blob/master/screenshots/Screenshot3.png)
- ![image](https://github.com/fanchen001/Bangumi/blob/master/screenshots/Screenshot4.png)
- ![image](https://github.com/fanchen001/Bangumi/blob/master/screenshots/Screenshot5.png)
- ![image](https://github.com/fanchen001/Bangumi/blob/master/screenshots/Screenshot6.png)
- ![image](https://github.com/fanchen001/Bangumi/blob/master/screenshots/Screenshot7.png)
- ![image](https://github.com/fanchen001/Bangumi/blob/master/screenshots/Screenshot8.png)
+ ![image](https://github.com/fanchen001/Bangumi/blob/master/app/screenshot/screenshot_001.png)
+ ![image](https://github.com/fanchen001/Bangumi/blob/master/app/screenshot/screenshot_002.png)
+ ![image](https://github.com/fanchen001/Bangumi/blob/master/app/screenshot/screenshot_003.png)
+ ![image](https://github.com/fanchen001/Bangumi/blob/master/app/screenshot/screenshot_004.png)
+ ![image](https://github.com/fanchen001/Bangumi/blob/master/app/screenshot/screenshot_005.png)
+ ![image](https://github.com/fanchen001/Bangumi/blob/master/app/screenshot/screenshot_006.png)
+ ![image](https://github.com/fanchen001/Bangumi/blob/master/app/screenshot/screenshot_007.png)
+ ![image](https://github.com/fanchen001/Bangumi/blob/master/app/screenshot/screenshot_008.png)
+ ![image](https://github.com/fanchen001/Bangumi/blob/master/app/screenshot/screenshot_009.png)
+ ![image](https://github.com/fanchen001/Bangumi/blob/master/app/screenshot/screenshot_010.png)
+ ![image](https://github.com/fanchen001/Bangumi/blob/master/app/screenshot/screenshot_011.png)
+ ![image](https://github.com/fanchen001/Bangumi/blob/master/app/screenshot/screenshot_012.png)
