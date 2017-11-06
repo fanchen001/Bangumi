@@ -6,16 +6,16 @@ android {
 //签名配置
     signingConfigs {
         debugConfig {
-            keyAlias "1"
-            keyPassword "happy1993_chen"
-            storeFile file("E:/workspace/androidStudio/happy1993_chen")
-            storePassword "happy1993_chen"
+            keyAlias ""
+            keyPassword ""
+            storeFile file("")
+            storePassword ""
         }
         releaseConfig {
-            keyAlias "1"
-            keyPassword "happy1993_chen"
-            storeFile file("E:/workspace/androidStudio/happy1993_chen")
-            storePassword "happy1993_chen"
+            keyAlias ""
+            keyPassword ""
+            storeFile file("")
+            storePassword ""
         }
     }
 
