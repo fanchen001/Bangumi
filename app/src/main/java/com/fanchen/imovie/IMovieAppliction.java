@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatDelegate;
 import android.text.TextUtils;
 
 import com.arialyy.annotations.Download;
@@ -84,7 +85,7 @@ public class IMovieAppliction extends Application {
     };
 
     static {
-        //配置你自己申请到的key
+        //填写你们自己申请的key
         PlatformConfig.setWeixin("", "");
         PlatformConfig.setSinaWeibo("", "", "http://sns.whalecloud.com/sina2/callback");
         PlatformConfig.setQQZone("", "");
@@ -94,12 +95,13 @@ public class IMovieAppliction extends Application {
     public void onCreate() {
         super.onCreate();
         app = this;
+        AppCompatDelegate.setDefaultNightMode(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("swith_mode", true) ? AppCompatDelegate.MODE_NIGHT_NO : AppCompatDelegate.MODE_NIGHT_YES);
         CrashReport.UserStrategy strategy = new CrashReport.UserStrategy(this); // App的策略Bean
         strategy.setAppChannel(getPackageName()); // 设置渠道
         strategy.setAppVersion(getVersion()); // App的版本
         strategy.setAppReportDelay(100); // 设置SDK处理延时，毫秒
         strategy.setCrashHandleCallback(new AppCrashHandleCallback());
-        //配置你自己申请到的key
+        //填写你们自己申请的key
         CrashReport.initCrashReport(this, "", false, strategy); // 自定义策略生效，必须在初始化SDK前调用
         UMShareAPI.init(this, "");
         SMSSDK.initSDK(this, "", "");

@@ -79,8 +79,8 @@
     <string name="back_hit">再按一次退出</string>
     <string name="player_history">播放历史</string>
     <string name="error_hit">请求网络数据出错</string>
-    <string name="collect_success">收藏成功</string>
-    <string name="collect_error">收藏失败</string>
+    <string name="collect_success">本地收藏成功</string>
+    <string name="collect_error">本地收藏失败</string>
     <string name="collect_repetition">请勿重复收藏</string>
     <string name="loading">正在努力加载中...</string>
     <string name="has_dixian">我是有底线的</string>
@@ -285,4 +285,10 @@
     <string name="success">保存成功</string>
     <string name="bind_success">绑定成功</string>
     <string name="send_success">反馈成功</string>
+    <string name="collect_ing">同步收藏中</string>
+    <string name="collect_asy_success">同步收藏成功</string>
+    <string name="collect_asy_error">同步收藏失败</string>
+    <string name="delete_asy_error">同步删除失败</string>
+    <string name="delete_asy_success">同步删除成功</string>
+    <string name="error_changepassword">该功能不适用于第三方登录账号</string>
 </resources>

@@ -22,6 +22,8 @@ public class VideoCollect extends VideoHistory implements Parcelable {
 
 
     public VideoCollect() {
+        if(User.getLoginUser() != null)
+            setUserId(User.getLoginUser().getObjectId());
     }
 
     public VideoCollect(DyttLiveBody item) {
@@ -33,6 +35,8 @@ public class VideoCollect extends VideoHistory implements Parcelable {
         setCover(item.getShareImage());
         setTime(item.getNext().getEpgName());
         setExtend(new Gson().toJson(item));
+        if(User.getLoginUser() != null)
+            setUserId(User.getLoginUser().getObjectId());
     }
 
     public VideoCollect(IVideo videoItem) {
@@ -45,6 +49,8 @@ public class VideoCollect extends VideoHistory implements Parcelable {
         setTime(videoItem.getLast());
         setCoverReferer(videoItem.getCoverReferer());
         setServiceClassName(videoItem.getServiceClassName());
+        if(User.getLoginUser() != null)
+            setUserId(User.getLoginUser().getObjectId());
     }
 
 
@@ -52,7 +58,6 @@ public class VideoCollect extends VideoHistory implements Parcelable {
         super(in);
         extras = in.readString();
         danmaku = in.readString();
-
     }
 
     @Override
@@ -60,7 +65,6 @@ public class VideoCollect extends VideoHistory implements Parcelable {
         super.writeToParcel(dest, flags);
         dest.writeString(extras);
         dest.writeString(danmaku);
-
     }
 
     @Override
@@ -96,6 +100,5 @@ public class VideoCollect extends VideoHistory implements Parcelable {
     public void setDanmaku(String danmaku) {
         this.danmaku = danmaku;
     }
-
 
 }

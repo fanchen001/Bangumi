@@ -16,7 +16,9 @@ import java.lang.ref.SoftReference;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Converter;
@@ -40,24 +42,25 @@ public class RetrofitManager {
 
     static {
         Converter.Factory animFactory = IMovieFactory.create();
-        //由于部分URL/API为非公开的，这里去掉一些
-        retrofitMap.put(RetrofitSource.DM5_API, new Retrofit.Builder().baseUrl("").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.XIAOBO_API, new Retrofit.Builder().baseUrl("").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.ACG12_API, new Retrofit.Builder().baseUrl("").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.DYTT_API, new Retrofit.Builder().baseUrl("").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.MOEAPK_API, new Retrofit.Builder().baseUrl("").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.XIAOMA_API, new Retrofit.Builder().baseUrl("").addConverterFactory(animFactory).build());
-
-        retrofitMap.put(RetrofitSource.TUCAO_API, new Retrofit.Builder().baseUrl("http://www.tucao.tv/").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.BAIDU_API, new Retrofit.Builder().baseUrl("https://sp0.baidu.com/").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.S80_API, new Retrofit.Builder().baseUrl("http://m.80s.tw/").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.BUMIMI_API, new Retrofit.Builder().baseUrl("http://m.bumimi.com/").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.JREN_API, new Retrofit.Builder().baseUrl("https://jren100.moe/").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.BILIPLUS_API, new Retrofit.Builder().baseUrl("https://www.biliplus.com/").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.DIANXIUMEI_API, new Retrofit.Builder().baseUrl("http://www.dianxiumei.com/").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.XIAOKANBA_API, new Retrofit.Builder().baseUrl("http://xiaokanba.com/").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.KMAO_API, new Retrofit.Builder().baseUrl("http://m.kkkkmao.com/").addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.A4DY_API, new Retrofit.Builder().baseUrl("http://m.aaccy.com/").addConverterFactory(animFactory).build());
+        OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).build();
+        //由于部分URL/API为非公开的，这里我就先删掉了  用www.baidu.com代替了
+        retrofitMap.put(RetrofitSource.XIAOBO_API, new Retrofit.Builder().baseUrl("http://www.baidu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.ACG12_API, new Retrofit.Builder().baseUrl("https://www.baidu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.DYTT_API, new Retrofit.Builder().baseUrl("http://www.baidu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.DM5_API, new Retrofit.Builder().baseUrl("http://www.baidu.com/").client(okHttpClient).client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.BILIPLUS_API, new Retrofit.Builder().baseUrl("https://www.baidu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.DIANXIUMEI_API, new Retrofit.Builder().baseUrl("http://www.baidu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.MOEAPK_API, new Retrofit.Builder().baseUrl("https://www.baidu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.XIAOMA_API, new Retrofit.Builder().baseUrl("http://www.baidu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        //下面的为公开URL/API
+        retrofitMap.put(RetrofitSource.TUCAO_API, new Retrofit.Builder().baseUrl("http://www.tucao.tv/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.BAIDU_API, new Retrofit.Builder().baseUrl("https://sp0.baidu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.S80_API, new Retrofit.Builder().baseUrl("http://m.80s.tw/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.BUMIMI_API, new Retrofit.Builder().baseUrl("http://m.bumimi.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.JREN_API, new Retrofit.Builder().baseUrl("https://jren100.moe/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.XIAOKANBA_API, new Retrofit.Builder().baseUrl("http://xiaokanba.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.KMAO_API, new Retrofit.Builder().baseUrl("http://m.kkkkmao.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.A4DY_API, new Retrofit.Builder().baseUrl("http://m.aaccy.com/").client(okHttpClient).addConverterFactory(animFactory).build());
     }
 
     /**

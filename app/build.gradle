@@ -24,8 +24,8 @@ android {
         applicationId "com.fanchen.imovie"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 20171105
-        versionName "1.11.5 bate"
+        versionCode 20171106
+        versionName "1.11.6 beta"
     }
     buildTypes {
         debug {
@@ -102,6 +102,8 @@ dependencies {
     compile files('libs/MobTools-2017.0321.1624.jar')
     /** *******下面是BmobSDK 后台数据库  *********/
     compile files('libs/BmobSDK_V3.4.7_0527.jar')
+    /** ******* java实现的js运行环境  *********/
     compile files('libs/rhino-1.7.7.1.jar')
+    /** ******* 西瓜视频 sdk  *********/
     compile files('libs/lib_xigua.jar')
 }

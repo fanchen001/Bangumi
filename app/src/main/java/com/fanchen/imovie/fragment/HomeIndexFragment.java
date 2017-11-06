@@ -11,7 +11,6 @@ import com.fanchen.imovie.activity.VideoDetailsActivity;
 import com.fanchen.imovie.adapter.HomeIndexAdapter;
 import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.base.BaseRecyclerFragment;
-import com.fanchen.imovie.db.LiteOrmManager;
 import com.fanchen.imovie.entity.face.IBangumiRoot;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.retrofit.RetrofitManager;
@@ -19,7 +18,6 @@ import com.fanchen.imovie.retrofit.service.TucaoService;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.view.pager.LoopViewPager;
-import com.litesuits.orm.LiteOrm;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -42,7 +40,6 @@ public class HomeIndexFragment extends BaseRecyclerFragment implements BaseAdapt
     private String serializeKey;
     private boolean isCategory;
     private boolean isLoad;
-    private LiteOrm liteOrm;
 
     /**
      * @param path
@@ -80,7 +77,6 @@ public class HomeIndexFragment extends BaseRecyclerFragment implements BaseAdapt
         isLoad = getArguments().getBoolean(LOAD);
         isCategory = getArguments().getBoolean(CATEGORY);
         serializeKey = getClass().getSimpleName() + "_" + path;
-        liteOrm = LiteOrmManager.getInstance(activity).getLiteOrm("imovie.db");
         super.initFragment(savedInstanceState, args);
     }
 

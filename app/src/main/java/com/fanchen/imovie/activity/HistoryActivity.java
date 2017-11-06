@@ -16,7 +16,6 @@ import com.fanchen.imovie.R;
 import com.fanchen.imovie.adapter.HistoryAdapter;
 import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.base.BaseRecyclerActivity;
-import com.fanchen.imovie.db.LiteOrmManager;
 import com.fanchen.imovie.dialog.BaseAlertDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
 import com.fanchen.imovie.entity.bmob.VideoHistory;
@@ -25,7 +24,6 @@ import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.view.CustomEmptyView;
-import com.litesuits.orm.LiteOrm;
 import com.litesuits.orm.db.assit.WhereBuilder;
 import com.squareup.picasso.Picasso;
 
@@ -41,20 +39,12 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
 
     private HistoryAdapter mHistoryAdapter;
 
-    private LiteOrm liteOrm;
-
     /**
      * @param context
      */
     public static void startActivity(Context context) {
         Intent intent = new Intent(context, HistoryActivity.class);
         context.startActivity(intent);
-    }
-
-    @Override
-    protected void initActivity(Bundle savedState, LayoutInflater inflater) {
-        liteOrm = LiteOrmManager.getInstance(this).getLiteOrm("imovie.db");
-        super.initActivity(savedState, inflater);
     }
 
     @Override
@@ -115,8 +105,8 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
 
         @Override
         public List<VideoHistory> onTaskBackground() {
-            if (isFinishing() || liteOrm == null) return null;
-            return liteOrm.query(VideoHistory.class);
+            if (isFinishing() || getLiteOrm() == null) return null;
+            return getLiteOrm().query(VideoHistory.class);
         }
 
         @Override
@@ -191,14 +181,14 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
 
         @Override
         public Integer onTaskBackground() {
-            if (isFinishing() || liteOrm == null) return DELETEERROR;
+            if (isFinishing() || getLiteOrm() == null) return DELETEERROR;
             if (TextUtils.isEmpty(id) && pisotion == -1) {
                 //删除全部
-                liteOrm.delete(VideoHistory.class);
+                getLiteOrm().delete(VideoHistory.class);
                 return DELETEALL;
             } else {
                 //按条件删除
-                liteOrm.delete(new WhereBuilder(VideoHistory.class, "id = ? ", new Object[]{id}));
+                getLiteOrm().delete(new WhereBuilder(VideoHistory.class, "id = ? ", new Object[]{id}));
                 return pisotion;
             }
         }

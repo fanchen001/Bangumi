@@ -2,6 +2,7 @@ package com.fanchen.imovie.entity.bmob;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
@@ -23,7 +24,7 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
     public static final int TYPE_TORRENT = 3;
 
     @PrimaryKey(AssignType.AUTO_INCREMENT)
-    private int _id;
+    private int video_id;
     @Column("title")
     private String title;
     @Column("cover")
@@ -49,7 +50,7 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
     @Column("extend")
     //扩展的字段，用来存放一些信息
     private String extend;
-
+    @Column("userId")
     private String userId ;
 
     public VideoHistory() {
@@ -122,7 +123,7 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
         id = in.readString();
         url = in.readString();
         source = in.readInt();
-        _id = in.readInt();
+        video_id = in.readInt();
         serviceClassName = in.readString();
         playPosition = in.readLong();
         type = in.readInt();
@@ -209,7 +210,7 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
         dest.writeString(id);
         dest.writeString(url);
         dest.writeInt(source);
-        dest.writeInt(_id);
+        dest.writeInt(video_id);
         dest.writeString(serviceClassName);
         dest.writeLong(playPosition);
         dest.writeInt(type);
@@ -235,7 +236,7 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
     }
 
     public String getExtend() {
-        return extend;
+        return TextUtils.isEmpty(extend) ? "{}" : extend;
     }
 
     public void setExtend(String extend) {

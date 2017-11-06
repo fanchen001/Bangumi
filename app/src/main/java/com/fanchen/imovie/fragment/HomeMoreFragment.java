@@ -22,11 +22,9 @@ import com.fanchen.imovie.activity.CouldTabActivity;
 import com.fanchen.imovie.activity.HackerToolActivity;
 import com.fanchen.imovie.activity.VideoTabActivity;
 import com.fanchen.imovie.base.BaseFragment;
-import com.fanchen.imovie.db.LiteOrmManager;
 import com.fanchen.imovie.entity.face.ISearchWord;
 import com.fanchen.imovie.entity.JsonSerialize;
 import com.fanchen.imovie.entity.xiaoma.XiaomaIndex;
-import com.fanchen.imovie.entity.xiaoma.XiaomaSearchResult;
 import com.fanchen.imovie.entity.xiaoma.XiaomaWord;
 import com.fanchen.imovie.entity.xiaoma.XiaomaWordResult;
 import com.fanchen.imovie.retrofit.RetrofitManager;
@@ -40,7 +38,6 @@ import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.view.FlowLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.litesuits.orm.LiteOrm;
 import com.litesuits.orm.db.assit.QueryBuilder;
 import com.litesuits.orm.db.assit.WhereBuilder;
 
@@ -106,7 +103,6 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
 
     private XiaomaIndex<XiaomaWordResult> mSaveWordIndex;
     private String serializeKey;
-    private LiteOrm liteOrm;
 
     public static HomeMoreFragment newInstance() {
         return new HomeMoreFragment();
@@ -127,7 +123,6 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
     protected void initFragment(@Nullable Bundle savedInstanceState, Bundle args) {
         super.initFragment(savedInstanceState, args);
         serializeKey = getClass().getSimpleName();
-        liteOrm = LiteOrmManager.getInstance(activity).getLiteOrm("imovie.db");
         TypedValue typedValue = new TypedValue();
         activity.getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
         mSwipeRefreshLayout.setColorSchemeColors(typedValue.data);
@@ -348,7 +343,7 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
 
         @Override
         public XiaomaIndex<XiaomaWordResult> onTaskBackground() {
-            List<JsonSerialize> query = liteOrm.query(new QueryBuilder<>(JsonSerialize.class).where("key = ?", serializeKey));
+            List<JsonSerialize> query = getLiteOrm().query(new QueryBuilder<>(JsonSerialize.class).where("key = ?", serializeKey));
             if (query != null && query.size() > 0) {
                 JsonSerialize jsonSerialize = query.get(0);
                 if (!jsonSerialize.isStale()) {
@@ -392,8 +387,8 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
         @Override
         public Void onTaskBackground() {
             //保存key
-            liteOrm.delete(new WhereBuilder(JsonSerialize.class, "key = ?", new Object[]{serializeKey}));
-            liteOrm.insert(new JsonSerialize(response, serializeKey));
+            getLiteOrm().delete(new WhereBuilder(JsonSerialize.class, "key = ?", new Object[]{serializeKey}));
+            getLiteOrm().insert(new JsonSerialize(response, serializeKey));
             return null;
         }
 

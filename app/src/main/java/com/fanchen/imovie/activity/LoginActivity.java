@@ -14,11 +14,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.fanchen.imovie.IMovieAppliction;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.base.BaseToolbarActivity;
 import com.fanchen.imovie.entity.AppEvent;
 import com.fanchen.imovie.entity.bmob.User;
 import com.fanchen.imovie.entity.bmob.UserAuth;
+import com.fanchen.imovie.entity.bmob.VideoCollect;
+import com.fanchen.imovie.thread.AsyTaskQueue;
+import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.DisplayUtil;
 import com.fanchen.imovie.util.KeyBoardUtils;
@@ -30,10 +34,13 @@ import com.umeng.socialize.bean.SHARE_MEDIA;
 
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Map;
 
 import butterknife.InjectView;
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.OtherLoginListener;
 import cn.bmob.v3.listener.SaveListener;
 
@@ -187,6 +194,13 @@ public class LoginActivity extends BaseToolbarActivity implements View.OnClickLi
     public void afterTextChanged(Editable s) {
     }
 
+    private void synchronizationVideo(User user){
+        if(IMovieAppliction.app == null || user == null)return;
+        BmobQuery<VideoCollect> query = new BmobQuery<>();
+        query.addWhereEqualTo("userId",user.getObjectId());
+        query.findObjects(IMovieAppliction.app,findVideoListener);
+    }
+
     private UMAuthListener authListener = new UMAuthListener() {
 
         @Override
@@ -233,8 +247,9 @@ public class LoginActivity extends BaseToolbarActivity implements View.OnClickLi
 
         @Override
         public void onLoginSuccess(User user) {
+            synchronizationVideo(user);
             //发布登录事件
-            postAppEvent(new AppEvent(LoginActivity.class,AppEvent.LOGIN,user));
+            postAppEvent(new AppEvent(LoginActivity.class, AppEvent.LOGIN, user));
             showToast(getString(R.string.login_success));
             finish();
         }
@@ -243,5 +258,36 @@ public class LoginActivity extends BaseToolbarActivity implements View.OnClickLi
         public void onError(int i, String s) {
             showSnackbar(s);
         }
+
+    };
+
+    private FindListener<VideoCollect> findVideoListener = new FindListener<VideoCollect>() {
+
+        @Override
+        public void onSuccess(List<VideoCollect> list) {
+            LogUtil.e(LoginActivity.class,"同步video成功");
+            AsyTaskQueue.newInstance().execute(new SaveTaskListener(list));
+        }
+
+        @Override
+        public void onError(int i, String s) {
+            LogUtil.e(LoginActivity.class,"同步video失败");
+        }
+
+    };
+
+    private class SaveTaskListener extends AsyTaskListenerImpl<Integer>{
+
+        private List<VideoCollect> list;
+
+        public SaveTaskListener(List<VideoCollect> list) {
+            this.list = list;
+        }
+
+        @Override
+        public Integer onTaskBackground() {
+            return getLiteOrm().insert(list);
+        }
+
     };
 }

@@ -51,6 +51,7 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
     protected SwipeWebView mWebview;
 
     private String url;
+    private int urlCount = 0;
 
     /**
      * @param context
@@ -169,6 +170,16 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
 
     }
 
+    @Override
+    public void onBackPressed() {
+        if(urlCount > 0 && mWebview != null){
+            urlCount -- ;
+            mWebview.getWebView().goBack();
+            return;
+        }
+        super.onBackPressed();
+    }
+
     /**
      * // 设置web页面 // 如果页面中链接，如果希望点击链接继续在当前browser中响应， //
      * 而不是新开Android的系统browser中响应该链接，必须覆盖 webview的WebViewClient对象。
@@ -198,6 +209,7 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
             } else {
                 SystemUtil.startThreeApp(WebActivity.this, url);
             }
+            urlCount ++ ;
             return true;
         }
 

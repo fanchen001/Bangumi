@@ -1,5 +1,7 @@
 package com.fanchen.imovie.entity.bmob;
 
+import android.text.TextUtils;
+
 import com.fanchen.imovie.IMovieAppliction;
 import com.fanchen.imovie.util.LogUtil;
 
@@ -82,7 +84,7 @@ public class UserAuth extends BmobObject {
         BmobQuery<UserAuth> usernameQuery = new BmobQuery<UserAuth>();
         usernameQuery.addWhereEqualTo("snsType", snsType);
         BmobQuery<UserAuth> passwordQuery = new BmobQuery<UserAuth>();
-        passwordQuery.addWhereEqualTo("userId", userId);
+        passwordQuery.addWhereEqualTo("accessToken", accessToken);
         List<BmobQuery<UserAuth>> andQuerys = new ArrayList<BmobQuery<UserAuth>>();
         andQuerys.add(usernameQuery);
         andQuerys.add(passwordQuery);
@@ -132,6 +134,16 @@ public class UserAuth extends BmobObject {
                     }
                 } else if (SNS_TYPE_WEIBO.equals(getSnsType())) {
                     user.setAuthWB(true);
+                    user.setNickName(TextUtils.isEmpty(map.get("screen_name") ) ? map.get("name") : map.get("screen_name"));
+                    user.setHeaderUrl(TextUtils.isEmpty(map.get("profile_image_url") ) ? map.get("iconurl") : map.get("profile_image_url"));
+                    String gender = map.get("gender");
+                    if("男".equals(gender)){
+                        user.setSex(User.SEX_MAN);
+                    }else  if("女".equals(gender)){
+                        user.setSex(User.SEX_WOMAN);
+                    }else{
+                        user.setSex(User.SEX_NON);
+                    }
                 } else if (SNS_TYPE_WEIXIN.equals(getSnsType())) {
                     user.setAuthWX(true);
                 }

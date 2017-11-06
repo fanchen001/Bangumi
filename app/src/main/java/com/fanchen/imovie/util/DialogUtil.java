@@ -2,6 +2,7 @@ package com.fanchen.imovie.util;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -10,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fanchen.imovie.R;
+import com.fanchen.imovie.activity.VideoDetailsActivity;
 import com.fanchen.imovie.base.BaseActivity;
 import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.base.BaseFragment;
@@ -20,16 +22,21 @@ import com.fanchen.imovie.dialog.DownloadDialog;
 import com.fanchen.imovie.dialog.MaterialDialog;
 import com.fanchen.imovie.dialog.MaterialListDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
+import com.fanchen.imovie.entity.bmob.BmobObj;
 import com.fanchen.imovie.entity.bmob.VideoCollect;
 import com.fanchen.imovie.entity.dytt.DyttLiveBody;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
+import com.fanchen.imovie.fragment.CollectFragment;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.callback.RetrofitCallback;
 import com.fanchen.imovie.thread.AsyTaskQueue;
+import com.fanchen.imovie.thread.task.AsyTaskListener;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
+import com.fanchen.imovie.view.CustomEmptyView;
 import com.litesuits.orm.db.assit.QueryBuilder;
+import com.litesuits.orm.db.assit.WhereBuilder;
 
 import java.lang.ref.SoftReference;
 import java.util.Iterator;
@@ -114,6 +121,19 @@ public class DialogUtil {
         materialListDialog.show();
     }
 
+
+    /**
+     *
+     * @param fragment
+     * @param taskListener
+     * @param datas
+     * @param position
+     */
+    public static void showMaterialDeleteDialog(CollectFragment fragment,AsyTaskListener<?> taskListener, List<VideoCollect> datas, int position){
+        closeDialog();
+        showMaterialListDialog(fragment.activity, new String[]{"删除记录", "直接打开"}, new DeletClickListener(fragment, taskListener,datas, position));
+    }
+
     /**
      * @param context
      * @param stringMap
@@ -178,25 +198,24 @@ public class DialogUtil {
     }
 
     /**
-     *
      * @param context
      * @param l
      */
-    public static void showInputDialog(Context context,final OnInputListener l) {
+    public static void showInputDialog(Context context, final OnInputListener l) {
         closeDialog();
         final EditText editText = new EditText(context);
-        MaterialDialog materialDialog = (MaterialDialog) (DialogUtil.materialDialog = dialog = new MaterialDialog(context,editText));
+        MaterialDialog materialDialog = (MaterialDialog) (DialogUtil.materialDialog = dialog = new MaterialDialog(context, editText));
         materialDialog.title("请输入");
         materialDialog.setButtonClickListener(new OnButtonClickListener() {
 
             @Override
             public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
-                if(btn == OnButtonClickListener.LIFT){
+                if (btn == OnButtonClickListener.LIFT) {
                     dialog.dismiss();
                     return;
                 }
-                if(l != null){
-                    l.onInput(editText,dialog);
+                if (l != null) {
+                    l.onInput(editText, dialog);
                 }
             }
 
@@ -248,9 +267,9 @@ public class DialogUtil {
         DialogUtil.showMaterialListDialog(fragment.activity, new String[]{"打开详情", "加入收藏"}, new ItemClickListener(position, video, videos, fragment, (BaseAdapter.OnItemClickListener) fragment));
     }
 
-    public static void showDownloadOperationDialog(BaseFragment fragment, IVideo video, List<IVideo> videos, int position,RetrofitCallback<?> callback) {
+    public static void showDownloadOperationDialog(BaseFragment fragment, IVideo video, List<IVideo> videos, int position, RetrofitCallback<?> callback) {
         if (!(fragment instanceof BaseAdapter.OnItemClickListener)) return;
-        DialogUtil.showMaterialListDialog(fragment.activity, new String[]{"直接打开", "加入收藏","下载视频"}, new ItemClickListener(position, video, videos, fragment, (BaseAdapter.OnItemClickListener) fragment,callback));
+        DialogUtil.showMaterialListDialog(fragment.activity, new String[]{"直接打开", "加入收藏", "下载视频"}, new ItemClickListener(position, video, videos, fragment, (BaseAdapter.OnItemClickListener) fragment, callback));
     }
 
     private static class ItemClickListener implements AdapterView.OnItemClickListener {
@@ -296,7 +315,7 @@ public class DialogUtil {
             this.onItemClick = new SoftReference<>(onItemClick);
         }
 
-        public ItemClickListener(int position, IVideo item, List<?> datas, BaseFragment fragment, BaseAdapter.OnItemClickListener onItemClick,RetrofitCallback<?> callback) {
+        public ItemClickListener(int position, IVideo item, List<?> datas, BaseFragment fragment, BaseAdapter.OnItemClickListener onItemClick, RetrofitCallback<?> callback) {
             this.position = position;
             this.item = item;
             this.datas = datas;
@@ -337,9 +356,9 @@ public class DialogUtil {
                     break;
                 case 2:
                     try {
-                        if(downloadCallback == null)return;
+                        if (downloadCallback == null) return;
                         RetrofitCallback<?> callback = downloadCallback.get();
-                        if(callback == null)return;
+                        if (callback == null) return;
                         RetrofitManager manager = null;
                         if (activity != null) {
                             BaseActivity baseActivity = activity.get();
@@ -386,14 +405,69 @@ public class DialogUtil {
 
         @Override
         public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
-            if (btn == OnButtonClickListener.RIGHT) {
+            BaseActivity baseActivity = activity.get();
+            if (btn == OnButtonClickListener.RIGHT && baseActivity != null) {
                 if (item != null) {
-                    AsyTaskQueue.newInstance().execute(new TaskListener(activity, item));
+                    long count = baseActivity.getLiteOrm().queryCount(new QueryBuilder<>(VideoCollect.class).where("id = ?", item.getId()));
+                    if (count <= 0) {
+                        VideoCollect collect = new VideoCollect(item);
+                        collect.save(new CollectListener(collect, activity));
+                    } else {
+                        baseActivity.showSnackbar(baseActivity.getString(R.string.collect_repetition));
+                    }
                 } else if (liveBody != null) {
-                    AsyTaskQueue.newInstance().execute(new TaskListener(activity, liveBody));
+                    long count = baseActivity.getLiteOrm().queryCount(new QueryBuilder<>(VideoCollect.class).where("id = ?", String.valueOf(liveBody.getVideoId())));
+                    if (count <= 0) {
+                        VideoCollect collect = new VideoCollect(liveBody);
+                        collect.save(new CollectListener(collect, activity));
+                    } else {
+                        baseActivity.showSnackbar(baseActivity.getString(R.string.collect_repetition));
+                    }
                 }
             }
             dialog.dismiss();
+        }
+
+    }
+
+    private static class CollectListener extends BmobObj.OnRefreshListener {
+
+        private VideoCollect collect;
+        private SoftReference<BaseActivity> softReference;
+
+        public CollectListener(VideoCollect collect, SoftReference<BaseActivity> activity) {
+            this.collect = collect;
+            this.softReference = activity;
+        }
+
+        @Override
+        public void onStart() {
+            BaseActivity activity = softReference.get();
+            if (activity == null || activity.isFinishing()) return;
+            DialogUtil.showProgressDialog(activity, activity.getString(R.string.collect_ing));
+        }
+
+        @Override
+        public void onFinish() {
+            BaseActivity activity = softReference.get();
+            if (activity == null || activity.isFinishing()) return;
+            DialogUtil.closeProgressDialog();
+        }
+
+        @Override
+        public void onSuccess() {
+            BaseActivity activity = softReference.get();
+            if (activity == null || activity.isFinishing()) return;
+            activity.showSnackbar(activity.getString(R.string.collect_asy_success));
+            AsyTaskQueue.newInstance().execute(new TaskListener(softReference, collect));
+        }
+
+        @Override
+        public void onFailure(int i, String s) {
+            LogUtil.e("onFailure","onFailure=>" + s);
+            BaseActivity activity = softReference.get();
+            if (activity == null || activity.isFinishing()) return;
+            activity.showSnackbar(activity.getString(R.string.collect_asy_error));
         }
 
     }
@@ -404,51 +478,31 @@ public class DialogUtil {
     private static class TaskListener extends AsyTaskListenerImpl<Integer> {
 
         public int SUCCESS = 0;
-        public int REPETITION = 1;
         public int ERROR = 2;
 
-        private IVideo item;
-        private DyttLiveBody liveBody;
+        private VideoCollect collect;
         private SoftReference<BaseActivity> activity;
 
-        public TaskListener(SoftReference<BaseActivity> activity, IVideo item) {
-            this.item = item;
-            this.activity = activity;
-        }
-
-        public TaskListener(SoftReference<BaseActivity> activity, DyttLiveBody liveBody) {
-            this.liveBody = liveBody;
+        public TaskListener(SoftReference<BaseActivity> activity, VideoCollect item) {
+            this.collect = item;
             this.activity = activity;
         }
 
         @Override
         public Integer onTaskBackground() {
-            if (activity == null) return ERROR;
             BaseActivity baseActivity = activity.get();
-            if (baseActivity == null || baseActivity.isFinishing()) return ERROR;
-            String id = item == null ? String.valueOf(liveBody.getVideoId()) : item.getId();
-            List<VideoCollect> query = baseActivity.getLiteOrm().query(new QueryBuilder<>(VideoCollect.class).where("id = ?", id));
-            if (query == null || query.size() == 0) {
-                if(item != null){
-                    baseActivity.getLiteOrm().insert(new VideoCollect(item));
-                }else if(liveBody != null){
-                    baseActivity.getLiteOrm().insert(new VideoCollect(liveBody));
-                }
-                return SUCCESS;
-            }
-            return REPETITION;
+            if (baseActivity == null) return ERROR;
+            baseActivity.getLiteOrm().insert(collect);
+            return SUCCESS;
         }
 
         @Override
         public void onTaskSuccess(Integer data) {
-            if (activity == null) return;
             BaseActivity baseActivity = activity.get();
             if (baseActivity == null || baseActivity.isFinishing()) return;
             if (data == SUCCESS) {
                 baseActivity.showSnackbar(baseActivity.getString(R.string.collect_success));
-            } else if (data == REPETITION) {
-                baseActivity.showSnackbar(baseActivity.getString(R.string.collect_repetition));
-            } else {
+            }else {
                 baseActivity.showSnackbar(baseActivity.getString(R.string.collect_error));
             }
         }
@@ -458,13 +512,48 @@ public class DialogUtil {
     /**
      *
      */
-    public interface OnInputListener{
+    private static class DeletClickListener implements AdapterView.OnItemClickListener {
+
+        private SoftReference<CollectFragment> fragmentReference;
+        private List<VideoCollect> datas;
+        private SoftReference<AsyTaskListener<?>> taskReference;
+        private int position;
+
+        public DeletClickListener(CollectFragment fragment, AsyTaskListener<?> taskListener,List<VideoCollect> datas, int position) {
+            fragmentReference = new SoftReference<CollectFragment>(fragment);
+            taskReference = new SoftReference<AsyTaskListener<?>>(taskListener);
+            this.datas = datas;
+            this.position = position;
+        }
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            switch (position) {
+                case 0:
+                    AsyTaskListener<?> asyTaskListener = taskReference.get();
+                    if(asyTaskListener == null)return;
+                    AsyTaskQueue.newInstance().execute(asyTaskListener);
+                    break;
+                case 1:
+                    CollectFragment collectFragment = fragmentReference.get();
+                    if(collectFragment == null)return;
+                    collectFragment.onItemClick(datas, view, this.position);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    public interface OnInputListener {
         /**
-         *
          * @param editText
          * @param dialog
          */
-        void onInput(EditText editText,BaseDialog<?> dialog);
+        void onInput(EditText editText, BaseDialog<?> dialog);
 
     }
 }

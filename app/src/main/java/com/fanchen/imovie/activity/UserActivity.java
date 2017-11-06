@@ -18,6 +18,7 @@ import com.fanchen.imovie.dialog.BaseAlertDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
 import com.fanchen.imovie.entity.AppEvent;
 import com.fanchen.imovie.entity.bmob.User;
+import com.fanchen.imovie.entity.bmob.VideoCollect;
 import com.fanchen.imovie.picasso.PicassoWrap;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.view.CircleImageView;
@@ -122,6 +123,11 @@ public class UserActivity extends BaseToolbarActivity implements View.OnClickLis
                 }
                 break;
             case R.id.rl_user_changepassword:
+                if(getLoginUser() == null)return;
+                if(getLoginUser().isAuthQQ() || getLoginUser().isAuthWB() || getLoginUser().isAuthWX()){
+                    showSnackbar(getString(R.string.error_changepassword));
+                    return;
+                }
                 break;
             case R.id.tv_user_logout:
                 DialogUtil.showMaterialDialog(this, getString(R.string.logout_hit), new OnButtonClickListener() {
@@ -130,7 +136,8 @@ public class UserActivity extends BaseToolbarActivity implements View.OnClickLis
                         dialog.dismiss();
                         if(btn == OnButtonClickListener.RIGHT){
                             User.logout();
-                            postAppEvent(new AppEvent(UserActivity.class,AppEvent.LOGOUT));
+                            getLiteOrm().delete(VideoCollect.class);
+                            postAppEvent(new AppEvent(UserActivity.class, AppEvent.LOGOUT));
                             finish();
                         }
                     }

@@ -7,6 +7,7 @@ import com.fanchen.imovie.IMovieAppliction;
 import java.lang.ref.SoftReference;
 
 import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.listener.FindCallback;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
 

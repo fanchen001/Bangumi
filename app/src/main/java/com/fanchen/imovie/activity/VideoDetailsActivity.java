@@ -25,9 +25,9 @@ import com.fanchen.imovie.adapter.EpisodeAdapter;
 import com.fanchen.imovie.adapter.RecomAdapter;
 import com.fanchen.imovie.base.BaseActivity;
 import com.fanchen.imovie.base.BaseAdapter;
-import com.fanchen.imovie.db.LiteOrmManager;
 import com.fanchen.imovie.dialog.BaseAlertDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
+import com.fanchen.imovie.entity.bmob.BmobObj;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
@@ -64,7 +64,7 @@ import butterknife.InjectView;
  * Created by fanchen on 2017/8/14.
  */
 public class VideoDetailsActivity extends BaseActivity implements
-        View.OnClickListener, BaseAdapter.OnItemClickListener,DialogInterface.OnDismissListener {
+        View.OnClickListener, BaseAdapter.OnItemClickListener, DialogInterface.OnDismissListener {
 
     public static final String VIDEO = "video";
     public static final String COLLECT = "collect";
@@ -121,23 +121,21 @@ public class VideoDetailsActivity extends BaseActivity implements
     private IVideo mVideo;
     private VideoCollect mVideoCollect;
     private String className;
-    private String vid ;
+    private String vid;
     private IVideoDetails details;
     private PicassoWrap picasso;
     private EpisodeAdapter mEpisodeAdapter;
     private RecomAdapter mRecomAdapter;
-    private LiteOrm liteOrm;
 
     /**
-     *
      * @param context
      * @param id
      * @param className
      */
-    public static void startActivity(Context context, String id,String className) {
+    public static void startActivity(Context context, String id, String className) {
         Intent intent = new Intent(context, VideoDetailsActivity.class);
         intent.putExtra(VID, id);
-        intent.putExtra(CLASS_NAME,className);
+        intent.putExtra(CLASS_NAME, className);
         context.startActivity(intent);
     }
 
@@ -145,27 +143,25 @@ public class VideoDetailsActivity extends BaseActivity implements
      * @param context
      * @param item
      */
-    public static void startActivity(Context context, IVideo item,String className) {
+    public static void startActivity(Context context, IVideo item, String className) {
         Intent intent = new Intent(context, VideoDetailsActivity.class);
         intent.putExtra(VIDEO, item);
-        intent.putExtra(CLASS_NAME,className);
+        intent.putExtra(CLASS_NAME, className);
         context.startActivity(intent);
     }
 
     /**
-     *
      * @param context
      * @param videoCollect
      */
     public static void startActivity(Context context, VideoCollect videoCollect) {
         Intent intent = new Intent(context, VideoDetailsActivity.class);
-        intent.putExtra(COLLECT, (Parcelable)videoCollect);
+        intent.putExtra(COLLECT, (Parcelable) videoCollect);
         intent.putExtra(CLASS_NAME, videoCollect.getServiceClassName());
         context.startActivity(intent);
     }
 
     /**
-     *
      * @param context
      * @param item
      */
@@ -198,35 +194,34 @@ public class VideoDetailsActivity extends BaseActivity implements
         mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
         mBackTitleTextView.setText(R.string.bangumi_details);
-        if(getIntent().getData() != null){
+        if (getIntent().getData() != null) {
             String info = getIntent().getData().getQueryParameter("info");
             String decode = new String(SecurityUtil.decode(info));
-            try{
+            try {
                 JSONObject jsonObject = new JSONObject(decode);
-                if(jsonObject.has("thisClass")){
+                if (jsonObject.has("thisClass")) {
                     Class<?> forName = Class.forName(jsonObject.getString("thisClass"));
-                    mVideo = (IVideo) new Gson().fromJson(decode,forName);
+                    mVideo = (IVideo) new Gson().fromJson(decode, forName);
                     className = mVideo.getServiceClassName();
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        if(getIntent().hasExtra(VIDEO)){
+        if (getIntent().hasExtra(VIDEO)) {
             mVideo = getIntent().getParcelableExtra(VIDEO);
         }
-        if(getIntent().hasExtra(COLLECT)){
+        if (getIntent().hasExtra(COLLECT)) {
             mVideoCollect = getIntent().getParcelableExtra(COLLECT);
         }
-        if(getIntent().hasExtra(VID)){
+        if (getIntent().hasExtra(VID)) {
             vid = getIntent().getStringExtra(VID);
         }
-        if(getIntent().hasExtra(CLASS_NAME)){
+        if (getIntent().hasExtra(CLASS_NAME)) {
             className = getIntent().getStringExtra(CLASS_NAME);
         }
         mEpisodeRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         mRecomRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-        liteOrm = LiteOrmManager.getInstance(this).getLiteOrm("imovie.db");
         mEpisodeAdapter = new EpisodeAdapter(this);
         mEpisodeRecyclerView.setAdapter(mEpisodeAdapter);
         mEpisodeRecyclerView.setNestedScrollingEnabled(false);
@@ -235,7 +230,7 @@ public class VideoDetailsActivity extends BaseActivity implements
         mRecomRecyclerView.setNestedScrollingEnabled(false);
 
         String path = mVideo == null ? mVideoCollect == null ? vid : mVideoCollect.getId() : mVideo.getId();
-        getRetrofitManager().enqueue(className,callback,"details",path);
+        getRetrofitManager().enqueue(className, callback, "details", path);
     }
 
     @Override
@@ -255,46 +250,46 @@ public class VideoDetailsActivity extends BaseActivity implements
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.cev_empty){
+        if (v.getId() == R.id.cev_empty) {
             String path = mVideo == null ? mVideoCollect == null ? vid : mVideoCollect.getId() : mVideo.getId();
-            getRetrofitManager().enqueue(className,callback,"details",path);
+            getRetrofitManager().enqueue(className, callback, "details", path);
             return;
-        }else if(v.getId() == R.id.iv_top_back){
+        } else if (v.getId() == R.id.iv_top_back) {
             finish();
             return;
         }
         if (details == null) return;
         switch (v.getId()) {
             case R.id.tv_bangumi_more_episode:
-                if(details.getEpisodes() == null || details.getEpisodes().size() == 0){
+                if (details.getEpisodes() == null || details.getEpisodes().size() == 0) {
                     showSnackbar(getString(R.string.non_episode));
-                }else{
-                    EpisodeActivity.startActivity(this,details);
+                } else {
+                    EpisodeActivity.startActivity(this, details);
                 }
                 break;
             case R.id.ll_bangumi_collect:
-                if(checkLogin()){
+                if (checkLogin()) {
                     DialogUtil.showMaterialDialog(this, String.format(getString(R.string.collect_hit), details.getTitle()), buttonClickListener);
                 }
                 break;
             case R.id.ll_bangumi_share:
                 Uri.Builder info = Uri.parse("https://details").buildUpon().appendQueryParameter("info", SecurityUtil.encode(new Gson().toJson(details).getBytes()));
-                ShareUtil.share(this, details.getTitle(),details.getIntroduce(),  info.toString());
+                ShareUtil.share(this, details.getTitle(), details.getIntroduce(), info.toString());
                 break;
             case R.id.ll_bangumi_download:
-                if(details.canDownload()){
-                    DialogUtil.showDownloadDialog(this,details);
-                }else{
+                if (details.canDownload()) {
+                    DialogUtil.showDownloadDialog(this, details);
+                } else {
                     showSnackbar(getString(R.string.not_download));
                 }
                 break;
             case R.id.tv_bangumi_more_info:
                 int dip2px = DisplayUtil.dip2px(this, 34);
                 ViewGroup.LayoutParams layoutParams = mInfoTextView.getLayoutParams();
-                if(layoutParams.height == dip2px){
+                if (layoutParams.height == dip2px) {
                     mMoreInfoTextView.setText(getString(R.string.close_more_jianjie));
                     layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                }else{
+                } else {
                     mMoreInfoTextView.setText(getString(R.string.more_jianjie));
                     layoutParams.height = dip2px;
                 }
@@ -310,16 +305,16 @@ public class VideoDetailsActivity extends BaseActivity implements
         switch (((View) v.getParent()).getId()) {
             case R.id.recyclerview_recom:
                 IVideo iVideo = (IVideo) datas.get(position);
-                VideoDetailsActivity.startActivity(this, iVideo,className);
+                VideoDetailsActivity.startActivity(this, iVideo, className);
                 break;
             case R.id.recyclerview_episode:
                 IVideoEpisode episode = (IVideoEpisode) datas.get(position);
                 if (episode.getPlayerType() == IVideoEpisode.PLAY_TYPE_XUNLEI) {
                     showSnackbar(getString(R.string.video_xunlei));
-                    SystemUtil.startThreeApp(this,episode.getUrl());
-                }else if(episode.getPlayerType() == IVideoEpisode.PLAY_TYPE_NOT){
+                    SystemUtil.startThreeApp(this, episode.getUrl());
+                } else if (episode.getPlayerType() == IVideoEpisode.PLAY_TYPE_NOT) {
                     showSnackbar(getString(R.string.video_not_play));
-                }else{
+                } else {
                     VideoPlayerActivity.startActivity(this, details, episode);
                 }
                 break;
@@ -330,7 +325,7 @@ public class VideoDetailsActivity extends BaseActivity implements
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        if(mEpisodeAdapter != null)
+        if (mEpisodeAdapter != null)
             mEpisodeAdapter.notifyDataSetChanged();
     }
 
@@ -339,12 +334,11 @@ public class VideoDetailsActivity extends BaseActivity implements
         @Override
         public void onStart(int enqueueKey) {
             if (isFinishing()) return;
-            LogUtil.e("RefreshCallback","onStart");
-            if(mEmptyView != null)
+            if (mEmptyView != null)
                 mEmptyView.setEmptyType(CustomEmptyView.TYPE_NON);
-            if(mAblView != null)
+            if (mAblView != null)
                 mAblView.setVisibility(View.VISIBLE);
-            if(mNsvView != null)
+            if (mNsvView != null)
                 mNsvView.setVisibility(View.VISIBLE);
             mMaterialProgressBar.setVisibility(View.VISIBLE);
         }
@@ -358,11 +352,11 @@ public class VideoDetailsActivity extends BaseActivity implements
         @Override
         public void onFailure(int enqueueKey, String throwable) {
             if (isFinishing()) return;
-            if(mEmptyView != null)
+            if (mEmptyView != null)
                 mEmptyView.setEmptyType(CustomEmptyView.TYPE_ERROR);
-            if(mAblView != null)
+            if (mAblView != null)
                 mAblView.setVisibility(View.GONE);
-            if(mNsvView != null)
+            if (mNsvView != null)
                 mNsvView.setVisibility(View.GONE);
             showSnackbar(throwable);
         }
@@ -371,12 +365,12 @@ public class VideoDetailsActivity extends BaseActivity implements
         public void onSuccess(int enqueueKey, IVideoDetails response) {
             if (isFinishing() || response == null) return;
             details = mVideo == null ? mVideoCollect == null ? response : response.setVideo(mVideoCollect) : response.setVideo(mVideo);
-            if(!TextUtils.isEmpty(response.getCoverReferer())){
-                picasso = new PicassoWrap(VideoDetailsActivity.this,new RefererDownloader(getApplicationContext(),response.getCoverReferer()));
+            if (!TextUtils.isEmpty(response.getCoverReferer())) {
+                picasso = new PicassoWrap(VideoDetailsActivity.this, new RefererDownloader(getApplicationContext(), response.getCoverReferer()));
                 mRecomAdapter.setPicasso(picasso);
             }
             picasso.loadVertical(response.getCover(), VideoDetailsActivity.class, mRoundImageView);
-            if(!TextUtils.isEmpty(response.getCover())){
+            if (!TextUtils.isEmpty(response.getCover())) {
                 picasso.getPicasso().load(response.getCover()).transform(new BlurTransform()).into(mBackgroudImageView);
             }
             mTitleTextView.setText(response.getTitle());
@@ -408,32 +402,76 @@ public class VideoDetailsActivity extends BaseActivity implements
 
         @Override
         public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
-            if (btn == OnButtonClickListener.RIGHT) {
-                AsyTaskQueue.newInstance().execute(collectListener);
+            if (btn == OnButtonClickListener.RIGHT && details != null) {
+                long count = getLiteOrm().queryCount(new QueryBuilder<>(VideoCollect.class).where("id = ?", details.getId()));
+                if (count <= 0) {
+                    VideoCollect collect = new VideoCollect(details);
+                    collect.save(new CollectListener(collect));
+                } else {
+                    showSnackbar(getString(R.string.collect_repetition));
+                }
             }
             dialog.dismiss();
         }
 
     };
 
+    private class CollectListener extends BmobObj.OnRefreshListener {
+
+        private VideoCollect collect;
+
+        public CollectListener(VideoCollect collect) {
+            this.collect = collect;
+        }
+
+        @Override
+        public void onStart() {
+            if (isFinishing()) return;
+            DialogUtil.showProgressDialog(VideoDetailsActivity.this, getString(R.string.collect_ing));
+        }
+
+        @Override
+        public void onFinish() {
+            if (isFinishing()) return;
+            DialogUtil.closeProgressDialog();
+        }
+
+        @Override
+        public void onSuccess() {
+            AsyTaskQueue.newInstance().execute(new SaveTaskListener(collect));
+            if (isFinishing()) return;
+            showSnackbar(getString(R.string.collect_asy_success));
+        }
+
+        @Override
+        public void onFailure(int i, String s) {
+            if (isFinishing()) return;
+            showSnackbar(getString(R.string.collect_asy_error));
+        }
+
+    }
+
+    ;
+
     /**
      *
      */
-    private AsyTaskListenerImpl<Integer> collectListener = new AsyTaskListenerImpl<Integer>() {
+    private class SaveTaskListener extends AsyTaskListenerImpl<Integer> {
 
         public int SUCCESS = 0;
-        public int REPETITION = 1;
         public int ERROR = 2;
+
+        private VideoCollect collect;
+
+        public SaveTaskListener(VideoCollect collect) {
+            this.collect = collect;
+        }
 
         @Override
         public Integer onTaskBackground() {
             if (isFinishing() || details == null) return ERROR;
-            List<VideoCollect> query = liteOrm.query(new QueryBuilder<>(VideoCollect.class).where("id = ?", details.getId()));
-            if (query == null || query.size() == 0) {
-                liteOrm.insert(new VideoCollect(details));
-                return SUCCESS;
-            }
-            return REPETITION;
+            getLiteOrm().insert(collect);
+            return SUCCESS;
         }
 
         @Override
@@ -441,13 +479,13 @@ public class VideoDetailsActivity extends BaseActivity implements
             if (isFinishing()) return;
             if (data == SUCCESS) {
                 showSnackbar(getString(R.string.collect_success));
-            } else if (data == REPETITION) {
-                showSnackbar(getString(R.string.collect_repetition));
             } else {
                 showSnackbar(getString(R.string.collect_error));
             }
         }
 
-    };
+    }
+
+    ;
 
 }

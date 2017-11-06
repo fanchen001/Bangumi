@@ -236,7 +236,11 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     public LiteOrm getLiteOrm() {
         if (mLiteOrm == null)
-            mLiteOrm = LiteOrmManager.getInstance(appliction).getLiteOrm("imovie.db");
+            if(appliction != null){
+                mLiteOrm = LiteOrmManager.getInstance(appliction).getLiteOrm("imovie.db");
+            }else if(IMovieAppliction.app != null){
+                mLiteOrm = LiteOrmManager.getInstance(IMovieAppliction.app).getLiteOrm("imovie.db");
+            }
         return mLiteOrm;
     }
 
