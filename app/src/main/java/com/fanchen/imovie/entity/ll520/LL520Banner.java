@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.fanchen.imovie.entity.face.IVideoBanner;
-import com.fanchen.imovie.retrofit.service.LoLi520Service;
+import com.fanchen.imovie.retrofit.service.LL520Service;
 
 /**
  * Created by fanchen on 2017/11/9.
@@ -66,7 +66,7 @@ public class LL520Banner implements Parcelable, IVideoBanner<LL520Banner> {
 
     @Override
     public String getServiceClass() {
-        return LoLi520Service.class.getName();
+        return LL520Service.class.getName();
     }
 
     @Override

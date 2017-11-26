@@ -21,7 +21,7 @@ import retrofit2.http.Url;
  * Created by fanchen on 2017/10/28.
  */
 @RetrofitType(RetrofitSource.LL520_API)
-public interface LL520Service1 {
+public interface LL520Service {
 
     /**
      *
