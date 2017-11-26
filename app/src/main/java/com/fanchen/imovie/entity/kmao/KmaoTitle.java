@@ -130,6 +130,11 @@ public class KmaoTitle implements IBangumiTitle,Parcelable{
         return id;
     }
 
+    @Override
+    public int getStartPage() {
+        return 1;
+    }
+
     public void setId(String id) {
         this.id = id;
     }

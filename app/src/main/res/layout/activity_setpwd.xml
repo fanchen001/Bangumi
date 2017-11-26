@@ -56,7 +56,7 @@
                     android:layout_centerVertical="true"
                     android:layout_toLeftOf="@+id/btn_password_visible">
 
-                    <EditText
+                    <com.fanchen.imovie.view.SelectionEditText
                         android:id="@+id/et_password"
                         style="@style/account_editview_textsize"
                         android:layout_width="match_parent"

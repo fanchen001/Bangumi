@@ -20,13 +20,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import retrofit2.Retrofit;
+
 /**
  * Created by fanchen on 2017/9/24.
  */
 public class BumimiImpl implements IVideoMoreParser {
 
+    private static final String PLAYERURL = "https://www.ai577.com/playm3u8/index.php?type=&vid=%s";
+
     @Override
-    public IBangumiMoreRoot search(String html) {
+    public IBangumiMoreRoot search(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
         BumimiHome root = new BumimiHome();
         try{
@@ -34,7 +38,7 @@ public class BumimiImpl implements IVideoMoreParser {
             for (Node n : node.list("ul#resize_list > li")){
                 String cover = n.attr("a > div > img", "data-original");
                 String title = n.attr("a", "title");
-                String url = "http://m.bumimi.com" + n.attr("a", "href");
+                String url = baseUrl + n.attr("a", "href");
                 String id = "";
                 if (!TextUtils.isEmpty(url)) {
                     String[] split = url.split("/");
@@ -63,7 +67,7 @@ public class BumimiImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IHomeRoot home(String html) {
+    public IHomeRoot home(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
         BumimiHome index = new BumimiHome();
         try {
@@ -115,7 +119,7 @@ public class BumimiImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IVideoDetails details(String html) {
+    public IVideoDetails details(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
         BumimiDetails details = new BumimiDetails();
         try {
@@ -146,7 +150,7 @@ public class BumimiImpl implements IVideoMoreParser {
                 String from = new Node(n.getElement().parent().parent()).attr("id");
                 BumimiEpisode episode = new BumimiEpisode();
                 episode.setTitle(from + ":" +n.text());
-                episode.setUrl("http://m.bumimi.com" + n.attr("a", "href"));
+                episode.setUrl(baseUrl + n.attr("a", "href"));
                 episode.setId(n.attr("a", "href", "/", 2));
                 episodes.add(episode);
             }
@@ -165,7 +169,7 @@ public class BumimiImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IBangumiMoreRoot more(String html) {
+    public IBangumiMoreRoot more(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
         BumimiHome more = new BumimiHome();
         try {
@@ -173,7 +177,7 @@ public class BumimiImpl implements IVideoMoreParser {
             for (Node n : node.list("div.list_vod > ul > li")) {
                 String cover = n.attr("a > div > img", "data-original");
                 String title = n.attr("a > div > img", "alt");
-                String url = "http://m.bumimi.com" + n.attr("a", "href");
+                String url = baseUrl + n.attr("a", "href");
                 String id = "";
                 if (!TextUtils.isEmpty(url)) {
                     String[] split = url.split("/");
@@ -202,13 +206,14 @@ public class BumimiImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IPlayUrls playUrl(String html) {
+    public IPlayUrls playUrl(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
         BumimiPlayUrl playUrl = new BumimiPlayUrl();
         try {
+            String href = node.attr("div#zanpiancms_player > a", "href").substring(34);
             Map<String,String> url = new HashMap<>();
             playUrl.setUrls(url);
-            url.put("标清", String.format("https://www.ai577.com/playm3u8/index.php?type=&vid=%s", node.attr("div#zanpiancms_player > a","href").substring(34)));
+            url.put("标清", String.format(PLAYERURL, href));
             playUrl.setSuccess(true);
         }catch (Exception e){
             playUrl.setSuccess(false);

@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import com.fanchen.imovie.base.BaseFragmentAdapter;
+import com.fanchen.imovie.fragment.HomeCategoryFragment;
 import com.fanchen.imovie.fragment.HomeIndexFragment;
 import com.fanchen.imovie.fragment.HomeMoreFragment;
 
@@ -14,8 +15,8 @@ import com.fanchen.imovie.fragment.HomeMoreFragment;
  */
 public class HomePagerAdapter extends BaseFragmentAdapter {
 
-    private final String[] TITLES = new String[]{"推荐", "番剧","影視", "音乐", "更多"};
-    private final String[] PATHS = new String[]{"index.html", "list/24/","list/23/", "list/20/"};
+    private final String[] TITLES = new String[]{"推荐", "番剧","影視", "分区", "更多"};
+    private final String[] PATHS = new String[]{"index.html", "list/24/","list/23/"};
 
     public HomePagerAdapter(FragmentManager fm) {
         super(fm);
@@ -36,7 +37,7 @@ public class HomePagerAdapter extends BaseFragmentAdapter {
             case 2:
                 return HomeIndexFragment.newInstance(PATHS[position],false,true);
             case 3:
-                return HomeIndexFragment.newInstance(PATHS[position],false,true);
+                return HomeCategoryFragment.newInstance();
             case 4:
                 return HomeMoreFragment.newInstance();
             default:

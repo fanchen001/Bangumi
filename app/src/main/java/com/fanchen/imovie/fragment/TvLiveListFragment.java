@@ -101,14 +101,14 @@ public class TvLiveListFragment extends BaseRecyclerFragment implements BaseAdap
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position || position < 0 || !(datas.get(position) instanceof DyttLiveBody)) return;
+        if (!(datas.get(position) instanceof DyttLiveBody)) return;
         DyttLiveBody body = (DyttLiveBody) datas.get(position);
         VideoPlayerActivity.startActivity(activity, body);
     }
 
     @Override
     public boolean onItemLongClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position || position < 0 || !(datas.get(position) instanceof DyttLiveBody)) return false;
+        if (!(datas.get(position) instanceof DyttLiveBody)) return false;
         DyttLiveBody item = (DyttLiveBody) datas.get(position);
         DialogUtil.showOperationDialog(this,item,(List<DyttLiveBody>)datas,position);
         return true;
@@ -116,17 +116,9 @@ public class TvLiveListFragment extends BaseRecyclerFragment implements BaseAdap
 
     private RefreshRecyclerFragmentImpl<DyttRoot<List<DyttLiveBody>>> callback = new RefreshRecyclerFragmentImpl<DyttRoot<List<DyttLiveBody>>>() {
 
-//        @Override
-//        public void onSuccess(int enqueueKey, DyttRoot<List<DyttLiveBody>> response) {
-//            if (!isAdded() || isDetached() || response == null) return;
-//            if (isRefresh()) mLiveAdapter.clear();
-//            AsyTaskQueue.newInstance().execute(new SaveTaskListener(response));
-//            setAdapterList(response);
-//        }
-
         @Override
         public void onSuccess(DyttRoot<List<DyttLiveBody>> response) {
-            if(response.getBody() == null)return;
+            if(response.getBody() == null || mLiveAdapter == null)return;
             setAdapterList(response);
         }
 
@@ -136,7 +128,7 @@ public class TvLiveListFragment extends BaseRecyclerFragment implements BaseAdap
 
         @Override
         public void onSuccess(DyttRoot<List<DyttLiveBody>> date) {
-            if(date.getBody() == null)return;
+            if(date.getBody() == null || mLiveAdapter == null)return;
             setAdapterList(date);
         }
 

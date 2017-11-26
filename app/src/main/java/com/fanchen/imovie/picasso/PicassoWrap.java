@@ -7,6 +7,7 @@ import android.widget.ImageView;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.util.AppUtil;
+import com.fanchen.imovie.util.LogUtil;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Downloader;
 import com.squareup.picasso.Picasso;
@@ -114,12 +115,20 @@ public class PicassoWrap {
      * @param config
      * @param imageView
      */
-    public void load(String cover,Object tag,int placeholder,int error,Bitmap.Config config,ImageView imageView){
+    public void load(String cover,Object tag,int placeholder,int error,Bitmap.Config config,boolean centerCrop,ImageView imageView){
         if(picasso == null)return;
-        if(TextUtils.isEmpty(cover)){
-            picasso.load(R.drawable.image_load_pre).tag(tag).placeholder(placeholder).error(error).config(config).into(imageView);
+        if(centerCrop){
+            if(TextUtils.isEmpty(cover)){
+                picasso.load(R.drawable.image_load_pre).tag(tag).placeholder(placeholder).error(error).config(config).fit().centerCrop().into(imageView);
+            }else{
+                picasso.load(cover).tag(tag).placeholder(placeholder).error(error).config(config).fit().centerCrop().into(imageView);
+            }
         }else{
-            picasso.load(cover).tag(tag).placeholder(placeholder).error(error).config(config).into(imageView);
+            if(TextUtils.isEmpty(cover)){
+                picasso.load(R.drawable.image_load_pre).tag(tag).placeholder(placeholder).error(error).config(config).into(imageView);
+            }else{
+                picasso.load(cover).tag(tag).placeholder(placeholder).error(error).config(config).into(imageView);
+            }
         }
     }
 
@@ -134,9 +143,9 @@ public class PicassoWrap {
     public void load(String cover,int placeholder,int error,Bitmap.Config config,ImageView imageView){
         if(picasso == null)return;
         if(TextUtils.isEmpty(cover)){
-            picasso.load(R.drawable.image_load_pre).placeholder(placeholder).error(error).config(config).into(imageView);
+            picasso.load(R.drawable.image_load_pre).placeholder(placeholder).error(error).config(config).fit().centerCrop().into(imageView);
         }else{
-            picasso.load(cover).placeholder(placeholder).error(error).config(config).into(imageView);
+            picasso.load(cover).placeholder(placeholder).error(error).config(config).fit().centerCrop().into(imageView);
         }
     }
 
@@ -150,9 +159,9 @@ public class PicassoWrap {
     public void load(String cover,Object tag,Bitmap.Config config,ImageView imageView){
         if(picasso == null)return;
         if(TextUtils.isEmpty(cover)){
-            picasso.load(R.drawable.image_load_pre).tag(tag).config(config).into(imageView);
+            picasso.load(R.drawable.image_load_pre).tag(tag).config(config).fit().centerCrop().into(imageView);
         }else{
-            picasso.load(cover).tag(tag).config(config).into(imageView);
+            picasso.load(cover).tag(tag).config(config).fit().centerCrop().into(imageView);
         }
     }
 
@@ -165,18 +174,18 @@ public class PicassoWrap {
     public void load(String cover,Object tag,ImageView imageView){
         if(picasso == null)return;
         if(TextUtils.isEmpty(cover)){
-            picasso.load(R.drawable.image_load_pre).tag(tag).config(Bitmap.Config.RGB_565).into(imageView);
+            picasso.load(R.drawable.image_load_pre).tag(tag).config(Bitmap.Config.RGB_565).fit().centerCrop().into(imageView);
         }else{
-            picasso.load(cover).tag(tag).config(Bitmap.Config.RGB_565).into(imageView);
+            picasso.load(cover).tag(tag).config(Bitmap.Config.RGB_565).fit().centerCrop().into(imageView);
         }
     }
 
     public void load(String cover,ImageView imageView){
         if(picasso == null)return;
         if(TextUtils.isEmpty(cover)){
-            picasso.load(R.drawable.image_load_pre).config(Bitmap.Config.RGB_565).into(imageView);
+            picasso.load(R.drawable.image_load_pre).config(Bitmap.Config.RGB_565).fit().centerCrop().into(imageView);
         }else{
-            picasso.load(cover).config(Bitmap.Config.RGB_565).into(imageView);
+            picasso.load(cover).config(Bitmap.Config.RGB_565).fit().centerCrop().into(imageView);
         }
     }
 
@@ -197,7 +206,7 @@ public class PicassoWrap {
      * @param imageView
      */
     public void loadVertical(String cover,Object tag,Bitmap.Config config,ImageView imageView){
-        load(cover, tag, R.drawable.image_load_h_pre, R.drawable.image_load_h_error, config, imageView);
+        load(cover, tag, R.drawable.image_load_h_pre, R.drawable.image_load_h_error, config,true, imageView);
     }
 
     /**
@@ -207,7 +216,11 @@ public class PicassoWrap {
      * @param imageView
      */
     public void loadVertical(String cover,Object tag,ImageView imageView){
-        load(cover, tag, R.drawable.image_load_h_pre, R.drawable.image_load_h_error, Bitmap.Config.RGB_565, imageView);
+        load(cover, tag, R.drawable.image_load_h_pre, R.drawable.image_load_h_error, Bitmap.Config.RGB_565, true,imageView);
+    }
+
+    public void loadVertical(String cover,Object tag,boolean centerCrop,ImageView imageView){
+        load(cover, tag, R.drawable.image_load_h_pre, R.drawable.image_load_h_error, Bitmap.Config.RGB_565,centerCrop, imageView);
     }
 
     /**
@@ -227,7 +240,7 @@ public class PicassoWrap {
      * @param imageView
      */
     public void loadHorizontal(String cover,Object tag,Bitmap.Config config,ImageView imageView){
-        load(cover,tag, R.drawable.image_load_pre,R.drawable.image_load_error,config,imageView);
+        load(cover,tag, R.drawable.image_load_pre,R.drawable.image_load_error,config,true,imageView);
     }
 
     /**
@@ -237,6 +250,6 @@ public class PicassoWrap {
      * @param imageView
      */
     public void loadHorizontal(String cover,Object tag,ImageView imageView){
-        load(cover,tag, R.drawable.image_load_pre,R.drawable.image_load_error,Bitmap.Config.RGB_565,imageView);
+        load(cover, tag, R.drawable.image_load_pre, R.drawable.image_load_error, Bitmap.Config.RGB_565,true, imageView);
     }
 }

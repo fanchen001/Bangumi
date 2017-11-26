@@ -128,6 +128,11 @@ public class BumimiTitle implements IBangumiTitle,Parcelable{
         return id;
     }
 
+    @Override
+    public int getStartPage() {
+        return 1;
+    }
+
     public void setId(String id) {
         this.id = id;
     }

@@ -58,8 +58,12 @@ public class UserActivity extends BaseToolbarActivity implements View.OnClickLis
      * @param context
      */
     public static void startActivity(Context context){
-        Intent intent = new Intent(context,UserActivity.class);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context,UserActivity.class);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

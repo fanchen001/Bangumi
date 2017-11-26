@@ -133,10 +133,14 @@ public class VideoDetailsActivity extends BaseActivity implements
      * @param className
      */
     public static void startActivity(Context context, String id, String className) {
-        Intent intent = new Intent(context, VideoDetailsActivity.class);
-        intent.putExtra(VID, id);
-        intent.putExtra(CLASS_NAME, className);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, VideoDetailsActivity.class);
+            intent.putExtra(VID, id);
+            intent.putExtra(CLASS_NAME, className);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -144,10 +148,14 @@ public class VideoDetailsActivity extends BaseActivity implements
      * @param item
      */
     public static void startActivity(Context context, IVideo item, String className) {
-        Intent intent = new Intent(context, VideoDetailsActivity.class);
-        intent.putExtra(VIDEO, item);
-        intent.putExtra(CLASS_NAME, className);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, VideoDetailsActivity.class);
+            intent.putExtra(VIDEO, item);
+            intent.putExtra(CLASS_NAME, className);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -155,10 +163,14 @@ public class VideoDetailsActivity extends BaseActivity implements
      * @param videoCollect
      */
     public static void startActivity(Context context, VideoCollect videoCollect) {
-        Intent intent = new Intent(context, VideoDetailsActivity.class);
-        intent.putExtra(COLLECT, (Parcelable) videoCollect);
-        intent.putExtra(CLASS_NAME, videoCollect.getServiceClassName());
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, VideoDetailsActivity.class);
+            intent.putExtra(COLLECT, (Parcelable) videoCollect);
+            intent.putExtra(CLASS_NAME, videoCollect.getServiceClassName());
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -300,14 +312,15 @@ public class VideoDetailsActivity extends BaseActivity implements
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position || details == null) return;
-        if (v == null || v.getParent() == null) return;
+        if (details == null || v == null || v.getParent() == null) return;
         switch (((View) v.getParent()).getId()) {
             case R.id.recyclerview_recom:
+                if (!(datas.get(position) instanceof IVideo)) return;
                 IVideo iVideo = (IVideo) datas.get(position);
                 VideoDetailsActivity.startActivity(this, iVideo, className);
                 break;
             case R.id.recyclerview_episode:
+                if (!(datas.get(position) instanceof IVideoEpisode)) return;
                 IVideoEpisode episode = (IVideoEpisode) datas.get(position);
                 if (episode.getPlayerType() == IVideoEpisode.PLAY_TYPE_XUNLEI) {
                     showSnackbar(getString(R.string.video_xunlei));
@@ -333,25 +346,25 @@ public class VideoDetailsActivity extends BaseActivity implements
 
         @Override
         public void onStart(int enqueueKey) {
-            if (isFinishing()) return;
+            if (mMaterialProgressBar != null)
+                mMaterialProgressBar.setVisibility(View.VISIBLE);
             if (mEmptyView != null)
                 mEmptyView.setEmptyType(CustomEmptyView.TYPE_NON);
             if (mAblView != null)
                 mAblView.setVisibility(View.VISIBLE);
             if (mNsvView != null)
                 mNsvView.setVisibility(View.VISIBLE);
-            mMaterialProgressBar.setVisibility(View.VISIBLE);
+
         }
 
         @Override
         public void onFinish(int enqueueKey) {
-            if (isFinishing()) return;
-            mMaterialProgressBar.setVisibility(View.GONE);
+            if (mMaterialProgressBar != null)
+                mMaterialProgressBar.setVisibility(View.GONE);
         }
 
         @Override
         public void onFailure(int enqueueKey, String throwable) {
-            if (isFinishing()) return;
             if (mEmptyView != null)
                 mEmptyView.setEmptyType(CustomEmptyView.TYPE_ERROR);
             if (mAblView != null)
@@ -363,13 +376,13 @@ public class VideoDetailsActivity extends BaseActivity implements
 
         @Override
         public void onSuccess(int enqueueKey, IVideoDetails response) {
-            if (isFinishing() || response == null) return;
+            if (response == null || !response.isSuccess() || mRecomAdapter == null) return;
             details = mVideo == null ? mVideoCollect == null ? response : response.setVideo(mVideoCollect) : response.setVideo(mVideo);
             if (!TextUtils.isEmpty(response.getCoverReferer())) {
                 picasso = new PicassoWrap(VideoDetailsActivity.this, new RefererDownloader(getApplicationContext(), response.getCoverReferer()));
                 mRecomAdapter.setPicasso(picasso);
             }
-            picasso.loadVertical(response.getCover(), VideoDetailsActivity.class, mRoundImageView);
+            picasso.loadVertical(response.getCover(), VideoDetailsActivity.class,false, mRoundImageView);
             if (!TextUtils.isEmpty(response.getCover())) {
                 picasso.getPicasso().load(response.getCover()).transform(new BlurTransform()).into(mBackgroudImageView);
             }
@@ -469,14 +482,13 @@ public class VideoDetailsActivity extends BaseActivity implements
 
         @Override
         public Integer onTaskBackground() {
-            if (isFinishing() || details == null) return ERROR;
+            if (details == null || getLiteOrm() == null) return ERROR;
             getLiteOrm().insert(collect);
             return SUCCESS;
         }
 
         @Override
         public void onTaskSuccess(Integer data) {
-            if (isFinishing()) return;
             if (data == SUCCESS) {
                 showSnackbar(getString(R.string.collect_success));
             } else {

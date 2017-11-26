@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.fanchen.imovie.entity.face.IVideoBanner;
+import com.fanchen.imovie.retrofit.service.TucaoService;
 
 /**
  * Tucaoc 轮播图数据实体
@@ -66,6 +67,11 @@ public class TucaoBanner extends TucaoBaseVideo implements Parcelable, IVideoBan
     @Override
     public int getSource() {
         return 0;
+    }
+
+    @Override
+    public String getServiceClass() {
+        return TucaoService.class.getName();
     }
 
     public void setExtInfo(String extInfo) {

@@ -32,6 +32,7 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
     protected  CustomEmptyView mCustomEmptyView;
 
     private int page = 1;
+    private int pageStart = 1;
     private BaseAdapter mAdapter;
 
     @Override
@@ -47,7 +48,7 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
         mSwipeRefreshLayout.setColorSchemeColors(typedValue.data);
         mRecyclerView.setLayoutManager(getLayoutManager());
         mRecyclerView.setAdapter(mAdapter = getAdapter(getPicasso()));
-        loadData(getRetrofitManager(), page = 1);
+        loadData(getRetrofitManager(), page = pageStart);
     }
 
     @Override
@@ -74,7 +75,7 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
 
     @Override
     public void onRefresh() {
-        loadData(getRetrofitManager(),page = 1);
+        loadData(getRetrofitManager(),page = pageStart);
     }
 
     @Override
@@ -86,6 +87,10 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
         return page;
     }
 
+    public void setPageStart(int page) {
+        this.pageStart = page;
+    }
+
     public void setPage(int page) {
         this.page = page;
     }
@@ -94,7 +99,7 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
      * @return
      */
     protected boolean isRefresh() {
-        return page <= 1;
+        return page <= pageStart;
     }
 
     /**
@@ -146,7 +151,7 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
 
         @Override
         public void onStart(int enqueueKey) {
-            if (isFinishing()) return;
+            if (mCustomEmptyView == null || mSwipeRefreshLayout == null || mAdapter == null) return;
             mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_NON);
             if (!mSwipeRefreshLayout.isRefreshing() && !mAdapter.isLoading()) {
                 mSwipeRefreshLayout.setRefreshing(true);
@@ -155,14 +160,14 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
 
         @Override
         public void onFailure(int enqueueKey, String throwable) {
-            if (isFinishing()) return;
+            if (mCustomEmptyView == null || mAdapter == null) return;
             if (mAdapter.isEmpty()) mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_ERROR);
             showSnackbar(throwable);
         }
 
         @Override
         public void onFinish(int enqueueKey) {
-            if (isFinishing()) return;
+            if (mCustomEmptyView == null || mSwipeRefreshLayout == null || mAdapter == null) return;
             mSwipeRefreshLayout.setRefreshing(false);
             mAdapter.setLoading(false);
             if (mAdapter.isEmpty()) {
@@ -175,7 +180,7 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
 
         @Override
         public void onTaskFinish() {
-            if (isFinishing()) return;
+            if (mCustomEmptyView == null || mSwipeRefreshLayout == null || mAdapter == null) return;
             mSwipeRefreshLayout.setRefreshing(false);
             mAdapter.setLoading(false);
             if (mAdapter.isEmpty()) {
@@ -185,7 +190,7 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
 
         @Override
         public void onTaskSart() {
-            if (isFinishing()) return;
+            if (mCustomEmptyView == null || mSwipeRefreshLayout == null) return;
             mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_NON);
             if (!mSwipeRefreshLayout.isRefreshing() && !mAdapter.isLoading()) {
                 mSwipeRefreshLayout.setRefreshing(true);

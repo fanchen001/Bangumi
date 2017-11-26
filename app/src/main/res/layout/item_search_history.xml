@@ -25,7 +25,7 @@
         android:textSize="14sp"
         tools:text="History" />
 
-    <ImageView
+    <com.fanchen.imovie.view.RecycleImageView
         android:id="@+id/iv_item_search_delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

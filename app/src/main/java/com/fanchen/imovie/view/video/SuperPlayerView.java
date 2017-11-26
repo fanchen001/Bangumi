@@ -43,6 +43,7 @@ import com.fanchen.imovie.activity.WebPlayerActivity;
 import com.fanchen.imovie.util.NetworkUtil;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
@@ -951,6 +952,15 @@ public class SuperPlayerView extends RelativeLayout {
         play(url, 0, null);
     }
 
+    public void play(String url,String referer) {
+        if (TextUtils.isEmpty(url)) return;
+        this.url = url;
+        $.id(R.id.app_video_loading).visible();
+        Map<String ,String> map = new HashMap<>();
+        map.put("Referer",referer);
+        play(url, 0, map);
+    }
+
     public void playUrl(String url) {
         this.url = url;
     }
@@ -965,6 +975,7 @@ public class SuperPlayerView extends RelativeLayout {
      * @see （一般用于记录上次播放的位置或者切换视频源）
      */
     public void play(String url, int currentPosition, Map<String, String> header) {
+        if(TextUtils.isEmpty(url))return;
         this.url = url;
         if (!isNetListener) {// 如果设置不监听网络的变化，则取消监听网络变化的广播
             unregisterNetReceiver();
@@ -981,6 +992,7 @@ public class SuperPlayerView extends RelativeLayout {
         } else {
             if (playerSupport) {
                 $.id(R.id.app_video_loading).visible();
+                if(TextUtils.isEmpty(url))return;
                 videoView.setVideoURI(Uri.parse(url), header);
                 if (isLive) {
                     videoView.seekTo(0);

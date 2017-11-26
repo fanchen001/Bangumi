@@ -23,46 +23,66 @@ import retrofit2.http.Query;
 public interface Dm5Service {
 
     /**
-     *
+     * @param path
      * @return
      */
     @GET("{path}")
-    @RetrofitType(RetrofitSource.DM5_API)
+    @JsoupType(JsoupSource.DM5)
     @MethodType(value = MethodSource.HOME)
-    @JsoupType(JsoupSource.DM5)
-    Call<IHomeRoot> home(@Path("path")String path);
-
-    @GET("video/{path}/page/{page}")
-    @RetrofitType(RetrofitSource.BUMIMI_API)
-    @MethodType(value = MethodSource.HOME)
-    @JsoupType(JsoupSource.DM5)
-    Call<IHomeRoot> home(@Path("path")String path,@Path("page")Integer page);
-
-    @GET("page/{page}")
-    @RetrofitType(RetrofitSource.DM5_API)
-    @MethodType(value = MethodSource.SEARCH)
-    @JsoupType(JsoupSource.DM5)
-    Call<IBangumiMoreRoot> search(@Path("page")Integer page,@Query("s")String word);
-
-    @GET("bangumi/{path}")
-    @RetrofitType(RetrofitSource.DM5_API)
-    @MethodType(value = MethodSource.DETAILS)
-    @JsoupType(JsoupSource.DM5)
-    Call<IVideoDetails> details(@Path("path") String path);
-
-    @GET("bangumi/{path}")
-    @RetrofitType(RetrofitSource.DM5_API)
-    @MethodType(value = MethodSource.PLAYURL)
-    @JsoupType(JsoupSource.DM5)
-    Call<IPlayUrls> playUrl(@Path("path") String path,@Query("link") String link);
+    @RetrofitType(isJsoupResponse = true)
+    Call<IHomeRoot> home(@Path("path") String path);
 
     /**
-     *
+     * @param path
+     * @param page
+     * @return
+     */
+    @GET("video/{path}/page/{page}")
+    @JsoupType(JsoupSource.DM5)
+    @MethodType(value = MethodSource.HOME)
+    @RetrofitType(isJsoupResponse = true)
+    Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
+
+    /**
+     * @param page
+     * @param word
+     * @return
+     */
+    @GET("page/{page}")
+    @JsoupType(JsoupSource.DM5)
+    @MethodType(value = MethodSource.SEARCH)
+    @RetrofitType(isJsoupResponse = true)
+    Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Query("s") String word);
+
+    /**
+     * @param path
+     * @return
+     */
+    @GET("bangumi/{path}")
+    @JsoupType(JsoupSource.DM5)
+    @MethodType(value = MethodSource.DETAILS)
+    @RetrofitType(isJsoupResponse = true)
+    Call<IVideoDetails> details(@Path("path") String path);
+
+    /**
+     * @param path
+     * @param link
+     * @return
+     */
+    @GET("bangumi/{path}")
+    @JsoupType(JsoupSource.DM5)
+    @MethodType(value = MethodSource.PLAYURL)
+    @RetrofitType(isJsoupResponse = true)
+    Call<IPlayUrls> playUrl(@Path("path") String path, @Query("link") String link);
+
+    /**
+     * @param pid
+     * @param page
      * @return
      */
     @GET("video/bgm/{pid}/page/{page}")
-    @RetrofitType(RetrofitSource.DM5_API)
-    @MethodType(value = MethodSource.MORE)
     @JsoupType(JsoupSource.DM5)
-    Call<IBangumiMoreRoot> more(@Path("pid")String pid,@Path("page") Integer page);
+    @MethodType(value = MethodSource.MORE)
+    @RetrofitType(isJsoupResponse = true)
+    Call<IBangumiMoreRoot> more(@Path("pid") String pid, @Path("page") Integer page);
 }

@@ -30,7 +30,7 @@ public class A4dyPagerAdapter extends BaseFragmentAdapter{
 
     @Override
     public Fragment createFragment(int position) {
-        return VideoListFragment.newInstance(PATHS[position],getExtendInfo().toString(),1,LOADS[position],false,false,REFERER);
+        return VideoListFragment.newInstance(PATHS[position],getExtendInfo().toString(),1,LOADS[position],false,false,REFERER,false);
     }
 
     @Override

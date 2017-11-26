@@ -17,19 +17,35 @@ import retrofit2.http.POST;
  */
 @RetrofitType(RetrofitSource.ACG12_API)
 public interface Acg12Service {
+
+    /**
+     *
+     * @param body
+     * @return
+     */
     @POST("wp-admin/admin-ajax.php?action=3a83abb58190771625479890b3035831&type=getPostsByCategory")
     @Headers({"Content-type:application/x-www-form-urlencoded","Accept-Language:zh-CN,zh;q=0.8"})
-    @RetrofitType(RetrofitSource.ACG12_API)
+    @RetrofitType(isJsonResponse = true)
     Call<AcgRoot<AcgData>> getPostsByCategory(@Body RequestBody body);
 
+    /**
+     *
+     * @param body
+     * @return
+     */
     @POST("wp-admin/admin-ajax.php?action=3a83abb58190771625479890b3035831&type=getCategories")
     @Headers({"Content-type:application/x-www-form-urlencoded","Accept-Language:zh-CN,zh;q=0.8"})
-    @RetrofitType(RetrofitSource.ACG12_API)
+    @RetrofitType(isJsonResponse = true)
     Call<AcgRoot<AcgData>> getCategories(@Body RequestBody body);
 
+    /**
+     *
+     * @param body
+     * @return
+     */
     @POST("wp-admin/admin-ajax.php?action=3a83abb58190771625479890b3035831&type=getToken")
     @Headers({"Content-type:application/x-www-form-urlencoded","Accept-Language:zh-CN,zh;q=0.8"})
-    @RetrofitType(RetrofitSource.ACG12_API)
+    @RetrofitType(isJsonResponse = true)
     Call<AcgRoot<AcgToken>> getToken(@Body RequestBody body);
 
 }

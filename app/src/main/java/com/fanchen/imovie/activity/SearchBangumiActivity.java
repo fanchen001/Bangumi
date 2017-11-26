@@ -62,9 +62,13 @@ public class SearchBangumiActivity extends BaseToolbarActivity implements Dropdo
      * @param word
      */
     public static void startActivity(Activity activity, String word) {
-        Intent intent = new Intent(activity, SearchBangumiActivity.class);
-        intent.putExtra(WORD, word);
-        activity.startActivity(intent);
+        try {
+            Intent intent = new Intent(activity, SearchBangumiActivity.class);
+            intent.putExtra(WORD, word);
+            activity.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -104,9 +108,9 @@ public class SearchBangumiActivity extends BaseToolbarActivity implements Dropdo
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if(datas == null || datas.size() <= position)return;
+        if (!(datas.get(position) instanceof IVideo)) return;
         IVideo video = (IVideo) datas.get(position);
-        VideoDetailsActivity.startActivity(this,video);
+        VideoDetailsActivity.startActivity(this, video);
     }
 
     @Override
@@ -135,7 +139,7 @@ public class SearchBangumiActivity extends BaseToolbarActivity implements Dropdo
 
     @Override
     public void OnDropdownListSelected(int indexOfButton, int indexOfList, String textOfList, String valueOfList) {
-        switch (indexOfButton){
+        switch (indexOfButton) {
             case 0:
                 tid = valueOfList;
                 break;
@@ -158,14 +162,14 @@ public class SearchBangumiActivity extends BaseToolbarActivity implements Dropdo
 
         @Override
         public void onSuccess(int enqueueKey, IBangumiMoreRoot response) {
-            if(isFinishing() || response == null || !response.isSuccess())  return;
-            if(page == 1) mVideoListAdapter.clear();
+            if (response == null || !response.isSuccess() || mVideoListAdapter == null) return;
+            if (page == 1) mVideoListAdapter.clear();
             List<? extends IVideo> list = response.getList();
-            if(list == null || list.size() == 0){
+            if (list == null || list.size() == 0) {
                 showSnackbar(getString(R.string.not_more));
                 mVideoListAdapter.setLoad(false);
                 mVideoListAdapter.notifyDataSetChanged();
-            }else{
+            } else {
                 mVideoListAdapter.addAll(list);
                 mVideoListAdapter.setLoad(list.size() >= 10);
             }
@@ -173,7 +177,7 @@ public class SearchBangumiActivity extends BaseToolbarActivity implements Dropdo
 
         @Override
         public void onStart(int enqueueKey) {
-            if (isFinishing()) return;
+            if (mCustomEmptyView == null || mSwipeRefreshLayout == null || mVideoListAdapter == null)return;
             mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_NON);
             if (!mSwipeRefreshLayout.isRefreshing() && !mVideoListAdapter.isLoading()) {
                 mSwipeRefreshLayout.setRefreshing(true);
@@ -182,7 +186,7 @@ public class SearchBangumiActivity extends BaseToolbarActivity implements Dropdo
 
         @Override
         public void onFailure(int enqueueKey, String throwable) {
-            if (isFinishing()) return;
+            if (mCustomEmptyView == null || mVideoListAdapter == null) return;
             if (mVideoListAdapter.isEmpty())
                 mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_ERROR);
             showSnackbar(throwable);
@@ -190,7 +194,7 @@ public class SearchBangumiActivity extends BaseToolbarActivity implements Dropdo
 
         @Override
         public void onFinish(int enqueueKey) {
-            if (isFinishing()) return;
+            if (mCustomEmptyView == null || mSwipeRefreshLayout == null || mVideoListAdapter == null) return;
             mSwipeRefreshLayout.setRefreshing(false);
             mVideoListAdapter.setLoading(false);
             if (mVideoListAdapter.getList().size() == 0) {

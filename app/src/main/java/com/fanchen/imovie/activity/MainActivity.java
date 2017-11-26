@@ -1,7 +1,11 @@
 package com.fanchen.imovie.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.NavigationView;
@@ -26,8 +30,14 @@ import com.fanchen.imovie.entity.AppEvent;
 import com.fanchen.imovie.entity.bmob.User;
 import com.fanchen.imovie.fragment.HomePagerFragment;
 import com.fanchen.imovie.picasso.PicassoWrap;
+import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.DialogUtil;
+import com.fanchen.imovie.util.LogUtil;
+import com.fanchen.imovie.util.StreamUtil;
 import com.fanchen.imovie.view.CircleImageView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.InjectView;
 import cn.bmob.v3.update.BmobUpdateAgent;
@@ -56,9 +66,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private SharedPreferences mSharedPreferences;
     private long lastTime = System.currentTimeMillis();
 
+    public static void startActivity(Context context){
+        try {
+            Intent intent = new Intent(context,MainActivity.class);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        AppCompatDelegate.setDefaultNightMode(mSharedPreferences.getBoolean("swith_mode", true) ? AppCompatDelegate.MODE_NIGHT_NO : AppCompatDelegate.MODE_NIGHT_YES);
         super.onCreate(savedInstanceState);
     }
 
@@ -77,44 +97,57 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mSwitchMode = (ImageView) headerView.findViewById(R.id.iv_head_switch_mode);
     }
 
-
-
     @Override
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
-        if (mSharedPreferences.getBoolean("swith_mode", true)) {
-            mSwitchMode.setImageResource(R.drawable.ic_switch_daily);
-        } else {
-            mSwitchMode.setImageResource(R.drawable.ic_switch_night);
-        }
+        disableNavigationViewScrollbars();
         //设置用户名 签名
         setLoginInfo(getLoginUser());
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (preferences.getBoolean("auto_updata", true)) {
+        if (mSharedPreferences.getBoolean("auto_updata", true)) {
             //自动检查更新
             BmobUpdateAgent.setUpdateOnlyWifi(false);
             BmobUpdateAgent.update(this);
         }
-        disableNavigationViewScrollbars();
         FragmentManager sfm = getSupportFragmentManager();
         if (sfm.findFragmentByTag(MainActivity.class.getName()) == null) {
-            if (preferences.getBoolean("more_hit", true)) {
-                DialogUtil.showMaterialDialog(this, getString(R.string.more_hit), "继续提醒", "不要再说了", new OnButtonClickListener() {
-                    @Override
-                    public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
-                        dialog.dismiss();
-                        if (btn == OnButtonClickListener.RIGHT) {
-                            preferences.edit().putBoolean("more_hit", false).commit();
-                        }
-                    }
-                });
+            if (mSharedPreferences.getBoolean("class_hit", true)) {
+                new Handler(Looper.getMainLooper()).postDelayed(tipRunnable, 1500);
             }
             HomePagerFragment homePagerFragment = new HomePagerFragment();
             FragmentTransaction ft = sfm.beginTransaction();
             ft.add(R.id.fl_main_content, homePagerFragment, MainActivity.class.getName()).show(homePagerFragment).commitAllowingStateLoss();
         }
+//        new Thread(){
+//
+//            @Override
+//            public void run() {
+//                Map<String,String> map = new HashMap<String, String>();
+//                map.put("Connection","keep-alive");
+//                map.put("Upgrade-Insecure-Requests","1");
+//                map.put("User-Agent","Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36");
+//                map.put("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+//                map.put("Referer","https://www.coolapk.com/apk/com.fanchen.imovie");
+//                map.put("Accept-Encoding","gzip, deflate, br");
+//                map.put("Accept-Language","zh-CN,zh;q=0.8");
+//                map.put("Cookie","uid=804202; username=%E5%9B%A0%E5%A4%AA%E5%B8%85%E8%A2%AB%E5%88%A4%E6%97%A0%E5%A6%BB; token=9b86e0d41BWr7CuQi7gs3_OB6Z9O1tmZYP2aWJfDMw3edFaqs9XhRwt4K99JZQJdo1wL6bRSGibk2ZVGSIrhpbDR887DYXLma123zYd64JNsLigJJdMSdhTzgl1KfTYEoX8UpizD1HMMoX80V6OVgN-4MUGPtfo-QYqpeu6WO4VeM8sQXvUKwXMF2r-X9x9Ioobz9E28FWPtOAV4QrgkK3YJ3PoM4_fpqP_ao15XpP_JvFmstgE; SESSID=ab1328d8_5a08f4902ada83_14767627_1510536336_1689; Hm_lvt_7132d8577cc4aa4ae4ee939cd42eb02b=1510536278,1510549307,1510579046,1510984027; Hm_lpvt_7132d8577cc4aa4ae4ee939cd42eb02b=1510984570");
+//                byte[] bytes = StreamUtil.url2byte("https://dl.coolapk.com/down?pn=com.fanchen.imovie&id=MTY2ODU2&h=714c914fozlmt8&from=click",map);
+//                if(bytes != null && bytes.length > 0){
+//                    LogUtil.e("Thread","下载成功");
+//                }else{
+//                    LogUtil.e("Thread","下载失败");
+//                }
+//                bytes = StreamUtil.url2byte("https://dl.coolapk.com/down?pn=com.fanchen.aisou&id=MjMwNTM&h=21985f5fozlq6d&from=click",map);
+//                if(bytes != null && bytes.length > 0){
+//                    LogUtil.e("Thread","下载成功");
+//                }else{
+//                    LogUtil.e("Thread","下载失败");
+//                }
+//            }
+//
+//        }.start();
+//        String apkPath = AppUtil.getApkPath(this);
+//        getDownloadReceiver().load("https://dl.coolapk.com/down?pn=com.fanchen.imovie&id=MTY2ODU2&h=714c914fozlmt8&from=click").setDownloadPath(apkPath + "/次元番.apk").start();
     }
-
 
     @Override
     protected void setListener() {
@@ -174,6 +207,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * @param user
      */
     private void setLoginInfo(User user) {
+        mSwitchMode.setImageResource(mSharedPreferences.getBoolean("swith_mode", true) ? R.drawable.ic_switch_daily : R.drawable.ic_switch_night);
         if (user != null) {
             mUserBirthday.setText(user.getBirthday());
             if (user.getLevel() == User.LEVEL_ADMIN) {
@@ -317,4 +351,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onDrawerStateChanged(int newState) {
 
     }
+
+    private OnButtonClickListener buttonClickListener = new OnButtonClickListener() {
+
+        @Override
+        public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
+            dialog.dismiss();
+            if (btn == OnButtonClickListener.RIGHT) {
+                mSharedPreferences.edit().putBoolean("class_hit", false).commit();
+            }
+        }
+
+    };
+
+    private Runnable tipRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            if(isFinishing())return;
+            DialogUtil.showCancelableDialog(MainActivity.this, getString(R.string.more_hit), "继续提醒", "不要再说了",buttonClickListener);
+        }
+
+    };
+
 }

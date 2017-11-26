@@ -16,7 +16,7 @@
         android:layout_centerHorizontal="true"
         app:cardCornerRadius="@dimen/card_corner_radius">
 
-        <ImageView
+        <com.fanchen.imovie.view.RecycleImageView
             android:id="@+id/iv_line_img"
             android:layout_width="@dimen/focus_bangumi_image_height_3"
             android:layout_height="@dimen/focus_bangumi_image_height_3"

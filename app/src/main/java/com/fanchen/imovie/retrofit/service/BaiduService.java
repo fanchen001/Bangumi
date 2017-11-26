@@ -12,7 +12,7 @@ import retrofit2.http.Query;
  *
  * Created by fanchen on 2017/9/17.
  */
-@RetrofitType(value = RetrofitSource.BAIDU_API)
+@RetrofitType(RetrofitSource.BAIDU_API)
 public interface BaiduService {
 
     /**
@@ -21,7 +21,7 @@ public interface BaiduService {
      * @return
      */
     @GET("5a1Fazu8AA54nxGko9WTAnF6hhy/su?json=1")
-    @RetrofitType(value = RetrofitSource.BAIDU_API)
+    @RetrofitType(isBaiduResponse = true)
     Call<SearchHitRoot> searchHit(@Query("wd") String wd);
 
 }

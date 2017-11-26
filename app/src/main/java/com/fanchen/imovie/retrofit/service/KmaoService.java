@@ -24,64 +24,68 @@ public interface KmaoService {
 
     /**
      *
+     * @param path
      * @return
      */
     @GET("{path}/")
-    @RetrofitType(RetrofitSource.KMAO_API)
-    @MethodType(value = MethodSource.HOME)
     @JsoupType(JsoupSource.KMAO)
-    Call<IHomeRoot> home(@Path("path")String path);
+    @MethodType(value = MethodSource.HOME)
+    @RetrofitType(isJsoupResponse = true)
+    Call<IHomeRoot> home(@Path("path") String path);
 
     /**
      *
+     * @param path
+     * @param page
      * @return
      */
     @GET("{path}/index-{page}.html")
-    @RetrofitType(RetrofitSource.KMAO_API)
-    @MethodType(value = MethodSource.HOME)
     @JsoupType(JsoupSource.KMAO)
-    Call<IHomeRoot> home(@Path("path")String path,@Path("page")Integer page);
+    @MethodType(value = MethodSource.HOME)
+    @RetrofitType(isJsoupResponse = true)
+    Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
 
     /**
      *
+     * @param page
      * @param keyword
      * @return
      */
     @GET("vod-search-wd-{keyword}-p-{page}.html")
-    @RetrofitType(RetrofitSource.KMAO_API)
-    @MethodType(value = MethodSource.SEARCH)
     @JsoupType(JsoupSource.KMAO)
-    Call<IBangumiMoreRoot> search(@Path("page")Integer page,@Path("keyword")String keyword);
+    @MethodType(value = MethodSource.SEARCH)
+    @RetrofitType(isJsoupResponse = true)
+    Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("keyword") String keyword);
 
     /**
      *
+     * @param pid
+     * @param page
      * @return
      */
     @GET("{path}/index-{page}.html")
-    @RetrofitType(RetrofitSource.KMAO_API)
-    @MethodType(value = MethodSource.MORE)
     @JsoupType(JsoupSource.KMAO)
-    Call<IBangumiMoreRoot> more(@Path("path")String pid,@Path("page") Integer page);
+    @MethodType(value = MethodSource.MORE)
+    @RetrofitType(isJsoupResponse = true)
+    Call<IBangumiMoreRoot> more(@Path("path") String pid, @Path("page") Integer page);
 
     /**
-     *
      * @param url
      * @return
      */
     @GET
-    @RetrofitType(RetrofitSource.KMAO_API)
-    @MethodType(value = MethodSource.DETAILS)
     @JsoupType(JsoupSource.KMAO)
+    @MethodType(value = MethodSource.DETAILS)
+    @RetrofitType(isJsoupResponse = true)
     Call<IVideoDetails> details(@Url String url);
 
     /**
-     *
      * @param url
      * @return
      */
     @GET
-    @RetrofitType(RetrofitSource.KMAO_API)
-    @MethodType(value = MethodSource.PLAYURL)
     @JsoupType(JsoupSource.KMAO)
+    @MethodType(value = MethodSource.PLAYURL)
+    @RetrofitType(isJsoupResponse = true)
     Call<IPlayUrls> playUrl(@Url String url);
 }

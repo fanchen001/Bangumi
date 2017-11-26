@@ -2,10 +2,9 @@ package com.fanchen.imovie.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.PixelFormat;
 import android.net.Uri;
-import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,25 +13,20 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.webkit.JavascriptInterface;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import com.fanchen.imovie.IMovieAppliction;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.base.BaseToolbarActivity;
-import com.fanchen.imovie.entity.apk.ApkEvaluat;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.ShareUtil;
 import com.fanchen.imovie.util.SystemUtil;
 import com.fanchen.imovie.view.ContextMenuTitleView;
 import com.fanchen.imovie.view.webview.SwipeWebView;
-import com.fanchen.zzplayer.view.VideoPlayer;
+import com.tencent.smtt.export.external.interfaces.SslError;
+import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
+import com.tencent.smtt.sdk.WebSettings;
+import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
 import com.xigua.p2p.P2PManager;
 import com.xigua.p2p.StorageUtils;
 
@@ -58,10 +52,14 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
      * @param url
      */
     public static void startActivity(Context context, String title, String url) {
-        Intent intent = new Intent(context, WebActivity.class);
-        intent.putExtra(URL, url);
-        intent.putExtra(TITLE, title);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, WebActivity.class);
+            intent.putExtra(URL, url);
+            intent.putExtra(TITLE, title);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -83,6 +81,17 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
     }
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setFormat(PixelFormat.TRANSLUCENT);
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected boolean isSwipeActivity() {
+        return false;
+    }
+
+    @Override
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
         WebView webView = mWebview.getWebView();
@@ -96,7 +105,7 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
         settings.setAppCacheEnabled(true);// 开启缓存机制
         settings.setUserAgentString(" Mozilla/5.0 (iPhone; U; CPU iPhone OS 5_0 like Mac OS X; en-us) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3\n");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+            settings.setMixedContentMode(0);
         }
         settings.setJavaScriptEnabled(true);
         webView.setWebViewClient(webViewClient);

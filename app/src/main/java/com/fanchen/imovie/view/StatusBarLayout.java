@@ -75,11 +75,15 @@ public class StatusBarLayout extends RelativeLayout {
 
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
-		// 要绘制的区域
-		mStatusBarRect.set(getLeft(), getTop(), getRight(), mStatusBarHeight);
-		// 绘制系统状态栏颜色
-		canvas.drawRect(mStatusBarRect, mStatusBarColorPaint);
-		super.dispatchDraw(canvas);
+		try {
+			// 要绘制的区域
+			mStatusBarRect.set(getLeft(), getTop(), getRight(), mStatusBarHeight);
+			// 绘制系统状态栏颜色
+			canvas.drawRect(mStatusBarRect, mStatusBarColorPaint);
+			super.dispatchDraw(canvas);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 
 	/**

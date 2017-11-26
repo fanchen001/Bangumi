@@ -5,8 +5,9 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.webkit.JsPromptResult;
-import android.webkit.WebView;
+
+import com.tencent.smtt.export.external.interfaces.JsPromptResult;
+import com.tencent.smtt.sdk.WebView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

@@ -3,10 +3,12 @@ package com.fanchen.imovie.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.PixelFormat;
 import android.net.Uri;
-import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -16,20 +18,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.widget.AdapterView;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.base.BaseActivity;
 import com.fanchen.imovie.dialog.BaseAlertDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
-import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.ShareUtil;
 import com.fanchen.imovie.util.SystemUtil;
 import com.fanchen.imovie.view.webview.SwipeWebView;
+import com.tencent.smtt.export.external.interfaces.SslError;
+import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
+import com.tencent.smtt.sdk.WebSettings;
+import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,9 +43,14 @@ import butterknife.InjectView;
  * 使用浏览器进行视频播放的页面
  * Created by fanchen on 2017/10/3.
  */
-public class WebPlayerActivity extends BaseActivity{
+public class WebPlayerActivity extends BaseActivity {
+
+    private static final String[] LUXIANS = {"https://www.ai577.com/playm3u8/index.php?type=&vid=%s",
+            "https://yun.glcw.cc:444/plays/?url=%s","http://jx.zz22x.com/xnflv/?url=%s",
+            "http://www.a305.org/x3/tong.php?url=%s"};
 
     public static final String URL = "url";
+    public static final String LUXIAN = "luxian";
     public static final String REFERER = "referer";
 
     @InjectView(R.id.toolbar_top)
@@ -54,41 +62,61 @@ public class WebPlayerActivity extends BaseActivity{
      * @param context
      * @param url
      */
-    public static void startActivity(Context context,String url) {
-        startActivity(context,url,null);
+    public static void startActivity(Context context, String url) {
+        startActivity(context, url, null, -1);
     }
 
     /**
+     *
      * @param context
      * @param url
+     * @param luxian
      */
-    public static void startActivity(Context context,String url,String referer) {
-        Intent intent = new Intent(context, WebPlayerActivity.class);
-        intent.putExtra(URL, url);
-        if(!TextUtils.isEmpty(referer)){
-            intent.putExtra(REFERER, referer);
+    public static void startActivity(Context context, String url, int luxian) {
+        startActivity(context, url, null, luxian);
+    }
+
+    /**
+     *
+     * @param context
+     * @param url
+     * @param referer
+     */
+    public static void startActivity(Context context, String url, String referer){
+        startActivity(context,url,referer,-1);
+    }
+
+    /**
+     *
+     * @param context
+     * @param url
+     * @param referer
+     * @param luxian
+     */
+    public static void startActivity(Context context, String url, String referer, int luxian) {
+        try {
+            Intent intent = new Intent(context, WebPlayerActivity.class);
+            intent.putExtra(URL, url);
+            if(luxian >= 0){
+                intent.putExtra(LUXIAN, luxian);
+            }
+            if (!TextUtils.isEmpty(referer)) {
+                intent.putExtra(REFERER, referer);
+            }
+            context.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        context.startActivity(intent);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //hide the status bar
+        getWindow().setFormat(PixelFormat.TRANSLUCENT);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //hide the title bar
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("play_hit",true)){
-            DialogUtil.showMaterialDialog(this, getString(R.string.player_hit),getString(R.string.not_say),getString(R.string.ok_say), new OnButtonClickListener() {
-                @Override
-                public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
-                    dialog.dismiss();
-                    if(btn == OnButtonClickListener.LIFT){
-                        PreferenceManager.getDefaultSharedPreferences(WebPlayerActivity.this).edit().putBoolean("play_hit",false).commit();
-                    }
-                }
-            });
-        }
     }
 
     @Override
@@ -115,49 +143,73 @@ public class WebPlayerActivity extends BaseActivity{
         settings.setLoadWithOverviewMode(true);// 调整到适合webview大小
         settings.setBlockNetworkImage(true);// 提高网页加载速度，暂时阻塞图片加载，然后网页加载好了，在进行加载图片
         settings.setAppCacheEnabled(true);// 开启缓存机制
-//        settings.setUserAgentString(" Mozilla/5.0 (iPhone; U; CPU iPhone OS 5_0 like Mac OS X; en-us) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3\n");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+            settings.setMixedContentMode(0);
         }
         settings.setJavaScriptEnabled(true);
         webView.setWebViewClient(webViewClient);
         registerForContextMenu(webView);
-
-        if(getIntent().hasExtra(URL)){
-            if(getIntent().hasExtra(REFERER)){
-                Map<String,String> map = new HashMap<>();
+        if (getIntent().hasExtra(LUXIAN) && getIntent().hasExtra(URL)) {
+            if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("luxian_hit", true)) {
+                new Handler(Looper.getMainLooper()).postDelayed(tipRunnable, 1500);
+            }
+            String url = String.format(LUXIANS[getIntent().getIntExtra(LUXIAN, 0)], getIntent().getStringExtra(URL));
+            mWebview.loadUrl(url);
+        } else if (getIntent().hasExtra(URL)) {
+            if (getIntent().hasExtra(REFERER)) {
+                Map<String, String> map = new HashMap<>();
                 map.put("Referer", getIntent().getStringExtra(REFERER));
-                map.put("User-Agent","Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36");
-                map.put("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
-                map.put("Accept-Encoding","gzip, deflate");
-                mWebview.loadUrl(getIntent().getStringExtra(URL),map);
-            }else{
+                map.put("User-Agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36");
+                map.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+                map.put("Accept-Encoding", "gzip, deflate");
+                mWebview.loadUrl(getIntent().getStringExtra(URL), map);
+            } else {
                 mWebview.loadUrl(getIntent().getStringExtra(URL));
             }
         }
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mWebview != null && mWebview.getWebView() != null) {
+            mWebview.getWebView().destroy();
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_web, menu);
+        if(getIntent().hasExtra(LUXIAN)){
+            getMenuInflater().inflate(R.menu.menu_luxian, menu);
+        }else{
+            getMenuInflater().inflate(R.menu.menu_web, menu);
+        }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_share:
-                ShareUtil.share(this, mWebview.getWebView().getTitle(), mWebview.getWebView().getUrl());
-                break;
-            case R.id.action_start:
-                SystemUtil.startThreeApp(this,mWebview.getWebView().getUrl());
-                break;
-            case R.id.action_copy:
-                SystemUtil.putText2Clipboard(this,mWebview.getWebView().getUrl());
-                showToast(getString(R.string.clipboard));
-                break;
-            default:
-                break;
+        if(getIntent().hasExtra(LUXIAN)){
+            switch (item.getItemId()) {
+                case R.id.action_luxian:
+                    DialogUtil.showMaterialListDialog(this, getResources().getStringArray(R.array.spinner_luxian),clickListener);
+                    break;
+            }
+        }else{
+            switch (item.getItemId()) {
+                case R.id.action_share:
+                    ShareUtil.share(this, mWebview.getWebView().getTitle(), mWebview.getWebView().getUrl());
+                    break;
+                case R.id.action_start:
+                    SystemUtil.startThreeApp(this, mWebview.getWebView().getUrl());
+                    break;
+                case R.id.action_copy:
+                    SystemUtil.putText2Clipboard(this, mWebview.getWebView().getUrl());
+                    showToast(getString(R.string.clipboard));
+                    break;
+                default:
+                    break;
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -232,6 +284,39 @@ public class WebPlayerActivity extends BaseActivity{
             super.onScaleChanged(view, oldScale, newScale);
             view.requestFocus();
             view.requestFocusFromTouch();
+        }
+
+    };
+
+    private Runnable tipRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            if (isFinishing()) return;
+            DialogUtil.showCancelableDialog(WebPlayerActivity.this, getString(R.string.player_hit), getString(R.string.not_say), getString(R.string.ok_say), buttonClickListener);
+        }
+
+    };
+
+    private OnButtonClickListener buttonClickListener = new OnButtonClickListener() {
+
+        @Override
+        public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
+            dialog.dismiss();
+            if (btn == OnButtonClickListener.LIFT) {
+                PreferenceManager.getDefaultSharedPreferences(WebPlayerActivity.this).edit().putBoolean("luxian_hit", false).commit();
+            }
+        }
+
+    };
+
+    private AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if(isFinishing() || position < 0 || LUXIANS.length <= position)return;
+            String url = String.format(LUXIANS[position], getIntent().getStringExtra(URL));
+            mWebview.loadUrl(url);
         }
 
     };

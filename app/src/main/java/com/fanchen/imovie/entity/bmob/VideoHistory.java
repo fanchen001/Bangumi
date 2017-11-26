@@ -130,6 +130,7 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
         extend = in.readString();
         userId = in.readString();
         coverReferer = in.readString();
+        playType = in.readInt();
     }
 
     public static final Creator<VideoHistory> CREATOR = new Creator<VideoHistory>() {
@@ -217,6 +218,7 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
         dest.writeString(extend);
         dest.writeString(userId);
         dest.writeString(coverReferer);
+        dest.writeInt(playType);
     }
 
     public String getServiceClassName() {
@@ -265,5 +267,13 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
 
     public void setCoverReferer(String coverReferer) {
         this.coverReferer = coverReferer;
+    }
+
+    public int getPlayType() {
+        return playType;
+    }
+
+    public void setPlayType(int playType) {
+        this.playType = playType;
     }
 }

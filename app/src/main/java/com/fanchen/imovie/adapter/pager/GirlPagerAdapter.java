@@ -31,6 +31,10 @@ public class GirlPagerAdapter extends BaseFragmentAdapter{
     @Override
     public Fragment createFragment(int position) {
         return VideoListFragment.newInstance(VALUES[position], DianxiumeiService.class.getName(),MULTIPLE[position],true,true,false);
-//        return DianxiumeiFragment.newInstance(VALUES[position],true,MULTIPLE[position]);
+    }
+
+    @Override
+    public Object getExtendInfo() {
+        return DianxiumeiService.class.getName();
     }
 }

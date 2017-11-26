@@ -46,9 +46,13 @@ public class InputCodeActivity extends BaseToolbarActivity implements View.OnCli
      * @param context
      */
     public static void startActivity(Context context, String phone) {
-        Intent intent = new Intent(context, InputCodeActivity.class);
-        intent.putExtra(PHONE, phone);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, InputCodeActivity.class);
+            intent.putExtra(PHONE, phone);
+            context.startActivity(intent);
+        }catch ( Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

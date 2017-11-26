@@ -42,8 +42,12 @@ public class RegisterActivity extends BaseToolbarActivity implements View.OnClic
      * @param context
      */
     public static void startActivity(Context context) {
-        Intent intent = new Intent(context, RegisterActivity.class);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, RegisterActivity.class);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

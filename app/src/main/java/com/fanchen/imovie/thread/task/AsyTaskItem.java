@@ -28,7 +28,7 @@ public class AsyTaskItem {
 	 */
 	public AsyTaskItem(AsyTaskListener listener) {
 		super();
-		this.listener = new SoftReference<AsyTaskListener>(listener);
+		this.listener = new SoftReference<>(listener);
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class AsyTaskItem {
 	 * @param listener the new listener
 	 */
 	public void setListener(AsyTaskListener listener) {
-		this.listener = new SoftReference<AsyTaskListener>(listener);
+		this.listener = new SoftReference<>(listener);
 	}
 
 } 

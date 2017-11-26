@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -150,6 +151,7 @@ public class FileUtil {
      * @return 目录删除成功返回true，否则返回false
      */
     public static boolean deleteDirectory(String sPath) {
+        if(TextUtils.isEmpty(sPath))return false;
         boolean flag = false;
         // 如果sPath不以文件分隔符结尾，自动添加文件分隔符
         if (!sPath.endsWith(File.separator)) {

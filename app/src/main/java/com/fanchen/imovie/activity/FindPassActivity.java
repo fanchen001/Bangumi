@@ -52,8 +52,12 @@ public class FindPassActivity extends BaseToolbarActivity implements TextWatcher
      * @param context
      */
     public static void startActivity(Context context) {
-        Intent intent = new Intent(context, FindPassActivity.class);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, FindPassActivity.class);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

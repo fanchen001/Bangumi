@@ -63,7 +63,7 @@ public class User extends BmobObj {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
-        nickName = "次元用户" + username.substring(username.length() - 4);
+        nickName = "次元用户" + username.substring(username.length() - 3);
     }
 
     public String getUsername() {

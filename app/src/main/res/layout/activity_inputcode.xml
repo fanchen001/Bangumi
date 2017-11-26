@@ -45,14 +45,14 @@
                     android:layout_toLeftOf="@+id/btn_sendmessage"
                     android:layout_toRightOf="@+id/img_password">
 
-                    <EditText
+                    <com.fanchen.imovie.view.SelectionEditText
                         android:id="@+id/et_verification"
                         style="@style/account_editview_textsize"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:inputType="numberSigned"
                         android:background="#00000000"
                         android:hint="输入验证码"
-                        android:inputType="none"
                         android:paddingTop="8dp"
                         android:singleLine="true"
                         android:textColorHint="@color/comm_text_hint_color" />

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +28,6 @@ import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.retrofit.callback.RetrofitCallback;
 import com.fanchen.imovie.retrofit.service.Dm5Service;
-import com.fanchen.imovie.retrofit.service.TucaoService;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
 import com.fanchen.imovie.util.DateUtil;
@@ -56,9 +56,10 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
     public static final String VIDEO_TITLE = "title";
     public static final String LIVE = "live";
     public static final String ISLIVE = "islive";
-    public static final String VIDEOEPISODE = "videoEpisode";
+    public static final String VIDEO_EPISODE = "videoEpisode";
     public static final String VIDEO = "video";
     public static final String LOCAL_VIDEO = "localVideo";
+    public static final String VIDEO_HISTORY = "videoHistory";
     public static final String MAGNET = "magnet";
     public static final String ORIENTATION = "orientation";
 
@@ -72,6 +73,7 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
     private String xiguaPlayUrl;
     private Vbyte mVbyteManager;
     private DyttLiveBody mLiveBody;
+    private VideoHistory mVideoHistory;
     private IVideo mVideo;
     private TorrentFileInfo mTorrentFile;
     private IVideoEpisode mVideoEpisode;
@@ -81,9 +83,23 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
      * @param body
      */
     public static void startActivity(Context context, DownloadEntity body) {
-        Intent intent = new Intent(context, VideoPlayerActivity.class);
-        intent.putExtra(LOCAL_VIDEO, body);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, VideoPlayerActivity.class);
+            intent.putExtra(LOCAL_VIDEO, body);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void startActivity(Context context, VideoHistory history) {
+        try {
+            Intent intent = new Intent(context, VideoPlayerActivity.class);
+            intent.putExtra(VIDEO_HISTORY, (Parcelable)history);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -91,9 +107,13 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
      * @param body
      */
     public static void startActivity(Context context, DyttLiveBody body) {
-        Intent intent = new Intent(context, VideoPlayerActivity.class);
-        intent.putExtra(LIVE, body);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, VideoPlayerActivity.class);
+            intent.putExtra(LIVE, body);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -101,9 +121,13 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
      * @param info
      */
     public static void startActivity(Context context, TorrentFileInfo info) {
-        Intent intent = new Intent(context, VideoPlayerActivity.class);
-        intent.putExtra(MAGNET, info);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, VideoPlayerActivity.class);
+            intent.putExtra(MAGNET, info);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -112,10 +136,14 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
      * @param title
      */
     public static void startActivity(Context context, String url, String title) {
-        Intent intent = new Intent(context, VideoPlayerActivity.class);
-        intent.putExtra(VIDEO_URL, url);
-        intent.putExtra(VIDEO_TITLE, title);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, VideoPlayerActivity.class);
+            intent.putExtra(VIDEO_URL, url);
+            intent.putExtra(VIDEO_TITLE, title);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -124,10 +152,14 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
      * @param episode
      */
     public static void startActivity(Context context, IVideo video, IVideoEpisode episode) {
-        Intent intent = new Intent(context, VideoPlayerActivity.class);
-        intent.putExtra(VIDEOEPISODE, episode);
-        intent.putExtra(VIDEO, video);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, VideoPlayerActivity.class);
+            intent.putExtra(VIDEO_EPISODE, episode);
+            intent.putExtra(VIDEO, video);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -135,11 +167,15 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
      * @param video
      */
     public static void startActivity(Context context, IVideo video, boolean isLive) {
-        Intent intent = new Intent(context, VideoPlayerActivity.class);
-        intent.putExtra(VIDEO, video);
-        intent.putExtra(ISLIVE, isLive);
-        intent.putExtra(ORIENTATION, !isLive);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, VideoPlayerActivity.class);
+            intent.putExtra(VIDEO, video);
+            intent.putExtra(ISLIVE, isLive);
+            intent.putExtra(ORIENTATION, !isLive);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -147,9 +183,13 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
      * @param url
      */
     public static void startActivity(Context context, String url) {
-        Intent intent = new Intent(context, VideoPlayerActivity.class);
-        intent.putExtra(VIDEO_URL, url);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, VideoPlayerActivity.class);
+            intent.putExtra(VIDEO_URL, url);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -174,7 +214,8 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
         mLiveBody = getIntent().getParcelableExtra(LIVE);
-        mVideoEpisode = getIntent().getParcelableExtra(VIDEOEPISODE);
+        mVideoHistory = getIntent().getParcelableExtra(VIDEO_HISTORY);
+        mVideoEpisode = getIntent().getParcelableExtra(VIDEO_EPISODE);
         mVideo = getIntent().getParcelableExtra(VIDEO);
         videoUrl = getIntent().getStringExtra(VIDEO_URL);
         videoTitle = getIntent().getStringExtra(VIDEO_TITLE);
@@ -190,7 +231,24 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
             mSuperPlayerView.setDefinition(true);
             playLive(mLiveBody.getVideoUrls().get(0).getLocation().replace("p2p://", ""));
             mSuperPlayerView.setSettingVisible(View.INVISIBLE);
-        } else if (getIntent().hasExtra(MAGNET)) {
+        } else if(getIntent().hasExtra(VIDEO_HISTORY)){
+            mSuperPlayerView.setAutoSpeend(true);
+            mSuperPlayerView.setTitle(mVideoHistory.getTitle());
+            RetrofitManager.REQUEST_URL = mVideoHistory.getUrl();
+            if (mVideoHistory.getPlayType() == IVideoEpisode.PLAY_TYPE_URL) {
+                if (mVideoHistory.getServiceClassName().equals(Dm5Service.class.getName())) {
+                    //五弹幕需要特殊处理
+                    String[] split = mVideoHistory.getId().split("\\?");
+                    getRetrofitManager().enqueue(mVideoHistory.getServiceClassName(), callback, "playUrl", split[0], split[1].replace("link=", ""));
+                }else {
+                    getRetrofitManager().enqueue(mVideoHistory.getServiceClassName(), callback, "playUrl", mVideoHistory.getId());
+                }
+            } else if (mVideoHistory.getPlayType() == IVideoEpisode.PLAY_TYPE_VIDEO) {
+                mSuperPlayerView.play(mVideoHistory.getUrl());
+            }else{
+                showToast(getString(R.string.error_video_type));
+            }
+        }else if (getIntent().hasExtra(MAGNET)) {
             mSuperPlayerView.setTitle(mTorrentFile.mFileName);
             mSuperPlayerView.play(mTorrentFile.playUrl);
         } else if (getIntent().hasExtra(VIDEO_URL) && getIntent().hasExtra(VIDEO_TITLE)) {
@@ -208,7 +266,7 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
         }else if (getIntent().hasExtra(VIDEO_URL) ){
             mSuperPlayerView.setAutoSpeend(true);
             mSuperPlayerView.play(videoUrl);
-        } else if (getIntent().hasExtra(VIDEOEPISODE)) {
+        } else if (getIntent().hasExtra(VIDEO_EPISODE)) {
             if(mVideoEpisode.getDownloadState() == IVideoEpisode.DOWNLOAD_SUCCESS){
                 //本地文件
                 mSuperPlayerView.setNetChangeListener(false);
@@ -216,23 +274,21 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
                 mSuperPlayerView.setTitle(mVideoEpisode.getTitle());
                 mSuperPlayerView.play(mVideoEpisode.getUrl());
             }else{
+                mSuperPlayerView.setAutoSpeend(true);
+                mSuperPlayerView.setTitle(mVideoEpisode.getTitle());
+                RetrofitManager.REQUEST_URL = mVideoEpisode.getUrl();
                 if (mVideoEpisode.getPlayerType() == IVideoEpisode.PLAY_TYPE_URL) {
-                    mSuperPlayerView.setAutoSpeend(true);
-                    mSuperPlayerView.setTitle(mVideoEpisode.getTitle());
-                    RetrofitManager.REQUEST_URL = mVideoEpisode.getUrl();
                     if (mVideoEpisode.getServiceClassName().equals(Dm5Service.class.getName())) {
                         //五弹幕需要特殊处理
                         String[] split = mVideoEpisode.getId().split("\\?");
                         getRetrofitManager().enqueue(mVideoEpisode.getServiceClassName(), callback, "playUrl", split[0], split[1].replace("link=", ""));
-                    } else if (mVideoEpisode.getServiceClassName().equals(TucaoService.class.getName())) {
-                        //吐槽C也需要需要特殊处理
-                        getRetrofitManager().enqueue(mVideoEpisode.getServiceClassName(), callback, "playUrl", mVideoEpisode.getExtend(), mVideoEpisode.getId());
-                    } else {
+                    }else {
                         getRetrofitManager().enqueue(mVideoEpisode.getServiceClassName(), callback, "playUrl", mVideoEpisode.getId());
                     }
                 } else if (mVideoEpisode.getPlayerType() == IVideoEpisode.PLAY_TYPE_VIDEO) {
-                    mSuperPlayerView.setTitle(mVideoEpisode.getTitle());
                     mSuperPlayerView.play(mVideoEpisode.getUrl());
+                }else{
+                    showToast(getString(R.string.error_video_type));
                 }
             }
         } else if (getIntent().hasExtra(VIDEO)) {
@@ -422,50 +478,64 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
 
         @Override
         public void onStart(int enqueueKey) {
-            if (isFinishing()) return;
+            if (mSuperPlayerView == null) return;
             mSuperPlayerView.setProgerssVisible(true);
         }
 
         @Override
         public void onFinish(int enqueueKey) {
-            if (isFinishing()) return;
         }
 
         @Override
         public void onFailure(int enqueueKey, String throwable) {
-            if (isFinishing()) return;
             showToast(throwable);
         }
 
         @Override
         public void onSuccess(int enqueueKey, final IPlayUrls response) {
-            if (isFinishing() || response == null) return;
-            if (response.isSuccess() && response.getUrls() != null && !response.getUrls().isEmpty() && !TextUtils.isEmpty(response.getUrls().entrySet().iterator().next().getValue())) {
+            if (response == null || !response.isSuccess() || response.getUrls() == null || mSuperPlayerView == null) return;
+            if (!response.getUrls().isEmpty() && !TextUtils.isEmpty(response.getUrls().entrySet().iterator().next().getValue())) {
                 final String value = response.getUrls().entrySet().iterator().next().getValue();
                 if (response.getPlayType() == IVideoEpisode.PLAY_TYPE_WEB) {
-                    DialogUtil.showMaterialDialog(VideoPlayerActivity.this, "该视频需要使用网页播放", new OnButtonClickListener() {
+                    DialogUtil.showCancelableDialog(VideoPlayerActivity.this, "该视频需要使用网页播放", new OnButtonClickListener() {
                         @Override
                         public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
                             if (btn == OnButtonClickListener.RIGHT) {
                                 WebPlayerActivity.startActivity(VideoPlayerActivity.this, value, response.getReferer());
-                                VideoPlayerActivity.this.finish();
                             }
                             dialog.dismiss();
+                            VideoPlayerActivity.this.finish();
+                        }
+                    });
+                } else if (response.getPlayType() == IVideoEpisode.PLAY_TYPE_WEB_V) {
+                    DialogUtil.showCancelableDialog(VideoPlayerActivity.this, "该视频需要跳转到原网页下载或播放", new OnButtonClickListener() {
+                        @Override
+                        public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
+                            if (btn == OnButtonClickListener.RIGHT) {
+                                LogUtil.e("value",value + "");
+                                WebActivity.startActivity(VideoPlayerActivity.this, value);
+                            }
+                            dialog.dismiss();
+                            VideoPlayerActivity.this.finish();
                         }
                     });
                 } else if (response.getPlayType() == IVideoEpisode.PLAY_TYPE_ZZPLAYER) {
-                    DialogUtil.showMaterialDialog(VideoPlayerActivity.this, "该视频需要使用ZPlayer播放", new OnButtonClickListener() {
+                    DialogUtil.showCancelableDialog(VideoPlayerActivity.this, "该视频需要使用ZPlayer播放", new OnButtonClickListener() {
                         @Override
                         public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
                             if (btn == OnButtonClickListener.RIGHT) {
                                 ZzplayerActivity.startActivity(VideoPlayerActivity.this, mSuperPlayerView.getVideoTitle().toString(), value);
-                                VideoPlayerActivity.this.finish();
                             }
                             dialog.dismiss();
+                            VideoPlayerActivity.this.finish();
                         }
                     });
                 } else if (response.getPlayType() == IVideoEpisode.PLAY_TYPE_VIDEO) {
-                    mSuperPlayerView.play(value);
+                    if(!TextUtils.isEmpty(response.getReferer())){
+                        mSuperPlayerView.play(value,response.getReferer());
+                    }else{
+                        mSuperPlayerView.play(value);
+                    }
                 }
             } else {
                 showToast(getString(R.string.error_play_conn));
@@ -484,6 +554,7 @@ public class VideoPlayerActivity extends BaseActivity implements AdapterView.OnI
 
         @Override
         public Void onTaskBackground() {
+            if( getLiteOrm() == null || mVideoHistory == null)return null;
             List<VideoHistory> query = getLiteOrm().query(new QueryBuilder<>(VideoHistory.class).where("cover=?", mVideoHistory.getCover()));
             if (query == null || query.size() == 0) {
                 getLiteOrm().insert(mVideoHistory);

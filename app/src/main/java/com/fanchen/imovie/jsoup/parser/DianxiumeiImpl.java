@@ -19,13 +19,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import retrofit2.Retrofit;
+
 /**
  * Created by fanchen on 2017/10/13.
  */
 public class DianxiumeiImpl implements IVideoParser {
 
     @Override
-    public IBangumiMoreRoot search(String html) {
+    public IBangumiMoreRoot search(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
         DianxiumeiHome root = new DianxiumeiHome();
         try {
@@ -50,17 +52,17 @@ public class DianxiumeiImpl implements IVideoParser {
     }
 
     @Override
-    public IHomeRoot home(String html) {
-        return (DianxiumeiHome)search(html);
+    public IHomeRoot home(Retrofit retrofit,String baseUrl,String html) {
+        return (DianxiumeiHome)search(retrofit,baseUrl,html);
     }
 
     @Override
-    public IVideoDetails details(String html) {
+    public IVideoDetails details(Retrofit retrofit,String baseUrl,String html) {
         throw new RuntimeException("this method not impl");
     }
 
     @Override
-    public IPlayUrls playUrl(String html) {
+    public IPlayUrls playUrl(Retrofit retrofit,String baseUrl,String html) {
         DianxiumeiPlayUrl url = new DianxiumeiPlayUrl();
         Node node = new Node(html);
         try {

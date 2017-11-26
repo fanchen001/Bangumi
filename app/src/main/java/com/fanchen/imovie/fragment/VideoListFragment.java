@@ -14,9 +14,12 @@ import com.arialyy.aria.core.download.DownloadEntity;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.VideoDetailsActivity;
 import com.fanchen.imovie.activity.VideoPlayerActivity;
+import com.fanchen.imovie.adapter.HomeIndexAdapter;
+import com.fanchen.imovie.adapter.VideoIndexAdapter;
 import com.fanchen.imovie.adapter.VideoListAdapter;
 import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.base.BaseRecyclerFragment;
+import com.fanchen.imovie.entity.face.IBangumiRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideo;
@@ -27,7 +30,10 @@ import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.retrofit.callback.RetrofitCallback;
 import com.fanchen.imovie.thread.AsyTaskQueue;
+import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.DialogUtil;
+import com.fanchen.imovie.util.LogUtil;
+import com.fanchen.imovie.view.pager.LoopViewPager;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -45,6 +51,8 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
     public static final String ISLIVE = "isLive";
     public static final String ISZERO = "isZero";
     public static final String REFERER = "referer";
+    public static final String PAGE_START = "page_start";
+    public static final String BANGUMIROOT = "bangumiroot";
 
     private String path;
     private String referer;
@@ -54,30 +62,54 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
     private boolean isLive = false;
     private boolean hasLoad = false;
     private boolean isZero = false;
-    private VideoListAdapter mVideoListAdapter;
+    private boolean isBangumiRoot = false;
+    private BaseAdapter mVideoAdapter;
 
     /**
      * @param path
      * @param className
      * @param multiple
+     * @param pageStart
+     * @param hasLoad
+     * @param isLive
+     * @param isZero
+     * @param referer
+     * @param isBangumiRoot
      * @return
      */
-    public static Fragment newInstance(String path, String className, int multiple, boolean hasLoad, boolean isLive, boolean isZero, String referer) {
+    public static Fragment newInstance(String path, String className, int multiple, int pageStart, boolean hasLoad, boolean isLive, boolean isZero, String referer, boolean isBangumiRoot) {
         Fragment fragment = new VideoListFragment();
         Bundle args = new Bundle();
         args.putString(PATH, path);
         args.putInt(MULTIPLE, multiple);
+        args.putInt(PAGE_START, pageStart);
         args.putBoolean(HAS_LOAD, hasLoad);
         args.putString(REFERER, referer);
         args.putBoolean(ISZERO, isZero);
         args.putString(CLASS_NAME, className);
         args.putBoolean(ISLIVE, isLive);
+        args.putBoolean(BANGUMIROOT, isBangumiRoot);
         fragment.setArguments(args);
         return fragment;
     }
 
+    /**
+     * @param path
+     * @param className
+     * @param multiple
+     * @param hasLoad
+     * @param isLive
+     * @param isZero
+     * @param referer
+     * @param isBangumiRoot
+     * @return
+     */
+    public static Fragment newInstance(String path, String className, int multiple, boolean hasLoad, boolean isLive, boolean isZero, String referer, boolean isBangumiRoot) {
+        return newInstance(path, className, multiple, 1, hasLoad, isLive, isZero, referer, isBangumiRoot);
+    }
+
     public static Fragment newInstance(String path, String className, int multiple, boolean hasLoad, boolean isLive, boolean isZero) {
-        return newInstance(path, className, multiple, hasLoad, isLive, isZero,null);
+        return newInstance(path, className, multiple, 1, hasLoad, isLive, isZero, null, false);
     }
 
     /**
@@ -113,6 +145,8 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
         isZero = getArguments().getBoolean(ISZERO);
         isLive = getArguments().getBoolean(ISLIVE, false);
         referer = getArguments().getString(REFERER);
+        isBangumiRoot = getArguments().getBoolean(BANGUMIROOT);
+        setPageStart(getArguments().getInt(PAGE_START, 1));
         serializeKey = getClass().getSimpleName() + "_" + path + "_" + className;
         super.initFragment(savedInstanceState, args);
     }
@@ -120,7 +154,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
     @Override
     protected void setListener() {
         super.setListener();
-        mVideoListAdapter.setOnItemLongClickListener(this);
+        mVideoAdapter.setOnItemLongClickListener(this);
     }
 
     @Override
@@ -129,11 +163,26 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (mVideoAdapter != null && mVideoAdapter instanceof VideoIndexAdapter) {
+            LoopViewPager loopViewPager = ((VideoIndexAdapter) mVideoAdapter).getLoopViewPager();
+            if (loopViewPager != null && isVisibleToUser && !loopViewPager.isLoop() && loopViewPager.hasLoop()) {
+                //用户可见的时候开启滚屏循环
+                loopViewPager.startLoop();
+            } else if (loopViewPager != null && !isVisibleToUser) {
+                //不可见关闭
+                loopViewPager.stopLoop();
+            }
+        }
+    }
+
+    @Override
     public BaseAdapter getAdapter(Picasso picasso) {
         if (!TextUtils.isEmpty(referer)) {
             picasso = new Picasso.Builder(activity).downloader(new RefererDownloader(activity, referer)).build();
         }
-        return mVideoListAdapter = new VideoListAdapter(activity, picasso, hasLoad);
+        return mVideoAdapter = isBangumiRoot ? new VideoIndexAdapter(activity, picasso) : new VideoListAdapter(activity, picasso, hasLoad);
     }
 
     @Override
@@ -163,8 +212,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position || !(datas.get(position) instanceof IVideo))
-            return;
+        if (!(datas.get(position) instanceof IVideo)) return;
         IVideo video = (IVideo) datas.get(position);
         if (video.hasVideoDetails()) {
             VideoDetailsActivity.startActivity(activity, video);
@@ -175,8 +223,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
 
     @Override
     public boolean onItemLongClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position || !(datas.get(position) instanceof IVideo))
-            return true;
+        if (!(datas.get(position) instanceof IVideo)) return true;
         IVideo video = (IVideo) datas.get(position);
         if (video.hasVideoDetails()) {
             DialogUtil.showOperationDialog(this, video, (List<IVideo>) datas, position);
@@ -198,9 +245,27 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
             } else {
                 integer = page == 1 ? 1 : multiple > 1 ? Integer.valueOf((page - 1) * multiple + 1) : Integer.valueOf(page * multiple);
             }
-            retrofit.enqueue(className, callback, "home", path, integer);
+            if (!path.startsWith("http") && (path.contains("/") || path.split("/").length > 1)) {
+                String[] split = path.split("/");
+                if (split.length == 2) {
+                    retrofit.enqueue(className, callback, "home", split[0], split[1], integer);
+                } else if (split.length == 3) {
+                    retrofit.enqueue(className, callback, "home", split[0], split[1], split[2], integer);
+                }
+            } else {
+                retrofit.enqueue(className, callback, "home", path, integer);
+            }
         } else {
-            retrofit.enqueue(className, callback, "home", path);
+            if (!path.startsWith("http") && (path.contains("/") || path.split("/").length > 1)) {
+                String[] split = path.split("/");
+                if (split.length == 2) {
+                    retrofit.enqueue(className, callback, "home", split[0], split[1]);
+                } else if (split.length == 3) {
+                    retrofit.enqueue(className, callback, "home", split[0], split[1], split[2]);
+                }
+            } else {
+                retrofit.enqueue(className, callback, "home", path);
+            }
         }
     }
 
@@ -208,14 +273,14 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
 
         @Override
         public void onSuccess(IHomeRoot date) {
-            if (!date.isSuccess()) return;
+            if (!date.isSuccess() || mVideoAdapter == null) return;
             List<? extends IViewType> adapterResult = date.getAdapterResult();
             if (adapterResult == null || adapterResult.size() == 0) {
-                mVideoListAdapter.setLoad(false);
+                mVideoAdapter.setLoad(false);
                 showSnackbar(getString(R.string.not_more));
             } else {
-                mVideoListAdapter.setLoad(hasLoad);
-                mVideoListAdapter.addAll(adapterResult);
+                mVideoAdapter.setLoad(hasLoad);
+                mVideoAdapter.addData(date);
             }
         }
 
@@ -223,31 +288,16 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
 
     private RefreshRecyclerFragmentImpl<IHomeRoot> callback = new RefreshRecyclerFragmentImpl<IHomeRoot>() {
 
-//        @Override
-//        public void onSuccess(int enqueueKey, IHomeRoot response) {
-//            if (!isAdded() || response == null || !response.isSuccess()) return;
-//            AsyTaskQueue.newInstance().execute(new SaveTaskListener(response));
-//            if (isRefresh()) mVideoListAdapter.clear();
-//            List<? extends IViewType> adapterResult = response.getAdapterResult();
-//            if (adapterResult == null || adapterResult.size() == 0) {
-//                mVideoListAdapter.setLoad(false);
-//                showSnackbar(getString(R.string.not_more));
-//            } else {
-//                mVideoListAdapter.setLoad(hasLoad);
-//                mVideoListAdapter.addAll(adapterResult);
-//            }
-//        }
-
         @Override
         public void onSuccess(IHomeRoot response) {
-            if (!response.isSuccess()) return;
+            if (!response.isSuccess() || mVideoAdapter == null) return;
             List<? extends IViewType> adapterResult = response.getAdapterResult();
             if (adapterResult == null || adapterResult.size() == 0) {
-                mVideoListAdapter.setLoad(false);
+                mVideoAdapter.setLoad(false);
                 showSnackbar(getString(R.string.not_more));
             } else {
-                mVideoListAdapter.setLoad(hasLoad);
-                mVideoListAdapter.addAll(adapterResult);
+                mVideoAdapter.setLoad(hasLoad);
+                mVideoAdapter.addData(response);
             }
         }
 
@@ -257,33 +307,33 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
 
         @Override
         public void onStart(int enqueueKey) {
-            if (isDetached() || !isAdded()) return;
+            if (activity == null) return;
             DialogUtil.showProgressDialog(activity, "正在获取下载地址...");
         }
 
         @Override
         public void onFinish(int enqueueKey) {
-            if (isDetached() || !isAdded()) return;
             DialogUtil.closeProgressDialog();
         }
 
         @Override
         public void onFailure(int enqueueKey, String throwable) {
-            if (isDetached() || !isAdded()) return;
             showToast(throwable);
         }
 
         @Override
         public void onSuccess(int enqueueKey, IPlayUrls response) {
-            if (isDetached() || !isAdded() || response == null) return;
+            if (response == null || activity == null) return;
             if (response.isSuccess() && response.getUrls() != null && !response.getUrls().isEmpty()) {
                 final String value = response.getUrls().entrySet().iterator().next().getValue();
                 if (response.getPlayType() == IVideoEpisode.PLAY_TYPE_VIDEO) {
-                    if (!TextUtils.isEmpty(value) && !getDownloadReceiver().load(value).taskExists()) {
-                        File dir = new File(Environment.getExternalStorageDirectory() + "/android/data/" + activity.getPackageName() + "/download/video/");
-                        if (!dir.exists())
-                            dir.mkdirs();
-                        getDownloadReceiver().load(value).setDownloadPath(new File(dir, "video_" + System.currentTimeMillis() + ".mp4").getAbsolutePath()).start();
+                    String videoPath = AppUtil.getVideoPath(activity);
+                    if (!TextUtils.isEmpty(value) && !TextUtils.isEmpty(videoPath)) {
+                        if ((value.startsWith("http") || value.startsWith("ftp")) && !getDownloadReceiver().load(value).taskExists()) {
+                            getDownloadReceiver().load(value).setDownloadPath(new File(videoPath, "video_" + System.currentTimeMillis() + ".mp4").getAbsolutePath()).start();
+                        }else {
+                            showSnackbar(getString(R.string.task_exists));
+                        }
                     } else {
                         showSnackbar(getString(R.string.task_exists));
                     }

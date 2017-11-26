@@ -19,29 +19,42 @@ import retrofit2.http.Url;
 /**
  * Created by fanchen on 2017/10/13.
  */
-@RetrofitType(RetrofitSource.DIANXIUMEI_API)
+@RetrofitType(value = RetrofitSource.DIANXIUMEI_API, isJsoupResponse = true)
 public interface DianxiumeiService {
 
     /**
      *
+     * @param url
+     * @param page
      * @return
      */
     @GET
-    @RetrofitType(RetrofitSource.DIANXIUMEI_API)
+    @JsoupType(JsoupSource.DIANXIUMEI)
+    @RetrofitType(isJsoupResponse = true)
     @MethodType(value = MethodSource.HOME)
-    @JsoupType(JsoupSource.DIANXIUMEI)
-    Call<IHomeRoot> home(@Url String url,@Query("p")Integer page);
+    Call<IHomeRoot> home(@Url String url, @Query("p") Integer page);
 
+    /**
+     *
+     * @param page
+     * @param word
+     * @return
+     */
     @GET("so/s.php")
-    @RetrofitType(RetrofitSource.DIANXIUMEI_API)
+    @JsoupType(JsoupSource.DIANXIUMEI)
+    @RetrofitType(isJsoupResponse = true)
     @MethodType(value = MethodSource.SEARCH)
-    @JsoupType(JsoupSource.DIANXIUMEI)
-    Call<IBangumiMoreRoot> search(@Query("p")Integer page,@Query("q")String word);
+    Call<IBangumiMoreRoot> search(@Query("p") Integer page, @Query("q") String word);
 
+    /**
+     *
+     * @param url
+     * @return
+     */
     @GET
-    @RetrofitType(RetrofitSource.DIANXIUMEI_API)
-    @MethodType(value = MethodSource.PLAYURL)
     @JsoupType(JsoupSource.DIANXIUMEI)
+    @RetrofitType(isJsoupResponse = true)
+    @MethodType(value = MethodSource.PLAYURL)
     Call<IPlayUrls> playUrl(@Url String url);
 
 }

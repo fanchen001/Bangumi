@@ -44,19 +44,19 @@
                     android:layout_marginLeft="10.0dip"
                     android:layout_weight="1.0">
 
-                    <EditText
+                    <com.fanchen.imovie.view.SelectionEditText
                         android:id="@+id/et_phonenumber"
                         style="@style/account_editview_textsize"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:background="#00000000"
+                        android:clickable="false"
+                        android:editable="false"
                         android:gravity="center_vertical"
                         android:hint="请输入你的手机号码"
                         android:inputType="numberSigned"
                         android:maxLength="11"
-                        android:editable="false"
-                        android:clickable="false"
                         android:paddingTop="8dp"
                         android:singleLine="true"
                         android:textColorHint="@color/comm_text_hint_color" />

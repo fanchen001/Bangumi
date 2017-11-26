@@ -47,8 +47,12 @@ public class ShortVideoTabActivity extends BaseTabActivity implements ShortVideo
     protected int lastPosition = -1;
 
     public static void startActivity(Context context) {
-        Intent intent = new Intent(context, ShortVideoTabActivity.class);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, ShortVideoTabActivity.class);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -59,7 +63,7 @@ public class ShortVideoTabActivity extends BaseTabActivity implements ShortVideo
     }
 
     @Override
-    protected int getTabMode() {
+    protected int getTabMode(PagerAdapter adapter) {
         return TabLayout.MODE_SCROLLABLE;
     }
 

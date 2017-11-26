@@ -20,7 +20,6 @@ import com.fanchen.imovie.activity.ApkListActivity;
 import com.fanchen.imovie.activity.CaptureActivity;
 import com.fanchen.imovie.activity.CouldTabActivity;
 import com.fanchen.imovie.activity.HackerToolActivity;
-import com.fanchen.imovie.activity.VideoTabActivity;
 import com.fanchen.imovie.base.BaseFragment;
 import com.fanchen.imovie.entity.face.ISearchWord;
 import com.fanchen.imovie.entity.JsonSerialize;
@@ -78,26 +77,10 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
     protected LinearLayout mApkView;
     @InjectView(R.id.ll_more_game)
     protected LinearLayout mGameView;
-    @InjectView(R.id.ll_s80)
-    protected LinearLayout mS80View;
-    @InjectView(R.id.ll_bumimi)
-    protected LinearLayout mBumimiView;
-    @InjectView(R.id.ll_jiren)
-    protected LinearLayout mJrenView;
-    @InjectView(R.id.ll_dm5)
-    protected LinearLayout mDm5View;
     @InjectView(R.id.ll_hack)
     protected LinearLayout mHackView;
     @InjectView(R.id.ll_could)
     protected LinearLayout mCouldView;
-    @InjectView(R.id.ll_169)
-    protected LinearLayout m169View;
-    @InjectView(R.id.ll_nv2)
-    protected LinearLayout mNV2View;
-    @InjectView(R.id.ll_4k)
-    protected LinearLayout m4KView;
-    @InjectView(R.id.ll_a4dy)
-    protected LinearLayout mA4dyView;
     @InjectView(R.id.tv_word_error)
     protected TextView mErrorTextView;
 
@@ -137,16 +120,8 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
     @Override
     protected void setListener() {
         super.setListener();
-        mA4dyView.setOnClickListener(this);
-        m4KView.setOnClickListener(this);
-        mNV2View.setOnClickListener(this);
-        m169View.setOnClickListener(this);
         mCouldView.setOnClickListener(this);
         mHackView.setOnClickListener(this);
-        mDm5View.setOnClickListener(this);
-        mJrenView.setOnClickListener(this);
-        mBumimiView.setOnClickListener(this);
-        mS80View.setOnClickListener(this);
         mGameView.setOnClickListener(this);
         mApkView.setOnClickListener(this);
         mSearchView.setOnClickListener(this);
@@ -180,30 +155,6 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
             case R.id.ll_game_pc:
                 ApkEvaluatActivity.startActivity(activity);
                 break;
-            case R.id.ll_a4dy:
-                VideoTabActivity.startActivity(activity, getString(R.string.a4dy), VideoTabActivity.A4DY);
-                break;
-            case R.id.ll_4k:
-                VideoTabActivity.startActivity(activity, getString(R.string.w_4k), VideoTabActivity.W4K);
-                break;
-            case R.id.ll_169:
-                VideoTabActivity.startActivity(activity, getString(R.string.xiu169), VideoTabActivity.XIU169);
-                break;
-            case R.id.ll_jiren:
-                VideoTabActivity.startActivity(activity, getString(R.string.jiren), VideoTabActivity.JREN);
-                break;
-            case R.id.ll_s80:
-                VideoTabActivity.startActivity(activity, getString(R.string.s80));
-                break;
-            case R.id.ll_dm5:
-                VideoTabActivity.startActivity(activity, getString(R.string.dm5), VideoTabActivity.DM5);
-                break;
-            case R.id.ll_bumimi:
-                VideoTabActivity.startActivity(activity, getString(R.string.bumimi), VideoTabActivity.BUMIMI);
-                break;
-            case R.id.ll_nv2:
-                VideoTabActivity.startActivity(activity, getString(R.string.nv2), VideoTabActivity.XIAOKANBA);
-                break;
             case R.id.search_bar:
                 Fragment parentFragment = getParentFragment();
                 if (parentFragment != null && parentFragment instanceof HomePagerFragment) {
@@ -214,7 +165,7 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
                 HackerToolActivity.startActivity(activity);
                 break;
             case R.id.qr_scan:
-                startActivity(CaptureActivity.class);
+                CaptureActivity.startActivity(activity);
                 break;
             case R.id.ll_more_hotword:
                 ViewGroup.LayoutParams layoutParams = mNestedScrollView.getLayoutParams();
@@ -295,32 +246,31 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
 
         @Override
         public void onStart(int enqueueKey) {
-            if (isDetached()) return;
+            if (mSwipeRefreshLayout == null || mErrorTextView== null) return;
             mErrorTextView.setVisibility(View.GONE);
             mSwipeRefreshLayout.setRefreshing(true);
         }
 
         @Override
         public void onFinish(int enqueueKey) {
-            if (isDetached()) return;
+            if (mSwipeRefreshLayout == null) return;
             mSwipeRefreshLayout.setRefreshing(false);
         }
 
         @Override
         public void onFailure(int enqueueKey, String throwable) {
-            if (isDetached()) return;
+            if (mErrorTextView == null) return;
             mErrorTextView.setVisibility(View.VISIBLE);
             showSnackbar(throwable);
         }
 
         @Override
         public void onSuccess(int enqueueKey, XiaomaIndex<XiaomaWordResult> response) {
+            if (mHotFlowLayout == null || response == null || isDetached()) return;
             mSaveWordIndex = response;
-            if (mHotFlowLayout != null && response != null && !isDetached()) {
-                mHotFlowLayout.removeAllViews();
-                mHotFlowLayout.addDataList2TextView(getListData(response.getResult()));
-                AsyTaskQueue.newInstance().execute(new SaveTaskListener(response));
-            }
+            mHotFlowLayout.removeAllViews();
+            mHotFlowLayout.addDataList2TextView(getListData(response.getResult()));
+            AsyTaskQueue.newInstance().execute(new SaveTaskListener(response));
         }
 
     };
@@ -335,7 +285,7 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
 
         @Override
         public void onTaskSart() {
-            if (isDetached() || !isAdded()) return;
+            if (mSwipeRefreshLayout == null) return;
             if (!mSwipeRefreshLayout.isRefreshing()) {
                 mSwipeRefreshLayout.setRefreshing(true);
             }
@@ -343,13 +293,13 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
 
         @Override
         public XiaomaIndex<XiaomaWordResult> onTaskBackground() {
+            if(getLiteOrm() == null) return null;
             List<JsonSerialize> query = getLiteOrm().query(new QueryBuilder<>(JsonSerialize.class).where("key = ?", serializeKey));
             if (query != null && query.size() > 0) {
                 JsonSerialize jsonSerialize = query.get(0);
                 if (!jsonSerialize.isStale()) {
                     //数据未过期
-                    return new Gson().fromJson(jsonSerialize.getJson(), new TypeToken<XiaomaIndex<XiaomaWordResult>>() {
-                    }.getType());
+                    return new Gson().fromJson(jsonSerialize.getJson(), new TypeToken<XiaomaIndex<XiaomaWordResult>>() {}.getType());
                 }
             }
             return null;
@@ -357,7 +307,7 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
 
         @Override
         public void onTaskSuccess(XiaomaIndex<XiaomaWordResult> data) {
-            if (isDetached()) return;
+            if (mHotFlowLayout == null || mSwipeRefreshLayout == null) return;
             mSaveWordIndex = data;
             if (data != null) {
                 //加载本地数据
@@ -386,6 +336,7 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
 
         @Override
         public Void onTaskBackground() {
+            if(getLiteOrm() == null || response == null)return null;
             //保存key
             getLiteOrm().delete(new WhereBuilder(JsonSerialize.class, "key = ?", new Object[]{serializeKey}));
             getLiteOrm().insert(new JsonSerialize(response, serializeKey));

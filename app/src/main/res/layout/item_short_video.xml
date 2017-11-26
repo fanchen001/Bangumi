@@ -23,7 +23,7 @@
             android:background="#30000000"
             android:visibility="visible">
 
-            <ImageView
+            <com.fanchen.imovie.view.RecycleImageView
                 android:id="@+id/fl_super_video_layout_iv_cover"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -35,7 +35,7 @@
                 android:layout_height="match_parent"
                 android:background="#50000000"></FrameLayout>
 
-            <ImageView
+            <com.fanchen.imovie.view.RecycleImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -71,7 +71,7 @@
         android:layout_below="@+id/rl_super_video_layout"
         android:padding="8dp">
 
-        <ImageView
+        <com.fanchen.imovie.view.RecycleImageView
             android:id="@+id/iv_avatar"
             android:layout_width="25dp"
             android:layout_height="25dp" />

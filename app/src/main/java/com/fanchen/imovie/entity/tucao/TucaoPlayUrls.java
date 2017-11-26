@@ -31,7 +31,7 @@ public class TucaoPlayUrls implements IPlayUrls{
 
     @Override
     public String getReferer() {
-        return null;
+        return "http://www.tucao.tv/";
     }
 
     @Override

@@ -20,26 +20,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import retrofit2.Retrofit;
+
 /**
  * Created by fanchen on 2017/10/2.
  */
 public class Dm5Impl implements IVideoMoreParser {
 
+    private static final String PLAYERURL = "https://xxxooo.duapp.com/ey.php?vid=%s";
+
     @Override
-    public IBangumiMoreRoot search(String html) {
-        return more(html);
+    public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {
+        return more(retrofit, baseUrl, html);
     }
 
     @Override
-    public IHomeRoot home(String html) {
+    public IHomeRoot home(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
         Dm5Home root = new Dm5Home();
-        try{
+        try {
             int count = 0;
             List<Dm5Title> titles = new ArrayList<>();
             List<Node> list = node.list("div.smart-box-head");
-            if(list != null && list.size() > 0){
-                for (Node n : list){
+            if (list != null && list.size() > 0) {
+                for (Node n : list) {
                     Dm5Title title = new Dm5Title();
                     title.setTitle(n.text("h2.light-title.title"));
                     title.setMore(true);
@@ -50,7 +54,7 @@ public class Dm5Impl implements IVideoMoreParser {
                     List<Dm5Video> videos = new ArrayList<>();
                     title.setList(videos);
                     titles.add(title);
-                    for (Node sub : new Node(n.getElement().nextElementSibling()).list("div.video-item")){
+                    for (Node sub : new Node(n.getElement().nextElementSibling()).list("div.video-item")) {
                         Dm5Video video = new Dm5Video();
                         video.setTitle(sub.text("div.item-head"));
                         video.setCover(sub.attr("div > div > a > img", "data-original"));
@@ -63,9 +67,9 @@ public class Dm5Impl implements IVideoMoreParser {
                     }
                 }
                 root.setTitles(titles);
-            }else{
+            } else {
                 List<Dm5Video> videos = new ArrayList<>();
-                for (Node sub : node.list("div[id^=post-]")){
+                for (Node sub : node.list("div[id^=post-]")) {
                     Dm5Video video = new Dm5Video();
                     video.setTitle(sub.text("div.item-head"));
                     video.setCover(sub.attr("div > div > a > img", "data-original"));
@@ -79,7 +83,7 @@ public class Dm5Impl implements IVideoMoreParser {
                 root.setList(videos);
             }
             root.setSuccess(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             root.setSuccess(false);
         }
@@ -87,15 +91,15 @@ public class Dm5Impl implements IVideoMoreParser {
     }
 
     @Override
-    public IVideoDetails details(String html) {
+    public IVideoDetails details(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
         Dm5Details details = new Dm5Details();
-        try{
+        try {
             details.setIntroduce(node.text("div.video-conent > div.item-content.toggled > p"));
             details.setExtras(node.text("div.video-conent > div.item-tax-list"));
             List<Dm5Episode> episodes = new ArrayList<>();
             details.setEpisodes(episodes);
-            for (Node n : node.list("td > a.multilink-btn.btn.btn-sm.btn-default.bordercolor2hover.bgcolor2hover")){
+            for (Node n : node.list("td > a.multilink-btn.btn.btn-sm.btn-default.bordercolor2hover.bgcolor2hover")) {
                 Dm5Episode episode = new Dm5Episode();
                 episode.setTitle(n.text());
                 episode.setId(n.attr("href", "/", 4));
@@ -103,7 +107,7 @@ public class Dm5Impl implements IVideoMoreParser {
                 episodes.add(episode);
             }
             details.setSuccess(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             details.setSuccess(false);
             e.printStackTrace();
         }
@@ -111,12 +115,12 @@ public class Dm5Impl implements IVideoMoreParser {
     }
 
     @Override
-    public IBangumiMoreRoot more(String html) {
+    public IBangumiMoreRoot more(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
         Dm5Home root = new Dm5Home();
-        try{
+        try {
             List<Dm5Video> videos = new ArrayList<>();
-            for (Node sub : node.list("div[id^=post-]")){
+            for (Node sub : node.list("div[id^=post-]")) {
                 Dm5Video video = new Dm5Video();
                 video.setTitle(sub.text("div.item-head"));
                 video.setCover(sub.attr("div > div > a > img", "data-original"));
@@ -129,7 +133,7 @@ public class Dm5Impl implements IVideoMoreParser {
             }
             root.setList(videos);
             root.setSuccess(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             root.setSuccess(false);
             e.printStackTrace();
         }
@@ -137,27 +141,26 @@ public class Dm5Impl implements IVideoMoreParser {
     }
 
     @Override
-    public IPlayUrls playUrl(String html) {
+    public IPlayUrls playUrl(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
         Dm5PlayUrl playUrl = new Dm5PlayUrl();
         try {
-            String fUrl = node.attr("iframe","src");
-            if(!TextUtils.isEmpty(fUrl)){
-                int aIndexOf = fUrl.indexOf("a=");
-                if(aIndexOf != -1){
-                    Map<String,String> map = new HashMap<>();
-                    String substring = fUrl.substring(aIndexOf + 2);
-                    int indexOf = substring.indexOf("&");
-                    if(indexOf != -1){
-                        map.put("标清","https://xxxooo.duapp.com/ey.php?vid=" + substring.substring(0,indexOf));
-                    }else{
-                        map.put("标清","https://xxxooo.duapp.com/ey.php?vid=" + substring);
-                    }
-                    playUrl.setUrls(map);
-                    playUrl.setSuccess(true);
+            String fUrl = node.attr("iframe", "src");
+            if (TextUtils.isEmpty(fUrl)) return playUrl;
+            int aIndexOf = fUrl.indexOf("a=");
+            if (aIndexOf != -1) {
+                Map<String, String> map = new HashMap<>();
+                String substring = fUrl.substring(aIndexOf + 2);
+                int indexOf = substring.indexOf("&");
+                if (indexOf != -1) {
+                    map.put("标清", String.format(PLAYERURL, substring.substring(0, indexOf)));
+                } else {
+                    map.put("标清", String.format(PLAYERURL, substring));
                 }
+                playUrl.setUrls(map);
+                playUrl.setSuccess(true);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             playUrl.setSuccess(false);
             e.printStackTrace();
         }

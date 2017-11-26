@@ -68,27 +68,16 @@ public class RankingListFragment extends BaseRecyclerFragment {
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position || position < 0 || !(datas.get(position) instanceof IVideo)) return;
+        if (!(datas.get(position) instanceof IVideo)) return;
         IVideo video = (IVideo) datas.get(position);
         VideoDetailsActivity.startActivity(activity, video);
     }
 
     private RefreshRecyclerFragmentImpl<IBangumiMoreRoot> callback = new RefreshRecyclerFragmentImpl<IBangumiMoreRoot>() {
 
-//        @Override
-//        public void onSuccess(int enqueueKey, IBangumiMoreRoot response) {
-//            if (isDetached() || response == null || !response.isSuccess()) return;
-//            if (isRefresh()) {
-//                mVideoListAdapter.clear();
-//            }
-//            mVideoListAdapter.addAll(response.getList());
-//            mVideoListAdapter.setLoad(false);
-//            mVideoListAdapter.setLoading(false);
-//        }
-
         @Override
         public void onSuccess(IBangumiMoreRoot response) {
-            if (!response.isSuccess()) return;
+            if (!response.isSuccess() || mVideoListAdapter == null) return;
             mVideoListAdapter.addAll(response.getList());
             mVideoListAdapter.setLoad(false);
             mVideoListAdapter.setLoading(false);

@@ -22,31 +22,38 @@ import retrofit2.http.Path;
  */
 @RetrofitType(RetrofitSource.S80_API)
 public interface S80Service {
-    /**
-     *
-     * @return
-     */
-    @GET("movie/{path}-{page}-0-0-0-0-0")
-    @RetrofitType(RetrofitSource.S80_API)
-    @MethodType(value = MethodSource.HOME)
-    @JsoupType(JsoupSource.S80)
-    Call<IHomeRoot> home(@Path("path")String path,@Path("page")Integer page);
 
     /**
      *
+     * @param path
+     * @param page
+     * @return
+     */
+    @GET("movie/{path}-{page}-0-0-0-0-0")
+    @JsoupType(JsoupSource.S80)
+    @MethodType(value = MethodSource.HOME)
+    @RetrofitType(isJsoupResponse = true)
+    Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
+
+    /**
      * @param keyword
      * @return
      */
     @POST("search")
-    @RetrofitType(RetrofitSource.S80_API)
-    @MethodType(value = MethodSource.SEARCH)
-    @JsoupType(JsoupSource.S80)
     @FormUrlEncoded
-    Call<IBangumiMoreRoot> search(@Field("keyword")String keyword);
-
-    @GET("movie/{id}")
-    @RetrofitType(RetrofitSource.S80_API)
-    @MethodType(value = MethodSource.DETAILS)
     @JsoupType(JsoupSource.S80)
+    @MethodType(value = MethodSource.SEARCH)
+    @RetrofitType(isJsoupResponse = true)
+    Call<IBangumiMoreRoot> search(@Field("keyword") String keyword);
+
+    /**
+     *
+     * @param path
+     * @return
+     */
+    @GET("movie/{id}")
+    @JsoupType(JsoupSource.S80)
+    @MethodType(value = MethodSource.DETAILS)
+    @RetrofitType(isJsoupResponse = true)
     Call<IVideoDetails> details(@Path("id") String path);
 }

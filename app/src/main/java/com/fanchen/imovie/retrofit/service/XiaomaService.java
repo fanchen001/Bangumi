@@ -13,22 +13,24 @@ import retrofit2.http.Query;
 /**
  * Created by fanchen on 2017/7/15.
  */
-@RetrofitType(value = RetrofitSource.XIAOMA_API)
+@RetrofitType(RetrofitSource.XIAOMA_API)
 public interface XiaomaService {
 
     /**
+     * 搜索热词
      * @param devId
      * @return
      */
     @GET("nav/sys/indexconfig?version_code=2&api_version=2")
-    @RetrofitType(value = RetrofitSource.XIAOMA_API)
+    @RetrofitType(isJsonResponse = true)
     Call<XiaomaIndex<XiaomaWordResult>> loadHotword(@Query("dev_id") String devId);
 
     /**
+     * 小马网盘/视频搜索
      * @param devId
      * @return
      */
     @GET("nav/search/list?version_code=21&api_version=2&start=0")
-    @RetrofitType(value = RetrofitSource.XIAOMA_API)
+    @RetrofitType(isJsonResponse = true)
     Call<XiaomaIndex<XiaomaSearchResult>> search(@Query("q") String word, @Query("dev_id") String devId);
 }

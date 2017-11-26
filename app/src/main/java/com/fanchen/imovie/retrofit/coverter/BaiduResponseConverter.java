@@ -7,6 +7,8 @@ import com.google.gson.stream.JsonReader;
 import java.io.IOException;
 import java.io.StringReader;
 
+import retrofit2.Retrofit;
+
 /**
  * 搜索智能词语联想
  *
@@ -19,6 +21,12 @@ public class BaiduResponseConverter extends StringResponseConverter {
     private final TypeAdapter<?> adapter;
 
     public BaiduResponseConverter(Gson gson, TypeAdapter<?> adapter) {
+        this.gson = gson;
+        this.adapter = adapter;
+    }
+
+    public BaiduResponseConverter(Retrofit retrofit, Gson gson, TypeAdapter<?> adapter) {
+        super(retrofit);
         this.gson = gson;
         this.adapter = adapter;
     }

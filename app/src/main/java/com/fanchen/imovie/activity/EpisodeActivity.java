@@ -30,9 +30,13 @@ public class EpisodeActivity extends BaseRecyclerActivity {
     private EpisodeAdapter mEpisodeAdapter;
 
     public static void startActivity(Context context,IVideoDetails mVideoDetails) {
-        Intent intent = new Intent(context, EpisodeActivity.class);
-        intent.putExtra(VIDEO, mVideoDetails);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, EpisodeActivity.class);
+            intent.putExtra(VIDEO, mVideoDetails);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -73,7 +77,7 @@ public class EpisodeActivity extends BaseRecyclerActivity {
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position || position < 0 || !(datas.get(position) instanceof IVideoEpisode)) return;
+        if (!(datas.get(position) instanceof IVideoEpisode)) return;
         IVideoEpisode episode = (IVideoEpisode) datas.get(position);
         VideoPlayerActivity.startActivity(this, mVideoDetails, episode);
     }

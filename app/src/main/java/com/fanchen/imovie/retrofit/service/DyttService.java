@@ -19,15 +19,23 @@ import retrofit2.http.Query;
 @RetrofitType(RetrofitSource.DYTT_API)
 public interface DyttService {
 
+    /**
+     * 电视直播
+     * @return
+     */
     @GET("newmovie/api/tvlives")
-    @Headers({"platVersion:5.1.1", "userId:WWNl6KssHOIDAFGqNssEweUo","platform:android", "xigua:true", "thunder:true", "package:com.ghost.movieheaven", "appVersion:5.6.0"})
-    @RetrofitType(RetrofitSource.DYTT_API)
-    /********电视直播********/
+    @RetrofitType(isJsonResponse = true)
+    @Headers({"platVersion:5.1.1", "userId:WWNl6KssHOIDAFGqNssEweUo", "platform:android", "xigua:true", "thunder:true", "package:com.ghost.movieheaven", "appVersion:5.6.0"})
     Call<DyttRoot<List<DyttLiveBody>>> live();
 
+    /**
+     * 短视频
+     * @param tid
+     * @param page
+     * @return
+     */
     @GET("newmovie/api/hotshortvideo")
-    @Headers({"platVersion:5.1.1", "userId:WWNl6KssHOIDAFGqNssEweUo","platform:android", "xigua:true", "thunder:true", "package:com.ghost.movieheaven", "appVersion:5.6.0"})
-    @RetrofitType(RetrofitSource.DYTT_API)
-    /******短视频*******/
-    Call<DyttRoot<List<DyttShortVideo>>> shortVideo(@Query("tid") String tid,@Query("page") Integer page);
+    @RetrofitType(isJsonResponse = true)
+    @Headers({"platVersion:5.1.1", "userId:WWNl6KssHOIDAFGqNssEweUo", "platform:android", "xigua:true", "thunder:true", "package:com.ghost.movieheaven", "appVersion:5.6.0"})
+    Call<DyttRoot<List<DyttShortVideo>>> shortVideo(@Query("tid") String tid, @Query("page") Integer page);
 }

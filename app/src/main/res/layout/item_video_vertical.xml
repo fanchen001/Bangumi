@@ -15,7 +15,7 @@
         android:layout_height="@dimen/focus_bangumi_image_height_4"
         app:cardCornerRadius="@dimen/card_corner_radius">
 
-        <ImageView
+        <com.fanchen.imovie.view.RecycleImageView
             android:id="@+id/item_img"
             android:layout_width="match_parent"
             android:layout_height="@dimen/focus_bangumi_image_height_4"
@@ -42,11 +42,10 @@
             app:corner="rightTop"
             app:labelBottomPadding="5dp"
             app:labelCenterPadding="0dp"
-            app:labelTopPadding="10dp"
-            app:primaryText="New"
+            app:labelTopPadding="12dp"
             app:primaryTextColor="@color/white"
             app:primaryTextSize="12sp"
-            app:secondaryTextSize="10sp" />
+            app:secondaryTextSize="8sp" />
 
     </android.support.v7.widget.CardView>
 

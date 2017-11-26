@@ -110,6 +110,11 @@ public class Dm5Title implements IBangumiTitle,Parcelable{
     }
 
     @Override
+    public int getStartPage() {
+        return 1;
+    }
+
+    @Override
     public int getViewType() {
         return IViewType.TYPE_TITLE;
     }

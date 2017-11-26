@@ -35,10 +35,10 @@ public class IMovieFactory extends Converter.Factory {
 
     @Override
     public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
-        return fromResponseBody(type, annotations);
+        return fromResponseBody(type, annotations,retrofit);
     }
 
-    public Converter<ResponseBody, ?> fromResponseBody(Type type, Annotation[] annotations) {
+    public Converter<ResponseBody, ?> fromResponseBody(Type type, Annotation[] annotations,Retrofit retrofit) {
         if (annotations == null) throw new NullPointerException("annotations == null");
         RetrofitType parser = null;
         MethodType method = null;
@@ -52,36 +52,20 @@ public class IMovieFactory extends Converter.Factory {
                 jsoup = (JsoupType) a;
             }
         }
-        if (parser == null) throw new NullPointerException("AnimParser == null");
+        if (parser == null) throw new NullPointerException("RetrofitType == null");
         Converter<ResponseBody, Object> converter = null;
-        RetrofitSource animValue = parser.value();
-       if (animValue == RetrofitSource.XIAOMA_API
-                || animValue == RetrofitSource.MOEAPK_API
-                || animValue == RetrofitSource.DYTT_API
-                || animValue == RetrofitSource.ACG12_API
-                || animValue == RetrofitSource.XIAOBO_API) {
+       if (parser.isJsonResponse()) {
             Gson gson = new Gson();
             TypeAdapter<?> adapter = gson.getAdapter(TypeToken.get(type));
             converter = new GsonResponseConverter(gson, adapter);
-        } else if (animValue == RetrofitSource.BAIDU_API) {
+        } else if (parser.isBaiduResponse()) {
             Gson gson = new Gson();
             TypeAdapter<?> adapter = gson.getAdapter(TypeToken.get(type));
             converter = new BaiduResponseConverter(gson, adapter);
-        } else if(animValue == RetrofitSource.TUCAO_API
-                || animValue == RetrofitSource.S80_API
-                || animValue == RetrofitSource.BUMIMI_API
-                || animValue == RetrofitSource.JREN_API
-               || animValue == RetrofitSource.DM5_API
-               || animValue == RetrofitSource.BILIPLUS_API
-               || animValue == RetrofitSource.DIANXIUMEI_API
-               || animValue == RetrofitSource.XIAOKANBA_API
-               || animValue == RetrofitSource.KMAO_API
-               || animValue == RetrofitSource.A4DY_API){
-            if (method == null || jsoup == null)
-                throw new NullPointerException("jsoupAnnotation == null");
-            converter = new JsoupResponseCoverter(method.value(),jsoup.value());
+        } else if(parser.isJsoupResponse() && method != null && jsoup != null){
+            converter = new JsoupResponseCoverter(retrofit,method.value(),jsoup.value());
         }
-        if (converter == null) throw new NullPointerException("AnimType  is inexistence");
+        if (converter == null) throw new NullPointerException("RetrofitType  is inexistence");
         return converter;
     }
 
@@ -94,6 +78,7 @@ public class IMovieFactory extends Converter.Factory {
                 parser = (RetrofitType) a;
             }
         }
+        if (parser == null) throw new NullPointerException("RetrofitType == null");
         Converter<?, RequestBody> converter = null;
         if (parser.isJsonRequest()){
             Gson gson = new Gson();
@@ -104,4 +89,5 @@ public class IMovieFactory extends Converter.Factory {
         }
         return converter;
     }
+
 }

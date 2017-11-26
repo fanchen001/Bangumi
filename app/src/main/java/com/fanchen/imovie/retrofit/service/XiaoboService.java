@@ -18,9 +18,14 @@ import retrofit2.http.Query;
 @RetrofitType(RetrofitSource.XIAOBO_API)
 public interface XiaoboService {
 
+    /**
+     * 迅雷云播搜索
+     * @param key
+     * @param page
+     * @return
+     */
     @GET("Vod")
+    @RetrofitType(isJsonResponse = true)
     @Headers({"platVersion:5.1.1", "userId:WWNl6KssHOIDAFGqNssEweUo","platform:android", "xigua:true", "thunder:true", "package:com.ghost.movieheaven", "appVersion:5.6.0"})
-    @RetrofitType(RetrofitSource.XIAOBO_API)
-    /******迅雷云播搜索*******/
     Call<XiaoboRoot> searchVod(@Query("keyword") String key,@Query("page")Integer page);
 }

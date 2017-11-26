@@ -73,7 +73,7 @@ public class CouldFragment extends BaseFragment implements View.OnClickListener,
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position) return;
+        if (!(datas.get(position) instanceof XiaoboVodBody)) return;
         final XiaoboVodBody body = (XiaoboVodBody) datas.get(position);
         DialogUtil.showMaterialListDialog(activity, TITLES, new AdapterView.OnItemClickListener() {
 
@@ -122,27 +122,26 @@ public class CouldFragment extends BaseFragment implements View.OnClickListener,
 
         @Override
         public void onStart(int enqueueKey) {
-            if (isDetached() || !isAdded() || page > 1) return;
+            if (mProgressView == null || page > 1) return;
             mProgressView.setVisibility(View.VISIBLE);
         }
 
         @Override
         public void onFinish(int enqueueKey) {
-            if (isDetached() || !isAdded()) return;
+            if (mProgressView == null || mSearchAdapter == null) return;
             mProgressView.setVisibility(View.GONE);
             mSearchAdapter.setLoading(false);
         }
 
         @Override
         public void onFailure(int enqueueKey, String throwable) {
-            if (isDetached() || !isAdded()) return;
             showSnackbar(throwable);
         }
 
         @Override
         public void onSuccess(int enqueueKey, XiaoboRoot response) {
-            if (isDetached() || !isAdded() || response == null || response.getBody() == null) return;
-            if(page == 1)mSearchAdapter.clear();
+            if (response == null || response.getBody() == null || mSearchAdapter == null) return;
+            if (page == 1) mSearchAdapter.clear();
             mSearchAdapter.addAll(response.getBody().getData());
         }
 

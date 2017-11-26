@@ -39,7 +39,7 @@ import cn.bmob.v3.listener.DeleteListener;
  * Created by fanchen on 2017/7/24.
  */
 public class CollectFragment extends BaseRecyclerFragment implements
-        BaseAdapter.OnItemLongClickListener,CollectTabActivity.OnClearListener {
+        BaseAdapter.OnItemLongClickListener, CollectTabActivity.OnClearListener {
 
     public static final String COLLECT_TYPE = "type";
 
@@ -49,7 +49,7 @@ public class CollectFragment extends BaseRecyclerFragment implements
     public static Fragment newInstance(int collectType) {
         Fragment fragment = new CollectFragment();
         Bundle args = new Bundle();
-        args.putInt(COLLECT_TYPE,collectType);
+        args.putInt(COLLECT_TYPE, collectType);
         fragment.setArguments(args);
         return fragment;
     }
@@ -73,12 +73,12 @@ public class CollectFragment extends BaseRecyclerFragment implements
 
     @Override
     public RecyclerView.LayoutManager getLayoutManager() {
-        return collectType == VideoCollect.TYPE_LIVE ? new LinearLayoutManager(activity) : new GridLayoutManager(activity,3);
+        return collectType == VideoCollect.TYPE_LIVE ? new LinearLayoutManager(activity) : new GridLayoutManager(activity, 3);
     }
 
     @Override
     public BaseAdapter getAdapter(Picasso picasso) {
-        return mVideoAdapter = new CollectAdapter(activity, picasso,collectType);
+        return mVideoAdapter = new CollectAdapter(activity, picasso, collectType);
     }
 
     @Override
@@ -88,27 +88,27 @@ public class CollectFragment extends BaseRecyclerFragment implements
     }
 
     @Override
-    public void loadData(Bundle savedInstanceState,RetrofitManager retrofit,int page) {
+    public void loadData(Bundle savedInstanceState, RetrofitManager retrofit, int page) {
         AsyTaskQueue.newInstance().execute(callback);
     }
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position || position < 0 || !(datas.get(position) instanceof VideoCollect)) return;
+        if (!(datas.get(position) instanceof VideoCollect)) return;
         VideoCollect collect = (VideoCollect) datas.get(position);
-        if(collect.getType() == VideoCollect.TYPE_LIVE){
+        if (collect.getType() == VideoCollect.TYPE_LIVE) {
             //电视直播
             VideoPlayerActivity.startActivity(activity, new Gson().fromJson(collect.getExtend(), DyttLiveBody.class));
-        }else if(collect.getType() == VideoCollect.TYPE_VIDEO){
+        } else if (collect.getType() == VideoCollect.TYPE_VIDEO) {
             //视频
-            VideoDetailsActivity.startActivity(activity,collect);
+            VideoDetailsActivity.startActivity(activity, collect);
         }
     }
 
     @Override
     public boolean onItemLongClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position || position < 0  || !(datas.get(position) instanceof VideoCollect)) return false;
-        DialogUtil.showMaterialDeleteDialog(this, new DeleteListenerImpl((List<VideoCollect >)datas,position),(List<VideoCollect >)datas, position);
+        if (!(datas.get(position) instanceof VideoCollect)) return false;
+        DialogUtil.showMaterialDeleteDialog(this.activity,this, new DeleteListenerImpl((List<VideoCollect>) datas, position), datas, position);
         return true;
     }
 
@@ -124,13 +124,13 @@ public class CollectFragment extends BaseRecyclerFragment implements
 
         @Override
         public List<VideoCollect> onTaskBackground() {
-            if (isDetached() && !isAdded()) return null;
+            if (getLiteOrm() == null) return null;
             return getLiteOrm().query(new QueryBuilder<>(VideoCollect.class).where("type = ?", collectType));
         }
 
         @Override
         public void onTaskSuccess(List<VideoCollect> data) {
-            if (isDetached() && !isAdded() || data == null) return;
+            if (data == null) return;
             mVideoAdapter.clear();
             mVideoAdapter.addAll(data);
         }
@@ -157,12 +157,12 @@ public class CollectFragment extends BaseRecyclerFragment implements
 
         @Override
         public Integer onTaskBackground() {
-            if (isDetached() || !isAdded() ) return DELETEERROR;
-            if ((collects == null || collects.size() == 0)&& pisotion == -1) {
+            if (getLiteOrm() == null) return DELETEERROR;
+            if ((collects == null || collects.size() == 0) && pisotion == -1) {
                 //删除全部
                 getLiteOrm().delete(VideoCollect.class);
                 return DELETEALL;
-            } else if(collects != null && collects.size() > pisotion){
+            } else if (collects != null && collects.size() > pisotion) {
                 //按条件删除
                 getLiteOrm().delete(new WhereBuilder(VideoCollect.class, "id = ? ", new Object[]{collects.get(pisotion).getId()}));
                 return pisotion;
@@ -172,26 +172,27 @@ public class CollectFragment extends BaseRecyclerFragment implements
 
         @Override
         public void onTaskSuccess(Integer data) {
-            if (isDetached() || !isAdded()) return;
+            if (collects == null || mVideoAdapter == null || collects.size() <= pisotion || pisotion < 0)
+                return;
             if (data == DELETEERROR) {
                 showSnackbar(getString(R.string.delete_error));
             } else {
                 if (data == DELETEALL) {
-                    if(IMovieAppliction.app != null){
+                    if (IMovieAppliction.app != null) {
                         List<BmobObject> bmobs = new ArrayList<>();
-                        for (VideoCollect collect : collects){
+                        for (VideoCollect collect : collects) {
                             bmobs.add(collect);
                         }
-                        new BmobObject().deleteBatch(IMovieAppliction.app,bmobs,deleteListener);
+                        new BmobObject().deleteBatch(IMovieAppliction.app, bmobs, deleteListener);
                     }
                     mVideoAdapter.clear();
                 } else {
-                    if(collects != null && collects.size() > pisotion && IMovieAppliction.app != null){
-                        collects.get(pisotion).delete(IMovieAppliction.app,deleteListener);
+                    if (collects != null && collects.size() > pisotion && IMovieAppliction.app != null) {
+                        collects.get(pisotion).delete(IMovieAppliction.app, deleteListener);
                     }
                     mVideoAdapter.remove(data);
                 }
-                if(mVideoAdapter.getList().size() == 0){
+                if (mVideoAdapter.getList().size() == 0) {
                     mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_EMPTY);
                 }
             }
