@@ -205,10 +205,11 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param savedInstanceState
      */
     private void init(Bundle savedInstanceState) {
-        appliction = (IMovieAppliction) getApplication();
+        appliction = IMovieAppliction.app != null ? IMovieAppliction.app : (IMovieAppliction) getApplication();
         mLiteOrm = LiteOrmManager.getInstance(appliction).getLiteOrm("imovie.db");
-        if (appliction != null)
+        if (appliction != null){
             appliction.addActivity(this);
+        }
         if(isRegisterEventBus())
             EventBus.getDefault().register(this);
         SwipeBackHelper.onCreate(this);

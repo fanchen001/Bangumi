@@ -13,7 +13,7 @@ import com.fanchen.imovie.retrofit.service.BumimiService;
 public class BumimiPagerAdapter extends BaseFragmentAdapter{
 
     private final String[] TITLES = new String[]{"电影", "电视剧","番剧", "综艺", "微电影"};
-    private final String[] PATHS = new String[]{"movie/", "tv/","comic/", "zongyi/","weidianying/"};
+    private final String[] PATHS = new String[]{"movie", "tv","comic", "zongyi","weidianying"};
 
     public BumimiPagerAdapter(FragmentManager fm) {
         super(fm);

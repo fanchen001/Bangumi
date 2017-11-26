@@ -9,6 +9,7 @@ import java.util.zip.GZIPInputStream;
 
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
+import retrofit2.Retrofit;
 
 /**
  * 返回数据为string使用StringResponseConverter
@@ -16,7 +17,13 @@ import retrofit2.Converter;
  */
 public class StringResponseConverter implements Converter<ResponseBody, Object> {
 
+    protected Retrofit retrofit;
+
     public StringResponseConverter() {
+    }
+
+    public StringResponseConverter(Retrofit retrofit) {
+        this.retrofit = retrofit;
     }
 
     @Override

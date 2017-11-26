@@ -4,7 +4,7 @@
     android:background="?android:attr/selectableItemBackground"
     android:layout_height="105.0dip" >
 
-    <ImageView
+    <com.fanchen.imovie.view.RecycleImageView
         android:id="@+id/iv_cover_image"
         android:layout_width="130.0dip"
         android:layout_height="93.0dip"

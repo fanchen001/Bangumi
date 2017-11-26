@@ -27,4 +27,22 @@ public @interface RetrofitType {
      * @return
      */
     boolean isJsonRequest() default false;
+
+    /**
+     * 响应是否需要json解析
+     * @return
+     */
+    boolean isJsonResponse() default false;
+
+    /**
+     * 响应是否需要jsoup解析
+     * @return
+     */
+    boolean isJsoupResponse() default false;
+
+    /**
+     * 响应是否需要百度解析
+     * @return
+     */
+    boolean isBaiduResponse() default false;
 }

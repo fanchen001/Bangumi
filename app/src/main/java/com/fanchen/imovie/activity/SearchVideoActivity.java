@@ -49,12 +49,16 @@ public class SearchVideoActivity extends BaseRecyclerActivity {
      * @param hasLoad
      */
     public static void  startActivity(Context context, String word,String className, int multiple, boolean hasLoad) {
-        Intent intent = new Intent(context,SearchVideoActivity.class);
-        intent.putExtra(WORD,word);
-        intent.putExtra(CLASS_NAME,className);
-        intent.putExtra(MULTIPLE,multiple);
-        intent.putExtra(HAS_LOAD,hasLoad);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context,SearchVideoActivity.class);
+            intent.putExtra(WORD,word);
+            intent.putExtra(CLASS_NAME,className);
+            intent.putExtra(MULTIPLE,multiple);
+            intent.putExtra(HAS_LOAD,hasLoad);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -138,7 +142,7 @@ public class SearchVideoActivity extends BaseRecyclerActivity {
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if(datas == null || datas.size() <= position || position < 0 || !(datas.get(position) instanceof IVideo))return;
+        if(!(datas.get(position) instanceof IVideo))return;
         IVideo video = (IVideo) datas.get(position);
         if(video.hasVideoDetails()){
             VideoDetailsActivity.startActivity(this,video);
@@ -151,7 +155,7 @@ public class SearchVideoActivity extends BaseRecyclerActivity {
 
         @Override
         public void onSuccess(int enqueueKey, IBangumiMoreRoot response) {
-            if(isFinishing() || response == null || !response.isSuccess())return;
+            if(response == null || !response.isSuccess() || mListAdapter == null)return;
             if(isRefresh()) mListAdapter.clear();
             List<? extends IVideo> list = response.getList();
             if(list == null || list.size() == 0){

@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.WebActivity;
@@ -41,6 +42,8 @@ public class FreeVideoFragment extends BaseFragment implements
     ImageView mRebackImageView;
     @InjectView(R.id.rlv_web_list)
     RecyclerView mWebRecyclerView;
+    @InjectView(R.id.sp_luxian)
+    Spinner mSpinner;
 
     private FreeVideoAdapter mVideoAdapter;
 
@@ -69,7 +72,8 @@ public class FreeVideoFragment extends BaseFragment implements
         mWebRecyclerView.setAdapter(mVideoAdapter);
         try {
             String json = new String(StreamUtil.stream2bytes(activity.getAssets().open("free_video.json")));
-            List<VideoWeb> list = new Gson().fromJson(json, new TypeToken<List<VideoWeb>>() {}.getType());
+            List<VideoWeb> list = new Gson().fromJson(json, new TypeToken<List<VideoWeb>>() {
+            }.getType());
             mVideoAdapter.addAll(list);
         } catch (Exception e) {
             e.printStackTrace();
@@ -78,7 +82,7 @@ public class FreeVideoFragment extends BaseFragment implements
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if (position < 0 ||datas == null || datas.size() <= position || !(datas.get(position) instanceof VideoWeb)) return;
+        if (!(datas.get(position) instanceof VideoWeb)) return;
         VideoWeb video = (VideoWeb) datas.get(position);
         if (!TextUtils.isEmpty(video.getUrl())) {
             WebActivity.startActivity(activity, video.getUrl());
@@ -88,17 +92,16 @@ public class FreeVideoFragment extends BaseFragment implements
     @Override
     public void onClick(View v) {
         String url = getEditTextString(mVideoEditText);
-        if(!TextUtils.isEmpty(url) && (url.startsWith("http") || url.startsWith("https"))){
-            switch (v.getId()){
+        if (!TextUtils.isEmpty(url) && (url.startsWith("http") || url.startsWith("https"))) {
+            switch (v.getId()) {
                 case R.id.btn_search:
-                    String format = String.format("https://www.ai577.com/playm3u8/index.php?type=&vid=%s", url);
-                    WebPlayerActivity.startActivity(activity,format);
+                    WebPlayerActivity.startActivity(activity, url,mSpinner.getSelectedItemPosition());
                     break;
                 case R.id.iv_reback:
-                    WebActivity.startActivity(activity,url);
+                    WebActivity.startActivity(activity, url);
                     break;
             }
-        }else{
+        } else {
             showSnackbar(getString(R.string.url_error_hit));
         }
     }

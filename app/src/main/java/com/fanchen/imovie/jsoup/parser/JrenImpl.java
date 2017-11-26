@@ -22,13 +22,15 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import retrofit2.Retrofit;
+
 /**
  * Created by fanchen on 2017/9/24.
  */
 public class JrenImpl implements IVideoParser {
 
     @Override
-    public IBangumiMoreRoot search(String html) {
+    public IBangumiMoreRoot search(Retrofit retrofit,String baseUrl,String html) {
         JrenHome more = new JrenHome();
         try {
             List<JrenVideo> videos = new ArrayList<>();
@@ -84,7 +86,7 @@ public class JrenImpl implements IVideoParser {
     }
 
     @Override
-    public IHomeRoot home(String html) {
+    public IHomeRoot home(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
         JrenHome root = new JrenHome();
         try {
@@ -115,7 +117,7 @@ public class JrenImpl implements IVideoParser {
     }
 
     @Override
-    public IVideoDetails details(String html) {
+    public IVideoDetails details(Retrofit retrofit,String baseUrl,String html) {
         String startUrl = "https://jren100.moe/?p=";
         int start = html.indexOf(startUrl);
         JrenDetails details = new JrenDetails();
@@ -141,7 +143,7 @@ public class JrenImpl implements IVideoParser {
     }
 
     @Override
-    public IPlayUrls playUrl(String html) {
+    public IPlayUrls playUrl(Retrofit retrofit,String baseUrl,String html) {
         return null;
     }
 

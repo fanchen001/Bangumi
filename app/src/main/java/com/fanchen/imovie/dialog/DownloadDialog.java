@@ -1,6 +1,5 @@
 package com.fanchen.imovie.dialog;
 
-import android.os.Environment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -17,23 +16,22 @@ import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
+import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.DialogUtil;
 
-import java.io.File;
 import java.util.List;
 
 /**
  * Created by fanchen on 2017/10/8.
  */
 public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
-        BaseAdapter.OnItemClickListener, View.OnClickListener, RefreshCallback<IPlayUrls> {
+        BaseAdapter.OnItemClickListener, View.OnClickListener {
 
     private RecyclerView mRecyclerView;
     private Button mAllButton;
     private Button mDownButton;
 
     private BaseActivity activity;
-    private File mDownloadDir;
     private IVideoDetails mVideoDetails;
     private IVideoEpisode mDownload;
     private List<IVideoEpisode> mDownloads;
@@ -47,8 +45,6 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
         mRetrofitManager = RetrofitManager.with(context);
         mEpisodeAdapter = new EpisodeAdapter(activity, false, true);
         mEpisodeAdapter.addAll(mVideoDetails.getEpisodes());
-        mDownloadDir = new File(Environment.getExternalStorageDirectory() + "/android/data/" + context.getPackageName() + "/download/video/");
-        if (!mDownloadDir.exists()) mDownloadDir.mkdirs();
     }
 
     @Override
@@ -72,7 +68,7 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position) return;
+        if (!(datas.get(position) instanceof IVideoEpisode)) return;
         IVideoEpisode videoEpisode = (IVideoEpisode) datas.get(position);
         if (videoEpisode.getDownloadState() == IVideoEpisode.DOWNLOAD_SELECT) {
             videoEpisode.setDownloadState(IVideoEpisode.DOWNLOAD_NON);
@@ -104,21 +100,28 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
 
     private void download(IVideoEpisode select) {
         this.mDownload = select;
+        String videoPath = AppUtil.getVideoPath(context);
+        if (TextUtils.isEmpty(videoPath) || this.mDownload == null) return;
         if (IVideoEpisode.PLAY_TYPE_VIDEO == select.getPlayerType() && !TextUtils.isEmpty(select.getUrl())) {
-            String fileNmae = mVideoDetails.getTitle() + "_" + select.getTitle() + ".mp4";
-            DownloadEntity downloadEntity = new DownloadEntity();
-            downloadEntity.setUrl(select.getUrl());
-            downloadEntity.setMd5Code(select.getUrl());
-            activity.getDownloadReceiver().load(downloadEntity).setDownloadPath(mDownloadDir + fileNmae).start();
-            mDownload.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
-            onFinish(-1);
+            String url = select.getUrl();
+            if(url.startsWith("http") || url.startsWith("ftp")){
+                String fileNmae = mVideoDetails.getTitle() + "_" + select.getTitle() + ".mp4";
+                DownloadEntity downloadEntity = new DownloadEntity();
+                downloadEntity.setUrl(url);
+                downloadEntity.setMd5Code(url);
+                downloadEntity.setFileName(fileNmae);
+                downloadEntity.setDownloadPath(videoPath + fileNmae);
+                activity.getDownloadReceiver().load(downloadEntity).start();
+                mDownload.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
+            }
+            callback.onFinish(-1);
         } else if (IVideoEpisode.PLAY_TYPE_URL == select.getPlayerType()) {
             try {
                 String[] split = select.getId().split("\\?");
                 if (split.length == 2) {
-                    mRetrofitManager.enqueue(select.getServiceClassName(), this, "playUrl", split[0], split[1].replace("link=", ""));
+                    mRetrofitManager.enqueue(select.getServiceClassName(), callback, "playUrl", split[0], split[1].replace("link=", ""));
                 } else {
-                    mRetrofitManager.enqueue(select.getServiceClassName(), this, "playUrl", split[0]);
+                    mRetrofitManager.enqueue(select.getServiceClassName(), callback, "playUrl", split[0]);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -129,50 +132,60 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
         }
     }
 
-    @Override
-    public void onStart(int enqueueKey) {
-    }
+    private RefreshCallback<IPlayUrls> callback = new RefreshCallback<IPlayUrls>() {
 
-    @Override
-    public void onFailure(int enqueueKey, String throwable) {
-    }
+        @Override
+        public void onStart(int enqueueKey) {
+        }
 
-    @Override
-    public void onFinish(int enqueueKey) {
-        if (mEpisodeAdapter != null)
-            mEpisodeAdapter.notifyDataSetChanged();
-        if (mDownloads != null && mDownloads.size() > 0) {
-            download(mDownloads.remove(0));
-        } else {
-            if (mEpisodeAdapter != null) {
-                for (IVideoEpisode episode : (List<IVideoEpisode>) mEpisodeAdapter.getList()) {
-                    if (episode.getDownloadState() == IVideoEpisode.DOWNLOAD_SELECT) {
-                        episode.setDownloadState(IVideoEpisode.DOWNLOAD_NON);
+        @Override
+        public void onFailure(int enqueueKey, String throwable) {
+        }
+
+        @Override
+        public void onFinish(int enqueueKey) {
+            if (mEpisodeAdapter != null)
+                mEpisodeAdapter.notifyDataSetChanged();
+            if (mDownloads != null && mDownloads.size() > 0) {
+                download(mDownloads.remove(0));
+            } else {
+                if (mEpisodeAdapter != null) {
+                    for (IVideoEpisode episode : (List<IVideoEpisode>) mEpisodeAdapter.getList()) {
+                        if (episode.getDownloadState() == IVideoEpisode.DOWNLOAD_SELECT) {
+                            episode.setDownloadState(IVideoEpisode.DOWNLOAD_NON);
+                        }
                     }
                 }
+                dismiss();
+                DialogUtil.closeProgressDialog();
             }
-            dismiss();
-            DialogUtil.closeProgressDialog();
         }
-    }
 
-    @Override
-    public void onSuccess(int enqueueKey, IPlayUrls response) {
-        if (mDownload == null || mVideoDetails == null || response == null) return;
-        if (response != null && response.getUrls() != null && !response.getUrls().isEmpty() && !TextUtils.isEmpty(response.getUrls().entrySet().iterator().next().getValue())) {
-            if (response.getUrlType() == IPlayUrls.URL_FILE) {
-                String value = response.getUrls().entrySet().iterator().next().getValue();
-                String fileNmae = mVideoDetails.getTitle() + "_" + mDownload.getTitle() + ".mp4";
-                DownloadEntity downloadEntity = new DownloadEntity();
-                downloadEntity.setMd5Code(mDownload.getUrl());
-                downloadEntity.setUrl(value);
-                activity.getDownloadReceiver().load(downloadEntity).setDownloadPath(mDownloadDir +"/" + fileNmae).start();
-                mDownload.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
-                activity.showToast(mVideoDetails.getTitle() + "_" + mDownload.getTitle() + "添加下载成功");
-            } else {
-                activity.showToast(mVideoDetails.getTitle() + "_" + mDownload.getTitle() + "下载失败");
+        @Override
+        public void onSuccess(int enqueueKey, IPlayUrls response) {
+            String videoPath = AppUtil.getVideoPath(context);
+            if (mDownload == null || mVideoDetails == null || response == null || TextUtils.isEmpty(videoPath))
+                return;
+            if (response != null && response.getUrls() != null && !response.getUrls().isEmpty() && !TextUtils.isEmpty(response.getUrls().entrySet().iterator().next().getValue())) {
+                if (response.getUrlType() == IPlayUrls.URL_FILE) {
+                    String value = response.getUrls().entrySet().iterator().next().getValue();
+                    if(value.startsWith("http") || value.startsWith("ftp")){
+                        String fileNmae = mVideoDetails.getTitle() + "_" + mDownload.getTitle() + ".mp4";
+                        DownloadEntity downloadEntity = new DownloadEntity();
+                        downloadEntity.setMd5Code(mDownload.getUrl());
+                        downloadEntity.setUrl(value);
+                        downloadEntity.setFileName(fileNmae);
+                        downloadEntity.setDownloadPath(videoPath + "/" + fileNmae);
+                        activity.getDownloadReceiver().load(downloadEntity).start();
+                        mDownload.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
+                        activity.showToast(mVideoDetails.getTitle() + "_" + mDownload.getTitle() + "添加下载成功");
+                    }
+                } else {
+                    activity.showToast(mVideoDetails.getTitle() + "_" + mDownload.getTitle() + "下载失败");
+                }
             }
         }
-    }
+
+    };
 
 }

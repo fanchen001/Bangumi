@@ -13,10 +13,10 @@ import com.fanchen.imovie.retrofit.service.KmaoService;
  */
 public class KmaoPagerAdapter extends BaseFragmentAdapter{
 
-    private final String[] TITLES = new String[]{"首页","电视剧", "电影", "动漫","综艺"};
-    private final String[] PATHS = new String[]{"","tv", "movie", "Animation","Arts"};
-    private final Boolean[] LOADS = new Boolean[]{false,false,false,true,true};
-
+    private final String[] TITLES = new String[]{"首页","电视剧", "电影", "动漫","综艺","微电影"};
+    private final String[] PATHS = new String[]{"","tv", "movie", "Animation","Arts","microfilm"};
+    private final Boolean[] LOADS = new Boolean[]{false,false,false,true,true,false};
+    private final Boolean[] BANGUMI = new Boolean[]{true,false,false,false,false,false};
     public KmaoPagerAdapter(FragmentManager fm) {
         super(fm);
     }
@@ -28,7 +28,7 @@ public class KmaoPagerAdapter extends BaseFragmentAdapter{
 
     @Override
     public Fragment createFragment(int position) {
-        return VideoListFragment.newInstance(PATHS[position],getExtendInfo().toString(),1,LOADS[position],false,false);
+        return VideoListFragment.newInstance(PATHS[position],getExtendInfo().toString(),1,LOADS[position],false,false,null,BANGUMI[position]);
     }
 
     @Override

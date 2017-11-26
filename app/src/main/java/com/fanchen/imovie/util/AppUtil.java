@@ -1,6 +1,7 @@
 package com.fanchen.imovie.util;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -12,6 +13,7 @@ import android.os.Environment;
 import android.os.StatFs;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * APP 工具类<br>
@@ -211,5 +213,53 @@ public class AppUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 包名判断是否为主进程
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isMainProcess(Context context) {
+        return context.getPackageName().equals(getProcessName(context));
+    }
+
+    /**
+     * 获取进程名称
+     *
+     * @param context
+     * @return
+     */
+    public static String getProcessName(Context context) {
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runningApps = am.getRunningAppProcesses();
+        if (runningApps == null) {
+            return null;
+        }
+        for (ActivityManager.RunningAppProcessInfo proInfo : runningApps) {
+            if (proInfo.pid == android.os.Process.myPid()) {
+                if (proInfo.processName != null) {
+                    return proInfo.processName;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param context
+     * @return
+     */
+    public static String getVideoPath(Context context) {
+        File mDownloadDir = new File(Environment.getExternalStorageDirectory() + "/android/data/" + context.getPackageName() + "/video/");
+        if (!mDownloadDir.exists()) mDownloadDir.mkdirs();
+        return mDownloadDir.getAbsolutePath();
+    }
+
+    public static String getApkPath(Context context) {
+        File dir = new File(Environment.getExternalStorageDirectory() + "/android/data/" + context.getPackageName() + "/download/apk/");
+        if (!dir.exists()) dir.mkdirs();
+        return dir.getAbsolutePath();
     }
 }

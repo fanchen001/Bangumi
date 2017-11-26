@@ -177,6 +177,7 @@
                 android:layout_marginRight="30.0px"
                 android:background="@drawable/drawable_line_rect_border"
                 android:gravity="start|center|top"
+                android:inputType="textNoSuggestions"
                 android:maxLength="800"
                 android:padding="2dp"
                 android:paddingTop="@dimen/dp_10"
@@ -225,6 +226,7 @@
                     android:layout_height="fill_parent"
                     android:layout_marginLeft="32dp"
                     android:background="@drawable/drawable_line_rect_border"
+                    android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:padding="2dp" />
             </FrameLayout>

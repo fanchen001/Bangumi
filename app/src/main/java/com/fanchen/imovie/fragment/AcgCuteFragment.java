@@ -63,7 +63,7 @@ public class AcgCuteFragment extends BaseRecyclerFragment {
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if(datas == null || datas.size() <= position)return;
+        if(!(datas.get(position) instanceof AcgPosts))return;
         AcgPosts posts = (AcgPosts) datas.get(position);
         WebActivity.startActivity(activity, posts.getTitle(), posts.getUrl());
     }
@@ -87,6 +87,7 @@ public class AcgCuteFragment extends BaseRecyclerFragment {
 
         @Override
         public void onSuccess(AcgRoot<AcgData> response) {
+            if(mCuteAdapter == null || response.getData() == null)return;
             mCuteAdapter.addAll(response.getData().getPosts());
         }
 
@@ -96,6 +97,7 @@ public class AcgCuteFragment extends BaseRecyclerFragment {
 
         @Override
         public void onSuccess(AcgRoot<AcgData> date) {
+            if(date.getData() == null || mCuteAdapter == null)return;
             mCuteAdapter.addAll(date.getData().getPosts());
         }
 

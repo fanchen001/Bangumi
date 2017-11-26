@@ -40,8 +40,12 @@ public class ApkEvaluatActivity extends BaseRecyclerActivity {
      * @param context
      */
     public static void startActivity(Context context){
-        Intent intent = new Intent(context,ApkEvaluatActivity.class);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context,ApkEvaluatActivity.class);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -70,7 +74,7 @@ public class ApkEvaluatActivity extends BaseRecyclerActivity {
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if(datas == null || datas.size() <= position || position < 0 || !(datas.get(position) instanceof ApkEvaluat))return;
+        if(!(datas.get(position) instanceof ApkEvaluat))return;
         ApkEvaluat apkEvaluat = (ApkEvaluat) datas.get(position);
         WebActivity.startActivity(this,apkEvaluat.getTitle(),apkEvaluat.getUrl());
     }
@@ -79,7 +83,7 @@ public class ApkEvaluatActivity extends BaseRecyclerActivity {
 
         @Override
         public void onSuccess(int enqueueKey, ApkRoot<ApkData<ApkEvaluat>> response) {
-            if (isFinishing() || response == null || response.getData() == null)return;
+            if (response == null || response.getData() == null || mEvaluatingAdapter == null)return;
             if(isRefresh())
                 mEvaluatingAdapter.clear();
             mEvaluatingAdapter.addAll(response.getData().getList());

@@ -17,24 +17,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import retrofit2.Retrofit;
+
 /**
  *
  * Created by fanchen on 2017/10/12.
  */
 public class BiliplusImpl implements IVideoParser {
+    private static final String VIDEOURL = "https://www.biliplus.com/video/av%s";
+    private static final String IFRAMEURL = "https://www.biliplus.com/api/h5play.php?iframe&name=&cid=%s&type=%s&vid=%s&bangumi=0";
 
     @Override
-    public IBangumiMoreRoot search(String html) {
+    public IBangumiMoreRoot search(Retrofit retrofit,String baseUrl,String html) {
         throw new RuntimeException("this method not impl");
     }
 
     @Override
-    public IHomeRoot home(String html) {
+    public IHomeRoot home(Retrofit retrofit,String baseUrl,String html) {
         throw new RuntimeException("this method not impl");
     }
 
     @Override
-    public IVideoDetails details(String html) {
+    public IVideoDetails details(Retrofit retrofit,String baseUrl,String html) {
         BiliplusDetails details = new BiliplusDetails();
         try{
             JSONObject jsonObject = new JSONObject(html);
@@ -45,7 +49,7 @@ public class BiliplusImpl implements IVideoParser {
             details.setLast(jsonObject.has("lastupdate") ? jsonObject.getString("lastupdate") : "");
             details.setDanmaku(jsonObject.has("typename") ? jsonObject.getString("typename") : "");
             details.setExtras(jsonObject.has("author") ? jsonObject.getString("author") : "");
-            details.setUrl(String.format("https://www.biliplus.com/video/av%s",details.getId()));//list
+            details.setUrl(String.format(VIDEOURL,details.getId()));//list
             if(jsonObject.has("list")){
                 List<BiliplusEpisode> episodes = new ArrayList<>();
                 JSONArray list = jsonObject.getJSONArray("list");
@@ -56,7 +60,7 @@ public class BiliplusImpl implements IVideoParser {
                     episode.setTitle(object.has("part") ? object.getString("part") :"第" + (i + 1) + "段");
                     episode.setExtend(object.has("vid") ? object.getString("vid") : "");
                     if(object.has("type")){
-                        episode.setUrl(String.format("https://www.biliplus.com/api/h5play.php?iframe&name=&cid=%s&type=%s&vid=%s&bangumi=0", episode.getId(), episode.getExtend(),object.getString("type")));
+                        episode.setUrl(String.format(IFRAMEURL, episode.getId(), episode.getExtend(),object.getString("type")));
                     }
                     episodes.add(episode);
                 }
@@ -71,7 +75,7 @@ public class BiliplusImpl implements IVideoParser {
     }
 
     @Override
-    public IPlayUrls playUrl(String html) {
+    public IPlayUrls playUrl(Retrofit retrofit,String baseUrl,String html) {
         BiliplusPlayUrl playUrl = new BiliplusPlayUrl();
         try {
             JSONObject object = new JSONObject(html);

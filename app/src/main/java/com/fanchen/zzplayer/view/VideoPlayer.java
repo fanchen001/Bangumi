@@ -43,6 +43,7 @@ import com.fanchen.zzplayer.util.VideoUriProtocol;
 
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -460,7 +461,7 @@ public class VideoPlayer extends RelativeLayout implements View.OnTouchListener 
      * 加载视频
      * 在这里才真正把视频路径设置到VideoView中
      */
-    private void load() {
+    private void load(Map<String,String> header) {
         //        if (mHasSetPath2vv) {
         //            return;
         //        }
@@ -474,9 +475,17 @@ public class VideoPlayer extends RelativeLayout implements View.OnTouchListener 
                 Log.i(TAG, "load failed because network not available");
                 return;
             }
-            mVv.setVideoPath(mVideoUri.toString());
+            if(header != null){
+                mVv.setVideoURI(mVideoUri,header);
+            }else{
+                mVv.setVideoPath(mVideoUri.toString());
+            }
         } else if (VideoUriProtocol.PROTOCOL_ANDROID_RESOURCE.equalsIgnoreCase(mVideoProtocol)) {
-            mVv.setVideoURI(mVideoUri);
+            if(header != null){
+                mVv.setVideoURI(mVideoUri,header);
+            }else{
+                mVv.setVideoURI(mVideoUri);
+            }
         }
         mHasSetPath2vv = true;
     }
@@ -494,7 +503,7 @@ public class VideoPlayer extends RelativeLayout implements View.OnTouchListener 
     }
 
     public void resumeFromError() {
-        load();
+        load(null);
         mVv.start();
         mVv.seekTo(mLastPlayingPos);
         updatePlayState(PlayState.PLAY);
@@ -544,16 +553,23 @@ public class VideoPlayer extends RelativeLayout implements View.OnTouchListener 
         if (VideoUriProtocol.PROTOCOL_HTTP.equalsIgnoreCase(mVideoProtocol)) {
             mIsOnlineSource = true;
         }
-
         initNetworkMonitor();
         registerNetworkReceiver();
     }
 
     public void loadAndStartVideo(@NonNull Activity act, @NonNull String path) {
         setVideoUri(act, path);
-        load();
+        load(null);
         startOrRestartPlay();
     }
+
+    public void loadAndStartVideo(@NonNull Activity act, @NonNull String path, @NonNull Map<String,String> map) {
+        setVideoUri(act, path);
+        load(map);
+        startOrRestartPlay();
+    }
+
+
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {

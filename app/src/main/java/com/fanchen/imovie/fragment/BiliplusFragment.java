@@ -18,6 +18,7 @@ import com.fanchen.imovie.entity.biliplus.BiliplusPlayUrl;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.retrofit.service.BiliplusService;
+import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.RegularUtil;
 
@@ -83,6 +84,7 @@ public class BiliplusFragment extends BaseFragment implements View.OnClickListen
 
         @Override
         public void onStart(int enqueueKey) {
+            if (activity == null) return;
             DialogUtil.showProgressDialog(activity, getString(R.string.loading));
         }
 
@@ -98,7 +100,7 @@ public class BiliplusFragment extends BaseFragment implements View.OnClickListen
 
         @Override
         public void onSuccess(int enqueueKey, IPlayUrls response) {
-            if (response.isSuccess() && response instanceof BiliplusPlayUrl) {
+            if (response != null && response.isSuccess() && response instanceof BiliplusPlayUrl && activity != null) {
                 Map<String, String> urls = response.getUrls();
                 DialogUtil.showMaterialListDialog(activity, getString(R.string.plase_select), urls.keySet(), new OnListListener(urls));
             } else {
@@ -118,13 +120,17 @@ public class BiliplusFragment extends BaseFragment implements View.OnClickListen
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (activity == null || valus == null || valus.isEmpty()) return;
             Object key = parent.getItemAtPosition(position);
             String s = valus.get(key);
-            File dir = new File(Environment.getExternalStorageDirectory() + "/android/data/" + activity.getPackageName() + "/download/video/");
-            if (!dir.exists()) dir.mkdirs();
-            if (!TextUtils.isEmpty(s) && !getDownloadReceiver().taskExists(s)) {
-                getDownloadReceiver().load(s).setDownloadPath(dir + "/" + key + "_" + System.currentTimeMillis() + ".mp4").start();
-                showSnackbar(getString(R.string.download_add));
+            String videoPath = AppUtil.getVideoPath(activity);
+            if (!TextUtils.isEmpty(s) && !TextUtils.isEmpty(videoPath)) {
+                if ((s.startsWith("http") || s.startsWith("ftp")) && !getDownloadReceiver().taskExists(s)) {
+                    getDownloadReceiver().load(s).setDownloadPath(videoPath + "/" + key + "_" + System.currentTimeMillis() + ".mp4").start();
+                    showSnackbar(getString(R.string.download_add));
+                }else {
+                    showSnackbar(getString(R.string.task_exists));
+                }
             } else {
                 showSnackbar(getString(R.string.task_exists));
             }

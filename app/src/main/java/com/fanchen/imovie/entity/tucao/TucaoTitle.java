@@ -81,6 +81,11 @@ public class TucaoTitle implements IBangumiTitle,Parcelable {
     }
 
     @Override
+    public int getStartPage() {
+        return 1;
+    }
+
+    @Override
     public int getViewType() {
         return TYPE_TITLE;
     }

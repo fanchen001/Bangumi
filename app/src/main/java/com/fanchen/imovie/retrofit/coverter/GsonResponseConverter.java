@@ -9,6 +9,7 @@ import java.io.StringReader;
 
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
+import retrofit2.Retrofit;
 
 /**
  * 返回数据为json
@@ -21,6 +22,12 @@ public class GsonResponseConverter extends StringResponseConverter {
     private final TypeAdapter<?> adapter;
 
     public GsonResponseConverter(Gson gson, TypeAdapter<?> adapter) {
+        this.gson = gson;
+        this.adapter = adapter;
+    }
+
+    public GsonResponseConverter(Retrofit retrofit, Gson gson, TypeAdapter<?> adapter) {
+        super(retrofit);
         this.gson = gson;
         this.adapter = adapter;
     }

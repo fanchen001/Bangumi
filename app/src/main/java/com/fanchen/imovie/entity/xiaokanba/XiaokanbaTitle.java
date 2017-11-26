@@ -62,6 +62,11 @@ public class XiaokanbaTitle implements IBangumiTitle{
     }
 
     @Override
+    public int getStartPage() {
+        return 1;
+    }
+
+    @Override
     public int getViewType() {
         return IViewType.TYPE_TITLE;
     }

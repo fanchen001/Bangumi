@@ -7,6 +7,7 @@ import android.os.Parcelable;
  */
 public interface IVideoEpisode extends IViewType,Parcelable{
 
+    int PLAY_TYPE_WEB_V = 0;
     /**
      * 使用网页播放
      */

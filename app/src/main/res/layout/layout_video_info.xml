@@ -22,7 +22,6 @@
         android:layout_marginLeft="@dimen/dp_15"
         android:layout_marginTop="@dimen/dp_86"
         android:padding="1dp"
-        android:scaleType="centerCrop"
         android:src="@drawable/image_load_h_pre" />
 
     <TextView

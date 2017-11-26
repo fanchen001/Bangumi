@@ -7,6 +7,8 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.VideoView;
 
+import java.util.Map;
+
 /**
  * Created by fanchen on 2017/4/28.
  */
@@ -54,6 +56,12 @@ public class ZZVideoView extends VideoView {
     @Override
     public void setVideoURI(Uri uri) {
         super.setVideoURI(uri);
+        mCurrentVideoPath = uri.getPath();
+    }
+
+    @Override
+    public void setVideoURI(Uri uri, Map<String, String> headers) {
+        super.setVideoURI(uri, headers);
         mCurrentVideoPath = uri.getPath();
     }
 

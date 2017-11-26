@@ -143,10 +143,10 @@ public class SplashActivity extends BaseActivity {
         if (!pf.getString(APP_VERSION, "").equals(versionName)) {
             pf.edit().putString(APP_VERSION, versionName).commit();
             // 如果是第一次进入页面加载引导界面
-            startActivity(MainActivity.class);
+            MainActivity.startActivity(this);
         } else {
             // 如果不是，加载主界面
-            startActivity(MainActivity.class);
+            MainActivity.startActivity(this);
         }
         finish();
     }
@@ -163,6 +163,8 @@ public class SplashActivity extends BaseActivity {
             localArrayList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != 0)
             localArrayList.add(Manifest.permission.CAMERA);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != 0)
+            localArrayList.add(Manifest.permission.ACCESS_FINE_LOCATION);
         if (localArrayList.size() > 0) {
             String[] arrayOfString = new String[localArrayList.size()];
             localArrayList.toArray(arrayOfString);
@@ -225,7 +227,7 @@ public class SplashActivity extends BaseActivity {
 
         @Override
         public List<DownloadEntity> onTaskBackground() {
-            if (appliction == null) return null;
+            if (appliction == null || getDownloadReceiver() == null) return null;
             List<DownloadEntity> list = new ArrayList<>();
             List<DownloadEntity> simpleTaskList = getDownloadReceiver().getSimpleTaskList();
             if(simpleTaskList != null){
@@ -240,10 +242,13 @@ public class SplashActivity extends BaseActivity {
 
         @Override
         public void onTaskSuccess(List<DownloadEntity> simpleTaskList) {
-            if (simpleTaskList == null) return;
+            if (simpleTaskList == null || getDownloadReceiver() == null) return;
             for (DownloadEntity entity : simpleTaskList) {
-                if(!TextUtils.isEmpty(entity.getUrl())){
-                    getDownloadReceiver().load(entity).start();
+                if(!TextUtils.isEmpty(entity.getUrl()) || !TextUtils.isEmpty(entity.getDownloadPath())){
+                    String url = entity.getUrl();
+                    if(url.startsWith("http") || url.startsWith("ftp")){
+                        getDownloadReceiver().load(entity).start();
+                    }
                 }
             }
         }

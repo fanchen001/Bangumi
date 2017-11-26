@@ -76,11 +76,13 @@ public class JavaScriptUtil {
         return "";
     }
 
+
     /**
      *
      * @param eval
      * @return
      */
+
     public static String getKkkkmaoE2(String eval){
         String evalDecrypt = JavaScriptUtil.evalDecrypt(eval);
         evalDecrypt = "function(){" + evalDecrypt.replace("eval(\"do\"+\"cum\"+\"en\"+\"t.ge\"+\"tEle\"+\"men\"+\"tB\"+\"yId('e'+'2').va\"+\"lue=e1r.join('')\");","return e1r.join('');}");

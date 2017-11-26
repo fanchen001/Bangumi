@@ -15,6 +15,7 @@ import com.fanchen.imovie.base.BaseActivity;
 import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.entity.face.IViewType;
+import com.fanchen.imovie.util.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,6 +148,10 @@ public class EpisodeAdapter extends BaseAdapter {
 
     @Override
     public void addAll(List<? extends IViewType> all) {
+        LogUtil.e("=====", "all == null ? " + (all == null));
+        if (all != null) {
+            LogUtil.e("=====", "all.size ? " + (all.size()));
+        }
         new Thread(new AddRunnable(all)).start();
     }
 
@@ -160,11 +165,11 @@ public class EpisodeAdapter extends BaseAdapter {
         }
     }
 
-    private class AddRunnable implements Runnable{
+    private class AddRunnable implements Runnable {
 
         private List<? extends IViewType> all;
 
-        private AddRunnable(List<? extends IViewType> all){
+        private AddRunnable(List<? extends IViewType> all) {
             this.all = all;
         }
 
@@ -172,14 +177,17 @@ public class EpisodeAdapter extends BaseAdapter {
         public void run() {
             if (activity == null || all == null || all.size() <= 0) return;
             List<DownloadEntity> taskList = activity.getDownloadReceiver().getSimpleTaskList();
-            if (taskList == null || taskList.size() <= 0) return;
+            if (taskList == null || taskList.size() <= 0) {
+                EpisodeAdapter.super.addAll(all);
+                return;
+            }
             for (IVideoEpisode e : (List<IVideoEpisode>) all) {
                 for (DownloadEntity entity : taskList) {
                     if (e.getUrl().equals(entity.getMd5Code())) {
                         if (entity.getState() == IEntity.STATE_COMPLETE) {
                             e.setDownloadState(IVideoEpisode.DOWNLOAD_SUCCESS);
                             e.setFilePath(entity.getDownloadPath());
-                        }else if (entity.getState() == IEntity.STATE_FAIL) {
+                        } else if (entity.getState() == IEntity.STATE_FAIL) {
                             e.setDownloadState(IVideoEpisode.DOWNLOAD_ERROR);
                         } else {
                             e.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
@@ -190,5 +198,7 @@ public class EpisodeAdapter extends BaseAdapter {
             EpisodeAdapter.super.addAll(all);
         }
 
-    };
+    }
+
+    ;
 }

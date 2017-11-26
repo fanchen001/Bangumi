@@ -13,6 +13,7 @@ import com.fanchen.imovie.activity.BangumiListActivity;
 import com.fanchen.imovie.activity.VideoTabActivity;
 import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.entity.face.IBangumiTitle;
+import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.fragment.HomeIndexFragment;
@@ -77,7 +78,7 @@ public class VideoListAdapter extends BaseAdapter{
             }
             if(danmaku != null && danmaku.trim().length() > 0){
                 videoViewHolder.triangTextView.setVisibility(View.VISIBLE);
-                videoViewHolder.triangTextView.setPrimaryText(danmaku);
+                videoViewHolder.triangTextView.setSecondaryText(danmaku);
             }else{
                 videoViewHolder.triangTextView.setVisibility(View.GONE);
             }
@@ -105,6 +106,13 @@ public class VideoListAdapter extends BaseAdapter{
             return R.layout.item_home_title;
         }else{
             return R.layout.item_load_footer;
+        }
+    }
+
+    @Override
+    public void addData(Object data) {
+        if(data instanceof IHomeRoot){
+            addAll(((IHomeRoot)data).getAdapterResult());
         }
     }
 

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Window;
 import android.view.WindowManager;
@@ -14,6 +15,9 @@ import com.fanchen.imovie.base.BaseActivity;
 import com.fanchen.zzplayer.controller.IPlayerImpl;
 import com.fanchen.zzplayer.util.OrientationUtil;
 import com.fanchen.zzplayer.view.VideoPlayer;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.InjectView;
 
@@ -26,15 +30,32 @@ public class ZzplayerActivity extends BaseActivity {
 
     public static final String URL = "url";
     public static final String TITLE = "title";
+    public static final String REFERER = "referer";
 
     @InjectView(R.id.video_main)
     protected VideoPlayer mVp;
 
     public static void startActivity(Context context,String title,String url){
-        Intent intent = new Intent(context,ZzplayerActivity.class);
-        intent.putExtra(URL,url);
-        intent.putExtra(TITLE,title);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context,ZzplayerActivity.class);
+            intent.putExtra(URL,url);
+            intent.putExtra(TITLE,title);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void startActivity(Context context,String title,String url,String referer){
+        try {
+            Intent intent = new Intent(context,ZzplayerActivity.class);
+            intent.putExtra(URL,url);
+            intent.putExtra(TITLE,title);
+            intent.putExtra(REFERER,referer);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -66,7 +87,14 @@ public class ZzplayerActivity extends BaseActivity {
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
         mVp.setTitle(getIntent().getStringExtra(TITLE));
-        mVp.loadAndStartVideo(this, getIntent().getStringExtra(URL));
+        String referer = getIntent().getStringExtra(REFERER);
+        if(!TextUtils.isEmpty(referer)){
+            Map<String,String> map = new HashMap<>();
+            map.put("Referer",referer);
+            mVp.loadAndStartVideo(this, getIntent().getStringExtra(URL),map);
+        }else{
+            mVp.loadAndStartVideo(this, getIntent().getStringExtra(URL));
+        }
         //设置控制栏播放/暂停/全屏/退出全屏按钮图标
         mVp.setIconPlay(R.drawable.play);
         mVp.setIconPause(R.drawable.pause);

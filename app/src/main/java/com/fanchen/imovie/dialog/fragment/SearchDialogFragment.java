@@ -207,7 +207,7 @@ public class SearchDialogFragment extends DialogFragment {
 
         @Override
         public void OnItemDelete(List<?> datas, int position) {
-            if (datas == null || datas.size() <= position) return;
+            if (datas == null || datas.size() <= position || position < 0 || !(datas.get(position) instanceof ISearchWord)) return;
             String keyword = ((ISearchWord) datas.get(position)).getWord();
             searchHistoryDB.deleteHistory(keyword);
             historys.remove(keyword);
@@ -228,7 +228,7 @@ public class SearchDialogFragment extends DialogFragment {
                 searchHistoryAdapter.notifyDataSetChanged();
             } else if (view.getId() == R.id.iv_search_scan) {
                 if (isAdded() && !isDetached()) {
-                    startActivity(new Intent(getActivity(), CaptureActivity.class));
+                    CaptureActivity.startActivity(getActivity());
                 }
                 hideAnim();
             }
@@ -236,7 +236,7 @@ public class SearchDialogFragment extends DialogFragment {
 
         @Override
         public void onItemClick(List<?> datas, View v, int position) {
-            if (datas == null || datas.size() <= position) return;
+            if (!(datas.get(position) instanceof ISearchWord)) return;
             ISearchWord keyword = (ISearchWord) datas.get(position);
             iOnSearchClickListener.onSearchClick(keyword);
             hideAnim();
@@ -404,7 +404,7 @@ public class SearchDialogFragment extends DialogFragment {
 
         @Override
         public void onSuccess(int enqueueKey, SearchHitRoot response) {
-            if (searchHistoryAdapter != null && isAdded()) {
+            if (searchHistoryAdapter != null) {
                 searchHistoryAdapter.clear();
                 if (response != null && response.getG() != null) {
                     searchHistoryAdapter.addAll(response.getG());

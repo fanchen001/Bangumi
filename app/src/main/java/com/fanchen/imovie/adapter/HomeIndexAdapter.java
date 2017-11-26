@@ -79,12 +79,12 @@ public class HomeIndexAdapter extends BaseAdapter {
 
     @Override
     public boolean hasFooterView() {
-        return true;
+        return index!= null && index.getHomeBanner() != null && !index.getHomeBanner().isEmpty();
     }
 
     @Override
     public boolean hasHeaderView() {
-        return true;
+        return index!= null && index.getHomeBanner() != null && !index.getHomeBanner().isEmpty();
     }
 
     @Override
@@ -207,7 +207,7 @@ public class HomeIndexAdapter extends BaseAdapter {
             if(iBanner.getBannerType() == IBanner.TYPE_WEB){
                 WebActivity.startActivity(context,iBanner.getUrl());
             }else{
-                VideoDetailsActivity.startActivity(context,iBanner.getId(), TucaoService.class.getName());
+                VideoDetailsActivity.startActivity(context,iBanner.getId(), iBanner.getServiceClass());
             }
         }
 

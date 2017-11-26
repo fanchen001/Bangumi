@@ -56,10 +56,14 @@ public class ApkListActivity extends BaseRecyclerActivity implements SearchDialo
      * @param type
      */
     public static void startActivity(Context context, int type) {
-        Intent intent = new Intent(context, ApkListActivity.class);
-        intent.putExtra(ApkListActivity.APKLIST_TYPE, type);
-        intent.putExtra(ApkListActivity.HAS_LOAD, true);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, ApkListActivity.class);
+            intent.putExtra(ApkListActivity.APKLIST_TYPE, type);
+            intent.putExtra(ApkListActivity.HAS_LOAD, true);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -67,11 +71,15 @@ public class ApkListActivity extends BaseRecyclerActivity implements SearchDialo
      * @param word
      */
     public static void startActivity(Context context, String word) {
-        Intent intent = new Intent(context, ApkListActivity.class);
-        intent.putExtra(ApkListActivity.APKLIST_TYPE, ApkListActivity.TYPE_SEARCH);
-        intent.putExtra(ApkListActivity.SEARCH_WORD, word);
-        intent.putExtra(ApkListActivity.HAS_LOAD, false);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, ApkListActivity.class);
+            intent.putExtra(ApkListActivity.APKLIST_TYPE, ApkListActivity.TYPE_SEARCH);
+            intent.putExtra(ApkListActivity.SEARCH_WORD, word);
+            intent.putExtra(ApkListActivity.HAS_LOAD, false);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -142,7 +150,7 @@ public class ApkListActivity extends BaseRecyclerActivity implements SearchDialo
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position || position < 0 || !(datas.get(position) instanceof ApkItem)) return;
+        if (!(datas.get(position) instanceof ApkItem)) return;
         ApkItem item = (ApkItem) datas.get(position);
         ApkDetailsActivity.startActivity(this, item);
     }
@@ -169,8 +177,7 @@ public class ApkListActivity extends BaseRecyclerActivity implements SearchDialo
 
         @Override
         public void onSuccess(int enqueueKey, ApkRoot<ApkData<ApkItem>> response) {
-            if (isFinishing() || response == null || response.getData() == null)
-                return;
+            if (response == null || response.getData() == null || mApkListAdapter == null)return;
             //第一次加载或者是刷新
             if (isRefresh()) mApkListAdapter.clear();
             mApkListAdapter.addAll(response.getData().getList());

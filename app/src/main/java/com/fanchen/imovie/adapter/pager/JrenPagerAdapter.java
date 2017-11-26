@@ -14,6 +14,7 @@ public class JrenPagerAdapter extends BaseFragmentAdapter{
 
     private final String[] TITLES = new String[]{"新番连载", "动漫完载", "剧场版/OVA", "肉番无修正"};
     private final String[] PATHS = new String[]{"dmlz", "xfwz", "ova","rfwx"};
+    private final Boolean[] BANGUMI = new Boolean[]{true,false,false,false,false,false};
 
     public JrenPagerAdapter(FragmentManager fm) {
         super(fm);

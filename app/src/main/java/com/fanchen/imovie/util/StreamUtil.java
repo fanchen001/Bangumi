@@ -66,20 +66,29 @@ public class StreamUtil {
 	 * @return the byte[]
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static byte[] stream2bytes(InputStream inStream) throws IOException {
+	public static byte[] stream2bytes(InputStream inStream){
 		byte[] buff = new byte[1024];
 		byte[] data = null;
-		try {
-			ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream swapStream = null;
+        try {
+			swapStream = new ByteArrayOutputStream();
 			int read = 0;
 			while ((read = inStream.read(buff, 0, 100)) > 0) {
 				swapStream.write(buff, 0, read);
 			}
 			data = swapStream.toByteArray();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
-		}
-		return data;
+		}finally {
+            if(swapStream != null){
+                try {
+                    swapStream.close();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+        return data;
 	}
 	
 	/**
@@ -90,15 +99,27 @@ public class StreamUtil {
      * @return the byte[]
      * @throws IOException Signals that an I/O exception has occurred.
      */
-	public static byte[] stream2Bytes(InputStream in, int length) throws IOException {
+	public static byte[] stream2Bytes(InputStream in, int length){
         byte[] bytes = new byte[length];
-        int count;
-        int pos = 0;
-        while (pos < length && ((count = in.read(bytes, pos, length - pos)) != -1)) {
-            pos += count;
-        }
-        if (pos != length) {
-            throw new IOException("Expected " + length + " bytes, read " + pos + " bytes");
+        try {
+            int count;
+            int pos = 0;
+            while (pos < length && ((count = in.read(bytes, pos, length - pos)) != -1)) {
+                pos += count;
+            }
+            if (pos != length) {
+                return null;
+            }
+        }catch (Throwable e){
+            e.printStackTrace();
+        }finally {
+            if(in != null){
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return bytes;
     }
@@ -111,10 +132,12 @@ public class StreamUtil {
      * @return the int
      * @throws IOException Signals that an I/O exception has occurred.
      */
-	public static int read(InputStream is) throws IOException {
-        int b = is.read();
-        if (b == -1) {
-            throw new EOFException();
+	public static int read(InputStream is){
+        int b = -1;
+        try {
+            b = is.read();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return b;
     }
@@ -297,7 +320,7 @@ public class StreamUtil {
             Response execute = call.execute();
             // 200直接返回结果
             bytes = doResponse(execute);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
         return bytes;
@@ -330,7 +353,7 @@ public class StreamUtil {
             Call newCall = mOkHttpClient.newCall(request);
             Response execute = newCall.execute();
             bytes = doResponse(execute);
-        }catch (Exception e) {
+        }catch (Throwable e) {
             e.printStackTrace();
         }
         return bytes;

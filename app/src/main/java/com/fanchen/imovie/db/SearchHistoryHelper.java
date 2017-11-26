@@ -45,17 +45,28 @@ public class SearchHistoryHelper extends SQLiteOpenHelper {
      */
     public ArrayList<ISearchWord> queryAllHistory() {
         ArrayList<String> historys = new ArrayList<>();
-        //获取数据库对象
-        SQLiteDatabase db = getReadableDatabase();
-        //查询表中的数据
-        Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, "id desc");
-        //获取name列的索引
-        for (cursor.moveToFirst(); !(cursor.isAfterLast()); cursor.moveToNext()) {
-            String history = cursor.getString(1);
-            historys.add(history);
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        try {
+            //获取数据库对象
+            db = getReadableDatabase();
+            //查询表中的数据
+            cursor = db.query(TABLE_NAME, null, null, null, null, null, "id desc");
+            //获取name列的索引
+            for (cursor.moveToFirst(); !(cursor.isAfterLast()); cursor.moveToNext()) {
+                String history = cursor.getString(1);
+                historys.add(history);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(cursor != null){
+                cursor.close();
+            }
+            if(db != null){
+                db.close();
+            }
         }
-        cursor.close();//关闭结果集
-        db.close();//关闭数据库对象
         ArrayList<ISearchWord> iSearchWords = new ArrayList<>();
         for (final String s : historys) {
             iSearchWords.add(new ISearchWord() {

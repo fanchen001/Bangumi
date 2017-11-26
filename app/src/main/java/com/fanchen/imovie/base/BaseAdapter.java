@@ -301,7 +301,7 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (itemClickListener != null) {
+                    if (itemClickListener != null && mList != null && mList.size() > itemViewPosition && itemViewPosition >= 0) {
                         itemClickListener.onItemClick(mList, v, itemViewPosition);
                     }
                 }
@@ -309,7 +309,7 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if (itemLongClickListener != null) {
+                    if (itemLongClickListener != null && mList != null && mList.size() > itemViewPosition && itemViewPosition >= 0) {
                         itemLongClickListener.onItemLongClick(mList, v, itemViewPosition);
                     }
                     return false;
@@ -429,6 +429,15 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
                     adapter.getItemViewType(position) == IViewType.TYPE_CATEGORY ||
                     adapter.getItemViewType(position) == IViewType.TYPE_FOOTER? gridManager.getSpanCount() : 1;
             return size;
+        }
+    }
+
+    /**
+     * Override 这个方法
+     * */
+    public void addData(Object data){
+        if(data instanceof List){
+            addAll((List<IViewType>)data);
         }
     }
 

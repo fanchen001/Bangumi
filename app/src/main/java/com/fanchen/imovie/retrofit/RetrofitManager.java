@@ -9,7 +9,7 @@ import com.fanchen.imovie.annotation.RetrofitSource;
 import com.fanchen.imovie.annotation.RetrofitType;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.retrofit.callback.RetrofitCallback;
-import com.fanchen.imovie.util.LogUtil;
+import com.fanchen.imovie.util.ActiveUtil;
 import com.fanchen.imovie.util.NetworkUtil;
 
 import java.lang.ref.SoftReference;
@@ -42,25 +42,30 @@ public class RetrofitManager {
 
     static {
         Converter.Factory animFactory = IMovieFactory.create();
-        OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).build();
-        //由于部分URL/API为非公开的，这里我就先删掉了  用www.baidu.com代替了
-        retrofitMap.put(RetrofitSource.XIAOBO_API, new Retrofit.Builder().baseUrl("http://www.baidu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.ACG12_API, new Retrofit.Builder().baseUrl("https://www.baidu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.DYTT_API, new Retrofit.Builder().baseUrl("http://www.baidu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.DM5_API, new Retrofit.Builder().baseUrl("http://www.baidu.com/").client(okHttpClient).client(okHttpClient).addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.BILIPLUS_API, new Retrofit.Builder().baseUrl("https://www.baidu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.DIANXIUMEI_API, new Retrofit.Builder().baseUrl("http://www.baidu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.MOEAPK_API, new Retrofit.Builder().baseUrl("https://www.baidu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.XIAOMA_API, new Retrofit.Builder().baseUrl("http://www.baidu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
-        //下面的为公开URL/API
+        OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(60, TimeUnit.SECONDS).build();
+        retrofitMap.put(RetrofitSource.XIAOBO_API, new Retrofit.Builder().baseUrl("http://vod.xiaokanba.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.ACG12_API, new Retrofit.Builder().baseUrl("https://acg12.com/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.TUCAO_API, new Retrofit.Builder().baseUrl("http://www.tucao.tv/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.DYTT_API, new Retrofit.Builder().baseUrl("http://101.37.135.113/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.MOEAPK_API, new Retrofit.Builder().baseUrl("https://api.moeapk.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.XIAOMA_API, new Retrofit.Builder().baseUrl("http://nav.api.sbxia.com/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.BAIDU_API, new Retrofit.Builder().baseUrl("https://sp0.baidu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.S80_API, new Retrofit.Builder().baseUrl("http://m.80s.tw/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.BUMIMI_API, new Retrofit.Builder().baseUrl("http://m.bumimi.com/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.JREN_API, new Retrofit.Builder().baseUrl("https://jren100.moe/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.DM5_API, new Retrofit.Builder().baseUrl("http://www.5dm.tv/").client(okHttpClient).client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.BILIPLUS_API, new Retrofit.Builder().baseUrl("https://www.biliplus.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.DIANXIUMEI_API, new Retrofit.Builder().baseUrl("http://www.dianxiumei.com/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.XIAOKANBA_API, new Retrofit.Builder().baseUrl("http://xiaokanba.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.KANKANWU_API, new Retrofit.Builder().baseUrl("http://m.kankanwu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.KMAO_API, new Retrofit.Builder().baseUrl("http://m.kkkkmao.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.LL520_API, new Retrofit.Builder().baseUrl("http://m.520ll.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.MMYY_API, new Retrofit.Builder().baseUrl("http://m.mimiyy.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.K8DY_API, new Retrofit.Builder().baseUrl("http://m.k8yy.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.BABAYU_API, new Retrofit.Builder().baseUrl("http://m.babayu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.A4DY_API, new Retrofit.Builder().baseUrl("http://m.aaccy.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.IKANFAN_API, new Retrofit.Builder().baseUrl("http://m.ikanfan.com").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.HALIHALI_API, new Retrofit.Builder().baseUrl("http://m.halihali.tv/").client(okHttpClient).addConverterFactory(animFactory).build());
     }
 
     /**
@@ -176,7 +181,7 @@ public class RetrofitManager {
      * @param args
      * @param <T>
      */
-    public <T> void enqueue(String clazzStr, final RetrofitCallback<T> callback, String method, Object... args) {
+    public <T> void enqueue(String clazzStr, RetrofitCallback<T> callback, String method, Object... args) {
         if (TextUtils.isEmpty(clazzStr)) return;
         Class<?> clazz = null;
         try {
@@ -218,7 +223,7 @@ public class RetrofitManager {
      * @param args
      * @param <T>
      */
-    public <T> void enqueue(String clazzStr, final RetrofitCallback<T> callback, String method, final int enqueueKey, Object... args) {
+    public <T> void enqueue(String clazzStr, RetrofitCallback<T> callback, String method, int enqueueKey, Object... args) {
         if (TextUtils.isEmpty(clazzStr)) return;
         Class<?> clazz = null;
         try {
@@ -238,7 +243,7 @@ public class RetrofitManager {
      * @param args
      * @param <T>
      */
-    public <T> void enqueue(Class<?> clazz, final RetrofitCallback<T> callback, String method, Object... args) {
+    public <T> void enqueue(Class<?> clazz, RetrofitCallback<T> callback, String method, Object... args) {
         Integer integer = findKey(clazz, method);
         enqueue(clazz, callback, method, integer, args);
     }
@@ -251,7 +256,7 @@ public class RetrofitManager {
      * @param args
      * @param <T>
      */
-    public <T> void enqueue(Class<?> clazz, final RetrofitCallback<T> callback, String method, final int enqueueKey, Object... args) {
+    public <T> void enqueue(Class<?> clazz, RetrofitCallback<T> callback, String method, int enqueueKey, Object... args) {
         if (clazz == null || callback == null || TextUtils.isEmpty(method)) return;
         boolean isRefreshCallback = false;
         if (callback instanceof RefreshCallback)
@@ -268,36 +273,38 @@ public class RetrofitManager {
             if (enqueueMethod == null) {
                 throw new RuntimeException("can not find Method name " + method);
             }
-            String proHost = android.net.Proxy.getDefaultHost();
-            int proPort = android.net.Proxy.getDefaultPort();
-            //简单的防Fiddler抓包检测
-            if (!TextUtils.isEmpty(proHost) && (proHost.startsWith("192") || proHost.startsWith("127")) && proPort != -1) {
-                if (isRefreshCallback) {
-                    ((RefreshCallback) callback).onFailure(enqueueKey, "请勿使用抓包工具,谢谢");
-                    ((RefreshCallback) callback).onFinish(enqueueKey);
-                }
-            } else {
+//            String proHost = android.net.Proxy.getDefaultHost();
+//            int proPort = android.net.Proxy.getDefaultPort();
+//            //简单的防Fiddler抓包检测
+//            if (!TextUtils.isEmpty(proHost) && (proHost.startsWith("192") || proHost.startsWith("127")) && proPort != -1) {
+//                if (isRefreshCallback && ActiveUtil.checkActive(callback)) {
+//                    ((RefreshCallback) callback).onFailure(enqueueKey, "请勿使用抓包工具,谢谢");
+//                    ((RefreshCallback) callback).onFinish(enqueueKey);
+//                }
+//            } else {
                 Call<T> invoke = (Call<T>) enqueueMethod.invoke(o, args);
                 if (NetworkUtil.isNetWorkAvailable(appContext)) {
-                    if (isRefreshCallback)
+                    if (isRefreshCallback && ActiveUtil.checkActive(callback))
                         ((RefreshCallback) callback).onStart(enqueueKey);
                     invoke.enqueue(new EnqueueCallback<T>(callback, isRefreshCallback, enqueueKey));
                 } else {
                     //网络不可用
-                    if (isRefreshCallback) {
+                    if (isRefreshCallback && ActiveUtil.checkActive(callback)) {
                         ((RefreshCallback) callback).onFailure(enqueueKey, "当前网络不可用");
                         ((RefreshCallback) callback).onFinish(enqueueKey);
                     }
                 }
-            }
+//            }
         } catch (Throwable e) {
             e.printStackTrace();
-            if (isRefreshCallback) {
+            if (isRefreshCallback && ActiveUtil.checkActive(callback)) {
                 ((RefreshCallback) callback).onFailure(enqueueKey, "请求网络数据出错");
                 ((RefreshCallback) callback).onFinish(enqueueKey);
             }
         }
     }
+
+
 
     private static class EnqueueCallback<T> implements Callback<T> {
         private SoftReference<RetrofitCallback<T>> callback;
@@ -313,7 +320,7 @@ public class RetrofitManager {
         @Override
         public void onResponse(Call<T> call, Response<T> response) {
             RetrofitCallback<T> tRetrofitCallback = callback.get();
-            if (tRetrofitCallback == null) return;
+            if (tRetrofitCallback == null || !ActiveUtil.checkActive(tRetrofitCallback)) return;
             tRetrofitCallback.onSuccess(enqueueKey, (T) response.body());
             if (isRefreshCallback)
                 ((RefreshCallback) tRetrofitCallback).onFinish(enqueueKey);
@@ -323,12 +330,16 @@ public class RetrofitManager {
         public void onFailure(Call<T> call, Throwable t) {
             t.printStackTrace();
             RetrofitCallback<T> tRetrofitCallback = callback.get();
-            if (tRetrofitCallback == null) return;
+            if (tRetrofitCallback == null || !ActiveUtil.checkActive(tRetrofitCallback)) return;
             if (isRefreshCallback) {
                 ((RefreshCallback) tRetrofitCallback).onFailure(enqueueKey, "请求网络数据失败");
                 ((RefreshCallback) tRetrofitCallback).onFinish(enqueueKey);
             }
 
         }
+
     }
+
+
+
 }

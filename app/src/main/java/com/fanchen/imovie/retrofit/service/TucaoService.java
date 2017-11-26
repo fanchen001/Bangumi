@@ -17,80 +17,100 @@ import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 
 /**
  * Created by fanchen on 2017/9/19.
  */
-@RetrofitType(value = RetrofitSource.TUCAO_API)
+@RetrofitType(RetrofitSource.TUCAO_API)
 public interface TucaoService {
 
     /**
-     *
+     * @param path
      * @return
      */
     @GET("{path}")
-    @RetrofitType(RetrofitSource.TUCAO_API)
-    @MethodType(value = MethodSource.HOME)
     @JsoupType(JsoupSource.TUCAO)
-    Call<IHomeRoot> home(@Path("path")String path);
+    @MethodType(value = MethodSource.HOME)
+    @RetrofitType(isJsoupResponse = true)
+    Call<IHomeRoot> home(@Path("path") String path);
 
     /**
-     *
+     * @param pid
+     * @param page
      * @return
      */
     @GET("list/{pid}/index_{page}.html")
-    @RetrofitType(RetrofitSource.TUCAO_API)
-    @MethodType(value = MethodSource.MORE)
     @JsoupType(JsoupSource.TUCAO)
-    Call<IBangumiMoreRoot> more(@Path("pid")String pid,@Path("page") Integer page);
+    @MethodType(value = MethodSource.MORE)
+    @RetrofitType(isJsoupResponse = true)
+    Call<IBangumiMoreRoot> more(@Path("pid") String pid, @Path("page") Integer page);
 
     /**
-     *
      * @param tid
+     * @param date
      * @return
      */
     @GET("api_v2/rank.php?apikey=25tids8f1ew1821ed&type=json")
-    @RetrofitType(RetrofitSource.TUCAO_API)
-    @MethodType(value = MethodSource.RANKING)
     @JsoupType(JsoupSource.TUCAO)
-    Call<IBangumiMoreRoot> ranking(@Query("tid")String tid,@Query("date")String date);
+    @MethodType(value = MethodSource.RANKING)
+    @RetrofitType(isJsoupResponse = true)
+    Call<IBangumiMoreRoot> ranking(@Query("tid") String tid, @Query("date") String date);
 
     /**
-     *
+     * @param q
+     * @param page
+     * @param tid
+     * @param order
+     * @return
+     */
+    @GET("api_v2/search.php?pagesize=10&apikey=25tids8f1ew1821ed&type=json")
+    @JsoupType(JsoupSource.TUCAO)
+    @MethodType(value = MethodSource.SEARCH)
+    @RetrofitType(isJsoupResponse = true)
+    Call<IBangumiMoreRoot> search(@Query("q") String q, @Query("page") Integer page, @Query("tid") String tid, @Query("order") String order);
+
+    /**
      * @param q
      * @param page
      * @param order
      * @return
      */
     @GET("api_v2/search.php?pagesize=10&apikey=25tids8f1ew1821ed&type=json")
-    @RetrofitType(RetrofitSource.TUCAO_API)
-    @MethodType(value = MethodSource.SEARCH)
     @JsoupType(JsoupSource.TUCAO)
-    Call<IBangumiMoreRoot> search(@Query("q")String q,@Query("page")Integer page,@Query("tid")String tid,@Query("order")String order);
-
-    @GET("api_v2/search.php?pagesize=10&apikey=25tids8f1ew1821ed&type=json")
-    @RetrofitType(RetrofitSource.TUCAO_API)
     @MethodType(value = MethodSource.SEARCH)
-    @JsoupType(JsoupSource.TUCAO)
-    Call<IBangumiMoreRoot> search(@Query("q")String q,@Query("page")Integer page,@Query("order")String order);
+    @RetrofitType(isJsoupResponse = true)
+    Call<IBangumiMoreRoot> search(@Query("q") String q, @Query("page") Integer page, @Query("order") String order);
 
 
+    /**
+     * @return
+     */
     @GET("index.html")
-    @RetrofitType(RetrofitSource.TUCAO_API)
-    @MethodType(value = MethodSource.TIME_LINE)
     @JsoupType(JsoupSource.TUCAO)
+    @MethodType(value = MethodSource.TIME_LINE)
+    @RetrofitType(isJsoupResponse = true)
     Call<IBangumiTimeRoot> timeLine();
 
+    /**
+     * @param path
+     * @return
+     */
     @GET("api_v2/view.php?apikey=25tids8f1ew1821ed&type=json")
-    @RetrofitType(RetrofitSource.TUCAO_API)
-    @MethodType(value = MethodSource.DETAILS)
     @JsoupType(JsoupSource.TUCAO)
+    @MethodType(value = MethodSource.DETAILS)
+    @RetrofitType(isJsoupResponse = true)
     Call<IVideoDetails> details(@Query("hid") String path);
 
-    @GET("api_v2/playurl.php?apikey=25tids8f1ew1821ed")
-    @RetrofitType(RetrofitSource.TUCAO_API)
-    @MethodType(value = MethodSource.PLAYURL)
+    /**
+     *
+     * @param url
+     * @return
+     */
+    @GET
     @JsoupType(JsoupSource.TUCAO)
+    @MethodType(value = MethodSource.PLAYURL)
+    @RetrofitType(isJsoupResponse = true)
     @Headers({"Cookie: TUCAO_COOKIE=8c65UgQEBFQCCVFRBwJQAAABBwdVXA5WBgxZBVNnbCV5fA"})
-    Call<IPlayUrls> playUrl(@Query("type") String type,@Query("vid") String vid);
+    Call<IPlayUrls> playUrl(@Url String url);
 }

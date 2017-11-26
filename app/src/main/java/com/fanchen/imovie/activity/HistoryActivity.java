@@ -35,7 +35,6 @@ import java.util.List;
  */
 public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter.OnItemLongClickListener {
 
-    private static final String[] DIALOG_TITLE = new String[]{"删除记录", "直接打开"};
 
     private HistoryAdapter mHistoryAdapter;
 
@@ -43,8 +42,12 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
      * @param context
      */
     public static void startActivity(Context context) {
-        Intent intent = new Intent(context, HistoryActivity.class);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, HistoryActivity.class);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -89,12 +92,16 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position || position < 0) return;
+        if(!(datas.get(position) instanceof VideoHistory))return ;
+        VideoHistory history = (VideoHistory) datas.get(position);
+        VideoPlayerActivity.startActivity(this,history);
     }
 
     @Override
     public boolean onItemLongClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position || position < 0) return false;
+        if(!(datas.get(position) instanceof VideoHistory))return true;
+        VideoHistory history = (VideoHistory) datas.get(position);
+        DialogUtil.showMaterialDeleteDialog(this,this,new DeleteListenerImpl(history.getId(), position),datas,position);
         return true;
     }
 
@@ -105,13 +112,13 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
 
         @Override
         public List<VideoHistory> onTaskBackground() {
-            if (isFinishing() || getLiteOrm() == null) return null;
+            if (getLiteOrm() == null) return null;
             return getLiteOrm().query(VideoHistory.class);
         }
 
         @Override
         public void onTaskSuccess(List<VideoHistory> data) {
-            if (isFinishing() || data == null) return;
+            if (data == null) return;
             mHistoryAdapter.clear();
             mHistoryAdapter.addAll(data);
         }
@@ -136,34 +143,6 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
     /**
      *
      */
-    private class ItemClickListener implements AdapterView.OnItemClickListener {
-
-        private int position;
-        private VideoHistory item;
-
-        public ItemClickListener(VideoHistory item, int position) {
-            this.position = position;
-            this.item = item;
-        }
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            switch (position) {
-                case 0:
-                    AsyTaskQueue.newInstance().execute(new DeleteListenerImpl(item.getId(), this.position));
-                    break;
-                case 1:
-                    HistoryActivity.this.onItemClick(mHistoryAdapter.getList(), view, this.position);
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    /**
-     *
-     */
     private class DeleteListenerImpl extends AsyTaskListenerImpl<Integer> {
         public int DELETEALL = -1;
         public int DELETEERROR = -2;
@@ -181,7 +160,7 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
 
         @Override
         public Integer onTaskBackground() {
-            if (isFinishing() || getLiteOrm() == null) return DELETEERROR;
+            if (getLiteOrm() == null) return DELETEERROR;
             if (TextUtils.isEmpty(id) && pisotion == -1) {
                 //删除全部
                 getLiteOrm().delete(VideoHistory.class);
@@ -195,7 +174,7 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
 
         @Override
         public void onTaskSuccess(Integer data) {
-            if (isFinishing()) return;
+            if (mHistoryAdapter == null) return;
             if (data == DELETEERROR) {
                 showSnackbar(getString(R.string.delete_error));
             } else {

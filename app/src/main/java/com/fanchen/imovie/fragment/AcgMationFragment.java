@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 
+import com.fanchen.imovie.IMovieAppliction;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.WebActivity;
 import com.fanchen.imovie.adapter.AcgMationAdapter;
@@ -63,7 +64,12 @@ public class AcgMationFragment extends BaseRecyclerFragment {
 
     @Override
     public void loadData(Bundle arg,RetrofitManager retrofit,int page) {
-        String token = activity.appliction.mAcg12Token;
+        String token = "";
+        if(appliction != null){
+            token = appliction.mAcg12Token;
+        }else if(IMovieAppliction.app != null){
+            token = IMovieAppliction.app.mAcg12Token;
+        }
         if(TextUtils.isEmpty(token)){
             RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=UTF-8"),"appSecure=3wk9khscjfk&appId=4q6wnmmdzd");
             retrofit.enqueue(Acg12Service.class,stringCallback,"getToken",requestBody);
@@ -107,24 +113,16 @@ public class AcgMationFragment extends BaseRecyclerFragment {
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if(position < 0 || datas == null || datas.size() <= position || !(datas.get(position) instanceof AcgPosts))return;
+        if(!(datas.get(position) instanceof AcgPosts))return;
         AcgPosts posts = (AcgPosts) datas.get(position);
         WebActivity.startActivity(activity, posts.getTitle(), posts.getUrl());
     }
 
     private RefreshRecyclerFragmentImpl<AcgRoot<AcgData>> callback = new RefreshRecyclerFragmentImpl<AcgRoot<AcgData>>() {
 
-//        @Override
-//        public void onSuccess(int enqueueKey, AcgRoot<AcgData> response) {
-//            if(isDetached() || !isAdded() || response == null || response.getData() == null)return;
-//            if(isRefresh())
-//                mMationAdapter.clear();
-//            mMationAdapter.addAll(response.getData().getPosts());
-//        }
-
         @Override
         public void onSuccess(AcgRoot<AcgData> response) {
-            if(response.getData() == null)return;
+            if(response.getData() == null || mMationAdapter == null)return;
             mMationAdapter.addAll(response.getData().getPosts());
         }
 
@@ -134,7 +132,7 @@ public class AcgMationFragment extends BaseRecyclerFragment {
 
         @Override
         public void onSuccess(AcgRoot<AcgData> date) {
-            if(date.getData() == null)return;
+            if(date.getData() == null || mMationAdapter == null)return;
             mMationAdapter.addAll(date.getData().getPosts());
         }
 
@@ -144,24 +142,25 @@ public class AcgMationFragment extends BaseRecyclerFragment {
 
         @Override
         public void onStart(int enqueueKey) {
-            if(isDetached() || !isAdded())return;
+            if(mSwipeRefreshLayout == null)return;
             mSwipeRefreshLayout.setRefreshing(true);
         }
 
         @Override
         public void onFinish(int enqueueKey) {
+            showToast(getString(R.string.success_token));
         }
 
         @Override
         public void onFailure(int enqueueKey, String throwable) {
-            if(isDetached() || !isAdded())return;
+            if(mSwipeRefreshLayout == null)return;
             showToast(getString(R.string.error_token));
             mSwipeRefreshLayout.setRefreshing(false);
         }
 
         @Override
         public void onSuccess(int enqueueKey, AcgRoot<AcgToken> response) {
-            if(isDetached() || !isAdded() || response == null || response.getData() == null)return;
+            if(response == null || response.getData() == null || activity == null)return;
             activity.appliction.mAcg12Token = response.getData().getToken();
             loadPosts(getRetrofitManager(), 1, response.getData().getToken());
         }

@@ -1,20 +1,24 @@
 package com.fanchen.imovie.view.webview;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.fanchen.imovie.R;
+import com.tencent.smtt.sdk.TbsVideo;
+import com.tencent.smtt.sdk.WebChromeClient;
+import com.tencent.smtt.sdk.WebSettings;
+import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
+import com.tencent.tbs.video.interfaces.IUserStateChangedListener;
+import com.tencent.tbs.video.interfaces.a;
 
 import java.util.Map;
 
@@ -38,7 +42,6 @@ public class SwipeWebView extends RelativeLayout implements SwipeRefreshLayout.O
     private SwipeRefreshLayout refreshView;
 
     private int count = 0;
-
     public SwipeWebView(Context context) {
         super(context);
         initView(context);
@@ -57,10 +60,16 @@ public class SwipeWebView extends RelativeLayout implements SwipeRefreshLayout.O
         initWebView();
     }
 
+    public void setSwipeRefreshEnabled(boolean isEnabled){
+        if(refreshView != null)
+            refreshView.setEnabled(isEnabled);
+    }
+
     private void initView(Context context) {
         ctx = context;
         LayoutInflater.from(context).inflate(R.layout.view_swipe_webview, this);
         refreshView = (SwipeRefreshLayout) findViewById(R.id.refresh_view);
+        refreshView.setEnabled(false);
         webView = (SafeWebView) findViewById(R.id.safe_webview);
         mProgressBar = (ProgressBar) findViewById(R.id.pg_load_web);
         TypedValue typedValue = new TypedValue();

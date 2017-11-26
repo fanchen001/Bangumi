@@ -44,13 +44,14 @@
                     android:layout_toLeftOf="@+id/find_password_delete"
                     android:layout_toRightOf="@+id/img_username">
 
-                    <EditText
+                    <com.fanchen.imovie.view.SelectionEditText
                         android:id="@+id/et_phonenumber"
                         style="@style/account_editview_textsize"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:background="#00000000"
                         android:hint="输入手机号"
+                        android:inputType="numberSigned"
                         android:maxLength="11"
                         android:paddingTop="@dimen/dp_8"
                         android:singleLine="true"
@@ -96,13 +97,14 @@
                     android:layout_toLeftOf="@+id/btn_sendmessage"
                     android:layout_toRightOf="@+id/img_password">
 
-                    <EditText
+                    <com.fanchen.imovie.view.SelectionEditText
                         android:id="@+id/et_verification"
                         style="@style/account_editview_textsize"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="#00000000"
                         android:hint="输入验证码"
+                        android:inputType="numberSigned"
                         android:paddingTop="@dimen/dp_8"
                         android:singleLine="true"
                         android:textColorHint="@color/comm_text_hint_color" />
@@ -153,9 +155,9 @@
                 style="@style/account_btn_textsize"
                 android:layout_width="fill_parent"
                 android:layout_height="45.0dip"
+                android:layout_marginBottom="20.0dip"
                 android:layout_marginLeft="20.0dip"
                 android:layout_marginRight="20.0dip"
-                android:layout_marginBottom="20.0dip"
                 android:background="@drawable/login_btn_bg"
                 android:clickable="false"
                 android:editable="false"

@@ -1,4 +1,10 @@
 <resources>
+    <string-array name="spinner_luxian">
+        <item>线路1</item>
+        <item>线路2</item>
+        <item>线路3</item>
+        <item>线路4</item>
+    </string-array>
     <string name="app_name">次元番</string>
     <string name="dynamic_total_guide_title">次元番需要下列权限才可正常使用</string>
     <string name="dynamic_phone_guide_title">手机/电话权限</string>
@@ -232,7 +238,7 @@
     <string name="delete_file">是否删除该下载任务?</string>
     <string name="task_exists">任务已经存在</string>
     <string name="hack">视频黑科技</string>
-    <string name="player_hit">如果播放按钮是灰色状态,点击播放后长时间不能播放,或播放中途卡住.请点击右上角选择使用浏览器打开(推荐使用UC或者QQ)</string>
+    <string name="player_hit">如果播放按钮是灰色状态,点击播放后长时间不能播放,或播放中途卡住.请点击右上角选择【切换播放线路】重试</string>
     <string name="not_say">不要再说了</string>
     <string name="ok_say">继续提醒我</string>
     <string name="please_login">请先登录再进行操作</string>
@@ -245,7 +251,7 @@
     <string name="logout_hit">是否退出登录?</string>
     <string name="not_login">未登录</string>
     <string name="free_video">立即播放</string>
-    <string name="free_video_hint">复制视频网站播放地址↓↓点击立即播放！</string>
+    <string name="free_video_hint">复制播放地址↓↓点击播放</string>
     <string name="biliplus_hint">输入:投稿号(如:AV221107)/Bili播放页面地址</string>
     <string name="gan_bei">, ( ゜- ゜)つロ 乾杯~</string>
     <string name="biliplus">BiliPlus</string>
@@ -274,7 +280,7 @@
     <string name="vip">VIP</string>
     <string name="user_non">普通用户</string>
     <string name="qqqun">客服QQ群 541361788</string>
-    <string name="more_hit">[更多]里面包含其他番剧源以及一些视频黑科技,首页搜不到的番剧视频可在[更多]里面寻找！！！</string>
+    <string name="more_hit">【首页】数据来自吐槽C,原网站很多视频本身看不了,但是【分区】里面包含其他番剧(影视)源,这里面绝大部分视频是可以正常播放的，部分支持下载。【更多】里面有一些视频黑科技,首页搜不到,解析播放错误的视频可在【分区】【更多】里面寻找！！！</string>
     <string name="w_4k">4K影院</string>
     <string name="zz_player_network_invalid">网络异常，请检查后再试</string>
     <string name="bindphone">绑定手机</string>
@@ -291,4 +297,10 @@
     <string name="delete_asy_error">同步删除失败</string>
     <string name="delete_asy_success">同步删除成功</string>
     <string name="error_changepassword">该功能不适用于第三方登录账号</string>
+    <string name="babayu">巴巴鱼</string>
+    <string name="kankanwu">看看屋</string>
+    <string name="login_lenght_hit"><![CDATA[用户名>=4位，密码>=6位]]></string>
+    <string name="video_hit">本次请求结束</string>
+    <string name="success_token">获取token成功</string>
+    <string name="error_video_type">不支持的播放类型</string>
 </resources>

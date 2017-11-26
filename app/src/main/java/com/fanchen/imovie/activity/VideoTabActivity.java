@@ -12,10 +12,17 @@ import android.view.MenuItem;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.adapter.pager.A4dyPagerAdapter;
+import com.fanchen.imovie.adapter.pager.BabayuPagerAdapter;
 import com.fanchen.imovie.adapter.pager.BumimiPagerAdapter;
 import com.fanchen.imovie.adapter.pager.Dm5PagerAdapter;
+import com.fanchen.imovie.adapter.pager.HaliHaliPagerAdapter;
+import com.fanchen.imovie.adapter.pager.IKanFanPagerAdapter;
 import com.fanchen.imovie.adapter.pager.JrenPagerAdapter;
+import com.fanchen.imovie.adapter.pager.K8dyPagerAdapter;
+import com.fanchen.imovie.adapter.pager.KankanPagerAdapter;
 import com.fanchen.imovie.adapter.pager.KmaoPagerAdapter;
+import com.fanchen.imovie.adapter.pager.LL520PagerAdapter;
+import com.fanchen.imovie.adapter.pager.MmyyPagerAdapter;
 import com.fanchen.imovie.adapter.pager.S80PagerAdapter;
 import com.fanchen.imovie.adapter.pager.XiaokabaPagerAdapter;
 import com.fanchen.imovie.adapter.pager.Xiu169PagerAdapter;
@@ -30,14 +37,21 @@ import com.fanchen.imovie.entity.face.ISearchWord;
  * Created by fanchen on 2017/9/23.
  */
 public class VideoTabActivity extends BaseTabActivity implements SearchDialogFragment.OnSearchClickListener {
-    public static final int S80 = 1;
-    public static final int BUMIMI = 2;
-    public static final int JREN = 3;
-    public static final int DM5 = 4;
-    public static final int XIU169 = 5;
-    public static final int XIAOKANBA = 6;
-    public static final int W4K = 7;
-    public static final int A4DY = 8;
+    public static final int DM5 = 1;
+    public static final int KANKANWU = 2;
+    public static final int XIU169 = 3;
+    public static final int XIAOKANBA = 4;
+    public static final int W4K = 5;
+    public static final int JREN = 6;
+    public static final int BUMIMI = 7;
+    public static final int BABAYU = 8;
+    public static final int A4DY = 9;
+    public static final int K8DY = 10;
+    public static final int LL520 = 11;
+    public static final int S80 = 12;
+    public static final int HALIHALI = 13;
+    public static final int IKANFAN = 14;
+    public static final int MMYY = 15;
 
     public static final String TYPE = "type";
     public static final String TITLE = "title";
@@ -54,10 +68,14 @@ public class VideoTabActivity extends BaseTabActivity implements SearchDialogFra
      * @param type
      */
     public static void startActivity(Context context, String title, int type) {
-        Intent intent = new Intent(context, VideoTabActivity.class);
-        intent.putExtra(TYPE, type);
-        intent.putExtra(TITLE, title);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, VideoTabActivity.class);
+            intent.putExtra(TYPE, type);
+            intent.putExtra(TITLE, title);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -75,8 +93,8 @@ public class VideoTabActivity extends BaseTabActivity implements SearchDialogFra
     }
 
     @Override
-    protected int getTabMode() {
-        return type == DM5 ? TabLayout.MODE_FIXED : TabLayout.MODE_SCROLLABLE;
+    protected int getTabMode(PagerAdapter adapter) {
+        return type == DM5 || type == HALIHALI || type == IKANFAN ? TabLayout.MODE_FIXED : TabLayout.MODE_SCROLLABLE;
     }
 
     @Override
@@ -102,6 +120,20 @@ public class VideoTabActivity extends BaseTabActivity implements SearchDialogFra
             mPagerAdapter = new KmaoPagerAdapter(fm);
         }else if(type == A4DY){
             mPagerAdapter = new A4dyPagerAdapter(fm);
+        }else if(type == KANKANWU){
+            mPagerAdapter = new KankanPagerAdapter(fm);
+        }else if(type == BABAYU){
+            mPagerAdapter = new BabayuPagerAdapter(fm);
+        }else if(type == LL520){
+            mPagerAdapter = new LL520PagerAdapter(fm);
+        }else if(type == K8DY){
+            mPagerAdapter = new K8dyPagerAdapter(fm);
+        }else if(type == IKANFAN){
+            mPagerAdapter = new IKanFanPagerAdapter(fm);
+        }else if(type == HALIHALI){
+            mPagerAdapter = new HaliHaliPagerAdapter(fm);
+        }else if(type == MMYY){
+            mPagerAdapter = new MmyyPagerAdapter(fm);
         }else {
             mPagerAdapter = new JrenPagerAdapter(fm);
         }

@@ -8,7 +8,6 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.arialyy.aria.core.Aria;
 import com.arialyy.aria.core.download.DownloadEntity;
 import com.arialyy.aria.core.download.DownloadTask;
 import com.arialyy.aria.core.inf.IEntity;
@@ -57,7 +56,10 @@ public class DownloadAdapter extends BaseAdapter {
         DownloadEntity entity = wrap.getEntity();
         viewHolder.progressBar.setMax(100);
         int percent = entity.getPercent();
-        viewHolder.progressBar.setProgress(percent <= 0 ? (int) (entity.getCurrentProgress() * 100L / entity.getFileSize()) : percent);
+        long fileSize = entity.getFileSize();
+        if(fileSize <= 0 )
+            fileSize = Integer.MAX_VALUE;
+        viewHolder.progressBar.setProgress(percent <= 0 ? (int) (entity.getCurrentProgress() * 100L / fileSize) : percent);
         viewHolder.downloadLength.setText(entity.getConvertSpeed());
         viewHolder.downloadName.setText(entity.getFileName());
         viewHolder.btnDelete.setTag(entity);
@@ -153,17 +155,15 @@ public class DownloadAdapter extends BaseAdapter {
     }
 
     public void addAll(List<DownloadEntity> all, String suffix) {
-        if (all == null) return;
+        if (all == null || TextUtils.isEmpty(suffix)) return;
         List<DownloadEntityWrap> newList = new ArrayList<>();
-        if (!TextUtils.isEmpty(suffix)) {
-            String[] split = suffix.split("/");
-            for (String s : split) {
-                for (DownloadEntity e : all) {
-                    if (e.getDownloadUrl().toLowerCase().contains(s.toLowerCase())) {
-                        newList.add(new DownloadEntityWrap(e, newList.size()));
-                    } else if (e.getFileName().toLowerCase().contains(s.toLowerCase())) {
-                        newList.add(new DownloadEntityWrap(e, newList.size()));
-                    }
+        String[] split = suffix.split("/");
+        for (String s : split) {
+            for (DownloadEntity e : all) {
+                if (e.getDownloadUrl().contains(s)) {
+                    newList.add(new DownloadEntityWrap(e, newList.size()));
+                } else if (e.getFileName().contains(s)) {
+                    newList.add(new DownloadEntityWrap(e, newList.size()));
                 }
             }
         }

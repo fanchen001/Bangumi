@@ -43,9 +43,13 @@ public class SetPwdActivity extends BaseToolbarActivity implements View.OnClickL
      * @param context
      */
     public static void startActivity(Context context,String phone) {
-        Intent intent = new Intent(context, SetPwdActivity.class);
-        intent.putExtra(PHONE,phone);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, SetPwdActivity.class);
+            intent.putExtra(PHONE,phone);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

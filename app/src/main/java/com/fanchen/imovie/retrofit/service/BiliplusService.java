@@ -17,18 +17,26 @@ import retrofit2.http.Query;
 /**
  * Created by fanchen on 2017/10/12.
  */
-@RetrofitType(value = RetrofitSource.BILIPLUS_API)
+@RetrofitType(RetrofitSource.BILIPLUS_API)
 public interface BiliplusService {
 
+    /**
+     * @param path
+     * @return
+     */
     @GET("api/view")
-    @RetrofitType(RetrofitSource.BILIPLUS_API)
-    @MethodType(value = MethodSource.DETAILS)
     @JsoupType(JsoupSource.BILIPLUS)
+    @MethodType(value = MethodSource.DETAILS)
+    @RetrofitType(isJsoupResponse = true)
     Call<IVideoDetails> details(@Query("id") String path);
 
+    /**
+     * @param path
+     * @return
+     */
     @GET("/api/geturl?bangumi=0&page=1")
-    @RetrofitType(RetrofitSource.BILIPLUS_API)
-    @MethodType(value = MethodSource.PLAYURL)
     @JsoupType(JsoupSource.BILIPLUS)
+    @MethodType(value = MethodSource.PLAYURL)
+    @RetrofitType(isJsoupResponse = true)
     Call<IPlayUrls> playUrl(@Query("av") String path);
 }

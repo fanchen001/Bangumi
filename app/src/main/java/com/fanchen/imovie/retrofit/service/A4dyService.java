@@ -23,41 +23,51 @@ import retrofit2.http.Url;
 public interface A4dyService {
 
     /**
+     *
+     * @param path
      * @return
      */
     @GET("{path}")
-    @RetrofitType(RetrofitSource.A4DY_API)
-    @MethodType(value = MethodSource.HOME)
     @JsoupType(JsoupSource.A4DY)
+    @MethodType(value = MethodSource.HOME)
+    @RetrofitType(isJsoupResponse = true)
     Call<IHomeRoot> home(@Path("path") String path);
 
     /**
+     *
+     * @param path
+     * @param page
      * @return
      */
     @GET("vod-type-id-{path}-pg-{page}.html")
-    @RetrofitType(RetrofitSource.A4DY_API)
-    @MethodType(value = MethodSource.HOME)
     @JsoupType(JsoupSource.A4DY)
+    @MethodType(value = MethodSource.HOME)
+    @RetrofitType(isJsoupResponse = true)
     Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
 
     /**
+     *
+     * @param page
      * @param keyword
      * @return
      */
     @GET("vod-search-pg-{page}-wd-{keyword}.html")
-    @RetrofitType(RetrofitSource.A4DY_API)
-    @MethodType(value = MethodSource.SEARCH)
     @JsoupType(JsoupSource.A4DY)
+    @MethodType(value = MethodSource.SEARCH)
+    @RetrofitType(isJsoupResponse = true)
     Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("keyword") String keyword);
 
 
     /**
+     *
+     * @param pid
+     * @param page
      * @return
      */
     @GET("vod-type-id-{path}-pg-{page}.html")
-    @RetrofitType(RetrofitSource.A4DY_API)
-    @MethodType(value = MethodSource.MORE)
     @JsoupType(JsoupSource.A4DY)
+    @MethodType(value = MethodSource.MORE)
+    @RetrofitType(isJsoupResponse = true)
     Call<IBangumiMoreRoot> more(@Path("path") String pid, @Path("page") Integer page);
 
 
@@ -66,9 +76,9 @@ public interface A4dyService {
      * @return
      */
     @GET("vod-detail-id-{path}")
-    @RetrofitType(RetrofitSource.A4DY_API)
-    @MethodType(value = MethodSource.DETAILS)
     @JsoupType(JsoupSource.A4DY)
+    @MethodType(value = MethodSource.DETAILS)
+    @RetrofitType(isJsoupResponse = true)
     Call<IVideoDetails> details(@Path("path") String path);
 
     /**
@@ -76,8 +86,8 @@ public interface A4dyService {
      * @return
      */
     @GET("{path}")
-    @RetrofitType(RetrofitSource.A4DY_API)
-    @MethodType(value = MethodSource.PLAYURL)
     @JsoupType(JsoupSource.A4DY)
+    @MethodType(value = MethodSource.PLAYURL)
+    @RetrofitType(isJsoupResponse = true)
     Call<IPlayUrls> playUrl(@Path("path") String path);
 }

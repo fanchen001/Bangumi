@@ -87,7 +87,7 @@ public class XiaomaFragment extends BaseFragment implements View.OnClickListener
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if(datas == null && datas.size() < position || position < 0)return;
+        if(!(datas.get(position) instanceof XiaomaSearch))return;
         XiaomaSearch search = (XiaomaSearch) datas.get(position);
         WebActivity.startActivity(activity,search.getTitle(),search.getLink());
     }
@@ -96,25 +96,24 @@ public class XiaomaFragment extends BaseFragment implements View.OnClickListener
 
         @Override
         public void onStart(int enqueueKey) {
-            if (isDetached() || !isAdded()) return;
+            if (mProgressView == null) return;
             mProgressView.setVisibility(View.VISIBLE);
         }
 
         @Override
         public void onFinish(int enqueueKey) {
-            if (isDetached() || !isAdded()) return;
+            if (mProgressView == null) return;
             mProgressView.setVisibility(View.GONE);
         }
 
         @Override
         public void onFailure(int enqueueKey, String throwable) {
-            if (isDetached() || !isAdded()) return;
             showSnackbar(throwable);
         }
 
         @Override
         public void onSuccess(int enqueueKey, XiaomaIndex<XiaomaSearchResult> response) {
-            if (isDetached() || !isAdded() ||response == null || response.getResult() == null) return;
+            if (response == null || response.getResult() == null || mXiaomaAdapter == null) return;
             mXiaomaAdapter.clear();
             mXiaomaAdapter.addAll(response.getResult().getList());
         }

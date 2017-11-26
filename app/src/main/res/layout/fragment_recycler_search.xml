@@ -14,11 +14,12 @@
         android:layout_marginRight="@dimen/dp_12"
         android:layout_marginTop="@dimen/dp_12">
 
-        <EditText
+        <com.fanchen.imovie.view.SelectionEditText
             android:id="@+id/ed_search_word"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/search_hint"
+            android:inputType="textNoSuggestions"
             android:paddingTop="@dimen/dp_8" />
 
     </android.support.design.widget.TextInputLayout>

@@ -17,26 +17,25 @@ import com.fanchen.imovie.util.LogUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Retrofit;
+
 /**
  * Created by fanchen on 2017/9/23.
  */
 public class S80Impl implements IVideoParser {
 
     @Override
-    public IHomeRoot home(String html) {
+    public IHomeRoot home(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
         S80Home root = new S80Home();
         try {
             List<S80Video> videos = new ArrayList<>();
-
-            LogUtil.e("S80Impl","size => " + node.list("div.col-xs-4.col-md-2.list_mov").size());
-
             for (Node n : node.list("div.col-xs-4.col-md-2.list_mov")){
                 String cover = "http:" + n.attr("a > img", "data-original");
                 String title = n.text("div.list_mov_title > h4");
                 String tip = n.text("div.list_mov_title > em");
                 String score = n.text("a > span.poster-score");
-                String url = "http://www.80s.tw" + n.attr("a", "href");
+                String url = baseUrl + n.attr("a", "href");
                 String id = "";
                 if(!TextUtils.isEmpty(url)){
                     String[] split = url.split("/");
@@ -61,7 +60,7 @@ public class S80Impl implements IVideoParser {
     }
 
     @Override
-    public IVideoDetails details(String html) {
+    public IVideoDetails details(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
         S80Details details = new S80Details();
         try {
@@ -83,7 +82,7 @@ public class S80Impl implements IVideoParser {
                 String title = n.text("h4");
                 String tip = n.text("p");
                 String score = n.text("h4 > small");
-                String url = "http://www.80s.tw" + n.attr("href");
+                String url = baseUrl + n.attr("href");
                 String id = "";
                 if(!TextUtils.isEmpty(url)){
                     String[] split = url.split("/");
@@ -110,12 +109,12 @@ public class S80Impl implements IVideoParser {
     }
 
     @Override
-    public IPlayUrls playUrl(String html) {
+    public IPlayUrls playUrl(Retrofit retrofit,String baseUrl,String html) {
         throw new RuntimeException("this method not impl");
     }
 
     @Override
-    public IBangumiMoreRoot search(String html) {
+    public IBangumiMoreRoot search(Retrofit retrofit,String baseUrl,String html) {
         S80Home root = new S80Home();
         Node node = new Node(html);
         try{
@@ -124,7 +123,7 @@ public class S80Impl implements IVideoParser {
                 String title = n.text("h4");
                 String tip = n.text("em");
                 String score = n.text("h4 > small");
-                String url = "http://www.80s.tw" + n.attr("href");
+                String url = baseUrl + n.attr("href");
                 String id = "";
                 if(!TextUtils.isEmpty(url)){
                     String[] split = url.split("/");

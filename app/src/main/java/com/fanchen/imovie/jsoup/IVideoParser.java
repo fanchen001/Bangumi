@@ -6,6 +6,8 @@ import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 
+import retrofit2.Retrofit;
+
 /**
  * Created by fanchen on 2017/9/23.
  */
@@ -13,31 +15,39 @@ public interface IVideoParser {
 
     /**
      *
+     * @param retrofit
+     * @param baseUrl
      * @param html
      * @return
      */
-    IBangumiMoreRoot search(String html);
+    IBangumiMoreRoot search(Retrofit retrofit,String baseUrl,String html);
 
     /**
      *
+     * @param retrofit
+     * @param baseUrl
      * @param html
      * @return
      */
-    IHomeRoot home(String html) ;
+    IHomeRoot home(Retrofit retrofit,String baseUrl,String html) ;
 
     /**
      *
+     * @param retrofit
+     * @param baseUrl
      * @param html
      * @return
      */
-    IVideoDetails details(String html);
+    IVideoDetails details(Retrofit retrofit,String baseUrl,String html);
 
     /**
      *
+     * @param retrofit
+     * @param baseUrl
      * @param html
      * @return
      */
-    IPlayUrls playUrl(String html);
+    IPlayUrls playUrl(Retrofit retrofit,String baseUrl,String html);
 
     int[] SEASON = {
             R.drawable.bangumi_home_ic_season_1,

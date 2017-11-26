@@ -37,6 +37,7 @@ import com.fanchen.imovie.entity.apk.ApkVideo;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.retrofit.callback.RetrofitCallback;
 import com.fanchen.imovie.retrofit.service.MoeapkService;
+import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.DisplayUtil;
 import com.fanchen.imovie.view.CustomEmptyView;
 import com.fanchen.imovie.view.EnabledScrollView;
@@ -46,7 +47,6 @@ import com.fanchen.imovie.view.video.SuperPlayerView;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.net.URLEncoder;
 import java.util.List;
 
@@ -125,9 +125,13 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
      * @param item
      */
     public static void startActivity(Activity activity, ApkItem item) {
-        Intent intent = new Intent(activity, ApkDetailsActivity.class);
-        intent.putExtra(APK_ITEM, item);
-        activity.startActivity(intent);
+        try {
+            Intent intent = new Intent(activity, ApkDetailsActivity.class);
+            intent.putExtra(APK_ITEM, item);
+            activity.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -204,6 +208,7 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
      * @param video
      */
     private void fillVideoData(ApkVideo video) {
+        if (mPlayFab == null || mSuperPlayerView == null) return;
         //有推广视频
         mPlayFab.setVisibility(View.VISIBLE);
         mSuperPlayerView.playUrl(video.getBest());//设置视频的titleName
@@ -281,13 +286,14 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
             case R.id.fab_apk_download:
                 if (mApkDetails == null) return;
                 String format = String.format("https://api.moeapk.com/client/app/downloadApk?package=%s", mApkDetails.getPackagename());
-                File dir = new File(Environment.getExternalStorageDirectory() + "/android/data/" + getPackageName() + "/download/apk/");
-                if (!dir.exists()) dir.mkdirs();
-                if(!TextUtils.isEmpty(format)){
+                if (!TextUtils.isEmpty(format)) {
                     if (getDownloadReceiver().taskExists(format)) {
                         showSnackbar(getString(R.string.task_exists));
                     } else {
-                        getDownloadReceiver().load(format).setDownloadPath(new File(dir, mApkDetails.getPackagename() + ".apk").getAbsolutePath()).start();
+                        String apkPath = AppUtil.getApkPath(this);
+                        if (TextUtils.isEmpty(apkPath)) return;
+                        if(!format.startsWith("http") && !format.startsWith("ftp"))return;
+                        getDownloadReceiver().load(format).setDownloadPath(apkPath + " /" + mApkDetails.getPackagename() + ".apk").start();
                         showSnackbar(getString(R.string.download_add));
                     }
                 }
@@ -307,7 +313,7 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if (datas == null || datas.size() <= position) return;
+        if (!(datas.get(position) instanceof ShowImagesDialog.IPhotoImage)) return;
         ShowImagesDialog.showDialog(this, (List<ShowImagesDialog.IPhotoImage>) datas, position);
     }
 
@@ -405,7 +411,7 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
 
         @Override
         public void onStateChange(int state) {
-            if (DisplayUtil.isScreenChange(ApkDetailsActivity.this))return;
+            if (DisplayUtil.isScreenChange(ApkDetailsActivity.this)) return;
             if (state == SuperPlayerView.STATUS_PLAYING) {
                 //播放状态下按钮不可见，视图不可以滚动
                 mPlayFab.setVisibility(View.GONE);
@@ -454,35 +460,36 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
 
         @Override
         public void onStart(int enqueueKey) {
-            mProgressbar.setVisibility(View.VISIBLE);
-            if(mEmptyView != null)
+            if (mProgressbar != null)
+                mProgressbar.setVisibility(View.VISIBLE);
+            if (mEmptyView != null)
                 mEmptyView.setEmptyType(CustomEmptyView.TYPE_NON);
-            if(mAblView != null)
+            if (mAblView != null)
                 mAblView.setVisibility(View.VISIBLE);
-            if(mNestedScrollView != null)
+            if (mNestedScrollView != null)
                 mNestedScrollView.setVisibility(View.VISIBLE);
         }
 
         @Override
         public void onFinish(int enqueueKey) {
-            mProgressbar.setVisibility(View.GONE);
+            if (mProgressbar != null)
+                mProgressbar.setVisibility(View.GONE);
         }
 
         @Override
         public void onFailure(int enqueueKey, String throwable) {
-            if (isFinishing()) return;
-            if(mEmptyView != null)
+            if (mEmptyView != null)
                 mEmptyView.setEmptyType(CustomEmptyView.TYPE_ERROR);
-            if(mAblView != null)
+            if (mAblView != null)
                 mAblView.setVisibility(View.GONE);
-            if(mNestedScrollView != null)
+            if (mNestedScrollView != null)
                 mNestedScrollView.setVisibility(View.GONE);
             showSnackbar(throwable);
         }
 
         @Override
         public void onSuccess(int enqueueKey, ApkRoot<ApkDetails> response) {
-            if (response == null || response.getData() == null || isFinishing()) return;
+            if (response == null || response.getData() == null || mApkScreenAdapter == null) return;
             ApkDetails data = response.getData();
             fillViewData(data);
             //apk有推广视频
@@ -497,7 +504,7 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
 
         @Override
         public void onSuccess(int enqueueKey, ApkRoot<ApkVideo> response) {
-            if (response == null || response.getData() == null || isFinishing()) return;
+            if (response == null || response.getData() == null || mApkScreenAdapter == null) return;
             fillVideoData(response.getData());
         }
 

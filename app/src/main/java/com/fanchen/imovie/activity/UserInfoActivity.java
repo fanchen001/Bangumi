@@ -51,8 +51,12 @@ public class UserInfoActivity extends BaseToolbarActivity implements View.OnClic
      * @param context
      */
     public static void startActivity(Context context) {
-        Intent intent = new Intent(context, UserInfoActivity.class);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, UserInfoActivity.class);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

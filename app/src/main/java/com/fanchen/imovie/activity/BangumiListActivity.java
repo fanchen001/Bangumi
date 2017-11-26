@@ -34,6 +34,7 @@ public class BangumiListActivity extends BaseRecyclerActivity {
     public static final String URL = "url";
     public static final String TITLE = "title";
     public static final String ISLOAD = "load";
+    public static final String PAGE_START = "page_start";
     public static final String CLASS_NAME = "className";
 
     private BangumiListAdapter mVideoListAdapter;
@@ -50,7 +51,30 @@ public class BangumiListActivity extends BaseRecyclerActivity {
      * @param className
      */
     public static void startActivity(Activity activity, String title, String url,String className) {
-        startActivity(activity, title, url, className, true);
+        startActivity(activity, title, 1, url, className, true);
+    }
+
+    /**
+     *
+     * @param activity
+     * @param title
+     * @param pageStart
+     * @param url
+     * @param className
+     * @param isLoad
+     */
+    public static void startActivity(Activity activity, String title,int pageStart, String url,String className ,boolean isLoad) {
+        try {
+            Intent intent = new Intent(activity, BangumiListActivity.class);
+            intent.putExtra(URL, url);
+            intent.putExtra(TITLE, title);
+            intent.putExtra(PAGE_START, pageStart);
+            intent.putExtra(ISLOAD, isLoad);
+            intent.putExtra(CLASS_NAME, className);
+            activity.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -61,13 +85,8 @@ public class BangumiListActivity extends BaseRecyclerActivity {
      * @param className
      * @param isLoad
      */
-    public static void startActivity(Activity activity, String title, String url,String className ,boolean isLoad) {
-        Intent intent = new Intent(activity, BangumiListActivity.class);
-        intent.putExtra(URL, url);
-        intent.putExtra(TITLE, title);
-        intent.putExtra(ISLOAD, isLoad);
-        intent.putExtra(CLASS_NAME, className);
-        activity.startActivity(intent);
+    public static void startActivity(Activity activity, String title,String url,String className ,boolean isLoad) {
+        startActivity(activity, title, 1, url, className, isLoad);
     }
 
     /**
@@ -77,7 +96,7 @@ public class BangumiListActivity extends BaseRecyclerActivity {
      * @param isLoad
      */
     public static void startActivity(Activity activity,IBangumiTitle bangumiTitle,boolean isLoad) {
-        startActivity(activity,bangumiTitle.getTitle(),bangumiTitle.getId(),bangumiTitle.getServiceClassName(),isLoad);
+        startActivity(activity,bangumiTitle.getTitle(),bangumiTitle.getStartPage(),bangumiTitle.getId(),bangumiTitle.getServiceClassName(),isLoad);
     }
 
     @Override
@@ -86,6 +105,7 @@ public class BangumiListActivity extends BaseRecyclerActivity {
         title = getIntent().getStringExtra(TITLE);
         isLoad = getIntent().getBooleanExtra(ISLOAD, false);
         className = getIntent().getStringExtra(CLASS_NAME);
+        setPageStart(getIntent().getIntExtra(PAGE_START, 1));
         super.initActivity(savedState, inflater);
     }
 
@@ -132,7 +152,7 @@ public class BangumiListActivity extends BaseRecyclerActivity {
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if(datas == null || datas.size() <= position || position < 0 || !(datas.get(position) instanceof IVideo))return;
+        if(!(datas.get(position) instanceof IVideo))return;
         IVideo video = (IVideo) datas.get(position);
         VideoDetailsActivity.startActivity(this,video);
     }
@@ -141,7 +161,7 @@ public class BangumiListActivity extends BaseRecyclerActivity {
 
         @Override
         public void onSuccess(int enqueueKey, IBangumiMoreRoot response) {
-            if (isFinishing() || response == null || !response.isSuccess()) return;
+            if (response == null || !response.isSuccess() || mVideoListAdapter == null) return;
             if (isRefresh()) {
                 mVideoListAdapter.clear();
             }

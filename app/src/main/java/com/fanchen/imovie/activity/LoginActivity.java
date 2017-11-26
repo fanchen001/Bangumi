@@ -74,8 +74,12 @@ public class LoginActivity extends BaseToolbarActivity implements View.OnClickLi
      * @param context
      */
     public static void startActivity(Context context) {
-        Intent intent = new Intent(context, LoginActivity.class);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, LoginActivity.class);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -130,6 +134,10 @@ public class LoginActivity extends BaseToolbarActivity implements View.OnClickLi
                 String pass = getEditTextString(mPasswordEditText);
                 if (TextUtils.isEmpty(user) || TextUtils.isEmpty(pass)) {
                     showSnackbar(getString(R.string.login_hit));
+                    return;
+                }
+                if (user.length() < 4 || pass.length() < 6) {
+                    showSnackbar(getString(R.string.login_lenght_hit));
                     return;
                 }
                 new User(user,pass).login(loginListener);
@@ -286,6 +294,7 @@ public class LoginActivity extends BaseToolbarActivity implements View.OnClickLi
 
         @Override
         public Integer onTaskBackground() {
+            if(getLiteOrm() == null || list == null)return 0;
             return getLiteOrm().insert(list);
         }
 

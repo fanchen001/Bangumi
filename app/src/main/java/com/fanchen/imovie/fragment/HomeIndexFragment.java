@@ -139,14 +139,14 @@ public class HomeIndexFragment extends BaseRecyclerFragment implements BaseAdapt
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if (position < 0 || datas == null || datas.size() <= position || !(datas.get(position) instanceof IVideo)) return;
+        if (!(datas.get(position) instanceof IVideo)) return;
         IVideo video = (IVideo) datas.get(position);
         VideoDetailsActivity.startActivity(activity,video);
     }
 
     @Override
     public boolean onItemLongClick(List<?> datas, View v, int position) {
-        if (position < 0 || datas == null || datas.size() <= position || !(datas.get(position) instanceof IVideo)) return false;
+        if (!(datas.get(position) instanceof IVideo)) return false;
         IVideo item = (IVideo) datas.get(position);
         DialogUtil.showOperationDialog(this,item,(List<IVideo>)datas,position);
         return true;
@@ -156,7 +156,7 @@ public class HomeIndexFragment extends BaseRecyclerFragment implements BaseAdapt
 
         @Override
         public void onSuccess(IBangumiRoot date) {
-            if (!date.isSuccess()) return;
+            if (!date.isSuccess() || mRecomAdapter == null) return;
             mRecomAdapter.setAdapterData(mIBangumiRoot = date);
         }
 
@@ -166,7 +166,7 @@ public class HomeIndexFragment extends BaseRecyclerFragment implements BaseAdapt
 
         @Override
         public void onSuccess(IBangumiRoot response) {
-            if (!response.isSuccess()) return;
+            if (!response.isSuccess() || mRecomAdapter == null) return;
             mRecomAdapter.setAdapterData(mIBangumiRoot = response);
         }
 
