@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IViewType;
-import com.fanchen.imovie.retrofit.service.LL520Service;
+import com.fanchen.imovie.retrofit.service.LoLi520Service;
 
 /**
  * Created by fanchen on 2017/9/24.
@@ -72,7 +72,7 @@ public class LL520Video implements IVideo,Parcelable{
 
     @Override
     public String getServiceClassName() {
-        return LL520Service.class.getName();
+        return LoLi520Service.class.getName();
     }
 
     @Override
