@@ -8,8 +8,8 @@
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_marginTop="?attr/actionBarSize"
         android:layout_height="fill_parent"
+        android:layout_marginTop="?attr/actionBarSize"
         android:background="@color/comm_background_color"
         android:scrollbarThumbVertical="@drawable/btn_dialog_scrollbar_thumb">
 
@@ -79,17 +79,18 @@
                     android:layout_marginLeft="36.0dip"
                     android:layout_toRightOf="@+id/user_profile_nickname_tv">
 
-                    <EditText
+                    <com.fanchen.imovie.view.SelectionEditText
                         android:id="@+id/user_profile_nickname_et"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:background="@null"
                         android:hint="2-10个中英文字符、数字和下划线组成"
                         android:imeOptions="actionNext"
+                        android:inputType="textNoSuggestions"
                         android:singleLine="true"
                         android:textColor="@color/comm_text_h2_color"
                         android:textColorHint="@color/comm_text_hint_color"
-                        android:textSize="12.0sp"/>
+                        android:textSize="12.0sp" />
 
                 </FrameLayout>
             </RelativeLayout>
@@ -119,17 +120,17 @@
                     android:layout_marginLeft="36.0dip"
                     android:layout_toRightOf="@+id/user_profile_email_tv">
 
-                    <EditText
+                    <com.fanchen.imovie.view.SelectionEditText
                         android:id="@+id/user_profile_email_et"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:background="@null"
                         android:hint="例：example@qq.com"
-                        android:inputType="textEmailAddress"
+                        android:inputType="textNoSuggestions"
                         android:singleLine="true"
                         android:textColor="@color/comm_text_h2_color"
                         android:textColorHint="@color/comm_text_hint_color"
-                        android:textSize="14.0sp"/>
+                        android:textSize="14.0sp" />
 
                 </FrameLayout>
             </RelativeLayout>

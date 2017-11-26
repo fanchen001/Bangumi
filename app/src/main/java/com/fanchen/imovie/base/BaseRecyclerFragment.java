@@ -45,7 +45,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
     protected CustomEmptyView mCustomEmptyView;
 
     private int page = 1;
-
+    private int pageStart = 1;
     private BaseAdapter mAdapter;
     private  Bundle savedInstanceState;
 
@@ -69,7 +69,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
             loadLocalData(AsyTaskQueue.newInstance());
         } else {
             LogUtil.e(BaseRecyclerFragment.class, "加载网络数据");
-            loadData(savedInstanceState, getRetrofitManager(), page = 1);
+            loadData(savedInstanceState, getRetrofitManager(), page = pageStart);
         }
     }
 
@@ -142,16 +142,20 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
         return page;
     }
 
+    public void setPageStart(int pageStart) {
+        this.pageStart = pageStart;
+    }
+
     /**
      * @return
      */
     public boolean isRefresh() {
-        return page == 1;
+        return page == pageStart;
     }
 
     @Override
     public void onRefresh() {
-        loadData(null, getRetrofitManager(), page = 1);
+        loadData(null, getRetrofitManager(), page = pageStart);
     }
 
     @Override
@@ -228,6 +232,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
 
         @Override
         public Void onTaskBackground() {
+            if(getLiteOrm() == null)return null;
             //保存key
             getLiteOrm().delete(new WhereBuilder(JsonSerialize.class, "key = ?", new Object[]{getSerializeKey()}));
             getLiteOrm().insert(new JsonSerialize(response, getSerializeKey()));
@@ -244,7 +249,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
 
         @Override
         public void onTaskSart() {
-            if (isDetached() || !isAdded()) return;
+            if (mCustomEmptyView == null || mSwipeRefreshLayout== null || mAdapter == null) return;
             mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_NON);
             if (!mSwipeRefreshLayout.isRefreshing() && !mAdapter.isLoading()) {
                 mSwipeRefreshLayout.setRefreshing(true);
@@ -253,6 +258,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
 
         @Override
         public T onTaskBackground() {
+            if(getLiteOrm() == null) return null;
             List<JsonSerialize> query = getLiteOrm().query(new QueryBuilder<>(JsonSerialize.class).where("key = ?", getSerializeKey()));
             if (query != null && query.size() > 0) {
                 JsonSerialize jsonSerialize = query.get(0);
@@ -276,7 +282,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
 
         @Override
         public void onTaskSuccess(T data) {
-            if(isDetached() || !isAdded())return;
+            if(mSwipeRefreshLayout == null)return;
             if(data != null){
                 onSuccess(data);
                 mSwipeRefreshLayout.setRefreshing(false);
@@ -284,7 +290,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
             }else{
                 //加载网络数据
                 LogUtil.e(BaseRecyclerFragment.class,"加载网络数据");
-                loadData(savedInstanceState,getRetrofitManager(),page = 1);
+                loadData(savedInstanceState,getRetrofitManager(),page = pageStart);
             }
         }
 
@@ -303,7 +309,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
 
         @Override
         public void onStart(int enqueueKey) {
-            if (isDetached() || !isAdded()) return;
+            if (mCustomEmptyView == null || mSwipeRefreshLayout == null) return;
             mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_NON);
             if (!mSwipeRefreshLayout.isRefreshing() && !mAdapter.isLoading()) {
                 mSwipeRefreshLayout.setRefreshing(true);
@@ -312,14 +318,14 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
 
         @Override
         public void onFailure(int enqueueKey, String throwable) {
-            if (isDetached() || !isAdded()) return;
+            if (mCustomEmptyView == null || mAdapter == null) return;
             if (mAdapter.isEmpty()) mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_ERROR);
             showSnackbar(throwable);
         }
 
         @Override
         public void onFinish(int enqueueKey) {
-            if (isDetached() || !isAdded()) return;
+            if (mCustomEmptyView == null || mAdapter == null || mAdapter == null) return;
             mSwipeRefreshLayout.setRefreshing(false);
             mAdapter.setLoading(false);
             if (mAdapter.isEmpty()) {
@@ -329,7 +335,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
 
         @Override
         public void onSuccess(int enqueueKey, T response) {
-            if(response == null || isDetached() || !isAdded())return;
+            if(response == null || mAdapter == null)return;
             if(isRefresh())mAdapter.clear();
             if(useLocalStorage()){
                 //将数据序列化到本地

@@ -109,8 +109,9 @@
         <activity
             android:name=".activity.WebActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:process=":web"
+            android:process=":remote"
             android:screenOrientation="portrait"
+            android:theme="@style/BaseAppThemeMain"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.CouldTabActivity"
@@ -250,11 +251,21 @@
             android:name=".activity.WebPlayerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:hardwareAccelerated="true"
-            android:process=":web"
+            android:process=":remote"
             android:screenOrientation="landscape"
             android:theme="@style/BaseAppThemeMain"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
-
+        <activity
+            android:name="com.tencent.smtt.sdk.VideoActivity"
+            android:alwaysRetainTaskState="true"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="false"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="com.tencent.smtt.tbs.video.PLAY" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <!--qq精简版-->
         <activity
             android:name="com.umeng.qq.tencent.AuthActivity"
@@ -305,9 +316,14 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
 
         <service
+            android:name=".service.EmptyService"
+            android:label="远程服务"
+            android:process=":remote" />
+
+        <service
             android:name="com.xigua.p2p.P2PService"
             android:label="P2P服务"
-            android:process=":p2p" />
+            android:process=":remote" />
 
     </application>
 

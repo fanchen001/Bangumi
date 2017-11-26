@@ -48,4 +48,10 @@ public interface IBangumiTitle extends IViewType{
      * @return
      */
     String getId();
+
+    /**
+     *
+     * @return
+     */
+    int getStartPage();
 }

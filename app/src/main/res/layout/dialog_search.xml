@@ -30,13 +30,14 @@
                 android:padding="6dp"
                 android:src="@drawable/ic_scan" />
 
-            <EditText
+            <com.fanchen.imovie.view.SelectionEditText
                 android:id="@+id/et_search_keyword"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@null"
                 android:hint="搜索关键字"
+                android:inputType="textNoSuggestions"
                 android:imeOptions="actionSearch"
                 android:padding="6dp"
                 android:singleLine="true"

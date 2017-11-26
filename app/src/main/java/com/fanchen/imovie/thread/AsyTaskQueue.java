@@ -7,6 +7,7 @@ import android.os.Message;
 
 import com.fanchen.imovie.thread.task.AsyTaskItem;
 import com.fanchen.imovie.thread.task.AsyTaskListener;
+import com.fanchen.imovie.util.ActiveUtil;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -50,13 +51,19 @@ public class AsyTaskQueue extends Thread {
                 if(asyTaskListener == null)return;
                 switch (msg.what) {
                     case 0:
-                        asyTaskListener.onTaskSart();
+                        if(ActiveUtil.checkActive(asyTaskListener)){
+                            asyTaskListener.onTaskSart();
+                        }
                         break;
                     case 1:
-                        asyTaskListener.onTaskFinish();
+                        if(ActiveUtil.checkActive(asyTaskListener)){
+                            asyTaskListener.onTaskFinish();
+                        }
                         break;
                     case 2:
-                        asyTaskListener.onTaskSuccess(result.get(item.toString()));
+                        if(ActiveUtil.checkActive(asyTaskListener)){
+                            asyTaskListener.onTaskSuccess(result.get(item.toString()));
+                        }
                         result.remove(item.toString());
                         break;
                     default:
@@ -150,13 +157,16 @@ public class AsyTaskQueue extends Thread {
                     start.obj = item;
                     handler.sendMessage(start);
                     //定义了回调
-                    if (item != null && item.getListener() != null && item.getListener().get() != null) {
-                        result.put(item.toString(), item.getListener().get().onTaskBackground());
-                        //交由UI线程处理
-                        Message success = handler.obtainMessage();
-                        success.what = 2;
-                        success.obj = item;
-                        handler.sendMessage(success);
+                    if (item != null && item.getListener() != null) {
+                        AsyTaskListener asyTaskListener = item.getListener().get();
+                        if(asyTaskListener != null && ActiveUtil.checkActive(asyTaskListener)){
+                            result.put(item.toString(), asyTaskListener.onTaskBackground());
+                            //交由UI线程处理
+                            Message success = handler.obtainMessage();
+                            success.what = 2;
+                            success.obj = item;
+                            handler.sendMessage(success);
+                        }
                     }
                     //停止后清空
                     if (quit) {

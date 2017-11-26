@@ -36,11 +36,11 @@ public abstract class BaseTabActivity extends BaseToolbarActivity {
         mViewPager.setAdapter(adapter);
         mViewPager.setOffscreenPageLimit(adapter.getCount());
         mSlidingTab.setupWithViewPager(mViewPager);
-        mSlidingTab.setTabMode(getTabMode());
+        mSlidingTab.setTabMode(getTabMode(adapter));
     }
 
-    protected int getTabMode(){
-        return TabLayout.MODE_FIXED;
+    protected int getTabMode(PagerAdapter adapter){
+        return adapter.getCount() < 5 ? TabLayout.MODE_FIXED : TabLayout.MODE_SCROLLABLE;
     }
 
     /**

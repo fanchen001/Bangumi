@@ -18,7 +18,8 @@ import com.umeng.socialize.UMShareAPI;
 import java.io.File;
 
 
-/**、
+/**
+ * 、
  * 設置與關於
  * Created by fanchen on 2017/8/26.
  */
@@ -28,8 +29,12 @@ public class SettingsActivity extends BaseToolbarActivity {
      * @param context
      */
     public static void startActivity(Context context) {
-        Intent intent = new Intent(context, SettingsActivity.class);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, SettingsActivity.class);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -43,22 +48,10 @@ public class SettingsActivity extends BaseToolbarActivity {
      * 清除缓存
      */
     public void clearCache() {
-        final File dir = new File(Environment.getExternalStorageDirectory(),"/Android/data/" + getPackageName() + "/cache");
-        if(dir.exists()){
-            AsyTaskQueue.newInstance().execute(new AsyTaskListenerImpl<Void>() {
-
-                @Override
-                public Void onTaskBackground() {
-                    FileUtil.deleteDirectory(dir.getAbsolutePath());
-                    return null;
-                }
-
-                @Override
-                public void onTaskSuccess(Void data) {
-                    showToast(getString(R.string.clear_ok));
-                }
-            });
-        }else{
+        final File dir = new File(Environment.getExternalStorageDirectory(), "/Android/data/" + getPackageName() + "/cache");
+        if (dir.exists()) {
+            AsyTaskQueue.newInstance().execute(new ClearTaskListener(dir));
+        } else {
             showToast(getString(R.string.clear_non));
         }
     }
@@ -78,7 +71,7 @@ public class SettingsActivity extends BaseToolbarActivity {
      * github
      */
     public void github() {
-        WebActivity.startActivity(this,"https://github.com/fanchen001/bangumi");
+        WebActivity.startActivity(this, "https://github.com/fanchen001/bangumi");
     }
 
     @Override
@@ -92,4 +85,26 @@ public class SettingsActivity extends BaseToolbarActivity {
         return getString(R.string.setting_about);
     }
 
+
+    private class ClearTaskListener extends AsyTaskListenerImpl<Void> {
+
+        private File dir;
+
+        public ClearTaskListener(File dir) {
+            this.dir = dir;
+        }
+
+        @Override
+        public Void onTaskBackground() {
+            if(dir == null || !dir.exists())return null;
+            FileUtil.deleteDirectory(dir.getAbsolutePath());
+            return null;
+        }
+
+        @Override
+        public void onTaskSuccess(Void data) {
+            showToast(getString(R.string.clear_ok));
+        }
+
+    }
 }

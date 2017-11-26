@@ -15,8 +15,12 @@ import com.fanchen.imovie.base.BaseTabActivity;
 public class HackerToolActivity extends BaseTabActivity{
 
     public static void startActivity(Context context) {
-        Intent intent = new Intent(context, HackerToolActivity.class);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, HackerToolActivity.class);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

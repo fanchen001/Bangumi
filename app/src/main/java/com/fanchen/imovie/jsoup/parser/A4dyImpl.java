@@ -16,7 +16,6 @@ import com.fanchen.imovie.jsoup.IVideoMoreParser;
 import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.util.JavaScriptUtil;
-import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.StreamUtil;
 
 import java.util.ArrayList;
@@ -24,13 +23,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import retrofit2.Retrofit;
+
 /**
  * Created by fanchen on 2017/11/2.
  */
 public class A4dyImpl implements IVideoMoreParser {
 
+    private static final String YOUKU = "http://h1.aayyc.com/ckplayer/%s/index.m3u8?vid=%s&height=270";
+    private static final String MGTV = "http://h1.aayyc.com/ckplayer/%s/index.hchc?id=%s&height=270";
+    private static final String BILIBILI = "http://h1.aayyc.com/h5/%s.m3u8?cid=%s&height=270";
+    private static final String WEIYUN = "http://404erbh.com/%s/index.mp4?name=%s&height=270";
+    private static final String TENCENT = "http://h1.aayyc.com/ckplayer/%s/indexvip.2fz?vid=%s&height=270";
+    private static final String OTHER = "http://h1.aayyc.com/ckplayer/%s/indexh5.m3u8?tvid=%s&height=270";
+
     @Override
-    public IBangumiMoreRoot search(String html) {
+    public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
         A4dyHome home = new A4dyHome();
         try {
@@ -42,7 +50,7 @@ public class A4dyImpl implements IVideoMoreParser {
                 String update = n.textAt("div.list_info > p", 4);
                 String type = n.textAt("div.list_info > p", 1);
                 String author = n.textAt("div.list_info > p", 2);
-                String url = "http://m.aaccy.com" + n.attr("a", "href");
+                String url = baseUrl + n.attr("a", "href");
                 String id = n.attr("a", "href", "-", 3);
                 A4dyVideo video = new A4dyVideo();
                 video.setCover(cover);
@@ -62,7 +70,7 @@ public class A4dyImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IHomeRoot home(String html) {
+    public IHomeRoot home(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
         A4dyHome home = new A4dyHome();
         try {
@@ -78,7 +86,7 @@ public class A4dyImpl implements IVideoMoreParser {
                     if (!topUrl.equals("[matrix:link]")) {
                         String topId = n.attr("i > a", "href", "-", 3);
                         A4dyTitle.setId(topId);
-                        A4dyTitle.setUrl("http://m.aaccy.com" + topUrl);
+                        A4dyTitle.setUrl(baseUrl + topUrl);
                         A4dyTitle.setMore(true);
                     } else {
                         A4dyTitle.setId("");
@@ -96,7 +104,7 @@ public class A4dyImpl implements IVideoMoreParser {
                         if (TextUtils.isEmpty(cover))
                             continue;
                         String hd = sub.text("a > div > label.title");
-                        String url = "http://m.aaccy.com/" + sub.attr("a", "href");
+                        String url = baseUrl + sub.attr("a", "href");
                         String id = sub.attr("a", "href", "-", 3);
                         A4dyVideo video = new A4dyVideo();
                         video.setCover(cover);
@@ -117,7 +125,7 @@ public class A4dyImpl implements IVideoMoreParser {
                     String hd = n.text("a > div > label.title");
                     String score = n.text("a > div > label.score");
                     String area = n.text("p");
-                    String url = "http://m.aaccy.com" + n.attr("a", "href");
+                    String url = baseUrl + n.attr("a", "href");
                     String id = n.attr("a", "href", "-", 3);
                     A4dyVideo video = new A4dyVideo();
                     video.setCover(cover);
@@ -139,7 +147,7 @@ public class A4dyImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IVideoDetails details(String html) {
+    public IVideoDetails details(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
         A4dyDetails details = new A4dyDetails();
         try {
@@ -150,8 +158,8 @@ public class A4dyImpl implements IVideoMoreParser {
             for (Node n : node.list("div.play-box > ul")) {
                 for (Node sub : n.list("li")) {
                     A4dyEpisode episode = new A4dyEpisode();
-                    episode.setId(sub.attr("a", "href","/",1));
-                    episode.setUrl(episodeurl = "http://m.aaccy.com" + sub.attr("a", "href"));
+                    episode.setId(sub.attr("a", "href", "/", 1));
+                    episode.setUrl(episodeurl = baseUrl + sub.attr("a", "href"));
                     if (list.size() > count) {
                         episode.setTitle(list.get(count).text() + "_" + sub.text());
                     } else {
@@ -168,19 +176,19 @@ public class A4dyImpl implements IVideoMoreParser {
             details.setTitle(node.text("div.vod-n-l > h1"));
             details.setIntroduce(node.text("div.vod_content"));
             details.setEpisodes(episodes);
-            if(!TextUtils.isEmpty(episodeurl)){
+            if (!TextUtils.isEmpty(episodeurl)) {
                 String s = StreamUtil.url2String(episodeurl);
-                if(!TextUtils.isEmpty(s)){
+                if (!TextUtils.isEmpty(s)) {
                     List<A4dyVideo> videos = new ArrayList<>();
-                    for (Node n : new Node(s).list("ul.list_tab_img > li")){
+                    for (Node n : new Node(s).list("ul.list_tab_img > li")) {
                         String title = n.text("h2");
                         String cover = n.attr("a > div > img", "data-original");
-                        if(TextUtils.isEmpty(cover))
+                        if (TextUtils.isEmpty(cover))
                             continue;
                         String hd = n.text("a > div > label.title");
                         String score = n.text("a > div > label.score");
-                        String url = "http://m.aaccy.com" + n.attr("a","href");
-                        String id = n.attr("a","href","-",3);
+                        String url = baseUrl + n.attr("a", "href");
+                        String id = n.attr("a", "href", "-", 3);
                         A4dyVideo video = new A4dyVideo();
                         video.setCover(cover);
                         video.setId(id);
@@ -201,63 +209,59 @@ public class A4dyImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IPlayUrls playUrl(String html) {
+    public IPlayUrls playUrl(Retrofit retrofit, String baseUrl, String html) {
         A4dyPlayUrl playUrl = new A4dyPlayUrl();
         try {
             String[] split = RetrofitManager.REQUEST_URL.replace(".html", "").split("-");
             String url = "";
             int count = 0;
             int xianlu = 0;
-            if(split.length >= 5){
+            if (split.length >= 5) {
                 xianlu = Integer.valueOf(split[5]) - 1;
             }
-            if(split.length >= 8){
+            if (split.length >= 8) {
                 count = Integer.valueOf(split[7]) - 1;
             }
-            String from = JavaScriptUtil.match("mac_from='[\\d\\w$]+'",html,0,10,1);
+            String from = JavaScriptUtil.match("mac_from='[\\d\\w$]+'", html, 0, 10, 1);
             String jscode = "function(){ return " + JavaScriptUtil.match("unescape[\\w\\d\\('%]+'\\);", html, 0) + "}";
             String callFunction = JavaScriptUtil.callFunction(jscode);
-            LogUtil.e("callFunction","callFunction ==> " + callFunction);
-            LogUtil.e("from","from ==> " + from);
             String[] fromSplit = from.split("\\$\\$\\$");
             String[] callSplit = callFunction.split("\\$\\$\\$");
-            if(fromSplit.length == callSplit.length && callSplit.length > xianlu){
-                String[] strings = callSplit[xianlu].split("#");
-                for (int i = 0 ;i < strings.length ; i ++){
-                    if(i == count){
-                        switch (fromSplit[xianlu]){
-                            case "sohu":
-                            case "youku":
-                                url = String.format("http://h1.aayyc.com/ckplayer/%s/index.m3u8?vid=%s&height=270",fromSplit[xianlu],strings[i].split("\\$")[1]);
-                                break;
-                            case "mgtv":
-                                url = String.format("http://h1.aayyc.com/ckplayer/%s/index.hchc?id=%s&height=270",fromSplit[xianlu],strings[i].split("\\$")[1]);
-                                break;
-                            case "bilibili":
-                                url = String.format("http://h1.aayyc.com/h5/%s.m3u8?cid=%s&height=270",fromSplit[xianlu],strings[i].split("\\$")[1]);
-                                break;
-                            case "weiyun":
-                                url = String.format("http://404erbh.com/%s/index.mp4?name=%s&height=270",fromSplit[xianlu],strings[i].split("\\$")[1]);
-                                break;
-                            case "qqtencent":
-                                url = String.format("http://h1.aayyc.com/ckplayer/%s/indexvip.2fz?vid=%s&height=270",fromSplit[xianlu],strings[i].split("\\$")[1]);
-                                break;
-                            default:
-                                url = String.format("http://h1.aayyc.com/ckplayer/%s/indexh5.m3u8?tvid=%s&height=270",fromSplit[xianlu],strings[i].split("\\$")[1]);
-                                break;
-                        }
+            if (fromSplit.length != callSplit.length || callSplit.length <= xianlu)
+                return playUrl;
+            String[] strings = callSplit[xianlu].split("#");
+            for (int i = 0; i < strings.length; i++) {
+                if (i != count) continue;
+                switch (fromSplit[xianlu]) {
+                    case "sohu":
+                    case "youku":
+                        url = String.format(YOUKU, fromSplit[xianlu], strings[i].split("\\$")[1]);
+                        break;
+                    case "mgtv":
+                        url = String.format(MGTV, fromSplit[xianlu], strings[i].split("\\$")[1]);
+                        break;
+                    case "bilibili":
+                        url = String.format(BILIBILI, fromSplit[xianlu], strings[i].split("\\$")[1]);
+                        break;
+                    case "weiyun":
+                        url = String.format(WEIYUN, fromSplit[xianlu], strings[i].split("\\$")[1]);
+                        break;
+                    case "qqtencent":
+                        url = String.format(TENCENT, fromSplit[xianlu], strings[i].split("\\$")[1]);
+                        break;
+                    default:
+                        url = String.format(OTHER, fromSplit[xianlu], strings[i].split("\\$")[1]);
+                        break;
 
-                    }
                 }
             }
-            if(!TextUtils.isEmpty(url)){
-                Map<String,String> mapUrl = new HashMap<>();
+            if (!TextUtils.isEmpty(url)) {
+                Map<String, String> mapUrl = new HashMap<>();
                 mapUrl.put("标清", url);
                 playUrl.setSuccess(true);
                 playUrl.setPlayType(IPlayUrls.URL_WEB);
                 playUrl.setUrls(mapUrl);
             }
-            LogUtil.e("playUrl","url ==> " + url);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -265,8 +269,8 @@ public class A4dyImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IBangumiMoreRoot more(String html) {
-        return (IBangumiMoreRoot) home(html);
+    public IBangumiMoreRoot more(Retrofit retrofit, String baseUrl, String html) {
+        return (IBangumiMoreRoot) home(retrofit, baseUrl, html);
     }
 
 }

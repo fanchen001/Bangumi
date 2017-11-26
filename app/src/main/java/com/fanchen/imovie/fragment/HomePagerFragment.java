@@ -75,11 +75,14 @@ public class HomePagerFragment extends BaseFragment implements Toolbar.OnMenuIte
         setLoginInfo(activity == null ? null : activity.getLoginUser());
         activity.setSupportActionBar(mToolbar);
         mHomePagerAdapter = new HomePagerAdapter(getChildFragmentManager());
-        mViewPager.setOffscreenPageLimit(4);
+        mViewPager.setOffscreenPageLimit(5);
         mViewPager.setAdapter(mHomePagerAdapter);
         mSlidingTab.setupWithViewPager(mViewPager);
         if(savedInstanceState != null){
             mViewPager.setCurrentItem(savedInstanceState.getInt(CURRENT_ITEM));
+        }else{
+            //默认选中番剧页
+            mViewPager.setCurrentItem(1);
         }
     }
 

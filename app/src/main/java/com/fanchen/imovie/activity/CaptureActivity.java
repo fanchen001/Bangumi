@@ -1,6 +1,7 @@
 package com.fanchen.imovie.activity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -22,6 +23,15 @@ import com.fanchen.imovie.fragment.CaptureFragment;
 public class CaptureActivity extends BaseToolbarActivity {
 
     private CaptureFragment captureFragment = new CaptureFragment();
+
+    public static void startActivity(Context context){
+        try {
+            Intent intent = new Intent(context,CaptureActivity.class);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     @Override
     protected int getLayout() {
@@ -94,6 +104,11 @@ public class CaptureActivity extends BaseToolbarActivity {
             bundle.putString(CodeUtils.RESULT_STRING, result);
             resultIntent.putExtras(bundle);
             CaptureActivity.this.setResult(RESULT_OK, resultIntent);
+            if(result.startsWith("http")){
+                WebActivity.startActivity(CaptureActivity.this,result);
+            }else{
+                WebActivity.startActivity(CaptureActivity.this,String.format("https://www.baidu.com/s?wd=%s",result));
+            }
             CaptureActivity.this.finish();
         }
 

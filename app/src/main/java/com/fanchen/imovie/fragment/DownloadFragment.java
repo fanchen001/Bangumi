@@ -75,7 +75,7 @@ public class DownloadFragment extends BaseRecyclerFragment {
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if(datas == null || datas.size() <= position || position < 0 || !(datas.get(position) instanceof DownloadEntityWrap))return ;
+        if(!(datas.get(position) instanceof DownloadEntityWrap))return ;
         DownloadEntityWrap entityWrap = (DownloadEntityWrap) datas.get(position);
         DownloadEntity entity = entityWrap.getEntity();
         if(entity.getState() != IEntity.STATE_COMPLETE)return;
@@ -96,22 +96,20 @@ public class DownloadFragment extends BaseRecyclerFragment {
 
         @Override
         public List<DownloadEntity> onTaskBackground() {
-            LogUtil.e("onTaskBackground", "onTaskBackground");
-            if (activity == null || activity.appliction == null) return null;
+            if (getDownloadReceiver() == null) return null;
             return getDownloadReceiver().getSimpleTaskList();
         }
 
         @Override
         public void onTaskSuccess(List<DownloadEntity> data) {
-            LogUtil.e("onTaskSuccess","onTaskSuccess");
             if (mDownloadAdapter == null) return;
             mDownloadAdapter.addAll(data, suffix);
         }
 
         @Override
         public void onTaskFinish() {
+            if(getSwipeRefreshLayout() == null)return;
             super.onTaskFinish();
-            LogUtil.e("onTaskFinish", "onTaskFinish");
             getSwipeRefreshLayout().setEnabled(false);
         }
     };

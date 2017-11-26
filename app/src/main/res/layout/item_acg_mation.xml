@@ -11,7 +11,7 @@
     android:orientation="vertical"
     app:cardCornerRadius="2.0dip">
 
-    <ImageView
+    <com.fanchen.imovie.view.RecycleImageView
         android:id="@+id/iv_acg_card_header"
         android:layout_width="fill_parent"
         android:layout_height="140.0dip"

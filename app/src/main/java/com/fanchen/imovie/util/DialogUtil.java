@@ -124,14 +124,15 @@ public class DialogUtil {
 
     /**
      *
-     * @param fragment
+     * @param context
+     * @param clickListener
      * @param taskListener
      * @param datas
      * @param position
      */
-    public static void showMaterialDeleteDialog(CollectFragment fragment,AsyTaskListener<?> taskListener, List<VideoCollect> datas, int position){
+    public static void showMaterialDeleteDialog(Context context,BaseAdapter.OnItemClickListener clickListener,AsyTaskListener<?> taskListener, List<?> datas, int position){
         closeDialog();
-        showMaterialListDialog(fragment.activity, new String[]{"删除记录", "直接打开"}, new DeletClickListener(fragment, taskListener,datas, position));
+        showMaterialListDialog(context, new String[]{"删除记录", "直接打开"}, new DeletClickListener(clickListener, taskListener, datas, position));
     }
 
     /**
@@ -170,6 +171,17 @@ public class DialogUtil {
         materialDialog.show();
     }
 
+    public static void showCancelableDialog(Context context, String content, OnButtonClickListener l) {
+        closeDialog();
+        MaterialDialog materialDialog = (MaterialDialog) (DialogUtil.materialDialog = dialog = new MaterialDialog(context));
+        materialDialog.setTitleVisble(View.GONE);
+        materialDialog.setCancelable(false);
+        materialDialog.setCanceledOnTouchOutside(true);
+        materialDialog.content(content);
+        materialDialog.setButtonClickListener(l);
+        materialDialog.show();
+    }
+
     public static void showMessageDialog(Context context, String content) {
         closeDialog();
         MaterialDialog materialDialog = (MaterialDialog) (DialogUtil.materialDialog = dialog = new MaterialDialog(context));
@@ -192,6 +204,30 @@ public class DialogUtil {
         materialDialog.setTitleVisble(View.GONE);
         materialDialog.btnText(btn1, btn2);
         materialDialog.btnNum(2);
+        materialDialog.content(content);
+        materialDialog.setButtonClickListener(l);
+        materialDialog.show();
+    }
+
+    public static void showCancelableDialog(Context context, String content, String btn1, String btn2, OnButtonClickListener l) {
+        closeDialog();
+        MaterialDialog materialDialog = (MaterialDialog) (DialogUtil.materialDialog = dialog = new MaterialDialog(context));
+        materialDialog.setTitleVisble(View.GONE);
+        materialDialog.btnText(btn1, btn2);
+        materialDialog.btnNum(2);
+        materialDialog.setCancelable(false);
+        materialDialog.setCanceledOnTouchOutside(true);
+        materialDialog.content(content);
+        materialDialog.setButtonClickListener(l);
+        materialDialog.show();
+    }
+
+    public static void showMaterialDialog(Context context, String content, String btn1, String btn2,String btn3, OnButtonClickListener l) {
+        closeDialog();
+        MaterialDialog materialDialog = (MaterialDialog) (DialogUtil.materialDialog = dialog = new MaterialDialog(context));
+        materialDialog.setTitleVisble(View.GONE);
+        materialDialog.btnText(btn1, btn2,btn3);
+        materialDialog.btnNum(3);
         materialDialog.content(content);
         materialDialog.setButtonClickListener(l);
         materialDialog.show();
@@ -491,7 +527,7 @@ public class DialogUtil {
         @Override
         public Integer onTaskBackground() {
             BaseActivity baseActivity = activity.get();
-            if (baseActivity == null) return ERROR;
+            if (baseActivity == null || collect == null || baseActivity.getLiteOrm() == null) return ERROR;
             baseActivity.getLiteOrm().insert(collect);
             return SUCCESS;
         }
@@ -514,13 +550,13 @@ public class DialogUtil {
      */
     private static class DeletClickListener implements AdapterView.OnItemClickListener {
 
-        private SoftReference<CollectFragment> fragmentReference;
-        private List<VideoCollect> datas;
+        private SoftReference< BaseAdapter.OnItemClickListener> fragmentReference;
+        private List<?> datas;
         private SoftReference<AsyTaskListener<?>> taskReference;
         private int position;
 
-        public DeletClickListener(CollectFragment fragment, AsyTaskListener<?> taskListener,List<VideoCollect> datas, int position) {
-            fragmentReference = new SoftReference<CollectFragment>(fragment);
+        public DeletClickListener( BaseAdapter.OnItemClickListener clickListener, AsyTaskListener<?> taskListener,List<?> datas, int position) {
+            fragmentReference = new SoftReference<>(clickListener);
             taskReference = new SoftReference<AsyTaskListener<?>>(taskListener);
             this.datas = datas;
             this.position = position;
@@ -535,9 +571,9 @@ public class DialogUtil {
                     AsyTaskQueue.newInstance().execute(asyTaskListener);
                     break;
                 case 1:
-                    CollectFragment collectFragment = fragmentReference.get();
-                    if(collectFragment == null)return;
-                    collectFragment.onItemClick(datas, view, this.position);
+                    BaseAdapter.OnItemClickListener clickListener = fragmentReference.get();
+                    if(clickListener == null)return;
+                    clickListener.onItemClick(datas, view, this.position);
                     break;
                 default:
                     break;

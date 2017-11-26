@@ -80,7 +80,7 @@ public class AboutActivity extends BaseToolbarActivity implements View.OnClickLi
                     intent.putExtra(Intent.EXTRA_SUBJECT, "这是邮件的主题部分"); // 主题
                     intent.putExtra(Intent.EXTRA_TEXT, "这是邮件的正文部分"); // 正文
                     startActivity(Intent.createChooser(intent, "请选择邮件类应用"));
-                } catch (ActivityNotFoundException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     showSnackbar(getString(R.string.activity_not_found));
                 }

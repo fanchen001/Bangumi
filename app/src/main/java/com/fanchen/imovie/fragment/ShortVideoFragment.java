@@ -104,23 +104,9 @@ public class ShortVideoFragment extends BaseRecyclerFragment{
 
     private RefreshRecyclerFragmentImpl<DyttRoot<List<DyttShortVideo>>> callback = new RefreshRecyclerFragmentImpl<DyttRoot<List<DyttShortVideo>>>() {
 
-//        @Override
-//        public void onSuccess(int enqueueKey, DyttRoot<List<DyttShortVideo>> response) {
-//            if (isDetached() || response == null  ) return;
-//            AsyTaskQueue.newInstance().execute(new SaveTaskListener(response));
-//            if(isRefresh()) mVideoAdapter.clear();
-//            List<DyttShortVideo> body = response.getBody();
-//            if(body != null && body.size() > 0){
-//                mVideoAdapter.addAll(body);
-//                mVideoAdapter.setLoad(true);
-//            }else{
-//                showSnackbar(getString(R.string.not_more));
-//                mVideoAdapter.setLoad(false);
-//            }
-//        }
-
         @Override
         public void onSuccess(DyttRoot<List<DyttShortVideo>> response) {
+            if(mVideoAdapter == null)return;
             List<DyttShortVideo> body = response.getBody();
             if(body != null && body.size() > 0){
                 mVideoAdapter.addAll(body);
@@ -137,6 +123,7 @@ public class ShortVideoFragment extends BaseRecyclerFragment{
 
         @Override
         public void onSuccess(DyttRoot<List<DyttShortVideo>> date) {
+            if(mVideoAdapter == null )return ;
             List<DyttShortVideo> body = date.getBody();
             if(body != null && body.size() > 0){
                 mVideoAdapter.addAll(body);

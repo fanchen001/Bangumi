@@ -1,4 +1,4 @@
-package com.fanchen.imovie.entity.a4dy;
+package com.fanchen.imovie.entity.ll520;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -6,42 +6,42 @@ import android.os.Parcelable;
 import com.fanchen.imovie.entity.face.IBangumiTitle;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IViewType;
-import com.fanchen.imovie.retrofit.service.A4dyService;
+import com.fanchen.imovie.retrofit.service.LL520Service;
 
 import java.util.List;
 
 /**
  * Created by fanchen on 2017/9/24.
  */
-public class A4dyTitle implements IBangumiTitle,Parcelable{
+public class LL520Title implements IBangumiTitle,Parcelable{
     private boolean more;
     private String url;
     private String title;
     private String id;
-    private List<A4dyVideo> list;
+    private List<LL520Video> list;
     private int drawable;
 
-    public A4dyTitle(){
+    public LL520Title(){
     }
 
-    protected A4dyTitle(Parcel in) {
+    protected LL520Title(Parcel in) {
         more = in.readByte() != 0;
         url = in.readString();
         title = in.readString();
-        list = in.createTypedArrayList(A4dyVideo.CREATOR);
+        list = in.createTypedArrayList(LL520Video.CREATOR);
         drawable = in.readInt();
         id = in.readString();
     }
 
-    public static final Creator<A4dyTitle> CREATOR = new Creator<A4dyTitle>() {
+    public static final Creator<LL520Title> CREATOR = new Creator<LL520Title>() {
         @Override
-        public A4dyTitle createFromParcel(Parcel in) {
-            return new A4dyTitle(in);
+        public LL520Title createFromParcel(Parcel in) {
+            return new LL520Title(in);
         }
 
         @Override
-        public A4dyTitle[] newArray(int size) {
-            return new A4dyTitle[size];
+        public LL520Title[] newArray(int size) {
+            return new LL520Title[size];
         }
     };
 
@@ -65,7 +65,7 @@ public class A4dyTitle implements IBangumiTitle,Parcelable{
         this.title = title;
     }
 
-    public void setList(List<A4dyVideo> list) {
+    public void setList(List<LL520Video> list) {
         this.list = list;
     }
 
@@ -100,7 +100,7 @@ public class A4dyTitle implements IBangumiTitle,Parcelable{
 
     @Override
     public String getServiceClassName() {
-        return A4dyService.class.getName();
+        return LL520Service.class.getName();
     }
 
     @Override
@@ -130,7 +130,7 @@ public class A4dyTitle implements IBangumiTitle,Parcelable{
 
     @Override
     public int getStartPage() {
-        return 1;
+        return 2;
     }
 
     public void setId(String id) {

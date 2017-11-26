@@ -1,47 +1,41 @@
-package com.fanchen.imovie.entity.tucao;
+package com.fanchen.imovie.entity.mmyy;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.fanchen.imovie.entity.face.IVideoEpisode;
-import com.fanchen.imovie.retrofit.service.TucaoService;
+import com.fanchen.imovie.entity.face.IViewType;
+import com.fanchen.imovie.retrofit.service.MmyyService;
 
 /**
- * Created by fanchen on 2017/9/28.
+ * Created by fanchen on 2017/9/25.
  */
-public class TucaoEpisode implements IVideoEpisode,Parcelable{
+public class MmyyEpisode implements IVideoEpisode,Parcelable {
     private String title;
     private String url;
     private String id;
-    private int type;
     private int state;
-    private String extend;
 
-    public TucaoEpisode(){
+    public MmyyEpisode() {
     }
 
-    protected TucaoEpisode(Parcel in) {
+
+    protected MmyyEpisode(Parcel in) {
         title = in.readString();
         url = in.readString();
         id = in.readString();
-        type = in.readInt();
-        extend = in.readString();
         state = in.readInt();
     }
 
-    public void setExtend(String extend) {
-        this.extend = extend;
-    }
-
-    public static final Creator<TucaoEpisode> CREATOR = new Creator<TucaoEpisode>() {
+    public static final Creator<MmyyEpisode> CREATOR = new Creator<MmyyEpisode>() {
         @Override
-        public TucaoEpisode createFromParcel(Parcel in) {
-            return new TucaoEpisode(in);
+        public MmyyEpisode createFromParcel(Parcel in) {
+            return new MmyyEpisode(in);
         }
 
         @Override
-        public TucaoEpisode[] newArray(int size) {
-            return new TucaoEpisode[size];
+        public MmyyEpisode[] newArray(int size) {
+            return new MmyyEpisode[size];
         }
     };
 
@@ -57,7 +51,7 @@ public class TucaoEpisode implements IVideoEpisode,Parcelable{
 
     @Override
     public String getId() {
-        return getExtend();
+        return id;
     }
 
     @Override
@@ -67,17 +61,17 @@ public class TucaoEpisode implements IVideoEpisode,Parcelable{
 
     @Override
     public int getPlayerType() {
-        return type;
+        return PLAY_TYPE_URL;
     }
 
     @Override
     public String getExtend() {
-        return String.format("http://api.tucao.tv/api/playurl?type=%s&vid=%s&key=tucao7b2b5650.cc",extend,id);
+        return null;
     }
 
     @Override
     public String getServiceClassName() {
-        return TucaoService.class.getName();
+        return MmyyService.class.getName();
     }
 
     @Override
@@ -97,22 +91,7 @@ public class TucaoEpisode implements IVideoEpisode,Parcelable{
 
     @Override
     public int getViewType() {
-        return 0;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(title);
-        dest.writeString(url);
-        dest.writeString(id);
-        dest.writeInt(type);
-        dest.writeString(extend);
-        dest.writeInt(state);
+        return IViewType.TYPE_NORMAL;
     }
 
     public void setTitle(String title) {
@@ -127,7 +106,16 @@ public class TucaoEpisode implements IVideoEpisode,Parcelable{
         this.id = id;
     }
 
-    public void setPlayType(int type) {
-        this.type = type;
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeString(url);
+        dest.writeString(id);
+        dest.writeInt(state);
     }
 }

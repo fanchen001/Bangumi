@@ -22,6 +22,7 @@ import com.fanchen.imovie.entity.tucao.TucaoTimeLineTitle;
 import com.fanchen.imovie.entity.tucao.TucaoVideo;
 import com.fanchen.imovie.jsoup.IBangumiParser;
 import com.fanchen.imovie.jsoup.node.Node;
+import com.fanchen.imovie.util.JavaScriptUtil;
 import com.fanchen.imovie.view.pager.IBanner;
 import com.google.gson.Gson;
 
@@ -35,13 +36,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import retrofit2.Retrofit;
+
 /**
  * Created by fanchen on 2017/9/18.
  */
 public class TucaoImpl implements IBangumiParser {
 
     @Override
-    public IHomeRoot home(String html) {
+    public IHomeRoot home(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
         TucaoHome index = new TucaoHome();
         try {
@@ -60,7 +63,7 @@ public class TucaoImpl implements IBangumiParser {
     }
 
     @Override
-    public IVideoDetails details(String html) {
+    public IVideoDetails details(Retrofit retrofit,String baseUrl,String html) {
         TucaoDetails details = new TucaoDetails();
         try{
             JSONObject jsonObject = new JSONObject(html);
@@ -99,7 +102,7 @@ public class TucaoImpl implements IBangumiParser {
     }
 
     @Override
-    public IBangumiMoreRoot more(String html) {
+    public IBangumiMoreRoot more(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
         TucaoHome more = new TucaoHome();
         try {
@@ -146,7 +149,7 @@ public class TucaoImpl implements IBangumiParser {
     }
 
     @Override
-    public IBangumiMoreRoot ranking(String json) {
+    public IBangumiMoreRoot ranking(Retrofit retrofit,String baseUrl,String json) {
         TucaoHome ranking = new TucaoHome();
         Gson gson = new Gson();
         try{
@@ -177,7 +180,7 @@ public class TucaoImpl implements IBangumiParser {
     }
 
     @Override
-    public IBangumiMoreRoot search(String json) {
+    public IBangumiMoreRoot search(Retrofit retrofit,String baseUrl,String json) {
         TucaoHome search = new TucaoHome();
         Gson gson = new Gson();
         try{
@@ -218,7 +221,7 @@ public class TucaoImpl implements IBangumiParser {
     }
 
     @Override
-    public IBangumiTimeRoot timeLine(String html) {
+    public IBangumiTimeRoot timeLine(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
         TucaoTimeLine lineRoot = new TucaoTimeLine();
         try{
@@ -259,17 +262,15 @@ public class TucaoImpl implements IBangumiParser {
     }
 
     @Override
-    public IPlayUrls playUrl(String html) {
+    public IPlayUrls playUrl(Retrofit retrofit,String baseUrl,String html) {
         TucaoPlayUrls urls = new TucaoPlayUrls();
         try{
-            JSONObject object = new JSONObject(html);
-            if(object.has("code") && "200".equals(object.getString("code"))){
-                if(object.has("result")){
-                    Map<String,String> url = new HashMap<>();
-                    urls.setUrls(url);
-                    url.put("标清",object.getString("url"));
-                    urls.setSuccess(true);
-                }
+            String match = JavaScriptUtil.match("http[,&%=?.\\w\\d:/-]+", html, 0);
+            if(!TextUtils.isEmpty(match)){
+                Map<String,String> url = new HashMap<>();
+                urls.setUrls(url);
+                url.put("标清",match);
+                urls.setSuccess(true);
             }
         }catch (Exception e){
             e.printStackTrace();

@@ -88,7 +88,7 @@ public class AcgSiteFragment extends BaseRecyclerFragment {
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if(position < 0 || datas == null || datas.size() <= position || !(datas.get(position) instanceof AcgPosts))return;
+        if(!(datas.get(position) instanceof AcgPosts))return;
         AcgPosts posts = (AcgPosts) datas.get(position);
         WebActivity.startActivity(activity,posts.getTitle(),posts.getUrl());
     }
@@ -96,17 +96,9 @@ public class AcgSiteFragment extends BaseRecyclerFragment {
 
     private RefreshRecyclerFragmentImpl<AcgRoot<AcgData>> callback = new RefreshRecyclerFragmentImpl<AcgRoot<AcgData>>() {
 
-//        @Override
-//        public void onSuccess(int enqueueKey, AcgRoot<AcgData> response) {
-//            if(isDetached() || !isAdded() || response == null || response.getData() == null)return;
-//            if(isRefresh())
-//                mSiteAdapter.clear();
-//            mSiteAdapter.addAll(response.getData().getPosts());
-//        }
-
         @Override
         public void onSuccess(AcgRoot<AcgData> response) {
-            if(response.getData() == null)return;
+            if(response.getData() == null || mSiteAdapter == null)return;
             mSiteAdapter.addAll(response.getData().getPosts());
         }
 
@@ -116,7 +108,7 @@ public class AcgSiteFragment extends BaseRecyclerFragment {
 
         @Override
         public void onSuccess(AcgRoot<AcgData> date) {
-            if(date.getData() == null)return;
+            if(date.getData() == null || mSiteAdapter == null)return;
             mSiteAdapter.addAll(date.getData().getPosts());
         }
 

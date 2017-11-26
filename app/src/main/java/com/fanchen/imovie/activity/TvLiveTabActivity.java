@@ -20,8 +20,12 @@ public class TvLiveTabActivity extends BaseTabActivity {
      * @param context
      */
     public static void startActivity(Context context) {
-        Intent intent = new Intent(context, TvLiveTabActivity.class);
-        context.startActivity(intent);
+        try {
+            Intent intent = new Intent(context, TvLiveTabActivity.class);
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

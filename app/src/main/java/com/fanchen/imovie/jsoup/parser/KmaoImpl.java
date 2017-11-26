@@ -7,6 +7,8 @@ import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
+import com.fanchen.imovie.entity.kankan.KankanwuBanner;
+import com.fanchen.imovie.entity.kmao.KmaoBanner;
 import com.fanchen.imovie.entity.kmao.KmaoDetails;
 import com.fanchen.imovie.entity.kmao.KmaoEpisode;
 import com.fanchen.imovie.entity.kmao.KmaoHome;
@@ -28,13 +30,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import retrofit2.Retrofit;
+
 /**
  * Created by fanchen on 2017/10/28.
  */
 public class KmaoImpl implements IVideoMoreParser {
 
     @Override
-    public IBangumiMoreRoot search(String html) {
+    public IBangumiMoreRoot search(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
         KmaoHome home = new KmaoHome();
         try {
@@ -46,7 +50,7 @@ public class KmaoImpl implements IVideoMoreParser {
                 String clazz = n.textAt("div.list_info > p", 0);
                 String type = n.textAt("div.list_info > p", 1);
                 String author = n.textAt("div.list_info > p", 2);
-                String url = "http://m.kkkkmao.com" + n.attr("a","href");
+                String url = baseUrl + n.attr("a","href");
                 String id = n.attr("a","href","/",2);
                 KmaoVideo video = new KmaoVideo();
                 video.setCover(cover);
@@ -66,12 +70,25 @@ public class KmaoImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IHomeRoot home(String html) {
+    public IHomeRoot home(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
         KmaoHome home = new KmaoHome();
         try {
             List<Node> list = node.list("div.modo_title.top");
             if(list != null && list.size() > 0){
+                List<Node> ullist = node.list("ul.focusList > li.con");
+                if(ullist != null && ullist.size() > 0){
+                    List<KmaoBanner> banners = new ArrayList<>();
+                    for (Node n : ullist){
+                        KmaoBanner banner = new KmaoBanner();
+                        banner.setCover(n.attr("a > img","data-src"));
+                        banner.setId(n.attr("a","href","/", 2));
+                        banner.setTitle(n.text("a > span"));
+                        banner.setUrl(baseUrl + n.attr("a","href"));
+                        banners.add(banner);
+                    }
+                    home.setBanners(banners);
+                }
                 int count = 0;
                 List<KmaoTitle> titles = new ArrayList<>();
                 home.setList(titles);
@@ -86,14 +103,13 @@ public class KmaoImpl implements IVideoMoreParser {
                     kmaoTitle.setId(topId);
                     kmaoTitle.setUrl(topUrl);
                     kmaoTitle.setList(videos);
-                    titles.add(kmaoTitle);
                     for (Node sub : new Node(n.getElement().nextElementSibling()).list("div > ul > li")){
                         String title = sub.text("a > div > label.name");
                         String cover = sub.attr("a > div > img", "src");
                         if(TextUtils.isEmpty(cover))
                             continue;
                         String hd = sub.text("a > div > label.title");
-                        String url = "http://m.kkkkmao.com" + sub.attr("a","href");
+                        String url = baseUrl + sub.attr("a","href");
                         String id = sub.attr("a","href","/",2);
                         KmaoVideo video = new KmaoVideo();
                         video.setCover(cover);
@@ -103,6 +119,8 @@ public class KmaoImpl implements IVideoMoreParser {
                         video.setType(hd);
                         videos.add(video);
                     }
+                    if(videos.size() > 0)
+                        titles.add(kmaoTitle);
                     kmaoTitle.setMore(kmaoTitle.getList().size() != 10);
                 }
             }else{
@@ -114,7 +132,7 @@ public class KmaoImpl implements IVideoMoreParser {
                         continue;
                     String hd = n.text("a > div > label.title");
                     String area = n.text("p");
-                    String url = "http://m.kkkkmao.com" + n.attr("a","href");
+                    String url = baseUrl + n.attr("a","href");
                     String id = n.attr("a","href","/",2);
                     KmaoVideo video = new KmaoVideo();
                     video.setCover(cover);
@@ -135,7 +153,7 @@ public class KmaoImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IVideoDetails details(String html) {
+    public IVideoDetails details(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
         KmaoDetails details = new KmaoDetails();
         try {
@@ -148,7 +166,7 @@ public class KmaoImpl implements IVideoMoreParser {
                     continue;
                 String hd = n.text("a > div > label.title");
                 String score = n.text("a > div > label.score");
-                String url = "http://m.kkkkmao.com" + n.attr("a","href");
+                String url = baseUrl + n.attr("a","href");
                 String id = n.attr("a","href","/",2);
                 KmaoVideo video = new KmaoVideo();
                 video.setCover(cover);
@@ -164,8 +182,8 @@ public class KmaoImpl implements IVideoMoreParser {
             for (Node n : node.list("div.play-box > ul")){
                 for (Node sub : n.list("li")){
                     KmaoEpisode episode = new KmaoEpisode();
-                    episode.setId("http://m.kkkkmao.com" + sub.attr("a", "href"));
-                    episode.setUrl("http://m.kkkkmao.com" + sub.attr("a", "href"));
+                    episode.setId(baseUrl + sub.attr("a", "href"));
+                    episode.setUrl(baseUrl + sub.attr("a", "href"));
                     if(list.size() > count){
                         episode.setTitle(list.get(count).text() + "_" + sub.text());
                     }else{
@@ -191,12 +209,12 @@ public class KmaoImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IPlayUrls playUrl(String html) {
+    public IPlayUrls playUrl(Retrofit retrofit,String baseUrl,String html) {
         KmaoPlayUrl playUrl = new KmaoPlayUrl();
         try{
             String attr = new Node(html).attr("iframe", "src");
             Map<String, String> map = new HashMap<>();
-            map.put("Referer", "http://m.kkkkmao.com/");
+            map.put("Referer", baseUrl);
             map.put("User-Agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36");
             map.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
             map.put("Upgrade-Insecure-Requests", "1");
@@ -263,8 +281,8 @@ public class KmaoImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IBangumiMoreRoot more(String html) {
-        return (IBangumiMoreRoot)home(html);
+    public IBangumiMoreRoot more(Retrofit retrofit,String baseUrl,String html) {
+        return (IBangumiMoreRoot)home(retrofit,baseUrl,html);
     }
 
 }

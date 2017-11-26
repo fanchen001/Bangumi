@@ -54,7 +54,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <EditText
+                        <com.fanchen.imovie.view.SelectionEditText
                             android:id="@+id/et_login_username"
                             style="@style/account_editview_textsize"
                             android:layout_width="fill_parent"
@@ -64,6 +64,7 @@
                             android:cursorVisible="true"
                             android:gravity="center_vertical"
                             android:hint="输入账号/手机号"
+                            android:inputType="numberSigned"
                             android:paddingTop="8dp"
                             android:singleLine="true"
                             android:textColorHint="@color/comm_text_hint_color" />
@@ -95,7 +96,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1.0">
 
-                        <EditText
+                        <com.fanchen.imovie.view.SelectionEditText
                             android:id="@+id/et_login_password"
                             style="@style/account_editview_textsize"
                             android:layout_width="fill_parent"
