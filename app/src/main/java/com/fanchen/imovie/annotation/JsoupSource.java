@@ -26,31 +26,26 @@ public enum JsoupSource {
 
     /**
      * 吉人动漫
-     * https://jren100.moe/
      */
     JREN,
 
     /**
      * 五弹幕
-     * http://www.5dm.tv/
      */
     DM5,
 
     /**
      * biliplus公具
-     * https://www.biliplus.com/
      */
     BILIPLUS,
 
     /**
      * 169秀
-     * http://www.dianxiumei.com/
      */
     DIANXIUMEI,
 
     /**
      * 小看吧
-     * http://xiaokanba.com/
      */
     XIAOKANBA,
 
