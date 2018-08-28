@@ -1,13 +1,11 @@
 package com.fanchen.imovie.dialog.fragment;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -29,6 +27,7 @@ import android.widget.Toast;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.CaptureActivity;
 import com.fanchen.imovie.adapter.SearchHistoryAdapter;
+import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.db.SearchHistoryHelper;
 import com.fanchen.imovie.dialog.anim.CircularRevealAnim;
 import com.fanchen.imovie.entity.face.ISearchWord;
@@ -44,7 +43,7 @@ import java.util.List;
 
 /**
  * 搜索弹窗
- * <p>
+ * <p/>
  * Created by fanchen on 2017/1/13.
  */
 public class SearchDialogFragment extends DialogFragment {
@@ -128,7 +127,7 @@ public class SearchDialogFragment extends DialogFragment {
         setAllHistorys();
 
         //初始化recyclerView
-        rvSearchHistory.setLayoutManager(new LinearLayoutManager(getContext()));//list类型
+        rvSearchHistory.setLayoutManager(new BaseAdapter.LinearLayoutManagerWrapper(getContext()));//list类型
         searchHistoryAdapter = new SearchHistoryAdapter(getContext());
         searchHistoryAdapter.addAll(historys);
         rvSearchHistory.setAdapter(searchHistoryAdapter);
@@ -207,7 +206,8 @@ public class SearchDialogFragment extends DialogFragment {
 
         @Override
         public void OnItemDelete(List<?> datas, int position) {
-            if (datas == null || datas.size() <= position || position < 0 || !(datas.get(position) instanceof ISearchWord)) return;
+            if (datas == null || datas.size() <= position || position < 0 || !(datas.get(position) instanceof ISearchWord))
+                return;
             String keyword = ((ISearchWord) datas.get(position)).getWord();
             searchHistoryDB.deleteHistory(keyword);
             historys.remove(keyword);
@@ -236,9 +236,11 @@ public class SearchDialogFragment extends DialogFragment {
 
         @Override
         public void onItemClick(List<?> datas, View v, int position) {
+            if (datas.get(position) == null) return;
             if (!(datas.get(position) instanceof ISearchWord)) return;
             ISearchWord keyword = (ISearchWord) datas.get(position);
-            iOnSearchClickListener.onSearchClick(keyword);
+            if (iOnSearchClickListener != null)
+                iOnSearchClickListener.onSearchClick(keyword);
             hideAnim();
         }
 
@@ -254,23 +256,23 @@ public class SearchDialogFragment extends DialogFragment {
         if (TextUtils.isEmpty(searchKey.trim())) {
             Toast.makeText(getContext(), "请输入关键字", Toast.LENGTH_SHORT).show();
         } else {
-            if(iOnSearchClickListener != null)
-            iOnSearchClickListener.onSearchClick(new ISearchWord() {
-                @Override
-                public int getViewType() {
-                    return TYPE_NORMAL;
-                }
+            if (iOnSearchClickListener != null)
+                iOnSearchClickListener.onSearchClick(new ISearchWord() {
+                    @Override
+                    public int getViewType() {
+                        return TYPE_NORMAL;
+                    }
 
-                @Override
-                public int getType() {
-                    return ISearchWord.TYPE_WORD;
-                }
+                    @Override
+                    public int getType() {
+                        return ISearchWord.TYPE_WORD;
+                    }
 
-                @Override
-                public String getWord() {
-                    return searchKey;
-                }
-            });//接口回调
+                    @Override
+                    public String getWord() {
+                        return searchKey;
+                    }
+                });//接口回调
             searchHistoryDB.insertHistory(searchKey);//插入到数据库
             hideAnim();
         }
@@ -326,18 +328,18 @@ public class SearchDialogFragment extends DialogFragment {
     public void show(FragmentManager manager, String tag) {
         //防止  Fragment already added:  异常
         long currentTime = System.currentTimeMillis();
-        if(currentTime - millis < 1000){
+        if (currentTime - millis < 1000) {
             return;
         }
         millis = currentTime;
-        try{
+        try {
             Field mAddedField = manager.getClass().getDeclaredField("mAdded");
             mAddedField.setAccessible(true);
             List<?> mAdded = (List<?>) mAddedField.get(manager);
-            if(mAdded != null && mAdded.contains(this)){
+            if (mAdded != null && mAdded.contains(this)) {
                 return;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         super.show(manager, tag);
@@ -347,23 +349,23 @@ public class SearchDialogFragment extends DialogFragment {
     public int show(FragmentTransaction transaction, String tag) {
         //防止  Fragment already added:  异常
         long currentTime = System.currentTimeMillis();
-        if(currentTime - millis < 1000){
+        if (currentTime - millis < 1000) {
             return -1;
         }
         millis = currentTime;
-        try{
+        try {
             Field mManagerField = transaction.getClass().getDeclaredField("mManager");
             mManagerField.setAccessible(true);
             FragmentManager mManager = (FragmentManager) mManagerField.get(transaction);
-            if(mManager != null){
+            if (mManager != null) {
                 Field mAddedField = mManager.getClass().getDeclaredField("mAdded");
                 mAddedField.setAccessible(true);
                 List<?> mAdded = (List<?>) mAddedField.get(mManager);
-                if(mAdded != null && mAdded.contains(this)){
+                if (mAdded != null && mAdded.contains(this)) {
                     return -1;
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return super.show(transaction, tag);

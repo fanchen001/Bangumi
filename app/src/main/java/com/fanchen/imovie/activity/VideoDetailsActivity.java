@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -28,6 +27,7 @@ import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.dialog.BaseAlertDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
 import com.fanchen.imovie.entity.bmob.BmobObj;
+import com.fanchen.imovie.entity.bmob.DialogBanner;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
@@ -69,6 +69,7 @@ public class VideoDetailsActivity extends BaseActivity implements
     public static final String VIDEO = "video";
     public static final String COLLECT = "collect";
     public static final String VID = "vid";
+    public static final String VIDEO_BANNWE = "video_bannwe";
     public static final String CLASS_NAME = "className";
 
     @InjectView(R.id.iv_bangumi_image)
@@ -158,6 +159,16 @@ public class VideoDetailsActivity extends BaseActivity implements
         }
     }
 
+    public static void startActivity(Context context, DialogBanner banner) {
+        try {
+            Intent intent = new Intent(context, VideoDetailsActivity.class);
+            intent.putExtra(VIDEO_BANNWE, banner.getBaseJson());
+            context.startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     /**
      * @param context
      * @param videoCollect
@@ -178,7 +189,7 @@ public class VideoDetailsActivity extends BaseActivity implements
      * @param item
      */
     public static void startActivity(Context context, IVideo item) {
-        startActivity(context, item, item.getServiceClassName());
+        startActivity(context, item, item.getServiceClass());
     }
 
     @Override
@@ -208,13 +219,24 @@ public class VideoDetailsActivity extends BaseActivity implements
         mBackTitleTextView.setText(R.string.bangumi_details);
         if (getIntent().getData() != null) {
             String info = getIntent().getData().getQueryParameter("info");
-            String decode = new String(SecurityUtil.decode(info));
             try {
+                JSONObject jsonObject = new JSONObject(info);
+                if (jsonObject.has("thisClass")) {
+                    Class<?> forName = Class.forName(jsonObject.getString("thisClass"));
+                    mVideo = (IVideo) new Gson().fromJson(info, forName);
+                    className = mVideo.getServiceClass();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else if(getIntent().hasExtra(VIDEO_BANNWE)){
+            try {
+                String decode = getIntent().getStringExtra(VIDEO_BANNWE);
                 JSONObject jsonObject = new JSONObject(decode);
                 if (jsonObject.has("thisClass")) {
                     Class<?> forName = Class.forName(jsonObject.getString("thisClass"));
                     mVideo = (IVideo) new Gson().fromJson(decode, forName);
-                    className = mVideo.getServiceClassName();
+                    className = mVideo.getServiceClass();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -232,7 +254,7 @@ public class VideoDetailsActivity extends BaseActivity implements
         if (getIntent().hasExtra(CLASS_NAME)) {
             className = getIntent().getStringExtra(CLASS_NAME);
         }
-        mEpisodeRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        mEpisodeRecyclerView.setLayoutManager(new BaseAdapter.LinearLayoutManagerWrapper(this, BaseAdapter.LinearLayoutManagerWrapper.HORIZONTAL, false));
         mRecomRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         mEpisodeAdapter = new EpisodeAdapter(this);
         mEpisodeRecyclerView.setAdapter(mEpisodeAdapter);
@@ -240,7 +262,6 @@ public class VideoDetailsActivity extends BaseActivity implements
         mRecomAdapter = new RecomAdapter(this, picasso = new PicassoWrap(getPicasso()));
         mRecomRecyclerView.setAdapter(mRecomAdapter);
         mRecomRecyclerView.setNestedScrollingEnabled(false);
-
         String path = mVideo == null ? mVideoCollect == null ? vid : mVideoCollect.getId() : mVideo.getId();
         getRetrofitManager().enqueue(className, callback, "details", path);
     }
@@ -285,8 +306,16 @@ public class VideoDetailsActivity extends BaseActivity implements
                 }
                 break;
             case R.id.ll_bangumi_share:
-                Uri.Builder info = Uri.parse("https://details").buildUpon().appendQueryParameter("info", SecurityUtil.encode(new Gson().toJson(details).getBytes()));
+                Uri.Builder info = Uri.parse("https://details").buildUpon().appendQueryParameter("info", new Gson().toJson(details));
                 ShareUtil.share(this, details.getTitle(), details.getIntroduce(), info.toString());
+//
+//                DialogBanner banner = new DialogBanner();
+//                banner.setTitle(details.getTitle());
+//                banner.setCover(details.getCover());
+//                banner.setBannerInt(20180803);
+//                banner.setBaseJson(new Gson().toJson(details));
+//                banner.setIntroduce(details.getIntroduce());
+//                banner.save();
                 break;
             case R.id.ll_bangumi_download:
                 if (details.canDownload()) {
@@ -376,7 +405,10 @@ public class VideoDetailsActivity extends BaseActivity implements
 
         @Override
         public void onSuccess(int enqueueKey, IVideoDetails response) {
-            if (response == null || !response.isSuccess() || mRecomAdapter == null) return;
+            if (response == null || !response.isSuccess() || mRecomAdapter == null){
+                onFailure(enqueueKey,"未知錯誤");
+                return;
+            }
             details = mVideo == null ? mVideoCollect == null ? response : response.setVideo(mVideoCollect) : response.setVideo(mVideo);
             if (!TextUtils.isEmpty(response.getCoverReferer())) {
                 picasso = new PicassoWrap(VideoDetailsActivity.this, new RefererDownloader(getApplicationContext(), response.getCoverReferer()));

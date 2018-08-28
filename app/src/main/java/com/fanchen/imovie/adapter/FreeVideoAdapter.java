@@ -43,7 +43,7 @@ public class FreeVideoAdapter extends BaseAdapter{
         VideoWeb videoWeb = (VideoWeb) datas.get(position);
         ItemViewHolder viewHolder = (ItemViewHolder) holder;
         viewHolder.textView.setText(videoWeb.getName());
-        picassoWrap.loadHorizontal(videoWeb.getCover(),viewHolder.imageView);
+        picassoWrap.getPicasso().load(videoWeb.getCover()).fit().into(viewHolder.imageView);
     }
 
     @Override

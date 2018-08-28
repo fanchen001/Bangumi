@@ -21,6 +21,8 @@ public class KmaoPagerAdapter extends BaseFragmentAdapter{
         super(fm);
     }
 
+    private final String REFERER = "http://m.kkkkmao.com/";
+
     @Override
     public String[] getTitles() {
         return TITLES;
@@ -28,7 +30,7 @@ public class KmaoPagerAdapter extends BaseFragmentAdapter{
 
     @Override
     public Fragment createFragment(int position) {
-        return VideoListFragment.newInstance(PATHS[position],getExtendInfo().toString(),1,LOADS[position],false,false,null,BANGUMI[position]);
+        return VideoListFragment.newInstance(PATHS[position],getExtendInfo().toString(),1,LOADS[position],false,false,REFERER,BANGUMI[position]);
     }
 
     @Override

@@ -43,7 +43,7 @@ public class VideoWeb implements Parcelable,IViewType{
     }
 
     public String getCover() {
-        return cover;
+        return cover != null && cover.startsWith("http") ? cover : "http:" + cover;
     }
 
     public void setCover(String cover) {

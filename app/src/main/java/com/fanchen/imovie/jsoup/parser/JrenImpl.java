@@ -4,12 +4,13 @@ import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoDetails;
-import com.fanchen.imovie.entity.jren.JrenDetails;
-import com.fanchen.imovie.entity.jren.JrenEpisode;
-import com.fanchen.imovie.entity.jren.JrenHome;
-import com.fanchen.imovie.entity.jren.JrenVideo;
+import com.fanchen.imovie.entity.Video;
+import com.fanchen.imovie.entity.VideoDetails;
+import com.fanchen.imovie.entity.VideoEpisode;
+import com.fanchen.imovie.entity.VideoHome;
 import com.fanchen.imovie.jsoup.IVideoParser;
 import com.fanchen.imovie.jsoup.node.Node;
+import com.fanchen.imovie.retrofit.service.JrenService;
 import com.fanchen.imovie.util.StreamUtil;
 
 import org.json.JSONArray;
@@ -31,9 +32,9 @@ public class JrenImpl implements IVideoParser {
 
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit,String baseUrl,String html) {
-        JrenHome more = new JrenHome();
+        VideoHome more = new VideoHome();
         try {
-            List<JrenVideo> videos = new ArrayList<>();
+            List<Video> videos = new ArrayList<>();
             JSONObject jsonObject = new JSONObject(html);
             if (jsonObject.has("data")) {
                 JSONObject jsonData = jsonObject.getJSONObject("data");
@@ -65,13 +66,15 @@ public class JrenImpl implements IVideoParser {
                             }
                         }
                         String aid = object.has("id") ? object.getString("id") : "";
-                        JrenVideo item = new JrenVideo();
+                        Video item = new Video();
+                        item.setHasDetails(true);
+                        item.setServiceClass(JrenService.class.getName());
                         item.setTitle(title);
                         item.setId(aid);
                         item.setUrl(durl);
                         item.setCover(cover);
                         item.setExtras(info);
-                        item.setUp(up);
+                        item.setDanmaku(up);
                         videos.add(item);
                     }
                 }
@@ -88,23 +91,25 @@ public class JrenImpl implements IVideoParser {
     @Override
     public IHomeRoot home(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
-        JrenHome root = new JrenHome();
+        VideoHome root = new VideoHome();
         try {
-            List<JrenVideo> videos = new ArrayList<>();
-            for (Node n : node.list("div.row.card-container > section > div.card-bg")) {
+            List<Video> videos = new ArrayList<>();
+            for (Node n : node.list("article > div.inn-archive__item__container.inn-card_post-thumbnail__item__container")) {
                 String cover = n.attr("a > img", "data-src");
                 String durl = n.attr("a", "href");
-                String title = n.attr("a", "title");
-                String info = n.text("a > div.color-cat-container");
-                String up = n.text("div.meta-container > a");
-                String aid = n.attr("a", "href", "/", 4).replace(".html", "");
-                JrenVideo item = new JrenVideo();
+                String title = n.text("h3");
+                String info = n.text("div > div > time");
+                String up = n.text("div > div.inn-archive__item__meta.inn-card_post-thumbnail__item__meta");
+                String aid = n.attr("a", "href", "/", 4);
+                Video item = new Video();
+                item.setHasDetails(true);
+                item.setServiceClass(JrenService.class.getName());
                 item.setTitle(title);
                 item.setId(aid);
                 item.setUrl(durl);
                 item.setCover(cover);
                 item.setExtras(info);
-                item.setUp(up);
+                item.setDanmaku(up);
                 videos.add(item);
             }
             root.setList(videos);
@@ -118,9 +123,9 @@ public class JrenImpl implements IVideoParser {
 
     @Override
     public IVideoDetails details(Retrofit retrofit,String baseUrl,String html) {
-        String startUrl = "https://jren100.moe/?p=";
+        String startUrl = "https://Video100.moe/?p=";
         int start = html.indexOf(startUrl);
-        JrenDetails details = new JrenDetails();
+        VideoDetails details = new VideoDetails();
         try{
             if(start != -1){
                 String url = html.substring(start,start + startUrl.length() + 5);
@@ -147,23 +152,25 @@ public class JrenImpl implements IVideoParser {
         return null;
     }
 
-    private JrenDetails parserRoot(JrenDetails details,String html){
+    private VideoDetails parserRoot(VideoDetails details,String html){
         Node node = new Node(html);
-        List<JrenEpisode> chapters = new ArrayList<>();
-        List<JrenVideo> items = new ArrayList<>();
+        List<VideoEpisode> chapters = new ArrayList<>();
+        List<Video> items = new ArrayList<>();
         details.setEpisodes(chapters);
-        details.setRecoms(items);
-        details.setIntroduce(node.text("div.entry-content.content-reset > table"));
-        for (Node n : node.list("div > section > div.card-bg")) {
+        details.setRecomm(items);
+        details.setIntroduce(node.text("table > tbody"));
+        for (Node n : node.list("article > div.inn-related-posts__item__container.inn-card_variable-width__item__container")) {
             String cover = n.attr("a > img", "data-src");
             String durl = n.attr("a", "href");
-            String title = n.attr("a", "title");
-            String info = n.text("a > div.color-cat-container");
+            String title = n.text("h3");
+            String info = n.text("div > div > time");
+            String up = n.text("div > div.inn-archive__item__meta.inn-card_post-thumbnail__item__meta");
             String aid = n.attr("a", "href", "/", 4);
-            String up = n.text("div.meta-container > a");
-            JrenVideo item = new JrenVideo();
+            Video item = new Video();
+            item.setHasDetails(true);
+            item.setServiceClass(JrenService.class.getName());
             item.setTitle(title);
-            item.setUp(up);
+            item.setDanmaku(up);
             item.setId(aid);
             item.setExtras(info);
             item.setUrl(durl);
@@ -173,7 +180,9 @@ public class JrenImpl implements IVideoParser {
         List<String> addVideo = addVideo(html);
         if(addVideo != null){
             for (int i = 0; i < addVideo.size(); i++) {
-                JrenEpisode chapter = new JrenEpisode();
+                VideoEpisode chapter = new VideoEpisode();
+                chapter.setPlayType(VideoEpisode.PLAY_TYPE_VIDEO);
+                chapter.setServiceClass(JrenService.class.getName());
                 chapter.setTitle("第" + (i + 1) + "集");
                 chapter.setUrl(addVideo.get(i));
                 chapters.add(chapter);

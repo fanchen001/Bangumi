@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.fanchen.imovie.entity.face.IBaseVideo;
 import com.fanchen.imovie.entity.face.IViewType;
+import com.fanchen.imovie.retrofit.service.TucaoService;
 
 /**
  * tucaoc 视频item基础类
@@ -72,7 +73,7 @@ public class TucaoBaseVideo implements IBaseVideo, Parcelable,IViewType {
 
     @Override
     public String getCover() {
-        return cover;
+        return cover != null && cover.startsWith("http") ? cover : "http:" + cover;
     }
 
     @Override
@@ -88,6 +89,11 @@ public class TucaoBaseVideo implements IBaseVideo, Parcelable,IViewType {
     @Override
     public int getSource() {
         return 0;
+    }
+
+    @Override
+    public String getServiceClass() {
+        return TucaoService.class.getName();
     }
 
     public void setTitle(String title) {

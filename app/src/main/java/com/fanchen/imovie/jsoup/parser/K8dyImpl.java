@@ -7,18 +7,18 @@ import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
-import com.fanchen.imovie.entity.k8dy.K8dyBanner;
-import com.fanchen.imovie.entity.k8dy.K8dyDetails;
-import com.fanchen.imovie.entity.k8dy.K8dyEpisode;
-import com.fanchen.imovie.entity.k8dy.K8dyHome;
-import com.fanchen.imovie.entity.k8dy.K8dyPlayUrl;
-import com.fanchen.imovie.entity.k8dy.K8dyTitle;
-import com.fanchen.imovie.entity.k8dy.K8dyVideo;
+import com.fanchen.imovie.entity.Video;
+import com.fanchen.imovie.entity.VideoBanner;
+import com.fanchen.imovie.entity.VideoDetails;
+import com.fanchen.imovie.entity.VideoEpisode;
+import com.fanchen.imovie.entity.VideoHome;
+import com.fanchen.imovie.entity.VideoPlayUrls;
+import com.fanchen.imovie.entity.VideoTitle;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
 import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.retrofit.RetrofitManager;
+import com.fanchen.imovie.retrofit.service.K8dyService;
 import com.fanchen.imovie.util.JavaScriptUtil;
-import com.fanchen.imovie.util.LogUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,10 +37,10 @@ public class K8dyImpl implements IVideoMoreParser {
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
-        K8dyHome home = new K8dyHome();
+        VideoHome home = new VideoHome();
         try {
-            List<K8dyVideo> videos = new ArrayList<>();
-            home.setResult(videos);
+            List<Video> videos = new ArrayList<>();
+            home.setList(videos);
             for (Node n : node.list("ul#resize_list > li")){
                 String title = n.text("a > div > label.name");
                 String cover = n.attr("a > div > img", "src");
@@ -48,10 +48,11 @@ public class K8dyImpl implements IVideoMoreParser {
                 String type = n.textAt("div.list_info > p", 1);
                 String author = n.textAt("div.list_info > p", 2);
                 String url = baseUrl + n.attr("a","href");
-                String id = n.attr("a","href","/",2);
-                K8dyVideo video = new K8dyVideo();
+                Video video = new Video();
+                video.setHasDetails(true);
+                video.setServiceClass(K8dyService.class.getName());
                 video.setCover(cover);
-                video.setId(id);
+                video.setId(url);
                 video.setTitle(title);
                 video.setUrl(url);
                 video.setAuthor(author);
@@ -69,37 +70,40 @@ public class K8dyImpl implements IVideoMoreParser {
     @Override
     public IHomeRoot home(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
-        K8dyHome home = new K8dyHome();
+        VideoHome home = new VideoHome();
         try {
             List<Node> list = node.list("div[class^=modo_title]");
             if(list != null && list.size() > 2){
                 List<Node> ullist = node.list("ul.focusList > li.con");
                 if(ullist != null && ullist.size() > 0){
-                    List<K8dyBanner> banners = new ArrayList<>();
+                    List<VideoBanner> banners = new ArrayList<>();
                     for (Node n : ullist){
-                        K8dyBanner banner = new K8dyBanner();
+                        VideoBanner banner = new VideoBanner();
                         banner.setCover(n.attr("a > img","src"));
-                        banner.setId(n.attr("a","href","/", 2));
+                        banner.setId(baseUrl + n.attr("a", "href"));
                         banner.setTitle(n.text("a > span"));
-                        banner.setUrl(baseUrl + n.attr("a","href"));
+                        banner.setUrl(baseUrl + n.attr("a", "href"));
+                        banner.setServiceClass(K8dyService.class.getName());
                         banners.add(banner);
                     }
-                    home.setBanners(banners);
+                    home.setHomeBanner(banners);
                 }
                 int count = 0;
-                List<K8dyTitle> titles = new ArrayList<>();
-                home.setList(titles);
+                List<VideoTitle> titles = new ArrayList<>();
+                home.setHomeResult(titles);
                 for (Node n : list){
                     String topTitle = n.text("h2");
                     String topUrl = n.attr("i > a", "href");
-                    String topId = n.attr("i > a", "href","/",2).replace(".html","");
-                    List<K8dyVideo> videos = new ArrayList<>();
-                    K8dyTitle K8dyTitle = new K8dyTitle();
-                    K8dyTitle.setTitle(topTitle);
-                    K8dyTitle.setDrawable(SEASON[count++ % SEASON.length]);
-                    K8dyTitle.setId(topId);
-                    K8dyTitle.setUrl(topUrl);
-                    K8dyTitle.setList(videos);
+                    String topId = n.attr("i > a", "href","/",2).replace(".html", "");
+                    List<Video> videos = new ArrayList<>();
+                    VideoTitle videoTitle = new VideoTitle();
+                    videoTitle.setTitle(topTitle);
+                    videoTitle.setDrawable(SEASON[count++ % SEASON.length]);
+                    videoTitle.setId(topId);
+                    videoTitle.setPageStart(2);
+                    videoTitle.setUrl(topUrl);
+                    videoTitle.setList(videos);
+                    videoTitle.setServiceClass(K8dyService.class.getName());
                     for (Node sub : new Node(n.getElement().nextElementSibling()).list("div > ul > li")){
                         String title = sub.text("a > div > label.name");
                         if(TextUtils.isEmpty(title))
@@ -110,10 +114,11 @@ public class K8dyImpl implements IVideoMoreParser {
                         String hd = sub.text("a > div > label.title");
                         String score = n.text("a > div > label.score");
                         String url = baseUrl + sub.attr("a","href");
-                        String id = sub.attr("a","href","/",2);
-                        K8dyVideo video = new K8dyVideo();
+                        Video video = new Video();
+                        video.setHasDetails(true);
+                        video.setServiceClass(K8dyService.class.getName());
                         video.setCover(cover);
-                        video.setId(id);
+                        video.setId(url);
                         video.setAuthor(score);
                         video.setTitle(title);
                         video.setUrl(url);
@@ -121,12 +126,11 @@ public class K8dyImpl implements IVideoMoreParser {
                         videos.add(video);
                     }
                     if(videos.size() > 0)
-                        titles.add(K8dyTitle);
-                    K8dyTitle.setMore(K8dyTitle.getList().size() == 6);
+                        titles.add(videoTitle);
+                    videoTitle.setMore(videoTitle.getList().size() == 6);
                 }
             }else{
-                List<K8dyVideo> videos = new ArrayList<>();
-                LogUtil.e("size","==>" + node.list("ul > li").size());
+                List<Video> videos = new ArrayList<>();
                 for (Node n : node.list("ul#resize_list > li")){
                     String title = n.text("h2");
                     String cover = n.attr("a > div > img", "src");
@@ -135,17 +139,18 @@ public class K8dyImpl implements IVideoMoreParser {
                     String hd = n.text("a > div > label.title");
                     String score = n.text("a > div > label.score");
                     String url = baseUrl + n.attr("a","href");
-                    String id = n.attr("a","href","/",2);
-                    K8dyVideo video = new K8dyVideo();
+                    Video video = new Video();
+                    video.setHasDetails(true);
+                    video.setServiceClass(K8dyService.class.getName());
                     video.setCover(cover);
-                    video.setId(id);
+                    video.setId(url);
                     video.setAuthor(score);
                     video.setTitle(title);
                     video.setUrl(url);
                     video.setType(hd);
                     videos.add(video);
                 }
-                home.setResult(videos);
+                home.setList(videos);
             }
             home.setSuccess(true);
         }catch (Exception e){
@@ -157,10 +162,10 @@ public class K8dyImpl implements IVideoMoreParser {
     @Override
     public IVideoDetails details(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
-        K8dyDetails details = new K8dyDetails();
+        VideoDetails details = new VideoDetails();
         try {
-            List<K8dyEpisode> episodes = new ArrayList<>();
-            List<K8dyVideo> videos = new ArrayList<>();
+            List<VideoEpisode> episodes = new ArrayList<>();
+            List<Video> videos = new ArrayList<>();
             for (Node n : node.list("ul.list_tab_img > li")){
                 String title = n.text("h2");
                 String cover = n.attr("a > div > img", "src");
@@ -169,10 +174,11 @@ public class K8dyImpl implements IVideoMoreParser {
                 String hd = n.text("a > div > label.title");
                 String score = n.text("a > div > label.score");
                 String url = baseUrl + n.attr("a","href");
-                String id = n.attr("a","href","/",2);
-                K8dyVideo video = new K8dyVideo();
+                Video video = new Video();
+                video.setHasDetails(true);
+                video.setServiceClass(K8dyService.class.getName());
                 video.setCover(cover);
-                video.setId(id);
+                video.setId(url);
                 video.setTitle(title);
                 video.setUrl(url);
                 video.setAuthor(score);
@@ -183,7 +189,8 @@ public class K8dyImpl implements IVideoMoreParser {
             List<Node> list = node.list("div.play-title > span");
             for (Node n : node.list("ul.plau-ul-list")){
                 for (Node sub : n.list("li")){
-                    K8dyEpisode episode = new K8dyEpisode();
+                    VideoEpisode episode = new VideoEpisode();
+                    episode.setServiceClass(K8dyService.class.getName());
                     episode.setId(baseUrl + sub.attr("a", "href"));
                     episode.setUrl(baseUrl + sub.attr("a", "href"));
                     if(list.size() > count){
@@ -191,10 +198,13 @@ public class K8dyImpl implements IVideoMoreParser {
                     }else{
                         episode.setTitle(sub.text());
                     }
-                    episodes.add(episode);
+                    if(!episode.getTitle().contains("迅雷") && !episode.getTitle().contains("网盘")){
+                        episodes.add(episode);
+                    }
                 }
                 count ++ ;
             }
+            details.setServiceClass(K8dyService.class.getName());
             details.setCover(node.attr("div.vod-n-img > img.loading", "src"));
             details.setClazz(node.textAt("div.vod-n-l > p", 0));
             details.setType(node.textAt("div.vod-n-l > p", 1));
@@ -202,7 +212,7 @@ public class K8dyImpl implements IVideoMoreParser {
             details.setTitle(node.text("div.vod-n-l > h1"));
             details.setIntroduce(node.text("div.vod_content"));
             details.setEpisodes(episodes);
-            details.setRecoms(videos);
+            details.setRecomm(videos);
             details.setSuccess(true);
         }catch (Exception e){
             e.printStackTrace();
@@ -212,7 +222,7 @@ public class K8dyImpl implements IVideoMoreParser {
 
     @Override
     public IPlayUrls playUrl(Retrofit retrofit,String baseUrl,String html) {
-        K8dyPlayUrl playUrl = new K8dyPlayUrl();
+        VideoPlayUrls playUrl = new VideoPlayUrls();
         try{
             String match = JavaScriptUtil.match("VideoInfoList=\"[\\w\\d$#第集]+\"", html, 0, 15, 1);
             String[] split = match.split("\\$\\$\\$");
@@ -225,7 +235,11 @@ public class K8dyImpl implements IVideoMoreParser {
                         if (k == Integer.valueOf(splitUrl[2].replace(".html", ""))) {
                             String[] strings = ids[k].split("\\$");
                             Map<String,String> map = new HashMap<>();
-                            map.put(strings[0],String.format(URL_MAT,strings[1]));
+                            if(strings[1].startsWith("ftp://") || strings[1].startsWith("xg://")){
+                                map.put(strings[0],strings[1]);
+                            }else{
+                                map.put(strings[0],String.format(URL_MAT,strings[1]));
+                            }
                             playUrl.setUrls(map);
                             playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
                             playUrl.setUrlType(IPlayUrls.URL_WEB);

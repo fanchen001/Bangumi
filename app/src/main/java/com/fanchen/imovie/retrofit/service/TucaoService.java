@@ -32,7 +32,7 @@ public interface TucaoService {
     @GET("{path}")
     @JsoupType(JsoupSource.TUCAO)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path);
 
     /**
@@ -43,7 +43,7 @@ public interface TucaoService {
     @GET("list/{pid}/index_{page}.html")
     @JsoupType(JsoupSource.TUCAO)
     @MethodType(value = MethodSource.MORE)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> more(@Path("pid") String pid, @Path("page") Integer page);
 
     /**
@@ -54,7 +54,7 @@ public interface TucaoService {
     @GET("api_v2/rank.php?apikey=25tids8f1ew1821ed&type=json")
     @JsoupType(JsoupSource.TUCAO)
     @MethodType(value = MethodSource.RANKING)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> ranking(@Query("tid") String tid, @Query("date") String date);
 
     /**
@@ -67,7 +67,7 @@ public interface TucaoService {
     @GET("api_v2/search.php?pagesize=10&apikey=25tids8f1ew1821ed&type=json")
     @JsoupType(JsoupSource.TUCAO)
     @MethodType(value = MethodSource.SEARCH)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> search(@Query("q") String q, @Query("page") Integer page, @Query("tid") String tid, @Query("order") String order);
 
     /**
@@ -79,7 +79,7 @@ public interface TucaoService {
     @GET("api_v2/search.php?pagesize=10&apikey=25tids8f1ew1821ed&type=json")
     @JsoupType(JsoupSource.TUCAO)
     @MethodType(value = MethodSource.SEARCH)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> search(@Query("q") String q, @Query("page") Integer page, @Query("order") String order);
 
 
@@ -89,7 +89,7 @@ public interface TucaoService {
     @GET("index.html")
     @JsoupType(JsoupSource.TUCAO)
     @MethodType(value = MethodSource.TIME_LINE)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiTimeRoot> timeLine();
 
     /**
@@ -99,7 +99,7 @@ public interface TucaoService {
     @GET("api_v2/view.php?apikey=25tids8f1ew1821ed&type=json")
     @JsoupType(JsoupSource.TUCAO)
     @MethodType(value = MethodSource.DETAILS)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IVideoDetails> details(@Query("hid") String path);
 
     /**
@@ -110,7 +110,7 @@ public interface TucaoService {
     @GET
     @JsoupType(JsoupSource.TUCAO)
     @MethodType(value = MethodSource.PLAYURL)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @Headers({"Cookie: TUCAO_COOKIE=8c65UgQEBFQCCVFRBwJQAAABBwdVXA5WBgxZBVNnbCV5fA"})
     Call<IPlayUrls> playUrl(@Url String url);
 }

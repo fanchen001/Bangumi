@@ -29,7 +29,7 @@ public interface Dm5Service {
     @GET("{path}")
     @JsoupType(JsoupSource.DM5)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path);
 
     /**
@@ -40,7 +40,7 @@ public interface Dm5Service {
     @GET("video/{path}/page/{page}")
     @JsoupType(JsoupSource.DM5)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
 
     /**
@@ -51,7 +51,7 @@ public interface Dm5Service {
     @GET("page/{page}")
     @JsoupType(JsoupSource.DM5)
     @MethodType(value = MethodSource.SEARCH)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Query("s") String word);
 
     /**
@@ -61,7 +61,7 @@ public interface Dm5Service {
     @GET("bangumi/{path}")
     @JsoupType(JsoupSource.DM5)
     @MethodType(value = MethodSource.DETAILS)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IVideoDetails> details(@Path("path") String path);
 
     /**
@@ -72,7 +72,7 @@ public interface Dm5Service {
     @GET("bangumi/{path}")
     @JsoupType(JsoupSource.DM5)
     @MethodType(value = MethodSource.PLAYURL)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IPlayUrls> playUrl(@Path("path") String path, @Query("link") String link);
 
     /**
@@ -83,6 +83,6 @@ public interface Dm5Service {
     @GET("video/bgm/{pid}/page/{page}")
     @JsoupType(JsoupSource.DM5)
     @MethodType(value = MethodSource.MORE)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> more(@Path("pid") String pid, @Path("page") Integer page);
 }

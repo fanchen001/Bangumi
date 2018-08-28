@@ -35,12 +35,6 @@ public interface IVideo extends IBaseVideo{
      *
      * @return
      */
-    String getServiceClassName();
-
-    /**
-     *
-     * @return
-     */
     boolean hasVideoDetails();
 
     /**

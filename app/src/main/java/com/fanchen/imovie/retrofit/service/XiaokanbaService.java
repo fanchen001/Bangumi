@@ -31,7 +31,7 @@ public interface XiaokanbaService {
      */
     @GET("videos_type_{type}_sort_time_gener_全部_area_全部_year_全部_p_{page}.html")
     @JsoupType(JsoupSource.XIAOKANBA)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.HOME)
     @Headers({"User-Agent: Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36"})
     Call<IHomeRoot> home(@Path("type") String type, @Path("page") Integer page);
@@ -43,7 +43,7 @@ public interface XiaokanbaService {
      */
     @GET("{path}")
     @JsoupType(JsoupSource.XIAOKANBA)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.HOME)
     @Headers({"User-Agent: Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36"})
     Call<IHomeRoot> home(@Path("path") String path);
@@ -56,7 +56,7 @@ public interface XiaokanbaService {
      */
     @GET("search_key_{key}_sort_time_p_{p}.html")
     @JsoupType(JsoupSource.XIAOKANBA)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.SEARCH)
     @Headers({"User-Agent: Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36"})
     Call<IBangumiMoreRoot> search(@Path("p") Integer page, @Path("key") String word);
@@ -68,7 +68,7 @@ public interface XiaokanbaService {
      */
     @GET("{path}")
     @JsoupType(JsoupSource.XIAOKANBA)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.DETAILS)
     @Headers({"User-Agent: Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36"})
     Call<IVideoDetails> details(@Path("path") String path);
@@ -80,7 +80,7 @@ public interface XiaokanbaService {
      */
     @GET("{path}")
     @JsoupType(JsoupSource.XIAOKANBA)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.PLAYURL)
     @Headers({"User-Agent: Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36"})
     Call<IPlayUrls> playUrl(@Path("path") String path);
@@ -90,7 +90,7 @@ public interface XiaokanbaService {
      */
     @GET("videos_type_{pid}_sort_time_gener_全部_area_全部_year_全部_p_{page}.html")
     @JsoupType(JsoupSource.XIAOKANBA)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.MORE)
     @Headers({"User-Agent: Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36"})
     Call<IBangumiMoreRoot> more(@Path("pid") String pid, @Path("page") Integer page);

@@ -8,13 +8,11 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.arialyy.aria.core.Aria;
-import com.arialyy.aria.core.download.DownloadReceiver;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.VideoDetailsActivity;
 import com.fanchen.imovie.activity.WebActivity;
 import com.fanchen.imovie.base.BaseFragment;
-import com.fanchen.imovie.entity.biliplus.BiliplusPlayUrl;
+import com.fanchen.imovie.entity.VideoPlayUrls;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.retrofit.service.BiliplusService;
@@ -22,7 +20,6 @@ import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.RegularUtil;
 
-import java.io.File;
 import java.util.Map;
 
 import butterknife.InjectView;
@@ -100,7 +97,7 @@ public class BiliplusFragment extends BaseFragment implements View.OnClickListen
 
         @Override
         public void onSuccess(int enqueueKey, IPlayUrls response) {
-            if (response != null && response.isSuccess() && response instanceof BiliplusPlayUrl && activity != null) {
+            if (response != null && response.isSuccess() && response instanceof VideoPlayUrls && activity != null) {
                 Map<String, String> urls = response.getUrls();
                 DialogUtil.showMaterialListDialog(activity, getString(R.string.plase_select), urls.keySet(), new OnListListener(urls));
             } else {

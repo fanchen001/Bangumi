@@ -1,6 +1,5 @@
 package com.fanchen.imovie.activity;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;

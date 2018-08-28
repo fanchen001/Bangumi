@@ -2,7 +2,6 @@ package com.fanchen.imovie.retrofit.service;
 
 import com.fanchen.imovie.annotation.RetrofitSource;
 import com.fanchen.imovie.annotation.RetrofitType;
-import com.fanchen.imovie.entity.dytt.DyttLiveBody;
 import com.fanchen.imovie.entity.dytt.DyttRoot;
 import com.fanchen.imovie.entity.dytt.DyttShortVideo;
 
@@ -18,15 +17,6 @@ import retrofit2.http.Query;
  */
 @RetrofitType(RetrofitSource.DYTT_API)
 public interface DyttService {
-
-    /**
-     * 电视直播
-     * @return
-     */
-    @GET("newmovie/api/tvlives")
-    @RetrofitType(isJsonResponse = true)
-    @Headers({"platVersion:5.1.1", "userId:WWNl6KssHOIDAFGqNssEweUo", "platform:android", "xigua:true", "thunder:true", "package:com.ghost.movieheaven", "appVersion:5.6.0"})
-    Call<DyttRoot<List<DyttLiveBody>>> live();
 
     /**
      * 短视频

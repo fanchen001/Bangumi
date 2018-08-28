@@ -3,7 +3,6 @@ package com.fanchen.imovie.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +20,7 @@ import com.fanchen.imovie.entity.face.IBangumiTitle;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.util.DialogUtil;
+import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.RegularUtil;
 import com.squareup.picasso.Picasso;
 
@@ -116,7 +116,7 @@ public class BangumiListActivity extends BaseRecyclerActivity {
 
     @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
-        return new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        return new BaseAdapter.LinearLayoutManagerWrapper(this, BaseAdapter.LinearLayoutManagerWrapper.VERTICAL, false);
     }
 
     @Override
@@ -127,6 +127,7 @@ public class BangumiListActivity extends BaseRecyclerActivity {
     @Override
     protected void loadData(RetrofitManager retrofit, int page) {
         retrofit.enqueue(className, callback, "more", url, Integer.valueOf(page));
+        LogUtil.e("loadData", "url => " + url);
     }
 
     @Override

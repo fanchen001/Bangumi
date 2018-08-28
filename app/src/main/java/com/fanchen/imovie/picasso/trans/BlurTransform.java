@@ -14,20 +14,25 @@ public class BlurTransform implements Transformation {
 
     @Override
     public Bitmap transform(Bitmap source) {
-        // 下面这两个数字是控制模糊度的，可以自定义，测试了1-15之间的数字，自己感觉合适就行！
-        float scaleFactor = 6;
-        float radius = 6;
-        int width = source.getWidth();
-        int height = source.getHeight();
-        Bitmap overlay = Bitmap.createBitmap((int) (width / scaleFactor), (int) (height / scaleFactor), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(overlay);
-        canvas.scale(1 / scaleFactor, 1 / scaleFactor);
-        Paint paint = new Paint();
-        paint.setFlags(Paint.FILTER_BITMAP_FLAG);
-        canvas.drawBitmap(source, 0, 0, paint);
-        overlay = doBlur(overlay, (int) radius, true);
-        source.recycle();
-        return overlay;
+        try {
+            // 下面这两个数字是控制模糊度的，可以自定义，测试了1-15之间的数字，自己感觉合适就行！
+            float scaleFactor = 6;
+            float radius = 6;
+            int width = source.getWidth();
+            int height = source.getHeight();
+            Bitmap overlay = Bitmap.createBitmap((int) (width / scaleFactor), (int) (height / scaleFactor), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(overlay);
+            canvas.scale(1 / scaleFactor, 1 / scaleFactor);
+            Paint paint = new Paint();
+            paint.setFlags(Paint.FILTER_BITMAP_FLAG);
+            canvas.drawBitmap(source, 0, 0, paint);
+            overlay = doBlur(overlay, (int) radius, true);
+            source.recycle();
+            return overlay;
+        }catch (Throwable e){
+            e.printStackTrace();
+        }
+        return source;
     }
 
     @Override

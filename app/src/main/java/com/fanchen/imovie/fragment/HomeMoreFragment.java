@@ -9,6 +9,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,25 +19,21 @@ import com.fanchen.imovie.activity.AcgTabActivity;
 import com.fanchen.imovie.activity.ApkEvaluatActivity;
 import com.fanchen.imovie.activity.ApkListActivity;
 import com.fanchen.imovie.activity.CaptureActivity;
-import com.fanchen.imovie.activity.CouldTabActivity;
 import com.fanchen.imovie.activity.HackerToolActivity;
 import com.fanchen.imovie.base.BaseFragment;
 import com.fanchen.imovie.entity.face.ISearchWord;
 import com.fanchen.imovie.entity.JsonSerialize;
-import com.fanchen.imovie.entity.xiaoma.XiaomaIndex;
-import com.fanchen.imovie.entity.xiaoma.XiaomaWord;
-import com.fanchen.imovie.entity.xiaoma.XiaomaWordResult;
+import com.fanchen.imovie.entity.bili.BilibiliIndex;
+import com.fanchen.imovie.entity.bili.BilibiliWord;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
-import com.fanchen.imovie.retrofit.service.XiaomaService;
+import com.fanchen.imovie.retrofit.service.BilibiliService;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
-import com.fanchen.imovie.util.DeviceUtil;
 import com.fanchen.imovie.util.DisplayUtil;
 import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.view.FlowLayout;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.litesuits.orm.db.assit.QueryBuilder;
 import com.litesuits.orm.db.assit.WhereBuilder;
 
@@ -51,11 +48,9 @@ import butterknife.InjectView;
  */
 public class HomeMoreFragment extends BaseFragment implements View.OnClickListener,
         FlowLayout.OnFlowItemClick, SwipeRefreshLayout.OnRefreshListener {
-
     public static final int DIP_96 = 96;
     public static final int DIP_192 = 192;
     public static final String INDEX = "index";
-
 
     protected SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -79,12 +74,10 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
     protected LinearLayout mGameView;
     @InjectView(R.id.ll_hack)
     protected LinearLayout mHackView;
-    @InjectView(R.id.ll_could)
-    protected LinearLayout mCouldView;
     @InjectView(R.id.tv_word_error)
     protected TextView mErrorTextView;
 
-    private XiaomaIndex<XiaomaWordResult> mSaveWordIndex;
+    private BilibiliIndex mSaveWordIndex;
     private String serializeKey;
 
     public static HomeMoreFragment newInstance() {
@@ -110,8 +103,10 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
         activity.getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
         mSwipeRefreshLayout.setColorSchemeColors(typedValue.data);
         if (savedInstanceState != null && (mSaveWordIndex = savedInstanceState.getParcelable(INDEX)) != null) {
-            mHotFlowLayout.removeAllViews();
-            mHotFlowLayout.addDataList2TextView(getListData(mSaveWordIndex.getResult()));
+            if (mSaveWordIndex.getData() != null && mSaveWordIndex.getData().getList() != null) {
+                mHotFlowLayout.removeAllViews();
+                mHotFlowLayout.addDataList2TextView(getListData(mSaveWordIndex));
+            }
         } else {
             AsyTaskQueue.newInstance().execute(new QueryTaskListener(getRetrofitManager()));
         }
@@ -120,7 +115,6 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
     @Override
     protected void setListener() {
         super.setListener();
-        mCouldView.setOnClickListener(this);
         mHackView.setOnClickListener(this);
         mGameView.setOnClickListener(this);
         mApkView.setOnClickListener(this);
@@ -137,9 +131,6 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ll_could:
-                CouldTabActivity.startActivity(activity);
-                break;
             case R.id.tv_word_error:
                 onRefresh();
                 break;
@@ -223,13 +214,12 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
         }
     }
 
-    public List<String> getListData(XiaomaWordResult result) {
+    public List<String> getListData(BilibiliIndex result) {
         List<String> all = new ArrayList<>();
-        if (result == null)
+        if (result == null || result.getData() == null || result.getData().getList() == null)
             return all;
-        for (XiaomaWord w : result.getHotKeyword()) {
-            if (w.getKeywords() != null)
-                all.addAll(w.getKeywords().subList(0, w.getKeywords().size() / 4));
+        for (BilibiliWord s : result.getData().getList()) {
+            all.add(s.getKeyword());
         }
         return all;
     }
@@ -238,15 +228,14 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
      *
      */
     private void loadDate(RetrofitManager retrofitManager) {
-        String deviceId = DeviceUtil.getDeviceId(activity);
-        retrofitManager.enqueue(XiaomaService.class, callback, "loadHotword", deviceId);
+        retrofitManager.enqueue(BilibiliService.class, callback, "loadHotword", String.valueOf(System.currentTimeMillis()));
     }
 
-    private RefreshCallback<XiaomaIndex<XiaomaWordResult>> callback = new RefreshCallback<XiaomaIndex<XiaomaWordResult>>() {
+    private RefreshCallback<BilibiliIndex> callback = new RefreshCallback<BilibiliIndex>() {
 
         @Override
         public void onStart(int enqueueKey) {
-            if (mSwipeRefreshLayout == null || mErrorTextView== null) return;
+            if (mSwipeRefreshLayout == null || mErrorTextView == null) return;
             mErrorTextView.setVisibility(View.GONE);
             mSwipeRefreshLayout.setRefreshing(true);
         }
@@ -265,17 +254,17 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
         }
 
         @Override
-        public void onSuccess(int enqueueKey, XiaomaIndex<XiaomaWordResult> response) {
+        public void onSuccess(int enqueueKey, BilibiliIndex response) {
             if (mHotFlowLayout == null || response == null || isDetached()) return;
             mSaveWordIndex = response;
             mHotFlowLayout.removeAllViews();
-            mHotFlowLayout.addDataList2TextView(getListData(response.getResult()));
+            mHotFlowLayout.addDataList2TextView(getListData(response));
             AsyTaskQueue.newInstance().execute(new SaveTaskListener(response));
         }
 
     };
 
-    private class QueryTaskListener extends AsyTaskListenerImpl<XiaomaIndex<XiaomaWordResult>> {
+    private class QueryTaskListener extends AsyTaskListenerImpl<BilibiliIndex> {
 
         private RetrofitManager retrofit;
 
@@ -292,27 +281,27 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
         }
 
         @Override
-        public XiaomaIndex<XiaomaWordResult> onTaskBackground() {
-            if(getLiteOrm() == null) return null;
+        public BilibiliIndex onTaskBackground() {
+            if (getLiteOrm() == null) return null;
             List<JsonSerialize> query = getLiteOrm().query(new QueryBuilder<>(JsonSerialize.class).where("key = ?", serializeKey));
             if (query != null && query.size() > 0) {
                 JsonSerialize jsonSerialize = query.get(0);
                 if (!jsonSerialize.isStale()) {
                     //数据未过期
-                    return new Gson().fromJson(jsonSerialize.getJson(), new TypeToken<XiaomaIndex<XiaomaWordResult>>() {}.getType());
+                    return new Gson().fromJson(jsonSerialize.getJson(), BilibiliIndex.class);
                 }
             }
             return null;
         }
 
         @Override
-        public void onTaskSuccess(XiaomaIndex<XiaomaWordResult> data) {
+        public void onTaskSuccess(BilibiliIndex data) {
             if (mHotFlowLayout == null || mSwipeRefreshLayout == null) return;
             mSaveWordIndex = data;
             if (data != null) {
                 //加载本地数据
                 LogUtil.d(HomeMoreFragment.class, "加载本地数据");
-                mHotFlowLayout.addDataList2TextView(getListData(data.getResult()));
+                mHotFlowLayout.addDataList2TextView(getListData(data));
                 mSwipeRefreshLayout.setRefreshing(false);
             } else {
                 //没有缓存数据或者数据已经过期，加载网络数据
@@ -328,15 +317,15 @@ public class HomeMoreFragment extends BaseFragment implements View.OnClickListen
 
     private class SaveTaskListener extends AsyTaskListenerImpl<Void> {
 
-        private XiaomaIndex<XiaomaWordResult> response;
+        private BilibiliIndex response;
 
-        public SaveTaskListener(XiaomaIndex<XiaomaWordResult> response) {
+        public SaveTaskListener(BilibiliIndex response) {
             this.response = response;
         }
 
         @Override
         public Void onTaskBackground() {
-            if(getLiteOrm() == null || response == null)return null;
+            if (getLiteOrm() == null || response == null) return null;
             //保存key
             getLiteOrm().delete(new WhereBuilder(JsonSerialize.class, "key = ?", new Object[]{serializeKey}));
             getLiteOrm().insert(new JsonSerialize(response, serializeKey));

@@ -29,7 +29,7 @@ public interface BabayuService {
     @GET("{path}/")
     @JsoupType(JsoupSource.BABAYU)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path);
 
     /**
@@ -41,7 +41,7 @@ public interface BabayuService {
     @GET("{path}/index-{page}.html")
     @JsoupType(JsoupSource.BABAYU)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
 
     /**
@@ -53,7 +53,7 @@ public interface BabayuService {
     @GET("vod-search-wd-{keyword}-p-{page}.html")
     @JsoupType(JsoupSource.BABAYU)
     @MethodType(value = MethodSource.SEARCH)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("keyword") String keyword);
 
     /**
@@ -65,7 +65,7 @@ public interface BabayuService {
     @GET("{path}/index-{page}.html")
     @JsoupType(JsoupSource.BABAYU)
     @MethodType(value = MethodSource.MORE)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> more(@Path("path") String pid, @Path("page") Integer page);
 
     /**
@@ -75,7 +75,7 @@ public interface BabayuService {
     @GET
     @JsoupType(JsoupSource.BABAYU)
     @MethodType(value = MethodSource.DETAILS)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IVideoDetails> details(@Url String url);
 
     /**
@@ -85,6 +85,6 @@ public interface BabayuService {
     @GET
     @JsoupType(JsoupSource.BABAYU)
     @MethodType(value = MethodSource.PLAYURL)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IPlayUrls> playUrl(@Url String url);
 }

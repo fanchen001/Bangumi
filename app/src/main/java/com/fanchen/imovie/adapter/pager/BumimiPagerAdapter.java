@@ -12,9 +12,10 @@ import com.fanchen.imovie.retrofit.service.BumimiService;
  */
 public class BumimiPagerAdapter extends BaseFragmentAdapter{
 
-    private final String[] TITLES = new String[]{"电影", "电视剧","番剧", "综艺", "微电影"};
-    private final String[] PATHS = new String[]{"movie", "tv","comic", "zongyi","weidianying"};
-
+    private final String[] TITLES = new String[]{"首页","电影", "电视剧","番剧", "综艺", };
+    private final String[] PATHS = new String[]{"","dianying", "lianxuju","dongman", "zongyi",};
+    private final Boolean[] LOADS = new Boolean[]{false,true,true,true,true};
+    private final Boolean[] BANGUMI = new Boolean[]{true,false,false,false,false};
     public BumimiPagerAdapter(FragmentManager fm) {
         super(fm);
     }
@@ -26,7 +27,7 @@ public class BumimiPagerAdapter extends BaseFragmentAdapter{
 
     @Override
     public Fragment createFragment(int position) {
-        return VideoListFragment.newInstance(PATHS[position],getExtendInfo().toString());
+        return VideoListFragment.newInstance(PATHS[position],getExtendInfo().toString(),1,2,LOADS[position],false,false,null,BANGUMI[position]);
     }
 
     @Override

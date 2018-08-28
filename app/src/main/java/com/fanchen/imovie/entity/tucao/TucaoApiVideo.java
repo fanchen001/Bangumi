@@ -125,7 +125,12 @@ public class TucaoApiVideo implements Parcelable ,IVideo {
 
     @Override
     public int getSource() {
-        return VIDEO_TUCAO;
+        return 0;
+    }
+
+    @Override
+    public String getServiceClass() {
+        return TucaoService.class.getName();
     }
 
     public void setTitle(String title) {
@@ -157,7 +162,7 @@ public class TucaoApiVideo implements Parcelable ,IVideo {
     }
 
     public String getThumb() {
-        return thumb;
+        return thumb != null && thumb.startsWith("http") ? thumb : "http:" + thumb;
     }
 
     public void setThumb(String thumb) {
@@ -253,10 +258,6 @@ public class TucaoApiVideo implements Parcelable ,IVideo {
         return drawable;
     }
 
-    @Override
-    public String getServiceClassName() {
-        return TucaoService.class.getName();
-    }
 
     @Override
     public int getViewType() {

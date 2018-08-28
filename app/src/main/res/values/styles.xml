@@ -41,6 +41,11 @@
         <item name="android:windowIsTranslucent">false</item>
     </style>
 
+    <style name="BaseAppThemeLive" parent="BaseAppTheme">
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
     <style name="BaseAppThemeVideo" parent="BaseAppTheme">
         <item name="colorAccent">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimary</item>

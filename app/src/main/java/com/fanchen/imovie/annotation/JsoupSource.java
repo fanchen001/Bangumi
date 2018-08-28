@@ -5,6 +5,15 @@ package com.fanchen.imovie.annotation;
  * Created by fanchen on 2017/7/18.
  */
 public enum JsoupSource {
+    /**
+     * 视频
+     */
+    TYPE_VIDEO,
+
+    /**
+     * 直播
+     */
+    TYPE_LIVE,
 
     /**
      * C站
@@ -101,5 +110,82 @@ public enum JsoupSource {
      * 秘密影院
      * http://www.mmyy.com/
      */
-    MMYY
+    MMYY,
+
+    /**
+     * 神马电影
+     * http://m.smdy.cc/
+     */
+    SMDY,
+
+    /**
+     * 爱神马电影
+     * http://m.aism.cc/
+     */
+    AISM,
+
+    /**
+     * 豌豆视频
+     * http://www.wandouys.com/
+     */
+    WANDOU,
+
+    /**
+     * 战地视频
+     * http://m.zhandi.cc/
+     */
+    ZHANDI,
+
+    /**
+     * 山猫视频
+     * https://www.bobmao.com/
+     */
+    BOBMAO,
+
+    /**
+     * 西瓜视频
+     * https://m.xigua110.com/
+     */
+    XIGUA,
+
+    /**
+     *http://m.kupian.cc
+     * 库片网
+     */
+    KUPIAN,
+
+    /**
+     * https://www.taijula.com
+     * 泰韩剧啦
+     */
+    TAIHAN,
+
+    /**
+     * http://m.itepian.me
+     * 特片啦
+     */
+    TEPIAN,
+
+    /**
+     * http://video.jfenxiang.com
+     * 聚狗影院
+     */
+    JUGOU,
+
+    /**
+     * http://www.laosijidy.com/
+     * 老司机电影
+     */
+    LAOSIJI,
+    /**
+     * http://www.zzzvz.cn/
+     * zzzvz电影
+     */
+    ZZZVZ,
+
+    /**
+     * 快看直播
+     * https://m.kuaikan.me
+     */
+    KUAIKAN_TV
 }

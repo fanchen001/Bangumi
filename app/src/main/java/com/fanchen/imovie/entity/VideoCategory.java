@@ -4,19 +4,25 @@ import com.fanchen.imovie.R;
 import com.fanchen.imovie.entity.face.IViewType;
 
 /**
+ * VideoCategory
  * Created by fanchen on 2017/11/9.
  */
 public class VideoCategory implements IViewType {
     private String title;
     private int position;
+    private boolean hot;
     private int type;
 
-    private static final int DRAWABLE[] = {R.drawable.ic_category_t1, R.drawable.ic_category_t11,
-            R.drawable.ic_category_t119, R.drawable.ic_category_t129, R.drawable.ic_category_t13,
-            R.drawable.ic_category_t155, R.drawable.ic_category_t160, R.drawable.ic_category_t165,
-            R.drawable.ic_category_t3, R.drawable.ic_category_t36, R.drawable.ic_category_t4,
-            R.drawable.ic_category_t5, R.drawable.ic_category_live, R.drawable.ic_category_promo,
-            R.drawable.ic_bangumi_follow_home_ic_index,R.drawable.ic_live_center_sea_patro};
+    private static final int DRAWABLE[] = {R.drawable.ic_category_01, R.drawable.ic_category_02,
+            R.drawable.ic_category_03, R.drawable.ic_category_04, R.drawable.ic_category_05,
+            R.drawable.ic_category_06, R.drawable.ic_category_07, R.drawable.ic_category_08,
+            R.drawable.ic_category_09, R.drawable.ic_category_10, R.drawable.ic_category_11,
+            R.drawable.ic_category_12, R.drawable.ic_category_13, R.drawable.ic_category_14,
+            R.drawable.ic_category_15, R.drawable.ic_category_16, R.drawable.ic_category_17,
+            R.drawable.ic_category_18, R.drawable.ic_category_19, R.drawable.ic_category_20,
+            R.drawable.ic_category_21,R.drawable.ic_category_22,R.drawable.ic_category_23,
+            R.drawable.ic_category_24,R.drawable.ic_category_25,R.drawable.ic_category_26
+    };
 
     public String getTitle() {
         return title;
@@ -44,6 +50,14 @@ public class VideoCategory implements IViewType {
 
     public int getDrawable() {
         return DRAWABLE[position % DRAWABLE.length];
+    }
+
+    public boolean isHot() {
+        return hot;
+    }
+
+    public void setHot(boolean hot) {
+        this.hot = hot;
     }
 
     @Override

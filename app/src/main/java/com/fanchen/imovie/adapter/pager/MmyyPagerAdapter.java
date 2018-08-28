@@ -8,14 +8,15 @@ import com.fanchen.imovie.fragment.VideoListFragment;
 import com.fanchen.imovie.retrofit.service.MmyyService;
 
 /**
+ *
  * Created by fanchen on 2017/9/24.
  */
 public class MmyyPagerAdapter extends BaseFragmentAdapter{
 
-    private final String[] TITLES = new String[]{"首页","电视剧", "电影", "动漫","综艺"};
-    private final String[] PATHS = new String[]{"","1", "2", "3","4"};
-    private final Boolean[] LOADS = new Boolean[]{false,true,true,true,true,false};
-    private final Boolean[] BANGUMI = new Boolean[]{true,false,false,false,false,false};
+    private final String[] TITLES = new String[]{"首页","电视剧", "电影", "动漫","综艺","伦理"};
+    private final String[] PATHS = new String[]{"","dianshiju", "dianying", "dongman","zongyi","lunli"};
+    private final Boolean[] LOADS = new Boolean[]{false,true,true,true,true,true,true};
+    private final Boolean[] BANGUMI = new Boolean[]{true,false,false,false,false,false,false};
 
     public MmyyPagerAdapter(FragmentManager fm) {
         super(fm);

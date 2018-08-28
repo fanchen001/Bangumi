@@ -7,15 +7,16 @@ import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
-import com.fanchen.imovie.entity.xiaokanba.XiaokanbaDetails;
-import com.fanchen.imovie.entity.xiaokanba.XiaokanbaEpisode;
-import com.fanchen.imovie.entity.xiaokanba.XiaokanbaPlayUrl;
-import com.fanchen.imovie.entity.xiaokanba.XiaokanbaHome;
-import com.fanchen.imovie.entity.xiaokanba.XiaokanbaTitle;
-import com.fanchen.imovie.entity.xiaokanba.XiaokanbaVideo;
+import com.fanchen.imovie.entity.Video;
+import com.fanchen.imovie.entity.VideoDetails;
+import com.fanchen.imovie.entity.VideoEpisode;
+import com.fanchen.imovie.entity.VideoHome;
+import com.fanchen.imovie.entity.VideoPlayUrls;
+import com.fanchen.imovie.entity.VideoTitle;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
 import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.retrofit.RetrofitManager;
+import com.fanchen.imovie.retrofit.service.XiaokanbaService;
 import com.fanchen.imovie.util.JavaScriptUtil;
 import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.StreamUtil;
@@ -39,20 +40,22 @@ public class XiaokanbaImpl implements IVideoMoreParser {
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
-        XiaokanbaHome root = new XiaokanbaHome();
+        VideoHome root = new VideoHome();
         try {
-            List<XiaokanbaVideo> videos = new ArrayList<>();
+            List<Video> videos = new ArrayList<>();
             for (Node n : node.list("div.item > ul.clearfix > li")) {
-                XiaokanbaVideo video = new XiaokanbaVideo();
+                Video video = new Video();
+                video.setHasDetails(true);
+                video.setServiceClass(XiaokanbaService.class.getName());
                 video.setCover(n.attr("a", "data-original"));
                 video.setId(n.attr("a", "href", "/", 1));
                 video.setTitle(n.attr("a", "title"));
                 video.setUrl(baseUrl + n.attr("a", "href").replace(".", ""));
-                video.setScore(n.text("a > span.score"));
+                video.setDanmaku("评分:" + n.text("a > span.score"));
                 videos.add(video);
             }
             root.setSuccess(true);
-            root.setResult(videos);
+            root.setList(videos);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,46 +65,51 @@ public class XiaokanbaImpl implements IVideoMoreParser {
     @Override
     public IHomeRoot home(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
-        XiaokanbaHome root = new XiaokanbaHome();
+        VideoHome root = new VideoHome();
         try {
             List<Node> list = node.list("div.hy-video-head");
             if (list != null && list.size() > 0) {
                 int count = 0;
-                List<XiaokanbaTitle> titles = new ArrayList<>();
+                List<VideoTitle> titles = new ArrayList<>();
                 for (Node n : list) {
-                    XiaokanbaTitle title = new XiaokanbaTitle();
+                    VideoTitle title = new VideoTitle();
                     titles.add(title);
+                    title.setServiceClass(XiaokanbaService.class.getName());
                     title.setUrl(baseUrl + n.attr("li > a", "href").replace(".", ""));
                     title.setTitle(n.text("h3"));
                     title.setId(n.attr("li > a", "href", "/", 1));
                     title.setDrawable(SEASON[count++ % SEASON.length]);
-                    List<XiaokanbaVideo> videos = new ArrayList<>();
-                    title.setResult(videos);
+                    List<Video> videos = new ArrayList<>();
+                    title.setList(videos);
                     for (Node sub : new Node(n.getElement().nextElementSibling()).list("div.col-md-2.col-sm-3.col-xs-4")) {
-                        XiaokanbaVideo video = new XiaokanbaVideo();
+                        Video video = new Video();
+                        video.setHasDetails(true);
+                        video.setServiceClass(XiaokanbaService.class.getName());
                         video.setCover(sub.attr("a", "data-original"));
                         video.setId(sub.attr("a", "href", "/", 1));
                         video.setTitle(sub.attr("a", "title"));
                         video.setUrl(baseUrl + sub.attr("a", "href").replace(".", ""));
-                        video.setScore(sub.text("a > span.score"));
+                        video.setDanmaku("评分:" + sub.text("a > span.score"));
                         videos.add(video);
                     }
                 }
                 root.setSuccess(true);
-                root.setList(titles);
+                root.setHomeResult(titles);
             } else {
-                List<XiaokanbaVideo> videos = new ArrayList<>();
+                List<Video> videos = new ArrayList<>();
                 for (Node n : node.list("div.item > ul.clearfix > li")) {
-                    XiaokanbaVideo video = new XiaokanbaVideo();
+                    Video video = new Video();
+                    video.setHasDetails(true);
+                    video.setServiceClass(XiaokanbaService.class.getName());
                     video.setCover(n.attr("a", "data-original"));
                     video.setId(n.attr("a", "href", "/", 1));
                     video.setTitle(n.attr("a", "title"));
                     video.setUrl(baseUrl + n.attr("a", "href").replace(".", ""));
-                    video.setScore(n.text("a > span.score"));
+                    video.setDanmaku("评分:" + n.text("a > span.score"));
                     videos.add(video);
                 }
                 root.setSuccess(true);
-                root.setResult(videos);
+                root.setList(videos);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,28 +120,31 @@ public class XiaokanbaImpl implements IVideoMoreParser {
     @Override
     public IVideoDetails details(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
-        XiaokanbaDetails details = new XiaokanbaDetails();
+        VideoDetails details = new VideoDetails();
         try {
-            List<XiaokanbaVideo> reco = new ArrayList<>();
-            List<XiaokanbaEpisode> episodes = new ArrayList<>();
+            List<Video> reco = new ArrayList<>();
+            List<VideoEpisode> episodes = new ArrayList<>();
             details.setTitle(node.text("div.head > h3"));
             details.setIntroduce(node.text("div.plot"));
-            details.setArea(node.textAt("span.text-muted", 3));
-            details.setTypes(node.textAt("span.text-muted", 4));
+            details.setLast(node.textAt("span.text-muted", 3));
+            details.setExtras(node.textAt("span.text-muted", 4));
             details.setAuthor(node.textAt("span.text-muted", 1));
             for (Node n : node.list("div.item > div.col-md-2.col-sm-3.col-xs-4 ")) {
-                XiaokanbaVideo video = new XiaokanbaVideo();
+                Video video = new Video();
+                video.setHasDetails(true);
+                video.setServiceClass(XiaokanbaService.class.getName());
                 video.setCover(n.attr("a", "data-original"));
                 video.setId(n.attr("a", "href", "/", 1));
                 video.setTitle(n.attr("a", "title"));
                 video.setUrl(baseUrl + n.attr("a", "href").replace(".", ""));
-                video.setScore(n.text("a > span.score"));
+                video.setDanmaku("评分:" + n.text("a > span.score"));
                 reco.add(video);
             }
             int source = 1;
             for (Node n : node.list("div[id^=playlist]")) {
                 for (Node sub : n.list("ul > li > a")) {
-                    XiaokanbaEpisode episode = new XiaokanbaEpisode();
+                    VideoEpisode episode = new VideoEpisode();
+                    episode.setServiceClass(XiaokanbaService.class.getName());
                     episode.setTitle("播放源" + source + ":" + sub.text());
                     episode.setUrl(baseUrl + sub.attr("href").replace(".", ""));
                     episode.setId(sub.attr("href", "/", 1));
@@ -141,8 +152,9 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                 }
                 source++;
             }
+            details.setServiceClass(XiaokanbaService.class.getName());
             details.setEpisodes(episodes);
-            details.setRecoms(reco);
+            details.setRecomm(reco);
             details.setSuccess(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -153,7 +165,7 @@ public class XiaokanbaImpl implements IVideoMoreParser {
     @Override
     public IPlayUrls playUrl(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
-        XiaokanbaPlayUrl playUrl = new XiaokanbaPlayUrl();
+        VideoPlayUrls playUrl = new VideoPlayUrls();
         try {
             Map<String, String> map = new HashMap<>();
             map.put("Referer", RetrofitManager.REQUEST_URL);
@@ -173,9 +185,9 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                             html = html.substring(0, endPosition + 2);
                             JSONObject jsonObject = new JSONObject(html);
                             String json = String.format("time=%s&key=%s&url=%s&type=%s", jsonObject.getString("time"), jsonObject.getString("key"), URLEncoder.encode(jsonObject.getString("url")), jsonObject.getString("type"));
-                            map.put("Referer", "https://p.xiaokanba.com/odflv/index.php?url=" + URLEncoder.encode(jsonObject.getString("url")));
+                            map.put("Referer", "https://p.Video.com/odflv/index.php?url=" + URLEncoder.encode(jsonObject.getString("url")));
                             map.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-                            byte[] bs = StreamUtil.doPoset("https://p.xiaokanba.com/odflv/api.php", json, map);
+                            byte[] bs = StreamUtil.doPoset("https://p.Video.com/odflv/api.php", json, map);
                             if (bs != null && bs.length > 0) {
                                 videoUrl = new JSONObject(new String(bs)).getString("url");
                             }
@@ -266,6 +278,14 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                         playUrl.setUrls(playMap);
                     }
                 }
+            }
+            if(!playUrl.isSuccess() || playUrl.getUrls() == null || playUrl.getUrls().isEmpty()){
+                Map<String, String> playMap = new HashMap<>();
+                playMap.put("标清", url);
+                playUrl.setUrlType(IPlayUrls.URL_WEB);
+                playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                playUrl.setSuccess(true);
+                playUrl.setUrls(playMap);
             }
         } catch (Exception e) {
             e.printStackTrace();

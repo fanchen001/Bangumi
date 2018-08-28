@@ -30,6 +30,8 @@ import com.fanchen.imovie.util.SystemUtil;
 import com.fanchen.imovie.view.webview.SwipeWebView;
 import com.tencent.smtt.export.external.interfaces.SslError;
 import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
+import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
+import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
@@ -45,9 +47,9 @@ import butterknife.InjectView;
  */
 public class WebPlayerActivity extends BaseActivity {
 
-    private static final String[] LUXIANS = {"https://www.ai577.com/playm3u8/index.php?type=&vid=%s",
-            "https://yun.glcw.cc:444/plays/?url=%s","http://jx.zz22x.com/xnflv/?url=%s",
-            "http://www.a305.org/x3/tong.php?url=%s"};
+    public static final String[] LUXIANS = {"https://api.daidaitv.com/index/?url=%s",
+            "https://api.47ks.com/webcloud/?v=%s","http://api.bbbbbb.me/playm3u8/?url=%s","http://yun.baiyug.cn/vip/index.php?url=%s",
+            "http://www.82190555.com/index.php?url=%s", "http://movie.vr-seesee.com/jiexi/index.php?url=%s"};
 
     public static final String URL = "url";
     public static final String LUXIAN = "luxian";
@@ -67,7 +69,6 @@ public class WebPlayerActivity extends BaseActivity {
     }
 
     /**
-     *
      * @param context
      * @param url
      * @param luxian
@@ -77,17 +78,15 @@ public class WebPlayerActivity extends BaseActivity {
     }
 
     /**
-     *
      * @param context
      * @param url
      * @param referer
      */
-    public static void startActivity(Context context, String url, String referer){
-        startActivity(context,url,referer,-1);
+    public static void startActivity(Context context, String url, String referer) {
+        startActivity(context, url, referer, -1);
     }
 
     /**
-     *
      * @param context
      * @param url
      * @param referer
@@ -97,7 +96,7 @@ public class WebPlayerActivity extends BaseActivity {
         try {
             Intent intent = new Intent(context, WebPlayerActivity.class);
             intent.putExtra(URL, url);
-            if(luxian >= 0){
+            if (luxian >= 0) {
                 intent.putExtra(LUXIAN, luxian);
             }
             if (!TextUtils.isEmpty(referer)) {
@@ -135,8 +134,13 @@ public class WebPlayerActivity extends BaseActivity {
         setSupportActionBar(mToolbar);
         mToolbar.setTitle("");
         WebView webView = mWebview.getWebView();
+        Bundle data = new Bundle();
+        data.putBoolean("standardFullScreen", true);//true表示标准全屏，false表示X5全屏；不设置默认false，
+        data.putInt("DefaultVideoScreen", 2);//1：以页面内开始播放，2：以全屏开始播放；不设置默认：1
+        if (webView.getX5WebViewExtension() != null) {
+            webView.getX5WebViewExtension().invokeMiscMethod("setVideoParams", data);
+        }
         WebSettings settings = webView.getSettings();
-        settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);// 开启DOM
         settings.setAllowFileAccess(true);// 设置支持文件流
         settings.setUseWideViewPort(true);// 调整到适合webview大小
@@ -148,13 +152,23 @@ public class WebPlayerActivity extends BaseActivity {
         }
         settings.setJavaScriptEnabled(true);
         webView.setWebViewClient(webViewClient);
+        webView.setWebChromeClient(webChromeClient);
         registerForContextMenu(webView);
         if (getIntent().hasExtra(LUXIAN) && getIntent().hasExtra(URL)) {
             if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("luxian_hit", true)) {
                 new Handler(Looper.getMainLooper()).postDelayed(tipRunnable, 1500);
             }
             String url = String.format(LUXIANS[getIntent().getIntExtra(LUXIAN, 0)], getIntent().getStringExtra(URL));
-            mWebview.loadUrl(url);
+            if (getIntent().hasExtra(REFERER)) {
+                Map<String, String> map = new HashMap<>();
+                map.put("Referer", getIntent().getStringExtra(REFERER));
+                map.put("User-Agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36");
+                map.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+                map.put("Accept-Encoding", "gzip, deflate");
+                mWebview.loadUrl(url, map);
+            } else {
+                mWebview.loadUrl(url);
+            }
         } else if (getIntent().hasExtra(URL)) {
             if (getIntent().hasExtra(REFERER)) {
                 Map<String, String> map = new HashMap<>();
@@ -179,9 +193,9 @@ public class WebPlayerActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if(getIntent().hasExtra(LUXIAN)){
+        if (getIntent().hasExtra(LUXIAN)) {
             getMenuInflater().inflate(R.menu.menu_luxian, menu);
-        }else{
+        } else {
             getMenuInflater().inflate(R.menu.menu_web, menu);
         }
         return true;
@@ -189,13 +203,13 @@ public class WebPlayerActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(getIntent().hasExtra(LUXIAN)){
+        if (getIntent().hasExtra(LUXIAN)) {
             switch (item.getItemId()) {
                 case R.id.action_luxian:
-                    DialogUtil.showMaterialListDialog(this, getResources().getStringArray(R.array.spinner_luxian),clickListener);
+                    DialogUtil.showMaterialListDialog(this, getResources().getStringArray(R.array.spinner_luxian), clickListener);
                     break;
             }
-        }else{
+        } else {
             switch (item.getItemId()) {
                 case R.id.action_share:
                     ShareUtil.share(this, mWebview.getWebView().getTitle(), mWebview.getWebView().getUrl());
@@ -235,6 +249,22 @@ public class WebPlayerActivity extends BaseActivity {
         }
     }
 
+    private WebChromeClient webChromeClient = new WebChromeClient() {
+
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            if (newProgress == 100) {
+                mWebview.getProgressBar().setVisibility(View.GONE);
+                mWebview.getRefreshView().setRefreshing(false);
+            } else {
+                if (mWebview.getProgressBar().getVisibility() == View.GONE)
+                    mWebview.getProgressBar().setVisibility(View.VISIBLE);
+                mWebview.getProgressBar().setProgress(newProgress);
+            }
+        }
+
+    };
+
     /**
      * // 设置web页面 // 如果页面中链接，如果希望点击链接继续在当前browser中响应， //
      * 而不是新开Android的系统browser中响应该链接，必须覆盖 webview的WebViewClient对象。
@@ -243,6 +273,16 @@ public class WebPlayerActivity extends BaseActivity {
      */
     private WebViewClient webViewClient = new WebViewClient() {
 
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView webView, String url) {
+            if (url.contains("456jjh") || url.contains("jianduankm")) {//
+                return new WebResourceResponse(null, null, null);//含有广告资源屏蔽请求
+            } else {
+                return super.shouldInterceptRequest(webView, url);//正常加载
+            }
+        }
+
+        @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             Uri localUri = Uri.parse(url);
             String scheme = localUri.getScheme();
@@ -288,6 +328,8 @@ public class WebPlayerActivity extends BaseActivity {
 
     };
 
+
+
     private Runnable tipRunnable = new Runnable() {
 
         @Override
@@ -314,7 +356,7 @@ public class WebPlayerActivity extends BaseActivity {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if(isFinishing() || position < 0 || LUXIANS.length <= position)return;
+            if (isFinishing() || position < 0 || LUXIANS.length <= position) return;
             String url = String.format(LUXIANS[position], getIntent().getStringExtra(URL));
             mWebview.loadUrl(url);
         }

@@ -33,10 +33,12 @@ public abstract class BaseTabActivity extends BaseToolbarActivity {
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
         PagerAdapter adapter = getAdapter(getSupportFragmentManager());
-        mViewPager.setAdapter(adapter);
-        mViewPager.setOffscreenPageLimit(adapter.getCount());
-        mSlidingTab.setupWithViewPager(mViewPager);
-        mSlidingTab.setTabMode(getTabMode(adapter));
+        if(!checkTabViewNull()){
+            mViewPager.setAdapter(adapter);
+            mViewPager.setOffscreenPageLimit(adapter.getCount());
+            mSlidingTab.setupWithViewPager(mViewPager);
+            mSlidingTab.setTabMode(getTabMode(adapter));
+        }
     }
 
     protected int getTabMode(PagerAdapter adapter){
@@ -62,4 +64,7 @@ public abstract class BaseTabActivity extends BaseToolbarActivity {
      */
     protected abstract PagerAdapter getAdapter(FragmentManager fm);
 
+    public boolean checkTabViewNull(){
+        return mSlidingTab == null || mViewPager == null;
+    }
 }

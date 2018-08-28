@@ -13,6 +13,8 @@ public interface IPlayUrls extends IRoot{
     /*** 支持下载*/
     int URL_FILE = 2;
 
+    int URL_XIGUA = 3;
+
     /**
      *
      * @return
@@ -37,4 +39,6 @@ public interface IPlayUrls extends IRoot{
      * @return
      */
     String getReferer();
+
+    boolean m3u8Referer();
 }

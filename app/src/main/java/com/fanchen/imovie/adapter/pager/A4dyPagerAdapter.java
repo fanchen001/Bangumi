@@ -17,7 +17,7 @@ public class A4dyPagerAdapter extends BaseFragmentAdapter{
     private final String[] PATHS = new String[]{"index.html","2", "1", "4","3"};
     private final Boolean[] LOADS = new Boolean[]{false,true,true,true,true};
 
-    private final String REFERER = "http://m.aaccy.com/";
+    private final String REFERER = "http://c.aaccy.com/";
 
     public A4dyPagerAdapter(FragmentManager fm) {
         super(fm);

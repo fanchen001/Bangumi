@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import com.fanchen.imovie.entity.face.IBaseVideo;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.entity.face.IViewType;
@@ -12,9 +13,9 @@ import com.litesuits.orm.db.annotation.Column;
 import com.litesuits.orm.db.annotation.PrimaryKey;
 import com.litesuits.orm.db.annotation.Table;
 import com.litesuits.orm.db.enums.AssignType;
-import com.xunlei.downloadlib.parameter.TorrentFileInfo;
 
 /**
+ * VideoHistory
  * Created by fanchen on 2017/9/22.
  */
 @Table("tab_video_history")
@@ -71,7 +72,7 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
         url = episode.getUrl();
         source = video.getSource();
         time = DateUtil.getCurrentDate("yyyy-MM-dd HH:mm:ss");
-        serviceClassName = video.getServiceClassName();
+        serviceClassName = video.getServiceClass();
         playPosition = positon;
         playType = episode.getPlayerType();
         type = TYPE_VIDEO;
@@ -88,7 +89,7 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
         url = video.getUrl();
         source = video.getSource();
         time = DateUtil.getCurrentDate("yyyy-MM-dd HH:mm:ss");
-        serviceClassName = video.getServiceClassName();
+        serviceClassName = video.getServiceClass();
         playPosition = positon;
         playType = IVideoEpisode.PLAY_TYPE_VIDEO;
         type = TYPE_VIDEO;
@@ -98,19 +99,18 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
             userId = loginUser.getObjectId();
     }
 
-    /**
-     *
-     * @param fileInfo
-     * @param positon
-     */
-    public VideoHistory(TorrentFileInfo fileInfo,long positon) {
-        title = fileInfo.mFileName;
-        id = fileInfo.mSubPath;
-        url = fileInfo.playUrl;
+    public VideoHistory(IBaseVideo video,long positon) {
+        title = video.getTitle();
+        cover = video.getCover();
+        id = video.getId();
+        url = video.getUrl();
+        source = video.getSource();
+        time = DateUtil.getCurrentDate("yyyy-MM-dd HH:mm:ss");
+        serviceClassName = video.getServiceClass();
         playPosition = positon;
         playType = IVideoEpisode.PLAY_TYPE_VIDEO;
-        time = DateUtil.getCurrentDate("yyyy-MM-dd HH:mm:ss");
-        type = TYPE_TORRENT;
+        type = TYPE_VIDEO;
+        coverReferer = "";
         User loginUser = User.getLoginUser();
         if(loginUser != null)
             userId = loginUser.getObjectId();
@@ -154,7 +154,7 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
     }
 
     public String getCover() {
-        return cover;
+        return cover != null && cover.startsWith("http") ? cover : "http:" + cover;
     }
 
     public void setCover(String cover) {

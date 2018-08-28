@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 /**
  * SearchDialogFragment
- *
+ * <p/>
  * 搜索历史记录database
  * Created by fanchen on 2017/9/17.
  */
@@ -57,13 +57,13 @@ public class SearchHistoryHelper extends SQLiteOpenHelper {
                 String history = cursor.getString(1);
                 historys.add(history);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            if(cursor != null){
+        } finally {
+            if (cursor != null) {
                 cursor.close();
             }
-            if(db != null){
+            if (db != null) {
                 db.close();
             }
         }
@@ -95,14 +95,20 @@ public class SearchHistoryHelper extends SQLiteOpenHelper {
      */
     public void insertHistory(String keyword) {
         SQLiteDatabase db = getWritableDatabase();
-        //生成ContentValues对象
-        ContentValues cv = new ContentValues();
-        //往ContentValues对象存放数据，键-值对模式
-        cv.put("history", keyword);
-        //调用insert方法，将数据插入数据库
-        db.insert(TABLE_NAME, null, cv);
-        //关闭数据库
-        db.close();
+        try {
+            //生成ContentValues对象
+            ContentValues cv = new ContentValues();
+            //往ContentValues对象存放数据，键-值对模式
+            cv.put("history", keyword);
+            //调用insert方法，将数据插入数据库
+            db.insert(TABLE_NAME, null, cv);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        } finally {
+            //关闭数据库
+            if (db != null)
+                db.close();
+        }
     }
 
     /**
@@ -110,10 +116,16 @@ public class SearchHistoryHelper extends SQLiteOpenHelper {
      */
     public void deleteHistory(String keyword) {
         SQLiteDatabase db = getWritableDatabase();
-        //生成ContentValues对象
-        db.delete(TABLE_NAME, "history=?", new String[]{keyword});
-        //关闭数据库
-        db.close();
+        try {
+            //生成ContentValues对象
+            db.delete(TABLE_NAME, "history=?", new String[]{keyword});
+        } catch (Throwable e) {
+            e.printStackTrace();
+        } finally {
+            //关闭数据库
+            if (db != null)
+                db.close();
+        }
     }
 
     /**
@@ -121,10 +133,16 @@ public class SearchHistoryHelper extends SQLiteOpenHelper {
      */
     public void deleteAllHistory() {
         SQLiteDatabase db = getWritableDatabase();
-        //删除全部数据
-        db.execSQL("delete from " + TABLE_NAME);
-        //关闭数据库
-        db.close();
+        try {
+            //删除全部数据
+            db.execSQL("delete from " + TABLE_NAME);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        } finally {
+            //关闭数据库
+            if (db != null)
+                db.close();
+        }
     }
 
 }

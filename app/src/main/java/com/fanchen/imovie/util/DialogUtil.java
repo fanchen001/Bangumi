@@ -24,24 +24,18 @@ import com.fanchen.imovie.dialog.MaterialListDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
 import com.fanchen.imovie.entity.bmob.BmobObj;
 import com.fanchen.imovie.entity.bmob.VideoCollect;
-import com.fanchen.imovie.entity.dytt.DyttLiveBody;
-import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
-import com.fanchen.imovie.fragment.CollectFragment;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.callback.RetrofitCallback;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListener;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
-import com.fanchen.imovie.view.CustomEmptyView;
 import com.litesuits.orm.db.assit.QueryBuilder;
-import com.litesuits.orm.db.assit.WhereBuilder;
 
 import java.lang.ref.SoftReference;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -182,6 +176,19 @@ public class DialogUtil {
         materialDialog.show();
     }
 
+    public static void showOtherPlayerDialog(Context context, OnButtonClickListener l) {
+        closeDialog();
+        MaterialDialog materialDialog = (MaterialDialog) (DialogUtil.materialDialog = dialog = new MaterialDialog(context));
+        materialDialog.setTitleVisble(View.GONE);
+        materialDialog.setCancelable(false);
+        materialDialog.btnNum(3);
+        materialDialog.btnText("TBS播放","取消","网页浏览器");
+        materialDialog.setCanceledOnTouchOutside(true);
+        materialDialog.content("视频播放失败！！！可以尝试使用其他方式重试");
+        materialDialog.setButtonClickListener(l);
+        materialDialog.show();
+    }
+
     public static void showMessageDialog(Context context, String content) {
         closeDialog();
         MaterialDialog materialDialog = (MaterialDialog) (DialogUtil.materialDialog = dialog = new MaterialDialog(context));
@@ -298,11 +305,6 @@ public class DialogUtil {
         DialogUtil.showMaterialListDialog(fragment.activity, new String[]{"打开详情", "加入收藏"}, new ItemClickListener(position, video, videos, fragment, (BaseAdapter.OnItemClickListener) fragment));
     }
 
-    public static void showOperationDialog(BaseFragment fragment, DyttLiveBody video, List<DyttLiveBody> videos, int position) {
-        if (!(fragment instanceof BaseAdapter.OnItemClickListener)) return;
-        DialogUtil.showMaterialListDialog(fragment.activity, new String[]{"打开详情", "加入收藏"}, new ItemClickListener(position, video, videos, fragment, (BaseAdapter.OnItemClickListener) fragment));
-    }
-
     public static void showDownloadOperationDialog(BaseFragment fragment, IVideo video, List<IVideo> videos, int position, RetrofitCallback<?> callback) {
         if (!(fragment instanceof BaseAdapter.OnItemClickListener)) return;
         DialogUtil.showMaterialListDialog(fragment.activity, new String[]{"直接打开", "加入收藏", "下载视频"}, new ItemClickListener(position, video, videos, fragment, (BaseAdapter.OnItemClickListener) fragment, callback));
@@ -312,24 +314,21 @@ public class DialogUtil {
 
         private int position;
         private IVideo item;
-        private DyttLiveBody liveBody;
         private List<?> datas;
         private SoftReference<BaseActivity> activity;
         private SoftReference<BaseFragment> fragment;
         private SoftReference<RetrofitCallback<?>> downloadCallback;
         private SoftReference<BaseAdapter.OnItemClickListener> onItemClick;
 
-        public ItemClickListener(int position, DyttLiveBody item, List<?> datas, BaseActivity activity, BaseAdapter.OnItemClickListener onItemClick) {
+        public ItemClickListener(int position, List<?> datas, BaseActivity activity, BaseAdapter.OnItemClickListener onItemClick) {
             this.position = position;
-            this.liveBody = item;
             this.datas = datas;
             this.activity = new SoftReference<>(activity);
             this.onItemClick = new SoftReference<>(onItemClick);
         }
 
-        public ItemClickListener(int position, DyttLiveBody item, List<?> datas, BaseFragment fragment, BaseAdapter.OnItemClickListener onItemClick) {
+        public ItemClickListener(int position, List<?> datas, BaseFragment fragment, BaseAdapter.OnItemClickListener onItemClick) {
             this.position = position;
-            this.liveBody = item;
             this.datas = datas;
             this.fragment = new SoftReference<>(fragment);
             this.onItemClick = new SoftReference<>(onItemClick);
@@ -374,8 +373,6 @@ public class DialogUtil {
                         if (baseActivity != null && baseActivity.checkLogin()) {
                             if (item != null) {
                                 DialogUtil.showMaterialDialog(baseActivity, String.format(baseActivity.getString(R.string.collect_hit), item.getTitle()), new ButtonClickListener(item, activity));
-                            } else if (liveBody != null) {
-                                DialogUtil.showMaterialDialog(baseActivity, String.format(baseActivity.getString(R.string.collect_hit), liveBody.getVideoName()), new ButtonClickListener(liveBody, activity));
                             }
                         }
                     }
@@ -384,8 +381,6 @@ public class DialogUtil {
                         if (baseFragment != null && baseFragment.activity.checkLogin()) {
                             if (item != null) {
                                 DialogUtil.showMaterialDialog(baseFragment.activity, String.format(baseFragment.activity.getString(R.string.collect_hit), item.getTitle()), new ButtonClickListener(item, new SoftReference<>(baseFragment.activity)));
-                            } else if (liveBody != null) {
-                                DialogUtil.showMaterialDialog(baseFragment.activity, String.format(baseFragment.activity.getString(R.string.collect_hit), liveBody.getVideoName()), new ButtonClickListener(liveBody, new SoftReference<>(baseFragment.activity)));
                             }
                         }
                     }
@@ -408,7 +403,7 @@ public class DialogUtil {
                             }
                         }
                         if (manager != null) {
-                            manager.enqueue(item.getServiceClassName(), callback, "playUrl", item.getUrl());
+                            manager.enqueue(item.getServiceClass(), callback, "playUrl", item.getUrl());
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -426,7 +421,6 @@ public class DialogUtil {
     private static class ButtonClickListener implements OnButtonClickListener {
 
         private IVideo item;
-        private DyttLiveBody liveBody;
         private SoftReference<BaseActivity> activity;
 
         public ButtonClickListener(IVideo item, SoftReference<BaseActivity> activity) {
@@ -434,8 +428,7 @@ public class DialogUtil {
             this.activity = activity;
         }
 
-        public ButtonClickListener(DyttLiveBody item, SoftReference<BaseActivity> activity) {
-            this.liveBody = item;
+        public ButtonClickListener(SoftReference<BaseActivity> activity) {
             this.activity = activity;
         }
 
@@ -447,14 +440,6 @@ public class DialogUtil {
                     long count = baseActivity.getLiteOrm().queryCount(new QueryBuilder<>(VideoCollect.class).where("id = ?", item.getId()));
                     if (count <= 0) {
                         VideoCollect collect = new VideoCollect(item);
-                        collect.save(new CollectListener(collect, activity));
-                    } else {
-                        baseActivity.showSnackbar(baseActivity.getString(R.string.collect_repetition));
-                    }
-                } else if (liveBody != null) {
-                    long count = baseActivity.getLiteOrm().queryCount(new QueryBuilder<>(VideoCollect.class).where("id = ?", String.valueOf(liveBody.getVideoId())));
-                    if (count <= 0) {
-                        VideoCollect collect = new VideoCollect(liveBody);
                         collect.save(new CollectListener(collect, activity));
                     } else {
                         baseActivity.showSnackbar(baseActivity.getString(R.string.collect_repetition));

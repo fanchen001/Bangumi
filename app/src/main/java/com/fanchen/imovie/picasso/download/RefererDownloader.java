@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 
 /**
+ *
  * Created by fanchen on 2017/10/2.
  */
 public class RefererDownloader extends UrlConnectionDownloader{

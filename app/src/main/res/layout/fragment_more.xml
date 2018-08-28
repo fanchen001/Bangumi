@@ -221,29 +221,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/ll_could"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/shape_more_item_bg"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="12dp">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_company_v_22" />
-
-                <TextView
-
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    android:text="@string/could" />
-            </LinearLayout>
-
-            <LinearLayout
                 android:id="@+id/ll_hack"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

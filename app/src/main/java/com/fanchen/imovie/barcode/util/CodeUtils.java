@@ -160,7 +160,7 @@ public class CodeUtils {
                     Bitmap.Config.ARGB_8888);
             bitmap.setPixels(pixels, 0, w, 0, 0, w, h);
             return bitmap;
-        } catch (WriterException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

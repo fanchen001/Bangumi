@@ -32,7 +32,7 @@ public interface S80Service {
     @GET("movie/{path}-{page}-0-0-0-0-0")
     @JsoupType(JsoupSource.S80)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
 
     /**
@@ -43,7 +43,7 @@ public interface S80Service {
     @FormUrlEncoded
     @JsoupType(JsoupSource.S80)
     @MethodType(value = MethodSource.SEARCH)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> search(@Field("keyword") String keyword);
 
     /**
@@ -54,6 +54,6 @@ public interface S80Service {
     @GET("movie/{id}")
     @JsoupType(JsoupSource.S80)
     @MethodType(value = MethodSource.DETAILS)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IVideoDetails> details(@Path("id") String path);
 }

@@ -19,7 +19,7 @@ import retrofit2.http.Url;
 /**
  * Created by fanchen on 2017/10/13.
  */
-@RetrofitType(value = RetrofitSource.DIANXIUMEI_API, isJsoupResponse = true)
+@RetrofitType(value = RetrofitSource.DIANXIUMEI_API, isJsoupResponse = JsoupSource.TYPE_VIDEO)
 public interface DianxiumeiService {
 
     /**
@@ -30,7 +30,7 @@ public interface DianxiumeiService {
      */
     @GET
     @JsoupType(JsoupSource.DIANXIUMEI)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.HOME)
     Call<IHomeRoot> home(@Url String url, @Query("p") Integer page);
 
@@ -42,7 +42,7 @@ public interface DianxiumeiService {
      */
     @GET("so/s.php")
     @JsoupType(JsoupSource.DIANXIUMEI)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.SEARCH)
     Call<IBangumiMoreRoot> search(@Query("p") Integer page, @Query("q") String word);
 
@@ -53,7 +53,7 @@ public interface DianxiumeiService {
      */
     @GET
     @JsoupType(JsoupSource.DIANXIUMEI)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.PLAYURL)
     Call<IPlayUrls> playUrl(@Url String url);
 

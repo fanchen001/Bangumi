@@ -27,7 +27,7 @@ public interface BiliplusService {
     @GET("api/view")
     @JsoupType(JsoupSource.BILIPLUS)
     @MethodType(value = MethodSource.DETAILS)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IVideoDetails> details(@Query("id") String path);
 
     /**
@@ -37,6 +37,6 @@ public interface BiliplusService {
     @GET("/api/geturl?bangumi=0&page=1")
     @JsoupType(JsoupSource.BILIPLUS)
     @MethodType(value = MethodSource.PLAYURL)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IPlayUrls> playUrl(@Query("av") String path);
 }

@@ -13,7 +13,7 @@ import com.fanchen.imovie.retrofit.service.LL520Service;
 public class LL520PagerAdapter extends BaseFragmentAdapter{
 
     private final String[] TITLES = new String[]{"首页","电视剧", "电影", "动漫","综艺","微电影"};
-    private final String[] PATHS = new String[]{"","1", "2", "3","4","6"};
+    private final String[] PATHS = new String[]{"","2", "1", "3","4","6"};
     private final Boolean[] LOADS = new Boolean[]{false,true,true,true,true,true};
     private final Boolean[] BANGUMI = new Boolean[]{true,false,false,false,false,false};
     public LL520PagerAdapter(FragmentManager fm) {

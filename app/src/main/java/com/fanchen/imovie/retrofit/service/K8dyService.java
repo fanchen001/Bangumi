@@ -31,7 +31,7 @@ public interface K8dyService {
     @GET("{path}/")
     @JsoupType(JsoupSource.K8DY)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path);
 
     /**
@@ -43,7 +43,7 @@ public interface K8dyService {
     @GET("{path1}/{path2}")
     @JsoupType(JsoupSource.K8DY)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path1") String path1, @Path("path2") String path2);
 
     /**
@@ -55,7 +55,7 @@ public interface K8dyService {
     @GET("list/{path}_{page}.html")
     @JsoupType(JsoupSource.K8DY)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
 
     /**
@@ -67,7 +67,7 @@ public interface K8dyService {
     @GET("search.php")
     @JsoupType(JsoupSource.K8DY)
     @MethodType(value = MethodSource.SEARCH)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> search(@Query("page") Integer page, @Query("searchword") String keyword);
 
     /**
@@ -79,7 +79,7 @@ public interface K8dyService {
     @GET("list/{path}_{page}.html")
     @JsoupType(JsoupSource.K8DY)
     @MethodType(value = MethodSource.MORE)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> more(@Path("path") String pid, @Path("page") Integer page);
 
     /**
@@ -89,7 +89,7 @@ public interface K8dyService {
     @GET
     @JsoupType(JsoupSource.K8DY)
     @MethodType(value = MethodSource.DETAILS)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IVideoDetails> details(@Url String url);
 
     /**
@@ -99,6 +99,6 @@ public interface K8dyService {
     @GET
     @JsoupType(JsoupSource.K8DY)
     @MethodType(value = MethodSource.PLAYURL)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IPlayUrls> playUrl(@Url String url);
 }

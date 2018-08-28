@@ -1,9 +1,32 @@
 <resources>
     <string-array name="spinner_luxian">
-        <item>线路1</item>
-        <item>线路2</item>
-        <item>线路3</item>
-        <item>线路4</item>
+        <item>呆呆解析</item>
+        <item>47Ak解析</item>
+        <item>思古解析</item>
+        <item>百域解析</item>
+        <item>无名解析</item>
+        <item>瑟瑟解析</item>
+    </string-array>
+
+    <string-array name="video_web">
+        <item>iqiyi.com/v_</item>
+        <item>youku.com/video</item>
+        <item>le.com/vplay</item>
+        <item>le.com/ptv</item>
+        <item>qq.com/x/cover</item>
+        <item>tudou.com/v</item>
+        <item>56.com</item>
+        <item>pptv.com/show</item>
+        <item>1905.com/play</item>
+        <item>bilibili.com/video/av</item>
+        <item>bilibili.com/bangumi/play</item>
+        <item>ku6.com</item>
+        <item>wasu.cn/Play</item>
+        <item>yinyuetai.com</item>
+        <item>mgtv.com/b</item>
+        <item>video.sina.com</item>
+        <item>v.163.com</item>
+        <item>fun.tv/vplay</item>
     </string-array>
     <string name="app_name">次元番</string>
     <string name="dynamic_total_guide_title">次元番需要下列权限才可正常使用</string>
@@ -11,7 +34,7 @@
     <string name="dynamic_phone_guide_desc">校验IMEI&amp;IMSI码，防止帐号被盗。</string>
     <string name="dynamic_storage_guide_title">存储权限</string>
     <string name="dynamic_storage_guide_desc">缓存图片和视频，降低流量消耗。</string>
-    <string name="dynamic_open_pm_desc">路径: 设置>应用>爱搜云>权限</string>
+    <string name="dynamic_open_pm_desc">路径: 设置>应用>次元番>权限</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
 
@@ -114,13 +137,14 @@
     <string name="menu_about_qq">541361788</string>
     <string name="menu_about_web">暂无</string>
     <string name="menu_web">微信客服</string>
+    <string name="non_error">发生未知错误</string>
     <string name="menu_qqnumber">QQ群</string>
     <string name="menu_phonenumber">客服电话</string>
     <string name="menu_emailadress">邮箱地址</string>
     <string name="menu_about_workingtime">工作时间：暂不确定</string>
     <string name="app_version">v1.0.0.2</string>
 
-    <string name="menu_subapp_about_detailed">专为二次元爱好者量身打造的番剧平台，这里不仅包含时下最热门的番剧内容，更有好玩有趣的二次元游戏、应用，供你与二次元的小伙伴交流互动！次元番，欢迎喜欢二次元的你！</string>
+    <string name="menu_subapp_about_detailed">专为二次元爱好者量身打造的番剧平台，这里不仅包含时下最热门的番剧内容，更有好玩有趣的二次元游戏、应用，供你与二次元的小伙伴交流互动！次元番，欢迎喜欢二次元的你！\n\n免责声明：本程序所有数据收集自互联网公共资源，程序本身及后台不存储任何音视频数据。如果有侵犯到您的权益，请联系开发者，开发者将在第一时间下架相关音视频</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
@@ -152,6 +176,17 @@
     <string name="pref_header_data_sync">Data &amp; sync</string>
 
     <string name="pref_title_sync_frequency">Sync frequency</string>
+
+    <string-array name="pref_def_player_titles">
+        <item>ijkplayer</item>
+        <item>系统播放器</item>
+        <item>TbsVideo</item>
+    </string-array>
+    <string-array name="pref_def_player_values">
+        <item>ijk</item>
+        <item>native</item>
+        <item>tbs</item>
+    </string-array>
     <string-array name="pref_sync_frequency_titles">
         <item>1任务</item>
         <item>2任务</item>
@@ -301,6 +336,13 @@
     <string name="kankanwu">看看屋</string>
     <string name="login_lenght_hit"><![CDATA[用户名>=4位，密码>=6位]]></string>
     <string name="video_hit">本次请求结束</string>
+    <string name="video_thit">【提醒】：部分视频的部分[播放源]可能无法播放，如果遇到这种问题可以切换[播放源]试试.如果切换播放源依然不能播放，可以切换[分区]观看</string>
     <string name="success_token">获取token成功</string>
     <string name="error_video_type">不支持的播放类型</string>
+    <string name="app_hit">喜欢观看漫画的小伙伴，可以支持一下我的另一个应用【爱搜云】哦。漫画,轻小说,美女图片,网盘搜索应有尽有...</string>
+    <string name="alipay_hit">是否跳转支付宝领取《线下(余额宝)支付红包》,即可以省钱，又是对开发者的支持！！！！</string>
+    <string name="video_src_hit">【提醒】：播放器默认使用ijkplayer，如碰到[声音不同步][没有声音]或者[播放失败]。可以点击右上角[┇]切换播放器,或者在系统设置里面设置默认播放器</string>
+    <string name="clear_ing">正在删除..</string>
+    <string name="item_tv">电视直播</string>
+    <string name="tv_live">电视直播</string>
 </resources>

@@ -76,6 +76,7 @@ public class GirlTabActivity extends BaseTabActivity implements SearchDialogFrag
         String wordString = word.getWord();
         String clazz = ((BaseFragmentAdapter) mViewPager.getAdapter()).getExtendInfo().toString();
         int multiple = ((BaseFragmentAdapter) mViewPager.getAdapter()).getMultiple();
-        SearchVideoActivity.startActivity(this,wordString, clazz,multiple);
+        int pageStart = ((BaseFragmentAdapter) mViewPager.getAdapter()).getPageStart();
+        SearchVideoActivity.startActivity(this,wordString, clazz,pageStart,multiple);
     }
 }

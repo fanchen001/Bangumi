@@ -5,12 +5,9 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.PagerAdapter;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +17,7 @@ import android.widget.RelativeLayout;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.adapter.ShortVideoAdapter;
 import com.fanchen.imovie.adapter.pager.ShortVideoPagerAdapter;
+import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.base.BaseRecyclerFragment;
 import com.fanchen.imovie.base.BaseTabActivity;
 import com.fanchen.imovie.entity.dytt.DyttShortVideo;
@@ -246,10 +244,10 @@ public class ShortVideoTabActivity extends BaseTabActivity implements ShortVideo
     /**
      * @return
      */
-    public LinearLayoutManager getFragmentLinearLayoutManager() {
+    public BaseAdapter.LinearLayoutManagerWrapper getFragmentLinearLayoutManager() {
         BaseRecyclerFragment visibleFragment = (BaseRecyclerFragment) getVisibleFragment();
         if (visibleFragment == null) return null;
-        return (LinearLayoutManager) visibleFragment.getLayoutManager();
+        return (BaseAdapter.LinearLayoutManagerWrapper) visibleFragment.getLayoutManager();
     }
 
 

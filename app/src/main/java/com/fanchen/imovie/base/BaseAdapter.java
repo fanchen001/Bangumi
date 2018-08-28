@@ -4,8 +4,10 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.entity.face.IViewType;
+import com.fanchen.imovie.util.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +31,7 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
     private boolean isLoad = true;
     private boolean isLoading = false;
     private OnLoadListener onLoadListener;
+    private int loadMinSize = 6;
     private Handler handler = new Handler(Looper.getMainLooper());
     private List<IViewType> mList = new ArrayList<>();
     private BaseAdapter.OnItemClickListener itemClickListener;
@@ -54,7 +58,6 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
     }
 
     /**
-     *
      * @return
      */
     public boolean hasCategoryView() {
@@ -97,44 +100,60 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemViewType(int position) {
-        if(hasHeaderView() && hasCategoryView()){
-            if(position == 0){
+        if (hasHeaderView() && hasCategoryView()) {
+            if (position == 0) {
                 return IViewType.TYPE_HEADER;
-            }else if(position == 1){
+            } else if (position == 1) {
                 return IViewType.TYPE_CATEGORY;
-            }else{
-                if(hasFooterView() && isLoad && position == getItemCount() - 1){
+            } else {
+                if (hasFooterView() && isLoad && position == getItemCount() - 1) {
                     return IViewType.TYPE_FOOTER;
                 }
-                return mList.get(position - 2).getViewType();
+                if(mList.size() > position - 2){
+                    return mList.get(position - 2).getViewType();
+                }else{
+                    return IViewType.TYPE_FOOTER;
+                }
             }
-        }else if (hasHeaderView()) { //有头布局
-            if(position == 0){
+        } else if (hasHeaderView()) { //有头布局
+            if (position == 0) {
                 return IViewType.TYPE_HEADER;
-            }else{
-                if(hasFooterView() && isLoad && position == getItemCount() - 1){
+            } else {
+                if (hasFooterView() && isLoad && position == getItemCount() - 1) {
                     return IViewType.TYPE_FOOTER;
                 }
-                return mList.get(position - 1).getViewType();
+                if(mList.size() > position - 1){
+                    return mList.get(position - 1).getViewType();
+                }else{
+                    return IViewType.TYPE_FOOTER;
+                }
             }
-        }else if (hasCategoryView()) { //有头布局
-            if(position == 0){
+        } else if (hasCategoryView()) { //有头布局
+            if (position == 0) {
                 return IViewType.TYPE_CATEGORY;
-            }else{
-                if(hasFooterView() && isLoad && position == getItemCount() - 1){
+            } else {
+                if (hasFooterView() && isLoad && position == getItemCount() - 1) {
                     return IViewType.TYPE_FOOTER;
                 }
-                return mList.get(position - 1).getViewType();
+                if(mList.size() > position - 1){
+                    return mList.get(position - 1).getViewType();
+                }else{
+                    return IViewType.TYPE_FOOTER;
+                }
             }
-        }else if(hasFooterView() && isLoad && position == getItemCount() - 1){
+        } else if (hasFooterView() && isLoad && position == getItemCount() - 1) {
             //尾部局
             return IViewType.TYPE_FOOTER;
-        }else{
+        } else {
             //没有带头布局
             if (mList == null || mList.size() <= position) {
                 return IViewType.TYPE_HEADER;
             }
-            return mList.get(position).getViewType();
+            if(mList.size() > position){
+                return mList.get(position).getViewType();
+            }else{
+                return IViewType.TYPE_FOOTER;
+            }
         }
     }
 
@@ -153,9 +172,9 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
             mList = new ArrayList<>();
         final int size = mList.size() == 0 ? 0 : mList.size() - 1;
         mList.add(viewType);
-        if(Thread.currentThread().getName().equals("main")){
+        if (Thread.currentThread().getName().equals("main")) {
             notifyItemRangeChanged(size, mList.size());
-        }else{
+        } else {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -169,16 +188,16 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
     /**
      * @param all
      */
-    public void addAll(List<? extends IViewType> all,boolean load) {
-        if(all == null)return;
+    public void addAll(List<? extends IViewType> all, boolean load) {
+        if (all == null) return;
         if (mList == null)
             mList = new ArrayList<>();
         final int size = mList.size() == 0 ? 0 : mList.size() - 1;
         mList.addAll(all);
-        if(load){
-            if(Thread.currentThread().getName().equals("main")){
+        if (load) {
+            if (Thread.currentThread().getName().equals("main")) {
                 notifyItemRangeChanged(size, mList.size());
-            }else{
+            } else {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -195,19 +214,18 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
     }
 
     /**
-     *
      * @return
      */
-    public boolean isEmpty(){
-        if(hasHeaderView() && hasFooterView() && getItemCount() <= 2){
+    public boolean isEmpty() {
+        if (hasHeaderView() && hasFooterView() && getItemCount() <= 2) {
             return true;
-        }else if(hasHeaderView() && hasCategoryView() && getItemCount() <= 2){
+        } else if (hasHeaderView() && hasCategoryView() && getItemCount() <= 2) {
             return true;
-        }else if(hasFooterView() && hasCategoryView() && getItemCount() <= 2){
+        } else if (hasFooterView() && hasCategoryView() && getItemCount() <= 2) {
             return true;
-        }else if((hasHeaderView() || hasFooterView() || hasCategoryView())  && getItemCount() <= 1){
-           return true;
-        }else if(getItemCount() == 0){
+        } else if ((hasHeaderView() || hasFooterView() || hasCategoryView()) && getItemCount() <= 1) {
+            return true;
+        } else if (getItemCount() == 0) {
             return true;
         }
         return false;
@@ -217,9 +235,9 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
         if (mList == null)
             return;
         mList.clear();
-        if(Thread.currentThread().getName().equals("main")){
+        if (Thread.currentThread().getName().equals("main")) {
             notifyDataSetChanged();
-        }else{
+        } else {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -230,13 +248,13 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
 
     }
 
-    public void remove(int position){
+    public void remove(int position) {
         if (mList == null)
             return;
         mList.remove(position);
-        if(Thread.currentThread().getName().equals("main")){
+        if (Thread.currentThread().getName().equals("main")) {
             notifyDataSetChanged();
-        }else{
+        } else {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -248,9 +266,9 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
 
     public void setLoad(boolean isLoad) {
         this.isLoad = isLoad;
-        if(Thread.currentThread().getName().equals("main")){
+        if (Thread.currentThread().getName().equals("main")) {
             notifyDataSetChanged();
-        }else{
+        } else {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -293,11 +311,11 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
         int itemViewType = getItemViewType(position);
         if (hasHeaderView() && hasCategoryView()) {
             position -= 2;
-        }else if(hasHeaderView() || hasCategoryView()){
+        } else if (hasHeaderView() || hasCategoryView()) {
             position -= 1;
         }
         final int itemViewPosition = position;
-        if(itemViewType != IViewType.TYPE_FOOTER && itemViewType != IViewType.TYPE_HEADER){
+        if (itemViewType != IViewType.TYPE_FOOTER && itemViewType != IViewType.TYPE_HEADER) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -315,15 +333,25 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
                     return false;
                 }
             });
-        }else if(itemViewType == IViewType.TYPE_FOOTER){
-            if(onLoadListener != null && isLoad && !isLoading && mList != null && mList.size() > 0){
+        } else if (itemViewType == IViewType.TYPE_FOOTER) {
+            if (onLoadListener != null && isLoad && !isLoading && mList != null && mList.size() >= loadMinSize) {
                 isLoading = true;
                 onLoadListener.onLoad();
+            } else if(onLoadListener != null && mList != null && mList.size() > 0){
+                isLoad = false;
+                holder.itemView.postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        notifyDataSetChanged();
+                    }
+
+                }, 2000);
             }
         }
-        if(itemViewType == IViewType.TYPE_FOOTER && (mList == null || mList.size() == 0)){
+        if (itemViewType == IViewType.TYPE_FOOTER && (mList == null || mList.size() == 0)) {
             holder.itemView.setVisibility(View.GONE);
-        }else if(itemViewType == IViewType.TYPE_FOOTER && mList != null && mList.size() > 0){
+        } else if (itemViewType == IViewType.TYPE_FOOTER && mList != null && mList.size() > 0) {
             holder.itemView.setVisibility(View.VISIBLE);
         }
         if (mList == null || mList.size() <= position) {
@@ -346,12 +374,11 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
         if (hasHeaderView() && hasCategoryView()) {
             return mList == null || mList.size() == 0 ? 0 : mList.size() + 2;
         }
-        if (hasHeaderView() || hasCategoryView()|| (hasFooterView() && isLoad)) {
+        if (hasHeaderView() || hasCategoryView() || (hasFooterView() && isLoad)) {
             return mList == null ? 1 : mList.size() + 1;
         }
         return mList == null ? 0 : mList.size();
     }
-
 
 
     @Override
@@ -374,6 +401,10 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
                 p.setFullSpan(holder.getLayoutPosition() == 0 || holder.getLayoutPosition() == getItemCount() - 1);
             }
         }
+    }
+
+    public void setLoadMinSize(int loadMinSize) {
+        this.loadMinSize = loadMinSize;
     }
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -405,7 +436,7 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public static class FooterViewHolder extends RecyclerView.ViewHolder{
+    public static class FooterViewHolder extends RecyclerView.ViewHolder {
 
         public FooterViewHolder(View itemView) {
             super(itemView);
@@ -427,17 +458,40 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
             int size = adapter.getItemViewType(position) == IViewType.TYPE_HEADER ||
                     adapter.getItemViewType(position) == IViewType.TYPE_TITLE ||
                     adapter.getItemViewType(position) == IViewType.TYPE_CATEGORY ||
-                    adapter.getItemViewType(position) == IViewType.TYPE_FOOTER? gridManager.getSpanCount() : 1;
+                    adapter.getItemViewType(position) == IViewType.TYPE_FOOTER ? gridManager.getSpanCount() : 1;
             return size;
+        }
+    }
+
+    public static class LinearLayoutManagerWrapper extends LinearLayoutManager {
+        public LinearLayoutManagerWrapper(Context context) {
+            super(context);
+        }
+
+        public LinearLayoutManagerWrapper(Context context, int orientation, boolean reverseLayout) {
+            super(context, orientation, reverseLayout);
+        }
+
+        public LinearLayoutManagerWrapper(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+            super(context, attrs, defStyleAttr, defStyleRes);
+        }
+
+        @Override
+        public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+            try {
+                super.onLayoutChildren(recycler, state);
+            } catch (IndexOutOfBoundsException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     /**
      * Override 这个方法
-     * */
-    public void addData(Object data){
-        if(data instanceof List){
-            addAll((List<IViewType>)data);
+     */
+    public void addData(Object data) {
+        if (data instanceof List) {
+            addAll((List<IViewType>) data);
         }
     }
 
@@ -458,7 +512,7 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
     /**
      *
      */
-    public interface OnLoadListener{
+    public interface OnLoadListener {
 
         void onLoad();
 

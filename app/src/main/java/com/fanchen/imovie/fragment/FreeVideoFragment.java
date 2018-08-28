@@ -19,16 +19,19 @@ import com.fanchen.imovie.adapter.FreeVideoAdapter;
 import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.base.BaseFragment;
 import com.fanchen.imovie.entity.VideoWeb;
+import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.StreamUtil;
+import com.fanchen.imovie.util.VideoUrlUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.squareup.picasso.Picasso;
+import com.tencent.smtt.sdk.TbsVideo;
 
 import java.util.List;
 
 import butterknife.InjectView;
 
 /**
+ * FreeVideoFragment
  * Created by fanchen on 2017/10/11.
  */
 public class FreeVideoFragment extends BaseFragment implements
@@ -46,6 +49,7 @@ public class FreeVideoFragment extends BaseFragment implements
     Spinner mSpinner;
 
     private FreeVideoAdapter mVideoAdapter;
+    private VideoUrlUtil mVideoUrlUtil;
 
     public static Fragment newInstance() {
         return new FreeVideoFragment();
@@ -67,6 +71,7 @@ public class FreeVideoFragment extends BaseFragment implements
     @Override
     protected void initFragment(@Nullable Bundle savedInstanceState, Bundle args) {
         super.initFragment(savedInstanceState, args);
+        mVideoUrlUtil = VideoUrlUtil.getInstance().init(activity);
         mWebRecyclerView.setLayoutManager(new GridLayoutManager(activity, 3));
         mVideoAdapter = new FreeVideoAdapter(activity, getPicasso());
         mWebRecyclerView.setAdapter(mVideoAdapter);
@@ -95,7 +100,14 @@ public class FreeVideoFragment extends BaseFragment implements
         if (!TextUtils.isEmpty(url) && (url.startsWith("http") || url.startsWith("https"))) {
             switch (v.getId()) {
                 case R.id.btn_search:
-                    WebPlayerActivity.startActivity(activity, url,mSpinner.getSelectedItemPosition());
+                    int position = mSpinner.getSelectedItemPosition();
+                    String[] luxians = WebPlayerActivity.LUXIANS;
+                    if (mVideoUrlUtil == null || luxians.length <= position) return;
+                    String videoUrl = String.format(luxians[position], url);
+                    DialogUtil.showProgressDialog(activity, "正在解析视频...");
+                    String referer = "http://movie.vr-seesee.com/vip";
+                    mVideoUrlUtil.setParserTime(5 * 1000).setOnParseListener(new FreeVideoListener(url));
+                    mVideoUrlUtil.setLoadUrl(videoUrl, referer).startParse();
                     break;
                 case R.id.iv_reback:
                     WebActivity.startActivity(activity, url);
@@ -105,4 +117,29 @@ public class FreeVideoFragment extends BaseFragment implements
             showSnackbar(getString(R.string.url_error_hit));
         }
     }
+
+    private class FreeVideoListener implements VideoUrlUtil.OnParseWebUrlListener {
+
+        private String url = "";
+
+        public FreeVideoListener(String url) {
+            this.url = url;
+        }
+
+        @Override
+        public void onFindUrl(String videoUrl) {
+            TbsVideo.openVideo(activity, videoUrl);
+            DialogUtil.closeProgressDialog();
+        }
+
+        @Override
+        public void onError(String errorMsg) {
+            int position = mSpinner.getSelectedItemPosition();
+            String referer = "http://movie.vr-seesee.com/vip";
+            WebPlayerActivity.startActivity(activity, url, referer, position);
+            DialogUtil.closeProgressDialog();
+        }
+
+    }
+
 }

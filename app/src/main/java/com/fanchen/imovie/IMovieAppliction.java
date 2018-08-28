@@ -16,6 +16,7 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.multidex.MultiDexApplication;
 import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 
 import com.arialyy.annotations.Download;
@@ -24,12 +25,12 @@ import com.arialyy.aria.core.download.DownloadEntity;
 import com.arialyy.aria.core.download.DownloadReceiver;
 import com.arialyy.aria.core.download.DownloadTask;
 import com.arialyy.aria.core.inf.IEntity;
+import com.fanchen.imovie.picasso.download.HttpsDownLoader;
 import com.fanchen.imovie.service.EmptyService;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
 import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.NetworkUtil;
-import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.tencent.smtt.sdk.QbSdk;
@@ -39,6 +40,7 @@ import com.umeng.socialize.UMShareAPI;
 import java.io.File;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,12 +49,14 @@ import cn.bmob.v3.Bmob;
 import cn.smssdk.SMSSDK;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
 
 /**
  * 整个应用上下文
  * Created by fanchen on 2017/9/15.
  */
 public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreInitCallback {
+    public static String KANKAN_COOKIE = "";
     private static final String NET_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
     private final static int TASK_UPDATE = 1;
     private final static int TASK_DELETE = 0;
@@ -74,7 +78,7 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
 
         @Override
         public void handleMessage(Message msg) {
-            if (runingListener == null) return;
+            if (runingListener == null || msg == null) return;
             OnTaskRuningListener onTaskRuningListener = runingListener.get();
             if (onTaskRuningListener == null) return;
             switch (msg.what) {
@@ -88,12 +92,6 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
         }
 
     };
-
-    static {
-        PlatformConfig.setWeixin("wx11d8a2cfc060c228", "20426f9814f9f05da2ae37d89616c577");
-        PlatformConfig.setSinaWeibo("3553472100", "bb22aa0b924586301609c10c7ad1afc3", "http://sns.whalecloud.com/sina2/callback");
-        PlatformConfig.setQQZone("1106461216", "hUIMorZnPWKdiOYG");
-    }
 
     @Override
     public void onCreate() {
@@ -110,11 +108,13 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
             initX5Sdk();
         }
     }
-
     public void initMainSdk() {
         UMShareAPI.init(this, "5978868307fe65109c0002fd");
         SMSSDK.initSDK(this, "216b8e0cd94ee", "81a4a9361ea6a111657619b8d613f8f8");
         Bmob.initialize(this, "0b1a20f9d304da48959020d40655ee3d");
+        PlatformConfig.setWeixin("wx11d8a2cfc060c228", "20426f9814f9f05da2ae37d89616c577");
+        PlatformConfig.setSinaWeibo("3553472100", "bb22aa0b924586301609c10c7ad1afc3", "http://sns.whalecloud.com/sina2/callback");
+        PlatformConfig.setQQZone("1106461216", "hUIMorZnPWKdiOYG");
         //网络改变
         isFristNetwork = true;
         registerReceiver(mNetworkReceiver, new IntentFilter(NET_ACTION));
@@ -136,6 +136,7 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
     @Override
     public void onTerminate() {
         super.onTerminate();
+        mHandler = null;
         if (AppUtil.isMainProcess(this)) {
             getDownloadReceiver().unRegister();
             unregisterReceiver(mNetworkReceiver);
@@ -146,7 +147,7 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
     public ComponentName startService(Intent service) {
         try {
             return super.startService(service);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -156,7 +157,7 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
     public void startActivity(Intent intent) {
         try {
             super.startActivity(intent);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -165,7 +166,7 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
     public void startActivity(Intent intent, Bundle options) {
         try {
             super.startActivity(intent, options);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -174,7 +175,7 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
     public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
         try {
             return super.registerReceiver(receiver, filter);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -184,7 +185,7 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
     public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission, Handler scheduler) {
         try {
             return super.registerReceiver(receiver, filter, broadcastPermission, scheduler);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -217,9 +218,14 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
                 if (picasso == null) {
                     File cacheDir = AppUtil.getExternalCacheDir(this);
                     if (!cacheDir.exists()) cacheDir.mkdirs();
+
+                    OkHttpClient client = new OkHttpClient.Builder().cache(new Cache(cacheDir, 64 * 1024 * 1024)).protocols(Collections.singletonList(Protocol.HTTP_1_1)).build();
+                    picasso = new Picasso.Builder(this).downloader(new HttpsDownLoader(client)).build();
+                    Picasso.setSingletonInstance(picasso);
+
                     //64Mb的缓存
-                    OkHttpClient client = new OkHttpClient.Builder().cache(new Cache(cacheDir, 64 * 1024 * 1024)).build();
-                    picasso = new Picasso.Builder(this).downloader(new OkHttp3Downloader(client)).build();
+//                    OkHttpClient client = new OkHttpClient.Builder().cache(new Cache(cacheDir, 64 * 1024 * 1024)).build();
+//                    picasso = new Picasso.Builder(this).downloader(new OkHttp3Downloader(client)).build();
                 }
             }
         }
@@ -363,27 +369,32 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
 
     @Download.onTaskStop
     public void onTaskStop(DownloadTask task) {
-        mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
+        if (mHandler != null)
+            mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
     }
 
     @Download.onTaskRunning
     public void onTaskRunning(DownloadTask task) {
-        mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
+        if (mHandler != null)
+            mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
     }
 
     @Download.onTaskFail
     public void onTaskFail(DownloadTask task) {
-        mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
+        if (mHandler != null)
+            mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
     }
 
     @Download.onTaskComplete
     public void onTaskComplete(DownloadTask task) {
-        mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
+        if (mHandler != null)
+            mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
     }
 
     @Download.onTaskCancel
     public void onTaskCancel(DownloadTask task) {
-        mHandler.obtainMessage(TASK_DELETE, task).sendToTarget();
+        if (mHandler != null)
+            mHandler.obtainMessage(TASK_DELETE, task).sendToTarget();
     }
 
     /**
@@ -416,7 +427,7 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
 
         @Override
         public List<DownloadEntity> onTaskBackground() {
-            if(getDownloadReceiver() == null)return null;
+            if (getDownloadReceiver() == null) return null;
             if (isWifiConnected) {
                 getDownloadReceiver().resumeAllTask();
                 List<DownloadEntity> list = new ArrayList<>();
@@ -438,7 +449,7 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
                 for (DownloadEntity entity : data) {
                     if (!TextUtils.isEmpty(entity.getUrl()) && !TextUtils.isEmpty(entity.getDownloadPath())) {
                         String url = entity.getUrl();
-                        if(url.startsWith("http") || url.startsWith("ftp")){
+                        if (url.startsWith("http") || url.startsWith("ftp")) {
                             getDownloadReceiver().load(entity).start();
                         }
                     }

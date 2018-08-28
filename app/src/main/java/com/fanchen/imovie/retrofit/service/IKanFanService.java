@@ -31,7 +31,7 @@ public interface IKanFanService {
     @GET("{path}/index{page}.html")
     @JsoupType(JsoupSource.IKANFAN)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path,@Path("page")Integer page);
 
     /**
@@ -43,7 +43,7 @@ public interface IKanFanService {
     @GET("search/{keyword}-{page}.html")
     @JsoupType(JsoupSource.IKANFAN)
     @MethodType(value = MethodSource.SEARCH)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("keyword") String keyword);
 
     /**
@@ -53,7 +53,7 @@ public interface IKanFanService {
     @GET("ac/{path}/")
     @JsoupType(JsoupSource.IKANFAN)
     @MethodType(value = MethodSource.DETAILS)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IVideoDetails> details(@Path("path") String path);
 
     /**
@@ -63,6 +63,6 @@ public interface IKanFanService {
     @GET
     @JsoupType(JsoupSource.IKANFAN)
     @MethodType(value = MethodSource.PLAYURL)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IPlayUrls> playUrl(@Url String path);
 }

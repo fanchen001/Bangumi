@@ -162,6 +162,11 @@ public class Node {
         return first != null ? new Node(first) : new Node("");
     }
 
+    public String html() {
+        if (element == null) return "";
+        return element.html();
+    }
+
     public String html(String cssQuery) {
         if (element == null) return "";
         Elements select = element.select(cssQuery);

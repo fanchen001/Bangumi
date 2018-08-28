@@ -29,8 +29,14 @@ public interface HaliHaliService {
     @GET("{path}/index{page}.html")
     @JsoupType(JsoupSource.HALIHALI)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path,@Path("page")Integer page);
+
+    @GET("{path}")
+    @JsoupType(JsoupSource.HALIHALI)
+    @MethodType(value = MethodSource.HOME)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    Call<IHomeRoot> home(@Path("path") String path);
 
     /**
      *
@@ -41,8 +47,20 @@ public interface HaliHaliService {
     @GET("search/{keyword}-{page}.html")
     @JsoupType(JsoupSource.HALIHALI)
     @MethodType(value = MethodSource.SEARCH)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("keyword") String keyword);
+
+    /**
+     *
+     * @param pid
+     * @param page
+     * @return
+     */
+    @GET("{path}/index{page}.html")
+    @JsoupType(JsoupSource.HALIHALI)
+    @MethodType(value = MethodSource.MORE)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    Call<IBangumiMoreRoot> more(@Path("path") String pid, @Path("page") Integer page);
 
     /**
      * @param path
@@ -51,7 +69,7 @@ public interface HaliHaliService {
     @GET("v/{path}/")
     @JsoupType(JsoupSource.HALIHALI)
     @MethodType(value = MethodSource.DETAILS)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IVideoDetails> details(@Path("path") String path);
 
     /**
@@ -61,6 +79,6 @@ public interface HaliHaliService {
     @GET
     @JsoupType(JsoupSource.HALIHALI)
     @MethodType(value = MethodSource.PLAYURL)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IPlayUrls> playUrl(@Url String path);
 }

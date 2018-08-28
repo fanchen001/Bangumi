@@ -51,4 +51,8 @@ public abstract class BaseFragmentAdapter extends FragmentStatePagerAdapter {
     public int getMultiple(){
         return 1;
     }
+
+    public int getPageStart(){
+        return 1;
+    }
 }

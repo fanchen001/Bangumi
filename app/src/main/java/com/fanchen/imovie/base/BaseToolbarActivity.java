@@ -33,12 +33,14 @@ public abstract class BaseToolbarActivity extends BaseActivity {
     @Override
     protected void setListener() {
         super.setListener();
+        if(checkToolbarViewNull())return;
         mBackView.setOnClickListener(finishClickListener);
     }
 
     @Override
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
+        if(checkToolbarViewNull())return;
         setSupportActionBar(mToolbar);
         mTitleView.setText(getActivityTitle());
     }
@@ -65,5 +67,7 @@ public abstract class BaseToolbarActivity extends BaseActivity {
 
     };
 
-
+    public boolean checkToolbarViewNull(){
+        return mBackView == null || mTitleView == null || mToolbar == null;
+    }
 }

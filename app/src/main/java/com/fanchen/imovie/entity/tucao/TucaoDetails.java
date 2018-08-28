@@ -9,12 +9,16 @@ import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.entity.bmob.VideoCollect;
 
+import java.lang.ref.SoftReference;
 import java.util.List;
 
 /**
+ * TucaoDetails
  * Created by fanchen on 2017/9/28.
  */
 public class TucaoDetails extends TucaoVideo implements IVideoDetails{
+
+    private static SoftReference<List<TucaoEpisode>> softEpisodes;
 
     private boolean success;
     private String message;
@@ -29,7 +33,13 @@ public class TucaoDetails extends TucaoVideo implements IVideoDetails{
         success = in.readByte() != 0;
         message = in.readString();
         introduce = in.readString();
-        episodes = in.createTypedArrayList(TucaoEpisode.CREATOR);
+        if(softEpisodes != null){
+            final List<?> videoEpisodes = softEpisodes.get();
+            if(videoEpisodes != null && videoEpisodes.size() > 0 && videoEpisodes.get(0) instanceof  TucaoEpisode){
+                episodes = (List<TucaoEpisode>) videoEpisodes;
+            }
+            softEpisodes = null;
+        }
     }
 
     @Override
@@ -38,7 +48,7 @@ public class TucaoDetails extends TucaoVideo implements IVideoDetails{
         dest.writeByte((byte) (success ? 1 : 0));
         dest.writeString(message);
         dest.writeString(introduce);
-        dest.writeTypedList(episodes);
+        softEpisodes = new SoftReference<>(episodes);
     }
 
     @Override
@@ -114,4 +124,5 @@ public class TucaoDetails extends TucaoVideo implements IVideoDetails{
     public void setEpisodes(List<TucaoEpisode> episodes) {
         this.episodes = episodes;
     }
+
 }

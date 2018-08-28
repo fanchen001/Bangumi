@@ -2,7 +2,6 @@ package com.fanchen.imovie.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -39,7 +38,7 @@ public class AcgCuteFragment extends BaseRecyclerFragment {
 
     @Override
     public RecyclerView.LayoutManager getLayoutManager() {
-        return new LinearLayoutManager(activity);
+        return new BaseAdapter.LinearLayoutManagerWrapper(activity);
     }
 
     @Override

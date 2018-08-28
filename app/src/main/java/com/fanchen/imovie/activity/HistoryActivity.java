@@ -2,15 +2,11 @@ package com.fanchen.imovie.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.adapter.HistoryAdapter;
@@ -57,7 +53,7 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
 
     @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
-        return new LinearLayoutManager(this);
+        return new BaseAdapter.LinearLayoutManagerWrapper(this);
     }
 
     @Override

@@ -9,7 +9,6 @@ import android.os.Environment;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -147,7 +146,7 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
         setSupportActionBar(mToolbar);
         apkItem = getIntent().getParcelableExtra(APK_ITEM);
         mApkScreenAdapter = new ApkScreenAdapter(this, picasso = getPicasso());
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        mRecyclerView.setLayoutManager(new BaseAdapter.LinearLayoutManagerWrapper(this, BaseAdapter.LinearLayoutManagerWrapper.HORIZONTAL, false));
         mRecyclerView.setAdapter(mApkScreenAdapter);
         mSuperPlayerView.setNetChangeListener(true);
         mSuperPlayerView.setShowTopControl(false);
@@ -285,7 +284,7 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
                 break;
             case R.id.fab_apk_download:
                 if (mApkDetails == null) return;
-                String format = String.format("https://api.moeapk.com/client/app/downloadApk?package=%s", mApkDetails.getPackagename());
+                String format = String.format("https://api.apk.moe/client/app/downloadApk?package=%s", mApkDetails.getPackagename());
                 if (!TextUtils.isEmpty(format)) {
                     if (getDownloadReceiver().taskExists(format)) {
                         showSnackbar(getString(R.string.task_exists));

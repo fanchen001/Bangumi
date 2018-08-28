@@ -19,6 +19,11 @@ public enum RetrofitSource {
     XIAOMA_API,
 
     /**
+     *
+     */
+    BILIBILI_API,
+
+    /**
      * 应用游戏
      * 使用萌萌安卓的api
      */
@@ -129,5 +134,78 @@ public enum RetrofitSource {
      * 秘密影院
      * http://m.mimiyy.com/
      */
-    MMYY_API
+    MMYY_API,
+
+    /**
+     * 神马电影
+     * http://m.smdy.cc/
+     */
+    SMDY_API,
+
+    /**
+     * 爱神马
+     * http://m.aism.cc/
+     */
+    AISM_API,
+
+    /**
+     * 豌豆视频
+     * http://www.wandouys.com/
+     */
+    WANDOU_API,
+
+    /**
+     * 战地视频
+     * http://m.zhandi.cc/
+     */
+    ZHANDI_API,
+
+    /**
+     * 山猫视频
+     * https://www.bobmao.com/
+     */
+    BOBMAO_API,
+
+    /**
+     * 西瓜视频
+     * https://m.xigua110.com/
+     */
+    XIGUA_API,
+
+    /**
+     *http://m.kupian.cc
+     * 库片网
+     */
+    KUPIAN_API,
+
+    /**
+     * https://www.taijula.com
+     * 泰韩剧啦
+     */
+    TAIHAN_API,
+
+    /**
+     * http://m.itepian.me
+     * 特片啦
+     */
+    TEPIAN_API,
+
+    /**
+     * http://video.jfenxiang.com
+     * 聚狗影院
+     */
+    JUGOU_API,
+
+    /**
+     * http://www.laosijidy.com/
+     * 老司机电影
+     */
+    LAOSIJI_API,
+    /**
+     * http://www.zzzvz.cn/
+     * zzzvz电影
+     */
+    ZZZVZ_API,
+
+    HLYY_API
 }

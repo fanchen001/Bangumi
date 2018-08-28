@@ -38,7 +38,7 @@ public @interface RetrofitType {
      * 响应是否需要jsoup解析
      * @return
      */
-    boolean isJsoupResponse() default false;
+    JsoupSource isJsoupResponse() default JsoupSource.TYPE_VIDEO;
 
     /**
      * 响应是否需要百度解析

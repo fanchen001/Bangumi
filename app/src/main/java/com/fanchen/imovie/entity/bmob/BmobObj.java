@@ -1,13 +1,10 @@
 package com.fanchen.imovie.entity.bmob;
 
-import android.content.Context;
-
 import com.fanchen.imovie.IMovieAppliction;
 
 import java.lang.ref.SoftReference;
 
 import cn.bmob.v3.BmobObject;
-import cn.bmob.v3.listener.FindCallback;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
 
@@ -56,37 +53,43 @@ public class BmobObj extends BmobObject{
     public void update(final OnUpdateListener listener) {
         if(listener == null || IMovieAppliction.app == null)return;
         listener.onStart();
-        super.update(IMovieAppliction.app, new UpdateListener() {
-            @Override
-            public void onSuccess() {
-                listener.onSuccess();
-                listener.onFinish();
-            }
-
-            @Override
-            public void onFailure(int i, String s) {
-                listener.onFailure(i,s);
-                listener.onFinish();
-            }
-        });
+        try {
+            super.update(IMovieAppliction.app,new InnerUpdateListener(listener));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void update(String objectId,final OnUpdateListener listener) {
         if(listener == null || IMovieAppliction.app == null)return;
         listener.onStart();
-        super.update(IMovieAppliction.app, objectId, new UpdateListener() {
-            @Override
-            public void onSuccess() {
-                listener.onSuccess();
-                listener.onFinish();
-            }
+        try {
+            super.update(IMovieAppliction.app, objectId,new InnerUpdateListener(listener));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
-            @Override
-            public void onFailure(int i, String s) {
-                listener.onFailure(i, s);
-                listener.onFinish();
-            }
-        });
+    private class InnerUpdateListener extends UpdateListener {
+
+        private OnUpdateListener listener;
+
+        public InnerUpdateListener(OnUpdateListener listener){
+            this.listener = listener;
+        }
+
+        @Override
+        public void onSuccess() {
+            listener.onSuccess();
+            listener.onFinish();
+        }
+
+        @Override
+        public void onFailure(int i, String s) {
+            listener.onFailure(i,s);
+            listener.onFinish();
+        }
+
     }
 
     public abstract static class OnRefreshListener extends SaveListener{

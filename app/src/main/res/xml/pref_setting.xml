@@ -38,6 +38,16 @@
         android:title="功能相关">
 
         <ListPreference
+            android:defaultValue="ijkplayer"
+            android:entries="@array/pref_def_player_titles"
+            android:entryValues="@array/pref_def_player_values"
+            android:key="defPlayer"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:textColor="@color/black"
+            android:title="默认播放器" />
+
+        <ListPreference
             android:defaultValue="3"
             android:entries="@array/pref_sync_frequency_titles"
             android:entryValues="@array/pref_sync_frequency_values"

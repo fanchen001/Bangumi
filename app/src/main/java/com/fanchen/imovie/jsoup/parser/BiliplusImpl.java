@@ -1,13 +1,14 @@
 package com.fanchen.imovie.jsoup.parser;
 
-import com.fanchen.imovie.entity.biliplus.BiliplusDetails;
-import com.fanchen.imovie.entity.biliplus.BiliplusEpisode;
-import com.fanchen.imovie.entity.biliplus.BiliplusPlayUrl;
+import com.fanchen.imovie.entity.VideoDetails;
+import com.fanchen.imovie.entity.VideoEpisode;
+import com.fanchen.imovie.entity.VideoPlayUrls;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.jsoup.IVideoParser;
+import com.fanchen.imovie.retrofit.service.BiliplusService;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -24,8 +25,8 @@ import retrofit2.Retrofit;
  * Created by fanchen on 2017/10/12.
  */
 public class BiliplusImpl implements IVideoParser {
-    private static final String VIDEOURL = "https://www.biliplus.com/video/av%s";
-    private static final String IFRAMEURL = "https://www.biliplus.com/api/h5play.php?iframe&name=&cid=%s&type=%s&vid=%s&bangumi=0";
+    private static final String VIDEOURL = "https://www.Video.com/video/av%s";
+    private static final String IFRAMEURL = "https://www.Video.com/api/h5play.php?iframe&name=&cid=%s&type=%s&vid=%s&bangumi=0";
 
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit,String baseUrl,String html) {
@@ -39,9 +40,10 @@ public class BiliplusImpl implements IVideoParser {
 
     @Override
     public IVideoDetails details(Retrofit retrofit,String baseUrl,String html) {
-        BiliplusDetails details = new BiliplusDetails();
+        VideoDetails details = new VideoDetails();
         try{
             JSONObject jsonObject = new JSONObject(html);
+            details.setServiceClass(BiliplusService.class.getName());
             details.setId(jsonObject.has("id") ? jsonObject.getString("id") : "");
             details.setTitle(jsonObject.has("title") ? jsonObject.getString("title") : "");
             details.setCover(jsonObject.has("pic") ? jsonObject.getString("pic") : "");
@@ -51,11 +53,13 @@ public class BiliplusImpl implements IVideoParser {
             details.setExtras(jsonObject.has("author") ? jsonObject.getString("author") : "");
             details.setUrl(String.format(VIDEOURL,details.getId()));//list
             if(jsonObject.has("list")){
-                List<BiliplusEpisode> episodes = new ArrayList<>();
+                List<VideoEpisode> episodes = new ArrayList<>();
                 JSONArray list = jsonObject.getJSONArray("list");
                 for (int i = 0; i < list.length() ; i ++){
                     JSONObject object = list.getJSONObject(i);
-                    BiliplusEpisode episode = new BiliplusEpisode();
+                    VideoEpisode episode = new VideoEpisode();
+                    episode.setPlayType(VideoEpisode.PLAY_TYPE_NOT);
+                    episode.setServiceClass(BiliplusService.class.getName());
                     episode.setId(object.has("cid") ? object.getString("cid") : "");
                     episode.setTitle(object.has("part") ? object.getString("part") :"第" + (i + 1) + "段");
                     episode.setExtend(object.has("vid") ? object.getString("vid") : "");
@@ -76,7 +80,7 @@ public class BiliplusImpl implements IVideoParser {
 
     @Override
     public IPlayUrls playUrl(Retrofit retrofit,String baseUrl,String html) {
-        BiliplusPlayUrl playUrl = new BiliplusPlayUrl();
+        VideoPlayUrls playUrl = new VideoPlayUrls();
         try {
             JSONObject object = new JSONObject(html);
             Map<String,String> map = new HashMap<>();

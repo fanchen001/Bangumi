@@ -6,12 +6,13 @@ import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoDetails;
-import com.fanchen.imovie.entity.s80.S80Details;
-import com.fanchen.imovie.entity.s80.S80Episode;
-import com.fanchen.imovie.entity.s80.S80Home;
-import com.fanchen.imovie.entity.s80.S80Video;
+import com.fanchen.imovie.entity.Video;
+import com.fanchen.imovie.entity.VideoDetails;
+import com.fanchen.imovie.entity.VideoEpisode;
+import com.fanchen.imovie.entity.VideoHome;
 import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.jsoup.IVideoParser;
+import com.fanchen.imovie.retrofit.service.S80Service;
 import com.fanchen.imovie.util.LogUtil;
 
 import java.util.ArrayList;
@@ -27,11 +28,15 @@ public class S80Impl implements IVideoParser {
     @Override
     public IHomeRoot home(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
-        S80Home root = new S80Home();
+        VideoHome root = new VideoHome();
         try {
-            List<S80Video> videos = new ArrayList<>();
+            List<Video> videos = new ArrayList<>();
             for (Node n : node.list("div.col-xs-4.col-md-2.list_mov")){
-                String cover = "http:" + n.attr("a > img", "data-original");
+                String attr = n.attr("a > img", "data-original");
+                if(TextUtils.isEmpty(attr)){
+                    attr = n.attr("a > img", "src");
+                }
+                String cover = "http:" + attr;
                 String title = n.text("div.list_mov_title > h4");
                 String tip = n.text("div.list_mov_title > em");
                 String score = n.text("a > span.poster-score");
@@ -41,16 +46,18 @@ public class S80Impl implements IVideoParser {
                     String[] split = url.split("/");
                     id = split[split.length - 1];
                 }
-                S80Video video = new S80Video();
+                Video video = new Video();
+                video.setHasDetails(true);
+                video.setServiceClass(S80Service.class.getName());
                 video.setTitle(title);
                 video.setCover(cover);
                 video.setExtras(tip);
-                video.setGrade(score);
+                video.setDanmaku(score);
                 video.setUrl(url);
                 video.setId(id);
                 videos.add(video);
             }
-            root.setResult(videos);
+            root.setList(videos);
             root.setSuccess(true);
         }catch (Exception e){
             e.printStackTrace();
@@ -62,17 +69,18 @@ public class S80Impl implements IVideoParser {
     @Override
     public IVideoDetails details(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
-        S80Details details = new S80Details();
+        VideoDetails details = new VideoDetails();
         try {
-            List<S80Episode> episodes = new ArrayList<>();
-            List<S80Video> videos = new ArrayList<>();
+            List<VideoEpisode> episodes = new ArrayList<>();
+            List<Video> videos = new ArrayList<>();
             for (Node n : node.list("tr > td > a")){
                 String href = n.attr("href");
-                String title = n.text();
-                if(!href.startsWith("thunder://") || "迅雷下载".equals(title.trim()) || "迅雷".equals(title.trim())){
+                if(!href.startsWith("thunder://")){
                     continue;
                 }
-                S80Episode episode = new S80Episode();
+                VideoEpisode episode = new VideoEpisode();
+                episode.setServiceClass(S80Service.class.getName());
+                episode.setPlayType(VideoEpisode.PLAY_TYPE_XUNLEI);
                 episode.setTitle(n.text());
                 episode.setUrl(href);
                 episode.setId(n.attr("href", "/", 2));
@@ -88,17 +96,20 @@ public class S80Impl implements IVideoParser {
                     String[] split = url.split("/");
                     id = split[split.length - 1];
                 }
-                S80Video video = new S80Video();
+                Video video = new Video();
+                video.setHasDetails(true);
+                video.setServiceClass(S80Service.class.getName());
                 video.setTitle(title);
                 video.setExtras(tip);
-                video.setGrade(score);
+                video.setDanmaku(score);
                 video.setUrl(url);
                 video.setId(id);
                 videos.add(video);
             }
+            details.setServiceClass(S80Service.class.getName());
             details.setCover("http:"+ node.attr("img.img-responsive.col-xs-6","src"));
             details.setEpisodes(episodes);
-            details.setRecoms(videos);
+            details.setRecomm(videos);
             details.setIntroduce(node.text("div#movie_description"));
             details.setSuccess(true);
         }catch (Exception e){
@@ -115,10 +126,10 @@ public class S80Impl implements IVideoParser {
 
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit,String baseUrl,String html) {
-        S80Home root = new S80Home();
+        VideoHome root = new VideoHome();
         Node node = new Node(html);
         try{
-            List<S80Video> videos = new ArrayList<>();
+            List<Video> videos = new ArrayList<>();
             for (Node n : node.list("a.list-group-item")){
                 String title = n.text("h4");
                 String tip = n.text("em");
@@ -129,15 +140,17 @@ public class S80Impl implements IVideoParser {
                     String[] split = url.split("/");
                     id = split[split.length - 1];
                 }
-                S80Video video = new S80Video();
+                Video video = new Video();
+                video.setHasDetails(true);
+                video.setServiceClass(S80Service.class.getName());
                 video.setTitle(title);
                 video.setExtras(tip);
-                video.setGrade(score);
+                video.setDanmaku(score);
                 video.setUrl(url);
                 video.setId(id);
                 videos.add(video);
             }
-            root.setResult(videos);
+            root.setList(videos);
             root.setSuccess(true);
         }catch (Exception e){
             root.setSuccess(false);

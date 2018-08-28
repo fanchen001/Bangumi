@@ -81,8 +81,8 @@ public class HomePagerFragment extends BaseFragment implements Toolbar.OnMenuIte
         if(savedInstanceState != null){
             mViewPager.setCurrentItem(savedInstanceState.getInt(CURRENT_ITEM));
         }else{
-            //默认选中番剧页
-            mViewPager.setCurrentItem(1);
+            //默认选中影视页
+            mViewPager.setCurrentItem(2);
         }
     }
 

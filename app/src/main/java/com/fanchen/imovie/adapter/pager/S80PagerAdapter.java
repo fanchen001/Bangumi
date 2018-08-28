@@ -12,8 +12,8 @@ import com.fanchen.imovie.retrofit.service.S80Service;
  */
 public class S80PagerAdapter extends BaseFragmentAdapter{
 
-    private final String[] TITLES = new String[]{"电影", "电视剧", "综艺", "公开课", "动漫", "音乐","短片"};
-    private final String[] PATHS = new String[]{"1", "2", "4", "7","14","5","6"};
+    private final String[] TITLES = new String[]{"电影", "电视剧",  "动漫", "音乐","短片"};
+    private final String[] PATHS = new String[]{"1", "2","14","5","6"};
 
     public S80PagerAdapter(FragmentManager fm) {
         super(fm);

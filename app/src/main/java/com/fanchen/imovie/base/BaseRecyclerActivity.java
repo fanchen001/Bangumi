@@ -29,7 +29,7 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
     @InjectView(R.id.swipe_refresh_layout)
     protected SwipeRefreshLayout mSwipeRefreshLayout;
     @InjectView(R.id.cev_empty)
-    protected  CustomEmptyView mCustomEmptyView;
+    protected CustomEmptyView mCustomEmptyView;
 
     private int page = 1;
     private int pageStart = 1;
@@ -45,20 +45,30 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
         super.initActivity(savedState, inflater);
         TypedValue typedValue = new TypedValue();
         getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
-        mSwipeRefreshLayout.setColorSchemeColors(typedValue.data);
-        mRecyclerView.setLayoutManager(getLayoutManager());
-        mRecyclerView.setAdapter(mAdapter = getAdapter(getPicasso()));
+        if (!checkFieldNull()) {
+            mSwipeRefreshLayout.setColorSchemeColors(typedValue.data);
+            mRecyclerView.setLayoutManager(getLayoutManager());
+            mRecyclerView.setAdapter(mAdapter = getAdapter(getPicasso()));
+        }
         loadData(getRetrofitManager(), page = pageStart);
     }
 
     @Override
     protected void setListener() {
         super.setListener();
-        mSwipeRefreshLayout.setOnRefreshListener(this);
-        mCustomEmptyView.setOnClickListener(this);
-        mRecyclerView.addOnScrollListener(scrollListener);
-        mAdapter.setOnItemClickListener(this);
-        if (hasLoad()) mAdapter.setOnLoadListener(this);
+        if (!checkFieldNull()) {
+            mSwipeRefreshLayout.setOnRefreshListener(this);
+            mCustomEmptyView.setOnClickListener(this);
+            mRecyclerView.addOnScrollListener(scrollListener);
+        }
+        if (mAdapter != null) {
+            mAdapter.setOnItemClickListener(this);
+            if (hasLoad()) mAdapter.setOnLoadListener(this);
+        }
+    }
+
+    public boolean checkFieldNull() {
+        return mSwipeRefreshLayout == null || mCustomEmptyView == null || mRecyclerView == null;
     }
 
     @Override
@@ -75,12 +85,12 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
 
     @Override
     public void onRefresh() {
-        loadData(getRetrofitManager(),page = pageStart);
+        loadData(getRetrofitManager(), page = pageStart);
     }
 
     @Override
     public void onLoad() {
-        loadData(getRetrofitManager(),++page);
+        loadData(getRetrofitManager(), ++page);
     }
 
     public int getPage() {
@@ -122,7 +132,7 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
     /**
      * @param page
      */
-    protected abstract void loadData(RetrofitManager retrofit,int page);
+    protected abstract void loadData(RetrofitManager retrofit, int page);
 
     /**
      *
@@ -133,7 +143,7 @@ public abstract class BaseRecyclerActivity extends BaseToolbarActivity implement
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
             Picasso picasso = getPicasso();
-            if(picasso != null){
+            if (picasso != null) {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     picasso.resumeTag(BaseRecyclerActivity.class);
                 } else {

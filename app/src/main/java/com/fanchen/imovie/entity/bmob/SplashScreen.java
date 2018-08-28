@@ -11,6 +11,7 @@ public class SplashScreen extends BmobObject {
     private long endTime = System.currentTimeMillis();
     private int version = 0;
     private String screenImage = "";
+    private String kankanCookie = "";
 
     public long getStartTime() {
         return startTime;
@@ -42,5 +43,13 @@ public class SplashScreen extends BmobObject {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public String getKankanCookie() {
+        return kankanCookie;
+    }
+
+    public void setKankanCookie(String kankanCookie) {
+        this.kankanCookie = kankanCookie;
     }
 }

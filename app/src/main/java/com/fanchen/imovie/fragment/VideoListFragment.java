@@ -1,7 +1,6 @@
 package com.fanchen.imovie.fragment;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -9,17 +8,15 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.arialyy.aria.core.Aria;
-import com.arialyy.aria.core.download.DownloadEntity;
 import com.fanchen.imovie.R;
+import com.fanchen.imovie.activity.LivePlayerActivity;
 import com.fanchen.imovie.activity.VideoDetailsActivity;
 import com.fanchen.imovie.activity.VideoPlayerActivity;
-import com.fanchen.imovie.adapter.HomeIndexAdapter;
 import com.fanchen.imovie.adapter.VideoIndexAdapter;
 import com.fanchen.imovie.adapter.VideoListAdapter;
 import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.base.BaseRecyclerFragment;
-import com.fanchen.imovie.entity.face.IBangumiRoot;
+import com.fanchen.imovie.entity.Video;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideo;
@@ -32,14 +29,16 @@ import com.fanchen.imovie.retrofit.callback.RetrofitCallback;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.DialogUtil;
-import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.view.pager.LoopViewPager;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
+ * VideoListFragment
  * Created by fanchen on 2017/9/23.
  */
 public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapter.OnItemLongClickListener {
@@ -214,10 +213,14 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
     public void onItemClick(List<?> datas, View v, int position) {
         if (!(datas.get(position) instanceof IVideo)) return;
         IVideo video = (IVideo) datas.get(position);
-        if (video.hasVideoDetails()) {
-            VideoDetailsActivity.startActivity(activity, video);
+        if (isLive) {//直播
+            LivePlayerActivity.startActivity(activity, video);
         } else {
-            VideoPlayerActivity.startActivity(activity, video, isLive);
+            if (video.hasVideoDetails()) {//有视频详情页
+                VideoDetailsActivity.startActivity(activity, video);
+            } else {//没有视频详情页，直接跳转播放
+                VideoPlayerActivity.startActivity(activity, video);
+            }
         }
     }
 
@@ -331,7 +334,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
                     if (!TextUtils.isEmpty(value) && !TextUtils.isEmpty(videoPath)) {
                         if ((value.startsWith("http") || value.startsWith("ftp")) && !getDownloadReceiver().load(value).taskExists()) {
                             getDownloadReceiver().load(value).setDownloadPath(new File(videoPath, "video_" + System.currentTimeMillis() + ".mp4").getAbsolutePath()).start();
-                        }else {
+                        } else {
                             showSnackbar(getString(R.string.task_exists));
                         }
                     } else {

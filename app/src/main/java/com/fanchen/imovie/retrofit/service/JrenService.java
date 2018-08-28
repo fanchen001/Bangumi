@@ -23,7 +23,6 @@ import retrofit2.http.Query;
  */
 @RetrofitType(RetrofitSource.JREN_API)
 public interface JrenService {
-
     /**
      * @param path
      * @param page
@@ -31,7 +30,7 @@ public interface JrenService {
      */
     @GET("archives/category/dm/{path}/page/{page}")
     @JsoupType(JsoupSource.JREN)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.HOME)
     Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
 
@@ -42,7 +41,7 @@ public interface JrenService {
      */
     @POST("wp-admin/admin-ajax.php?_nonce=5dff0382bf&action=fb3c8529e9820fef2769456c19d04292")
     @JsoupType(JsoupSource.JREN)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.SEARCH)
     @Headers({"Connection: keep-alive",
             "Accept: */*",
@@ -57,7 +56,7 @@ public interface JrenService {
      * @return
      */
     @GET("archives/{id}")
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @JsoupType(JsoupSource.JREN)
     @MethodType(value = MethodSource.DETAILS)
     @Headers({"Connection: keep-alive",

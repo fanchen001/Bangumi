@@ -1,13 +1,14 @@
 package com.fanchen.imovie.retrofit;
 
+import com.fanchen.imovie.annotation.JsoupSource;
 import com.fanchen.imovie.annotation.JsoupType;
 import com.fanchen.imovie.annotation.MethodType;
-import com.fanchen.imovie.annotation.RetrofitSource;
 import com.fanchen.imovie.annotation.RetrofitType;
 import com.fanchen.imovie.retrofit.coverter.BaiduResponseConverter;
 import com.fanchen.imovie.retrofit.coverter.GsonRequestConverter;
 import com.fanchen.imovie.retrofit.coverter.GsonResponseConverter;
-import com.fanchen.imovie.retrofit.coverter.JsoupResponseCoverter;
+import com.fanchen.imovie.retrofit.coverter.JsoupLiveResponseCoverter;
+import com.fanchen.imovie.retrofit.coverter.JsoupVideoResponseCoverter;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
@@ -21,7 +22,7 @@ import retrofit2.Converter;
 import retrofit2.Retrofit;
 
 /**
- *
+ * IMovieFactory
  * Created by fanchen on 2017/7/15.
  */
 public class IMovieFactory extends Converter.Factory {
@@ -35,10 +36,10 @@ public class IMovieFactory extends Converter.Factory {
 
     @Override
     public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
-        return fromResponseBody(type, annotations,retrofit);
+        return fromResponseBody(type, annotations, retrofit);
     }
 
-    public Converter<ResponseBody, ?> fromResponseBody(Type type, Annotation[] annotations,Retrofit retrofit) {
+    public Converter<ResponseBody, ?> fromResponseBody(Type type, Annotation[] annotations, Retrofit retrofit) {
         if (annotations == null) throw new NullPointerException("annotations == null");
         RetrofitType parser = null;
         MethodType method = null;
@@ -46,15 +47,16 @@ public class IMovieFactory extends Converter.Factory {
         for (Annotation a : annotations) {
             if (a instanceof RetrofitType) {
                 parser = (RetrofitType) a;
-            } else if(a instanceof MethodType){
+            } else if (a instanceof MethodType) {
                 method = (MethodType) a;
-            } else if(a instanceof JsoupType){
+            } else if (a instanceof JsoupType) {
                 jsoup = (JsoupType) a;
             }
         }
         if (parser == null) throw new NullPointerException("RetrofitType == null");
         Converter<ResponseBody, Object> converter = null;
-       if (parser.isJsonResponse()) {
+        JsoupSource source = parser.isJsoupResponse();
+        if (parser.isJsonResponse()) {
             Gson gson = new Gson();
             TypeAdapter<?> adapter = gson.getAdapter(TypeToken.get(type));
             converter = new GsonResponseConverter(gson, adapter);
@@ -62,15 +64,19 @@ public class IMovieFactory extends Converter.Factory {
             Gson gson = new Gson();
             TypeAdapter<?> adapter = gson.getAdapter(TypeToken.get(type));
             converter = new BaiduResponseConverter(gson, adapter);
-        } else if(parser.isJsoupResponse() && method != null && jsoup != null){
-            converter = new JsoupResponseCoverter(retrofit,method.value(),jsoup.value());
+        } else if (method != null && jsoup != null) {
+            if (source == JsoupSource.TYPE_LIVE) {
+                converter = new JsoupLiveResponseCoverter(retrofit, method.value(), jsoup.value());
+            } else if (source == JsoupSource.TYPE_VIDEO) {
+                converter = new JsoupVideoResponseCoverter(retrofit, method.value(), jsoup.value());
+            }
         }
         if (converter == null) throw new NullPointerException("RetrofitType  is inexistence");
         return converter;
     }
 
     @Override
-    public Converter<?, RequestBody> requestBodyConverter(Type type,Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
+    public Converter<?, RequestBody> requestBodyConverter(Type type, Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
         if (methodAnnotations == null) throw new NullPointerException("annotations == null");
         RetrofitType parser = null;
         for (Annotation a : methodAnnotations) {
@@ -80,12 +86,12 @@ public class IMovieFactory extends Converter.Factory {
         }
         if (parser == null) throw new NullPointerException("RetrofitType == null");
         Converter<?, RequestBody> converter = null;
-        if (parser.isJsonRequest()){
+        if (parser.isJsonRequest()) {
             Gson gson = new Gson();
             TypeAdapter<?> adapter = gson.getAdapter(TypeToken.get(type));
-            converter = new GsonRequestConverter(gson,adapter);
-        }else{
-            converter = super.requestBodyConverter(type,parameterAnnotations,methodAnnotations,retrofit);
+            converter = new GsonRequestConverter(gson, adapter);
+        } else {
+            converter = super.requestBodyConverter(type, parameterAnnotations, methodAnnotations, retrofit);
         }
         return converter;
     }

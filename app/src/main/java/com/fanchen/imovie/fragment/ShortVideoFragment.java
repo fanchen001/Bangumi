@@ -3,7 +3,6 @@ package com.fanchen.imovie.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -29,7 +28,7 @@ public class ShortVideoFragment extends BaseRecyclerFragment{
 
     public static final String TID = "tid";
 
-    private LinearLayoutManager mLayoutManager;
+    private BaseAdapter.LinearLayoutManagerWrapper mLayoutManager;
     private ShortVideoAdapter mVideoAdapter;
     private String serializeKey;
     private String tid ;
@@ -64,7 +63,7 @@ public class ShortVideoFragment extends BaseRecyclerFragment{
 
     @Override
     public RecyclerView.LayoutManager getLayoutManager() {
-        return mLayoutManager == null ? mLayoutManager = new LinearLayoutManager(activity) : mLayoutManager;
+        return mLayoutManager == null ? mLayoutManager = new BaseAdapter.LinearLayoutManagerWrapper(activity) : mLayoutManager;
     }
 
     @Override

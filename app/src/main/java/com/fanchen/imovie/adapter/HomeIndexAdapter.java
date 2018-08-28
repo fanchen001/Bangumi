@@ -24,6 +24,7 @@ import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.fragment.HomeIndexFragment;
 import com.fanchen.imovie.picasso.PicassoWrap;
 import com.fanchen.imovie.retrofit.service.TucaoService;
+import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.view.pager.IBanner;
 import com.fanchen.imovie.view.pager.LoopViewPager;
 import com.squareup.picasso.Picasso;
@@ -143,6 +144,7 @@ public class HomeIndexAdapter extends BaseAdapter {
                 itemViewHolder.lastTextView.setText(movieItem.getExtras());
                 itemViewHolder.titleTextView.setText(movieItem.getTitle());
                 itemViewHolder.timeTextView.setText(movieItem.getLast());
+                LogUtil.e("bindViewHolder => ",movieItem.getCover());
                 picasso.loadHorizontal(movieItem.getCover(), HomeIndexFragment.class, itemViewHolder.imageView);
             }
         }

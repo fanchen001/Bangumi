@@ -11,6 +11,7 @@ import com.fanchen.imovie.base.BaseToolbarActivity;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListener;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
+import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.FileUtil;
 import com.fanchen.imovie.util.ShareUtil;
 import com.umeng.socialize.UMShareAPI;
@@ -92,6 +93,16 @@ public class SettingsActivity extends BaseToolbarActivity {
 
         public ClearTaskListener(File dir) {
             this.dir = dir;
+        }
+
+        @Override
+        public void onTaskSart() {
+            DialogUtil.showProgressDialog(SettingsActivity.this,getString(R.string.clear_ing));
+        }
+
+        @Override
+        public void onTaskFinish() {
+            DialogUtil.closeProgressDialog();
         }
 
         @Override

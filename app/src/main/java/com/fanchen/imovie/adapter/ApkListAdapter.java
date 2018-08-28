@@ -12,6 +12,7 @@ import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.entity.apk.ApkItem;
 import com.fanchen.imovie.picasso.PicassoWrap;
+import com.fanchen.imovie.util.LogUtil;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class ApkListAdapter extends BaseAdapter {
 
     @Override
     public void bindViewHolder(RecyclerView.ViewHolder holder, List<IViewType> datas, int viewType, int position) {
-        if(viewType == IViewType.TYPE_FOOTER)return;
+        if(viewType == IViewType.TYPE_FOOTER)  return;
         ApkListViewHolder viewHolder = (ApkListViewHolder) holder;
         ApkItem animApkItem = (ApkItem) datas.get(position);
         viewHolder.mTitleTextView.setText(animApkItem.getTitle());

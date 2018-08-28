@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -80,7 +79,7 @@ public class SearchBangumiActivity extends BaseToolbarActivity implements Dropdo
         getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
         mSwipeRefreshLayout.setColorSchemeColors(typedValue.data);
         mVideoListAdapter = new BangumiListAdapter(this, getPicasso());
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.setLayoutManager(new BaseAdapter.LinearLayoutManagerWrapper(this, BaseAdapter.LinearLayoutManagerWrapper.VERTICAL, false));
         mRecyclerView.setAdapter(mVideoListAdapter);
         mDropdownLayout.setDropdownList(new String[][]{TIDKEYS, ORDERKEYS}, new String[][]{TIDVALUES, ORDERVALUES});
         //加载数据

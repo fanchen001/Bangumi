@@ -7,15 +7,20 @@ import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
-import com.fanchen.imovie.entity.ikanfan.IKanFanDetails;
-import com.fanchen.imovie.entity.ikanfan.IKanFanEpisode;
-import com.fanchen.imovie.entity.ikanfan.IKanFanHome;
-import com.fanchen.imovie.entity.ikanfan.IKanFanPlayUrl;
-import com.fanchen.imovie.entity.ikanfan.IKanFanVideo;
+import com.fanchen.imovie.entity.Video;
+import com.fanchen.imovie.entity.VideoDetails;
+import com.fanchen.imovie.entity.VideoEpisode;
+import com.fanchen.imovie.entity.VideoHome;
+import com.fanchen.imovie.entity.VideoPlayUrls;
 import com.fanchen.imovie.jsoup.IVideoParser;
 import com.fanchen.imovie.jsoup.node.Node;
+import com.fanchen.imovie.retrofit.RetrofitManager;
+import com.fanchen.imovie.retrofit.service.IKanFanService;
+import com.fanchen.imovie.util.JavaScriptUtil;
 import com.fanchen.imovie.util.LogUtil;
 import com.google.gson.Gson;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,10 +37,10 @@ public class IKanFanParser implements IVideoParser {
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
-        IKanFanHome home = new IKanFanHome();
+        VideoHome home = new VideoHome();
         try {
-            List<IKanFanVideo> videos = new ArrayList<>();
-            home.setResult(videos);
+            List<Video> videos = new ArrayList<>();
+            home.setList(videos);
             for (Node n : node.list("ul#resize_list > li")) {
                 String title = n.attr("a", "title");
                 String cover = n.attr("a > div > img", "data-original");
@@ -44,8 +49,10 @@ public class IKanFanParser implements IVideoParser {
                 String author = n.textAt("div.list_info > p", 2);
                 String url = baseUrl + n.attr("a", "href");
                 String id = n.attr("a", "href", "/", 2);
-                IKanFanVideo video = new IKanFanVideo();
+                Video video = new Video();
                 video.setCover(cover);
+                video.setHasDetails(true);
+                video.setServiceClass(IKanFanService.class.getName());
                 video.setId(id);
                 video.setTitle(title);
                 video.setUrl(url);
@@ -64,11 +71,13 @@ public class IKanFanParser implements IVideoParser {
     @Override
     public IHomeRoot home(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
-        IKanFanHome IKanFanHome = new IKanFanHome();
+        VideoHome VideoHome = new VideoHome();
         try {
-            List<IKanFanVideo> videos = new ArrayList<>();
+            List<Video> videos = new ArrayList<>();
             for (Node n : node.list("div > div > ul#vod_list > li")) {
-                IKanFanVideo video = new IKanFanVideo();
+                Video video = new Video();
+                video.setHasDetails(true);
+                video.setServiceClass(IKanFanService.class.getName());
                 video.setCover(n.attr("a > div > img", "data-original"));
                 video.setTitle(n.text("h2"));
                 video.setClazz(n.text("p"));
@@ -79,24 +88,24 @@ public class IKanFanParser implements IVideoParser {
                 videos.add(video);
             }
             if (videos.size() > 0) {
-                IKanFanHome.setSuccess(true);
-                IKanFanHome.setResult(videos);
+                VideoHome.setSuccess(true);
+                VideoHome.setList(videos);
             }
         } catch (Exception e) {
-            IKanFanHome.setSuccess(false);
-            IKanFanHome.setMessage(e.toString());
+            VideoHome.setSuccess(false);
+            VideoHome.setMessage(e.toString());
             e.printStackTrace();
         }
-        return IKanFanHome;
+        return VideoHome;
     }
 
     @Override
     public IVideoDetails details(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
-        IKanFanDetails details = new IKanFanDetails();
+        VideoDetails details = new VideoDetails();
         try {
-            List<IKanFanEpisode> episodes = new ArrayList<>();
-            List<IKanFanVideo> videos = new ArrayList<>();
+            List<VideoEpisode> episodes = new ArrayList<>();
+            List<Video> videos = new ArrayList<>();
             for (Node n : node.list("div.ikf-item.like > div > a")) {
                 String title = n.text("h3");
                 String cover = n.attr("div > img", "data-original");
@@ -106,7 +115,9 @@ public class IKanFanParser implements IVideoParser {
                 String score = n.text("em");
                 String url = baseUrl + n.attr("href");
                 String id = n.attr("href", "/", 2);
-                IKanFanVideo video = new IKanFanVideo();
+                Video video = new Video();
+                video.setHasDetails(true);
+                video.setServiceClass(IKanFanService.class.getName());
                 video.setCover(cover);
                 video.setId(id);
                 video.setTitle(title);
@@ -116,12 +127,14 @@ public class IKanFanParser implements IVideoParser {
                 videos.add(video);
             }
             for (Node n : node.list("ul.playlist > li")) {
-                IKanFanEpisode episode = new IKanFanEpisode();
+                VideoEpisode episode = new VideoEpisode();
+                episode.setServiceClass(IKanFanService.class.getName());
                 episode.setId(baseUrl + n.attr("a", "href"));
                 episode.setUrl(baseUrl + n.attr("a", "href"));
                 episode.setTitle(n.text());
                 episodes.add(episode);
             }
+            details.setServiceClass(IKanFanService.class.getName());
             details.setCover(node.attr("div.ikf-detail > div > a > img", "src"));
             details.setClazz(node.textAt("div.detail > p", 0));
             details.setType(node.textAt("div.detail > p", 1));
@@ -129,7 +142,7 @@ public class IKanFanParser implements IVideoParser {
             details.setTitle(node.text("div.detail > h1"));
             details.setIntroduce(node.text("p.pTxt"));
             details.setEpisodes(episodes);
-            details.setRecoms(videos);
+            details.setRecomm(videos);
             details.setSuccess(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -139,18 +152,58 @@ public class IKanFanParser implements IVideoParser {
 
     @Override
     public IPlayUrls playUrl(Retrofit retrofit, String baseUrl, String html) {
-        IKanFanPlayUrl playUrl = new IKanFanPlayUrl();
+        VideoPlayUrls playUrl = new VideoPlayUrls();
+        Map<String, String> stringMap = new HashMap<>();
+        playUrl.setUrls(stringMap);
         try {
-            Map<String, String> stringMap = new HashMap<>();
-            stringMap.put("标清", new Node(html).attr("a.pandata","href"));
+            String match = JavaScriptUtil.match("var playConfig = \\{[;:,./\\-@#=\\'\\\" \\w\\d\\?&]+\\}", html, 0, 17, 0);
+            LogUtil.e("match","match===>" + match);
+            if (!TextUtils.isEmpty(match)) {
+                JSONObject jsonObject = new JSONObject(match);
+                String playname = "", ckUrl = "", pv = "";
+                if (jsonObject.has("playname")) {
+                    playname = jsonObject.getString("playname");
+                }
+                if (jsonObject.has("ckUrl")) {
+                    ckUrl = jsonObject.getString("ckUrl");
+                }
+                if (jsonObject.has("pv")) {
+                    pv = jsonObject.getString("pv");
+                }
+                if(pv.contains("=") && pv.contains("@")){
+                    stringMap.put("标清", pv.split("@")[0]);
+                    playUrl.setSuccess(true);
+                    playUrl.setReferer(RetrofitManager.REQUEST_URL);
+                    playUrl.setUrlType(IPlayUrls.URL_WEB);
+                    playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                }else if (!pv.contains("=")) {
+                    String s1 = pv.split(",")[0];
+                    if(s1.startsWith("http")){
+                        String s = ckUrl + playname + "&id=" + s1;
+                        stringMap.put("标清", s);
+                    }else{
+                        if(s1.contains("_") && playname.contains("qiyi")){
+                            s1 = s1.split("_")[0];
+                        }
+                        String s = "https://www.ikanfan.cn/mdparse/?type=" + playname + "&id=" + s1;
+                        stringMap.put("标清", s);
+                    }
+                    playUrl.setSuccess(true);
+                    playUrl.setReferer(RetrofitManager.REQUEST_URL);
+                    playUrl.setUrlType(IPlayUrls.URL_WEB);
+                    playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (stringMap.isEmpty()) {
+            stringMap.put("标清", RetrofitManager.REQUEST_URL);
             playUrl.setUrls(stringMap);
             playUrl.setUrlType(IPlayUrls.URL_WEB);
             playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB_V);
             playUrl.setSuccess(true);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        LogUtil.e("playUrl => ",new Gson().toJson(playUrl));
         return playUrl;
     }
 }

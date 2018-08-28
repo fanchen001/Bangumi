@@ -3,14 +3,10 @@ package com.fanchen.imovie.entity.face;
 import android.os.Parcelable;
 
 /**
+ * IBaseVideo
  * Created by fanchen on 2017/9/18.
  */
 public interface IBaseVideo extends IViewType,Parcelable{
-
-    int VIDEO_JREN = 1;
-    int VIDEO_BUMIMI = 2;
-    int VIDEO_S80 = 3;
-    int VIDEO_TUCAO = 4;
     /**
      *标题
      * @return
@@ -40,4 +36,10 @@ public interface IBaseVideo extends IViewType,Parcelable{
      * @return
      */
     int getSource();
+
+    /**
+     *
+     * @return
+     */
+    String getServiceClass();
 }

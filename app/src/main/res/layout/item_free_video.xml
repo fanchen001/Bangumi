@@ -8,9 +8,9 @@
     android:orientation="vertical"
     app:cardCornerRadius="@dimen/card_corner_radius">
 
-    <com.fanchen.imovie.view.RecycleImageView
+    <ImageView
         android:id="@+id/iv_cover_image"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="72.0dip"
         android:layout_gravity="center"
         android:padding="2dp" />

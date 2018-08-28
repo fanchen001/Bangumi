@@ -30,7 +30,7 @@ public interface KmaoService {
     @GET("{path}/")
     @JsoupType(JsoupSource.KMAO)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path);
 
     /**
@@ -42,7 +42,7 @@ public interface KmaoService {
     @GET("{path}/index-{page}.html")
     @JsoupType(JsoupSource.KMAO)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
 
     /**
@@ -54,7 +54,7 @@ public interface KmaoService {
     @GET("vod-search-wd-{keyword}-p-{page}.html")
     @JsoupType(JsoupSource.KMAO)
     @MethodType(value = MethodSource.SEARCH)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("keyword") String keyword);
 
     /**
@@ -66,7 +66,7 @@ public interface KmaoService {
     @GET("{path}/index-{page}.html")
     @JsoupType(JsoupSource.KMAO)
     @MethodType(value = MethodSource.MORE)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> more(@Path("path") String pid, @Path("page") Integer page);
 
     /**
@@ -76,7 +76,7 @@ public interface KmaoService {
     @GET
     @JsoupType(JsoupSource.KMAO)
     @MethodType(value = MethodSource.DETAILS)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IVideoDetails> details(@Url String url);
 
     /**
@@ -86,6 +86,6 @@ public interface KmaoService {
     @GET
     @JsoupType(JsoupSource.KMAO)
     @MethodType(value = MethodSource.PLAYURL)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IPlayUrls> playUrl(@Url String url);
 }

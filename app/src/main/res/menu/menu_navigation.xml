@@ -8,15 +8,16 @@
             android:checked="true"
             android:icon="@drawable/ic_home_black_24dp"
             android:title="@string/item_home" />
+
         <item
             android:id="@+id/item_short"
             android:icon="@drawable/ic_sync_black_24dp"
             android:title="@string/item_short" />
-        <item
-            android:id="@+id/item_live"
-            android:icon="@drawable/ic_people_black_24dp"
-            android:title="@string/item_live" />
 
+        <item
+            android:id="@+id/item_tv"
+            android:icon="@drawable/ic_info_black_24dp"
+            android:title="@string/item_tv" />
         <item
             android:id="@+id/item_girl"
             android:icon="@drawable/ic_create_black_24dp"

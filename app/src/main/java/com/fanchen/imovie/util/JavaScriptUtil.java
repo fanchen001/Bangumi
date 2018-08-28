@@ -13,6 +13,65 @@ import java.util.regex.Pattern;
  */
 public class JavaScriptUtil {
 
+    /*
+    * 对应javascript的escape()函数, 加码后的串可直接使用javascript的unescape()进行解码
+    */
+    public static String escape(String src) {
+        int i;
+        char j;
+        StringBuffer tmp = new StringBuffer();
+        tmp.ensureCapacity(src.length() * 6);
+        for (i = 0; i < src.length(); i++) {
+            j = src.charAt(i);
+            if (Character.isDigit(j) || Character.isLowerCase(j)
+                    || Character.isUpperCase(j))
+                tmp.append(j);
+            else if (j < 256) {
+                tmp.append("%");
+                if (j < 16)
+                    tmp.append("0");
+                tmp.append(Integer.toString(j, 16));
+            } else {
+                tmp.append("%u");
+                tmp.append(Integer.toString(j, 16));
+            }
+        }
+        return tmp.toString();
+    }
+
+    /*
+    * 对应javascript的unescape()函数, 可对javascript的escape()进行解码
+    */
+    public static String unescape(String src) {
+        StringBuffer tmp = new StringBuffer();
+        tmp.ensureCapacity(src.length());
+        int lastPos = 0, pos = 0;
+        char ch;
+        while (lastPos < src.length()) {
+            pos = src.indexOf("%", lastPos);
+            if (pos == lastPos) {
+                if (src.charAt(pos + 1) == 'u') {
+                    ch = (char) Integer.parseInt(src
+                            .substring(pos + 2, pos + 6), 16);
+                    tmp.append(ch);
+                    lastPos = pos + 6;
+                } else {
+                    ch = (char) Integer.parseInt(src.substring(pos + 1, pos + 3), 16);
+                    tmp.append(ch);
+                    lastPos = pos + 3;
+                }
+            } else {
+                if (pos == -1) {
+                    tmp.append(src.substring(lastPos));
+                    lastPos = src.length();
+                } else {
+                    tmp.append(src.substring(lastPos, pos));
+                    lastPos = pos;
+                }
+            }
+        }
+        return tmp.toString();
+    }
 
     public static String match(String regex, String input, int group) {
         try {
@@ -27,11 +86,11 @@ public class JavaScriptUtil {
         return "";
     }
 
-    public static String match(String regex, String input, int group,int start,int endOf) {
+    public static String match(String regex, String input, int group, int start, int endOf) {
         try {
             String match = match(regex, input, group);
-            if(!TextUtils.isEmpty(match) && start >=0 && match.length() - endOf >= 0)
-            return match.substring(start,match.length() - endOf);
+            if (!TextUtils.isEmpty(match) && start >= 0 && match.length() - endOf >= 0)
+                return match.substring(start, match.length() - endOf);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,14 +137,13 @@ public class JavaScriptUtil {
 
 
     /**
-     *
      * @param eval
      * @return
      */
 
-    public static String getKkkkmaoE2(String eval){
+    public static String getKkkkmaoE2(String eval) {
         String evalDecrypt = JavaScriptUtil.evalDecrypt(eval);
-        evalDecrypt = "function(){" + evalDecrypt.replace("eval(\"do\"+\"cum\"+\"en\"+\"t.ge\"+\"tEle\"+\"men\"+\"tB\"+\"yId('e'+'2').va\"+\"lue=e1r.join('')\");","return e1r.join('');}");
+        evalDecrypt = "function(){" + evalDecrypt.replace("eval(\"do\"+\"cum\"+\"en\"+\"t.ge\"+\"tEle\"+\"men\"+\"tB\"+\"yId('e'+'2').va\"+\"lue=e1r.join('')\");", "return e1r.join('');}");
         return JavaScriptUtil.callFunction(evalDecrypt);
     }
 }

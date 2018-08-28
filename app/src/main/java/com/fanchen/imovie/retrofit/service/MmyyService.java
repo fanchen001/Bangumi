@@ -31,7 +31,7 @@ public interface MmyyService {
     @GET("{path}/")
     @JsoupType(JsoupSource.MMYY)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path);
 
     /**
@@ -40,10 +40,10 @@ public interface MmyyService {
      * @param page
      * @return
      */
-    @GET("list/{path}_{page}.html")
+    @GET("{path}/index{page}.html")
     @JsoupType(JsoupSource.MMYY)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
 
     /**
@@ -52,11 +52,11 @@ public interface MmyyService {
      * @param keyword
      * @return
      */
-    @GET("search.php")
+    @GET("vod-search-wd-{searchword}-p-{page}.html")
     @JsoupType(JsoupSource.MMYY)
     @MethodType(value = MethodSource.SEARCH)
-    @RetrofitType(isJsoupResponse = true)
-    Call<IBangumiMoreRoot> search(@Query("page") Integer page, @Query("searchword") String keyword);
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("searchword") String keyword);
 
     /**
      *
@@ -64,10 +64,10 @@ public interface MmyyService {
      * @param page
      * @return
      */
-    @GET("list/{path}_{page}.html")
+    @GET("{path}/index{page}.html")
     @JsoupType(JsoupSource.MMYY)
     @MethodType(value = MethodSource.MORE)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> more(@Path("path") String pid, @Path("page") Integer page);
 
     /**
@@ -77,7 +77,7 @@ public interface MmyyService {
     @GET
     @JsoupType(JsoupSource.MMYY)
     @MethodType(value = MethodSource.DETAILS)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IVideoDetails> details(@Url String url);
 
     /**
@@ -87,6 +87,6 @@ public interface MmyyService {
     @GET
     @JsoupType(JsoupSource.MMYY)
     @MethodType(value = MethodSource.PLAYURL)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IPlayUrls> playUrl(@Url String url);
 }

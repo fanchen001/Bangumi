@@ -3,7 +3,6 @@ package com.fanchen.imovie.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -53,7 +52,7 @@ public class RankingListFragment extends BaseRecyclerFragment {
 
     @Override
     public RecyclerView.LayoutManager getLayoutManager() {
-        return new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
+        return new BaseAdapter.LinearLayoutManagerWrapper(activity, BaseAdapter.LinearLayoutManagerWrapper.VERTICAL, false);
     }
 
     @Override

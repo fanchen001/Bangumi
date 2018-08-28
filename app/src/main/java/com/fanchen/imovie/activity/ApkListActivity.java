@@ -3,7 +3,6 @@ package com.fanchen.imovie.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -107,14 +106,14 @@ public class ApkListActivity extends BaseRecyclerActivity implements SearchDialo
         } else if (activityType == TYPE_GAME) {
             return getString(R.string.game);
         } else if (activityType == TYPE_SEARCH) {
-            return String.format(getString(R.string.search_mart, word));
+            return getString(R.string.search_mart, word);
         }
         return null;
     }
 
     @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
-        return new LinearLayoutManager(this);
+        return new BaseAdapter.LinearLayoutManagerWrapper(this);
     }
 
     @Override

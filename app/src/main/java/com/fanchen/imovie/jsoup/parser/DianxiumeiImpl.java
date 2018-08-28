@@ -2,15 +2,16 @@ package com.fanchen.imovie.jsoup.parser;
 
 import android.text.TextUtils;
 
-import com.fanchen.imovie.entity.dianxiumei.DianxiumeiPlayUrl;
-import com.fanchen.imovie.entity.dianxiumei.DianxiumeiHome;
-import com.fanchen.imovie.entity.dianxiumei.DianxiumeiVideo;
+import com.fanchen.imovie.entity.Video;
+import com.fanchen.imovie.entity.VideoHome;
+import com.fanchen.imovie.entity.VideoPlayUrls;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.jsoup.IVideoParser;
 import com.fanchen.imovie.jsoup.node.Node;
+import com.fanchen.imovie.retrofit.service.DianxiumeiService;
 import com.fanchen.imovie.util.JavaScriptUtil;
 
 import java.net.URLDecoder;
@@ -29,21 +30,22 @@ public class DianxiumeiImpl implements IVideoParser {
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit,String baseUrl,String html) {
         Node node = new Node(html);
-        DianxiumeiHome root = new DianxiumeiHome();
+        VideoHome root = new VideoHome();
         try {
-            List<DianxiumeiVideo> videos = new ArrayList<>();
+            List<Video> videos = new ArrayList<>();
             for (Node n : node.list("ul.list-pic > li.f-fl > dl")){
-                DianxiumeiVideo video = new DianxiumeiVideo();
+                Video video = new Video();
+                video.setServiceClass(DianxiumeiService.class.getName());
                 video.setId(n.attr("dt > a", "href","=",1));
                 video.setUrl(n.attr("dt > a", "href"));
                 video.setExtras(n.text("dd.d-i"));
-                video.setInfo(n.text("dt > a > span.cnl-tag"));
-                video.setTopInfo(n.text("dt > a > span.cnl-tag"));
+                video.setLast(n.text("dt > a > span.cnl-tag"));
+                video.setDanmaku(n.text("dt > a > span.cnl-tag"));
                 video.setTitle(n.text("dd.d-t"));
                 video.setCover(n.attr("dt > a > img","src"));
                 videos.add(video);
             }
-            root.setResult(videos);
+            root.setList(videos);
             root.setSuccess(true);
         }catch (Exception e){
             e.printStackTrace();
@@ -53,7 +55,7 @@ public class DianxiumeiImpl implements IVideoParser {
 
     @Override
     public IHomeRoot home(Retrofit retrofit,String baseUrl,String html) {
-        return (DianxiumeiHome)search(retrofit,baseUrl,html);
+        return (VideoHome)search(retrofit,baseUrl,html);
     }
 
     @Override
@@ -63,7 +65,7 @@ public class DianxiumeiImpl implements IVideoParser {
 
     @Override
     public IPlayUrls playUrl(Retrofit retrofit,String baseUrl,String html) {
-        DianxiumeiPlayUrl url = new DianxiumeiPlayUrl();
+        VideoPlayUrls url = new VideoPlayUrls();
         Node node = new Node(html);
         try {
             Map<String,String> map = new HashMap<>();

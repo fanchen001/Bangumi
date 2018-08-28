@@ -20,9 +20,11 @@ import android.widget.ImageView;
 
 import com.arialyy.aria.core.download.DownloadEntity;
 import com.arialyy.aria.core.inf.IEntity;
+import com.fanchen.imovie.IMovieAppliction;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.base.BaseActivity;
 import com.fanchen.imovie.dialog.PermissionDialog;
+import com.fanchen.imovie.entity.JsonSerialize;
 import com.fanchen.imovie.entity.bmob.SplashScreen;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListener;
@@ -94,14 +96,19 @@ public class SplashActivity extends BaseActivity {
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String versionName = AppUtil.getVersionName(this);
+        if (!preferences.getString("app_version", "").equals(versionName)) {
+            preferences.edit().putString("app_version", versionName).commit();
+            AsyTaskQueue.newInstance().execute(databaseListener);
+        }
         File headerDir = AppUtil.getExternalHeaderDir(this);
-        if(headerDir != null && headerDir.exists()){
+        if (headerDir != null && headerDir.exists()) {
             File file = new File(headerDir.getAbsolutePath() + IMAGE_SPLASH);
             if (file.exists()) {
                 mBitmap = ImageUtil.readBitMap(file.getAbsolutePath());
             }
-            if(preferences.getBoolean("main_check", true)){
-                new BmobQuery<SplashScreen>().findObjects(this,new SplashScreenListener(file,preferences));
+            if (preferences.getBoolean("main_check", true)) {
+                new BmobQuery<SplashScreen>().findObjects(this, new SplashScreenListener(file, preferences));
             }
         }
         if (preferences.getBoolean("auto_download", true)) {
@@ -117,7 +124,7 @@ public class SplashActivity extends BaseActivity {
                 // 延时3s加载主界面
                 mHandler.sendEmptyMessageDelayed(LOAD_SUCCESS, 3500);
             } else {
-                if(!isFinishing()){
+                if (!isFinishing()) {
                     new PermissionDialog(this).setOnClickListener(clickListener).show();
                 }
             }
@@ -152,7 +159,6 @@ public class SplashActivity extends BaseActivity {
     }
 
     /**
-     *
      * @return
      */
     private String[] checkPermission() {
@@ -163,8 +169,8 @@ public class SplashActivity extends BaseActivity {
             localArrayList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != 0)
             localArrayList.add(Manifest.permission.CAMERA);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != 0)
-            localArrayList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != 0)
+//            localArrayList.add(Manifest.permission.ACCESS_FINE_LOCATION);
         if (localArrayList.size() > 0) {
             String[] arrayOfString = new String[localArrayList.size()];
             localArrayList.toArray(arrayOfString);
@@ -174,12 +180,11 @@ public class SplashActivity extends BaseActivity {
     }
 
     /**
-     *
      * @param paramArrayOfInt
      * @return
      */
     private boolean checkPermissionsResult(int[] paramArrayOfInt) {
-        if(paramArrayOfInt==null || paramArrayOfInt.length == 0)return true;
+        if (paramArrayOfInt == null || paramArrayOfInt.length == 0) return true;
         int j = paramArrayOfInt.length;
         int i = 0;
         while (i < j) {
@@ -191,8 +196,8 @@ public class SplashActivity extends BaseActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int paramInt,String[] paramArrayOfString, int[] paramArrayOfInt) {
-        super.onRequestPermissionsResult(paramInt, paramArrayOfString,paramArrayOfInt);
+    public void onRequestPermissionsResult(int paramInt, String[] paramArrayOfString, int[] paramArrayOfInt) {
+        super.onRequestPermissionsResult(paramInt, paramArrayOfString, paramArrayOfInt);
         if ((paramInt == 1024) && checkPermissionsResult(paramArrayOfInt)) {
             loadMainUI();
             return;
@@ -214,11 +219,24 @@ public class SplashActivity extends BaseActivity {
         @Override
         public void onClick(View v) {
             String[] permission = checkPermission();
-            if(permission != null && permission.length > 0){
-                if (Build.VERSION.SDK_INT >= 23){
+            if (permission != null && permission.length > 0) {
+                if (Build.VERSION.SDK_INT >= 23) {
                     requestPermissions(permission, 1024);
                 }
             }
+        }
+
+    };
+
+    private AsyTaskListener<Void> databaseListener = new AsyTaskListenerImpl<Void>() {
+
+        @Override
+        public Void onTaskBackground() {
+            LogUtil.e("AsyTaskListener", "需要删除之前的缓存数据");
+            long l = System.currentTimeMillis();
+            getLiteOrm().delete(JsonSerialize.class);
+            LogUtil.e("AsyTaskListener", "删除成功,耗时 => " + (System.currentTimeMillis() - l));
+            return super.onTaskBackground();
         }
 
     };
@@ -230,7 +248,7 @@ public class SplashActivity extends BaseActivity {
             if (appliction == null || getDownloadReceiver() == null) return null;
             List<DownloadEntity> list = new ArrayList<>();
             List<DownloadEntity> simpleTaskList = getDownloadReceiver().getSimpleTaskList();
-            if(simpleTaskList != null){
+            if (simpleTaskList != null) {
                 for (DownloadEntity entity : simpleTaskList) {
                     if (entity.getState() == IEntity.STATE_RUNNING || entity.getState() == IEntity.STATE_WAIT) {
                         list.add(entity);
@@ -244,9 +262,9 @@ public class SplashActivity extends BaseActivity {
         public void onTaskSuccess(List<DownloadEntity> simpleTaskList) {
             if (simpleTaskList == null || getDownloadReceiver() == null) return;
             for (DownloadEntity entity : simpleTaskList) {
-                if(!TextUtils.isEmpty(entity.getUrl()) || !TextUtils.isEmpty(entity.getDownloadPath())){
+                if (!TextUtils.isEmpty(entity.getUrl()) || !TextUtils.isEmpty(entity.getDownloadPath())) {
                     String url = entity.getUrl();
-                    if(url.startsWith("http") || url.startsWith("ftp")){
+                    if (url.startsWith("http") || url.startsWith("ftp")) {
                         getDownloadReceiver().load(entity).start();
                     }
                 }
@@ -271,9 +289,10 @@ public class SplashActivity extends BaseActivity {
             long timeMillis = System.currentTimeMillis();
             int version = preferences.getInt(IMAGE_VERSION, 0);
             for (SplashScreen splashScreen : list) {
+                IMovieAppliction.KANKAN_COOKIE = splashScreen.getKankanCookie();
                 if (splashScreen.getStartTime() < timeMillis && splashScreen.getEndTime() > timeMillis && version < splashScreen.getVersion()) {
-                   FileUtil.downloadBackgroud(splashScreen.getScreenImage(),file);
-                    preferences.edit().putInt(IMAGE_VERSION,splashScreen.getVersion()).commit();
+                    FileUtil.downloadBackgroud(splashScreen.getScreenImage(), file);
+                    preferences.edit().putInt(IMAGE_VERSION, splashScreen.getVersion()).commit();
                     return;
                 }
             }
@@ -281,7 +300,7 @@ public class SplashActivity extends BaseActivity {
 
         @Override
         public void onError(int i, String s) {
-            LogUtil.e(SplashActivity.class,"更新封面图片失败");
+            LogUtil.e(SplashActivity.class, "更新封面图片失败");
         }
 
     }

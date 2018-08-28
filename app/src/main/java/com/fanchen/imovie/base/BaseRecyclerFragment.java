@@ -47,7 +47,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
     private int page = 1;
     private int pageStart = 1;
     private BaseAdapter mAdapter;
-    private  Bundle savedInstanceState;
+    private Bundle savedInstanceState;
 
     @Override
     protected int getLayout() {
@@ -61,10 +61,12 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
         setHasOptionsMenu(true);
         TypedValue typedValue = new TypedValue();
         activity.getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
-        mSwipeRefreshLayout.setColorSchemeColors(typedValue.data);
-        mSwipeRefreshLayout.setEnabled(hasRefresh());
-        mRecyclerView.setLayoutManager(getLayoutManager());
-        mRecyclerView.setAdapter(mAdapter = getAdapter(getPicasso()));
+        if (!checkFieldNull()) {
+            mSwipeRefreshLayout.setColorSchemeColors(typedValue.data);
+            mSwipeRefreshLayout.setEnabled(hasRefresh());
+            mRecyclerView.setLayoutManager(getLayoutManager());
+            mRecyclerView.setAdapter(mAdapter = getAdapter(getPicasso()));
+        }
         if (useLocalStorage() && savedInstanceState == null) {
             loadLocalData(AsyTaskQueue.newInstance());
         } else {
@@ -76,13 +78,21 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
     @Override
     protected void setListener() {
         super.setListener();
-        if (hasRefresh())
-            mSwipeRefreshLayout.setOnRefreshListener(this);
-        if (hasLoad())
-            mAdapter.setOnLoadListener(this);
-        mAdapter.setOnItemClickListener(this);
-        mCustomEmptyView.setOnClickListener(this);
-        mRecyclerView.addOnScrollListener(scrollListener);
+        if (!checkFieldNull()) {
+            if (hasRefresh())
+                mSwipeRefreshLayout.setOnRefreshListener(this);
+            mCustomEmptyView.setOnClickListener(this);
+            mRecyclerView.addOnScrollListener(scrollListener);
+        }
+        if (mAdapter != null) {
+            if (hasLoad())
+                mAdapter.setOnLoadListener(this);
+            mAdapter.setOnItemClickListener(this);
+        }
+    }
+
+    public boolean checkFieldNull() {
+        return mSwipeRefreshLayout == null || mCustomEmptyView == null || mRecyclerView == null;
     }
 
     public RecyclerView getRecyclerView() {
@@ -95,6 +105,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
 
     /**
      * 能否刷新
+     *
      * @return
      */
     protected boolean hasRefresh() {
@@ -103,18 +114,21 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
 
     /**
      * RecyclerView  LayoutManager
+     *
      * @return
      */
     public abstract RecyclerView.LayoutManager getLayoutManager();
 
     /**
      * RecyclerView Adapter
+     *
      * @return
      */
     public abstract BaseAdapter getAdapter(Picasso picasso);
 
     /**
      * 加载网络数据
+     *
      * @param page
      */
     public abstract void loadData(Bundle savedInstanceState, RetrofitManager retrofit, int page);
@@ -122,12 +136,13 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
     /**
      * 加载本地缓存的数据
      */
-    public void loadLocalData(AsyTaskQueue queue){
+    public void loadLocalData(AsyTaskQueue queue) {
 
     }
 
     /**
      * 能否加载更多
+     *
      * @return
      */
     protected boolean hasLoad() {
@@ -136,6 +151,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
 
     /**
      * 当前页数
+     *
      * @return
      */
     public int getPage() {
@@ -207,7 +223,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             Picasso picasso = getPicasso();
-            if(picasso != null){
+            if (picasso != null) {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     picasso.resumeTag(BaseRecyclerFragment.class);
                 } else {
@@ -222,7 +238,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
     /**
      *
      */
-    private class  SaveTaskListener extends AsyTaskListenerImpl<Void>{
+    private class SaveTaskListener extends AsyTaskListenerImpl<Void> {
 
         private Object response;
 
@@ -232,7 +248,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
 
         @Override
         public Void onTaskBackground() {
-            if(getLiteOrm() == null)return null;
+            if (getLiteOrm() == null) return null;
             //保存key
             getLiteOrm().delete(new WhereBuilder(JsonSerialize.class, "key = ?", new Object[]{getSerializeKey()}));
             getLiteOrm().insert(new JsonSerialize(response, getSerializeKey()));
@@ -242,14 +258,13 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
     }
 
     /**
-     *
      * @param <T>
      */
     public abstract class QueryTaskListener<T> extends AsyTaskListenerImpl<T> {
 
         @Override
         public void onTaskSart() {
-            if (mCustomEmptyView == null || mSwipeRefreshLayout== null || mAdapter == null) return;
+            if (mCustomEmptyView == null || mSwipeRefreshLayout == null || mAdapter == null) return;
             mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_NON);
             if (!mSwipeRefreshLayout.isRefreshing() && !mAdapter.isLoading()) {
                 mSwipeRefreshLayout.setRefreshing(true);
@@ -258,7 +273,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
 
         @Override
         public T onTaskBackground() {
-            if(getLiteOrm() == null) return null;
+            if (getLiteOrm() == null) return null;
             List<JsonSerialize> query = getLiteOrm().query(new QueryBuilder<>(JsonSerialize.class).where("key = ?", getSerializeKey()));
             if (query != null && query.size() > 0) {
                 JsonSerialize jsonSerialize = query.get(0);
@@ -268,7 +283,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
                         Type serializeClass = getSerializeClass();
                         if (serializeClass != null) {
                             return (T) new Gson().fromJson(jsonSerialize.getJson(), serializeClass);
-                        }else if(jsonSerialize.isRawType()){
+                        } else if (jsonSerialize.isRawType()) {
                             Class<?> forName = Class.forName(jsonSerialize.getClazz());
                             return (T) new Gson().fromJson(jsonSerialize.getJson(), forName);
                         }
@@ -282,20 +297,19 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
 
         @Override
         public void onTaskSuccess(T data) {
-            if(mSwipeRefreshLayout == null)return;
-            if(data != null){
+            if (mSwipeRefreshLayout == null) return;
+            if (data != null) {
                 onSuccess(data);
                 mSwipeRefreshLayout.setRefreshing(false);
                 LogUtil.e(BaseRecyclerFragment.class, "加载本地数据");
-            }else{
+            } else {
                 //加载网络数据
-                LogUtil.e(BaseRecyclerFragment.class,"加载网络数据");
-                loadData(savedInstanceState,getRetrofitManager(),page = pageStart);
+                LogUtil.e(BaseRecyclerFragment.class, "加载网络数据");
+                loadData(savedInstanceState, getRetrofitManager(), page = pageStart);
             }
         }
 
         /**
-         *
          * @param date
          */
         public abstract void onSuccess(T date);
@@ -335,18 +349,17 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
 
         @Override
         public void onSuccess(int enqueueKey, T response) {
-            if(response == null || mAdapter == null)return;
-            if(isRefresh())mAdapter.clear();
-            if(useLocalStorage()){
+            if (response == null || mAdapter == null) return;
+            if (isRefresh()) mAdapter.clear();
+            if (useLocalStorage()) {
                 //将数据序列化到本地
-                LogUtil.e(BaseRecyclerFragment.class,"序列化数据到本地");
+                LogUtil.e(BaseRecyclerFragment.class, "序列化数据到本地");
                 AsyTaskQueue.newInstance().execute(new SaveTaskListener(response));
             }
             onSuccess(response);
         }
 
         /**
-         *
          * @param response
          */
         public abstract void onSuccess(T response);

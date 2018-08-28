@@ -3,6 +3,7 @@ package com.fanchen.imovie.entity.face;
 import android.os.Parcelable;
 
 /**
+ *
  * Created by fanchen on 2017/9/25.
  */
 public interface IVideoEpisode extends IViewType,Parcelable{
@@ -26,6 +27,12 @@ public interface IVideoEpisode extends IViewType,Parcelable{
      * zzplayer系统自带Videoview在线播放
      */
     int PLAY_TYPE_ZZPLAYER = 5;
+
+    int PLAY_TYPE_XIGUA = 6;
+
+    int PLAY_TYPE_VIDEO_WEB = 7;
+
+    int PLAY_TYPE_VIDEO_M3U8 = 8;
     /**
      * 不支持在线播放
      */
@@ -94,4 +101,6 @@ public interface IVideoEpisode extends IViewType,Parcelable{
      * 本地文件
      */
     void setFilePath(String path);
+
+    IPlayUrls toPlayUrls(int palyType,int urlType);
 }

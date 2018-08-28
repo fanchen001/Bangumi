@@ -6,9 +6,8 @@ import android.text.TextUtils;
 import android.widget.ImageView;
 
 import com.fanchen.imovie.R;
+import com.fanchen.imovie.picasso.download.HttpsDownLoader;
 import com.fanchen.imovie.util.AppUtil;
-import com.fanchen.imovie.util.LogUtil;
-import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Downloader;
 import com.squareup.picasso.Picasso;
 
@@ -37,7 +36,7 @@ public class PicassoWrap {
         if (!cacheDir.exists())  cacheDir.mkdirs();
         //64Mb的缓存
         OkHttpClient client = new OkHttpClient.Builder().cache(new Cache(cacheDir, 64 * 1024 * 1024)).build();
-        picasso = new Picasso.Builder(context).downloader(new OkHttp3Downloader(client)).build();
+        picasso = new Picasso.Builder(context).downloader(new HttpsDownLoader(client)).build();
     }
 
     /**
@@ -62,7 +61,7 @@ public class PicassoWrap {
      * @param imageView
      */
     public void load(int cover,Object tag,int placeholder,int error,Bitmap.Config config,ImageView imageView){
-        if(picasso == null)return;
+        if(picasso == null|| imageView == null)return;
         if(cover <= 0){
             cover = R.drawable.image_load_h_pre;
         }
@@ -78,7 +77,7 @@ public class PicassoWrap {
      * @param imageView
      */
     public void load(int cover,int placeholder,int error,Bitmap.Config config,ImageView imageView){
-        if(picasso == null)return;
+        if(picasso == null|| imageView == null)return;
         if(cover <= 0){
             cover = R.drawable.image_load_h_pre;
         }
@@ -86,7 +85,7 @@ public class PicassoWrap {
     }
 
     public void load(int cover,Object tag,ImageView imageView){
-        if(picasso == null)return;
+        if(picasso == null|| imageView == null)return;
         if(cover <= 0){
             cover = R.drawable.image_load_h_pre;
         }
@@ -100,7 +99,7 @@ public class PicassoWrap {
      * @param imageView
      */
     public void load(int cover,Object tag,Bitmap.Config config,ImageView imageView){
-        if(picasso == null)return;
+        if(picasso == null|| imageView == null)return;
         if(cover <= 0){
             cover = R.drawable.image_load_h_pre;
         }
@@ -116,15 +115,15 @@ public class PicassoWrap {
      * @param imageView
      */
     public void load(String cover,Object tag,int placeholder,int error,Bitmap.Config config,boolean centerCrop,ImageView imageView){
-        if(picasso == null)return;
+        if(picasso == null|| imageView == null)return;
         if(centerCrop){
-            if(TextUtils.isEmpty(cover)){
+            if(TextUtils.isEmpty(cover) || cover.trim().length() == 0){
                 picasso.load(R.drawable.image_load_pre).tag(tag).placeholder(placeholder).error(error).config(config).fit().centerCrop().into(imageView);
             }else{
                 picasso.load(cover).tag(tag).placeholder(placeholder).error(error).config(config).fit().centerCrop().into(imageView);
             }
         }else{
-            if(TextUtils.isEmpty(cover)){
+            if(TextUtils.isEmpty(cover) || cover.trim().length() == 0){
                 picasso.load(R.drawable.image_load_pre).tag(tag).placeholder(placeholder).error(error).config(config).into(imageView);
             }else{
                 picasso.load(cover).tag(tag).placeholder(placeholder).error(error).config(config).into(imageView);
@@ -141,8 +140,8 @@ public class PicassoWrap {
      * @param imageView
      */
     public void load(String cover,int placeholder,int error,Bitmap.Config config,ImageView imageView){
-        if(picasso == null)return;
-        if(TextUtils.isEmpty(cover)){
+        if(picasso == null || imageView == null)return;
+        if(TextUtils.isEmpty(cover) || cover.trim().length() == 0){
             picasso.load(R.drawable.image_load_pre).placeholder(placeholder).error(error).config(config).fit().centerCrop().into(imageView);
         }else{
             picasso.load(cover).placeholder(placeholder).error(error).config(config).fit().centerCrop().into(imageView);
@@ -157,8 +156,8 @@ public class PicassoWrap {
      * @param imageView
      */
     public void load(String cover,Object tag,Bitmap.Config config,ImageView imageView){
-        if(picasso == null)return;
-        if(TextUtils.isEmpty(cover)){
+        if(picasso == null|| imageView == null)return;
+        if(TextUtils.isEmpty(cover) || cover.trim().length() == 0){
             picasso.load(R.drawable.image_load_pre).tag(tag).config(config).fit().centerCrop().into(imageView);
         }else{
             picasso.load(cover).tag(tag).config(config).fit().centerCrop().into(imageView);
@@ -172,8 +171,8 @@ public class PicassoWrap {
      * @param imageView
      */
     public void load(String cover,Object tag,ImageView imageView){
-        if(picasso == null)return;
-        if(TextUtils.isEmpty(cover)){
+        if(picasso == null|| imageView == null)return;
+        if(TextUtils.isEmpty(cover) || cover.trim().length() == 0){
             picasso.load(R.drawable.image_load_pre).tag(tag).config(Bitmap.Config.RGB_565).fit().centerCrop().into(imageView);
         }else{
             picasso.load(cover).tag(tag).config(Bitmap.Config.RGB_565).fit().centerCrop().into(imageView);
@@ -181,8 +180,8 @@ public class PicassoWrap {
     }
 
     public void load(String cover,ImageView imageView){
-        if(picasso == null)return;
-        if(TextUtils.isEmpty(cover)){
+        if(picasso == null|| imageView == null)return;
+        if(TextUtils.isEmpty(cover) || cover.trim().length() == 0){
             picasso.load(R.drawable.image_load_pre).config(Bitmap.Config.RGB_565).fit().centerCrop().into(imageView);
         }else{
             picasso.load(cover).config(Bitmap.Config.RGB_565).fit().centerCrop().into(imageView);

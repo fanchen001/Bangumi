@@ -35,6 +35,11 @@ public class TucaoPlayUrls implements IPlayUrls{
     }
 
     @Override
+    public boolean m3u8Referer() {
+        return false;
+    }
+
+    @Override
     public boolean isSuccess() {
         return success;
     }

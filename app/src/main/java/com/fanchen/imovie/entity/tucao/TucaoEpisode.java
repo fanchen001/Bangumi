@@ -3,6 +3,7 @@ package com.fanchen.imovie.entity.tucao;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.retrofit.service.TucaoService;
 
@@ -93,6 +94,11 @@ public class TucaoEpisode implements IVideoEpisode,Parcelable{
     @Override
     public void setFilePath(String path) {
         this.url = path;
+    }
+
+    @Override
+    public IPlayUrls toPlayUrls(int palyType, int urlType) {
+        return new TucaoPlayUrls();
     }
 
     @Override

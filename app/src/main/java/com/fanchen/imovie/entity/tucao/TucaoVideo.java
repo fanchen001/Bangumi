@@ -86,13 +86,13 @@ public class TucaoVideo extends TucaoBaseVideo implements IVideo, Parcelable {
     }
 
     @Override
-    public String getServiceClassName() {
-        return TucaoService.class.getName();
+    public int getSource() {
+        return 0;
     }
 
     @Override
-    public int getSource() {
-        return VIDEO_TUCAO;
+    public String getServiceClass() {
+        return TucaoService.class.getName();
     }
 
     @Override

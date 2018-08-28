@@ -12,6 +12,7 @@ import com.fanchen.imovie.entity.VideoCategory;
 import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.fragment.HomeCategoryFragment;
 import com.fanchen.imovie.picasso.PicassoWrap;
+import com.fanchen.imovie.view.TriangleLabelView;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -42,6 +43,7 @@ public class CategoryAdapter extends BaseAdapter {
     public void bindViewHolder(RecyclerView.ViewHolder holder, List<IViewType> datas, int viewType, int position) {
         CategoryViewHolder viewHolder = (CategoryViewHolder) holder;
         VideoCategory category = (VideoCategory) datas.get(position);
+        viewHolder.labelView.setVisibility(category.isHot() ? View.VISIBLE : View.GONE);
         picassoWrap.load(category.getDrawable(), HomeCategoryFragment.class, viewHolder.imageView);
         viewHolder.textView.setText(category.getTitle());
     }
@@ -56,11 +58,13 @@ public class CategoryAdapter extends BaseAdapter {
 
         public ImageView imageView;
         public TextView textView;
+        public TriangleLabelView labelView;
 
         public CategoryViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.item_img_region);
             textView = (TextView) itemView.findViewById(R.id.item_title_region);
+            labelView = (TriangleLabelView) itemView.findViewById(R.id.tlv_hot);
         }
     }
 }

@@ -49,7 +49,10 @@ public class BangumiListAdapter extends BaseAdapter {
 
     @Override
     public void bindViewHolder(RecyclerView.ViewHolder holder, List<IViewType> datas, int viewType, int position) {
-        if (viewType != IViewType.TYPE_NORMAL) return;
+        if(viewType == IViewType.TYPE_FOOTER){
+            LogUtil.e("bindViewHolder","IViewType TYPE_FOOTER");
+            return;
+        }
         IVideo videoItem = (IVideo) datas.get(position);
         if(picassoWrap == null){
             if(!TextUtils.isEmpty(videoItem.getCoverReferer())){
@@ -71,6 +74,7 @@ public class BangumiListAdapter extends BaseAdapter {
         }
         videoViewHolder.danmakuTextView.setVisibility(View.VISIBLE);
         videoViewHolder.danmakuTextView.setText(videoItem.getDanmaku());
+        LogUtil.e("bindViewHolder","getCover => " + videoItem.getCover());
         picassoWrap.loadHorizontal(videoItem.getCover(), BangumiListActivity.class, videoViewHolder.imageView);
     }
 

@@ -186,7 +186,7 @@ public class SuperPlayerView extends RelativeLayout {
                     mPopupWindow = null;
                 }
                 mPopupWindow = new ListPopupWindow(activity);
-                mPopupWindow.setAdapter(new ArrayAdapter<String>(activity, R.layout.item_textview, new String[]{"标清", "高清"}));
+                mPopupWindow.setAdapter(new ArrayAdapter<>(activity, R.layout.item_textview, new String[]{"标清", "高清"}));
                 mPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#88000000")));
                 mPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
                 mPopupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -1130,7 +1130,6 @@ public class SuperPlayerView extends RelativeLayout {
         } else {
             $.id(R.id.app_video_loading).visible();
         }
-        //
     }
 
     private void onProgressSlide(float percent) {
@@ -1231,14 +1230,14 @@ public class SuperPlayerView extends RelativeLayout {
     private void updateFullScreenButton() {
         if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {// 全屏幕
             $.id(R.id.view_jky_player_fullscreen).image(R.drawable.ic_not_fullscreen);
-            $.id(R.id.view_jky_player_iv_share).gone();
+//            $.id(R.id.view_jky_player_iv_share).gone();
 //            if(!isLive)
 //                $.id(R.id.view_jky_play_iv_setting).visible();
 //            else
 //                $.id(R.id.view_jky_play_iv_setting).gone();
         } else {
             $.id(R.id.view_jky_player_fullscreen).image(R.drawable.ic_enlarge);
-            $.id(R.id.view_jky_player_iv_share).visible();
+//            $.id(R.id.view_jky_player_iv_share).visible();
 //            $.id(R.id.view_jky_play_iv_setting).gone();
         }
     }
@@ -1734,8 +1733,7 @@ public class SuperPlayerView extends RelativeLayout {
             }
             if (NetworkUtil.getNetworkType(activity) == 3) {// 网络是WIFI
                 onNetChangeListener.onWifi();
-            } else if (NetworkUtil.getNetworkType(activity) == 2
-                    || NetworkUtil.getNetworkType(activity) == 4) {// 网络不是手机网络或者是以太网
+            } else if (NetworkUtil.getNetworkType(activity) == 2  || NetworkUtil.getNetworkType(activity) == 4) {// 网络不是手机网络或者是以太网
                 // TODO 更新状态是暂停状态
                 statusChange(STATUS_PAUSE);
                 videoView.pause();

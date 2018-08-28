@@ -3,7 +3,6 @@ package com.fanchen.imovie.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +31,7 @@ public class SearchVideoActivity extends BaseRecyclerActivity {
     public static final String WORD = "word";
     public static final String CLASS_NAME = "className";
     public static final String MULTIPLE = "multiple";
+    public static final String PAGE_START = "start";
     public static final String HAS_LOAD = "load";
 
     private String className;
@@ -45,13 +45,15 @@ public class SearchVideoActivity extends BaseRecyclerActivity {
      * @param context
      * @param word
      * @param className
+     * @param pageStart
      * @param multiple
      * @param hasLoad
      */
-    public static void  startActivity(Context context, String word,String className, int multiple, boolean hasLoad) {
+    public static void  startActivity(Context context, String word,String className,int pageStart, int multiple, boolean hasLoad) {
         try {
             Intent intent = new Intent(context,SearchVideoActivity.class);
             intent.putExtra(WORD,word);
+            intent.putExtra(PAGE_START,pageStart);
             intent.putExtra(CLASS_NAME,className);
             intent.putExtra(MULTIPLE,multiple);
             intent.putExtra(HAS_LOAD,hasLoad);
@@ -66,10 +68,11 @@ public class SearchVideoActivity extends BaseRecyclerActivity {
      * @param context
      * @param word
      * @param className
+     * @param pageStart
      * @param hasLoad
      */
-    public static void  startActivity(Context context, String word,String className, boolean hasLoad) {
-        startActivity(context,word,className,1,hasLoad);
+    public static void  startActivity(Context context, String word,String className,int pageStart, boolean hasLoad) {
+        startActivity(context,word,className,pageStart,1,hasLoad);
     }
 
     /**
@@ -77,10 +80,11 @@ public class SearchVideoActivity extends BaseRecyclerActivity {
      * @param context
      * @param word
      * @param className
+     * @param pageStart
      * @param multiple
      */
-    public static void  startActivity(Context context, String word,String className, int multiple) {
-        startActivity(context,word,className,multiple,true);
+    public static void  startActivity(Context context, String word,String className, int pageStart,int multiple) {
+        startActivity(context,word,className,pageStart,multiple,true);
     }
 
     /**
@@ -88,13 +92,15 @@ public class SearchVideoActivity extends BaseRecyclerActivity {
      * @param context
      * @param word
      * @param className
+     * @param pageStart
      */
-    public static void  startActivity(Context context, String word,String className) {
-        startActivity(context,word,className,1,true);
+    public static void  startActivity(Context context, String word,String className,int pageStart) {
+        startActivity(context,word,className,pageStart,1,true);
     }
 
     @Override
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
+        setPageStart(getIntent().getIntExtra(PAGE_START, 1));
         className = getIntent().getStringExtra(CLASS_NAME);
         word = getIntent().getStringExtra(WORD);
         hasLoad = getIntent().getBooleanExtra(HAS_LOAD, false);
@@ -109,7 +115,7 @@ public class SearchVideoActivity extends BaseRecyclerActivity {
 
     @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
-        return new LinearLayoutManager(this);
+        return new BaseAdapter.LinearLayoutManagerWrapper(this);
     }
 
     @Override
@@ -147,7 +153,7 @@ public class SearchVideoActivity extends BaseRecyclerActivity {
         if(video.hasVideoDetails()){
             VideoDetailsActivity.startActivity(this,video);
         }else{
-            VideoPlayerActivity.startActivity(this,video,false);
+            VideoPlayerActivity.startActivity(this,video);
         }
     }
 

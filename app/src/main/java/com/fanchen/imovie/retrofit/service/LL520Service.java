@@ -31,7 +31,7 @@ public interface LL520Service {
     @GET("{path}/")
     @JsoupType(JsoupSource.LL520)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path);
 
     /**
@@ -43,7 +43,7 @@ public interface LL520Service {
     @GET("list/{path}_{page}.html")
     @JsoupType(JsoupSource.LL520)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
 
     /**
@@ -55,7 +55,7 @@ public interface LL520Service {
     @GET("search.php")
     @JsoupType(JsoupSource.LL520)
     @MethodType(value = MethodSource.SEARCH)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> search(@Query("page") Integer page, @Query("searchword") String keyword);
 
     /**
@@ -67,7 +67,7 @@ public interface LL520Service {
     @GET("list/{path}_{page}.html")
     @JsoupType(JsoupSource.LL520)
     @MethodType(value = MethodSource.MORE)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> more(@Path("path") String pid, @Path("page") Integer page);
 
     /**
@@ -77,7 +77,7 @@ public interface LL520Service {
     @GET
     @JsoupType(JsoupSource.LL520)
     @MethodType(value = MethodSource.DETAILS)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IVideoDetails> details(@Url String url);
 
     /**
@@ -87,6 +87,6 @@ public interface LL520Service {
     @GET
     @JsoupType(JsoupSource.LL520)
     @MethodType(value = MethodSource.PLAYURL)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IPlayUrls> playUrl(@Url String url);
 }

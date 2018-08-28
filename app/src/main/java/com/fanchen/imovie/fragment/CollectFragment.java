@@ -4,26 +4,22 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.fanchen.imovie.IMovieAppliction;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.CollectTabActivity;
-import com.fanchen.imovie.activity.VideoPlayerActivity;
 import com.fanchen.imovie.activity.VideoDetailsActivity;
 import com.fanchen.imovie.adapter.CollectAdapter;
 import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.base.BaseRecyclerFragment;
 import com.fanchen.imovie.entity.bmob.VideoCollect;
-import com.fanchen.imovie.entity.dytt.DyttLiveBody;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.view.CustomEmptyView;
-import com.google.gson.Gson;
 import com.litesuits.orm.db.assit.QueryBuilder;
 import com.litesuits.orm.db.assit.WhereBuilder;
 import com.squareup.picasso.Picasso;
@@ -73,7 +69,7 @@ public class CollectFragment extends BaseRecyclerFragment implements
 
     @Override
     public RecyclerView.LayoutManager getLayoutManager() {
-        return collectType == VideoCollect.TYPE_LIVE ? new LinearLayoutManager(activity) : new GridLayoutManager(activity, 3);
+        return collectType == VideoCollect.TYPE_LIVE ? new BaseAdapter.LinearLayoutManagerWrapper(activity) : new GridLayoutManager(activity, 3);
     }
 
     @Override
@@ -96,11 +92,7 @@ public class CollectFragment extends BaseRecyclerFragment implements
     public void onItemClick(List<?> datas, View v, int position) {
         if (!(datas.get(position) instanceof VideoCollect)) return;
         VideoCollect collect = (VideoCollect) datas.get(position);
-        if (collect.getType() == VideoCollect.TYPE_LIVE) {
-            //电视直播
-            VideoPlayerActivity.startActivity(activity, new Gson().fromJson(collect.getExtend(), DyttLiveBody.class));
-        } else if (collect.getType() == VideoCollect.TYPE_VIDEO) {
-            //视频
+        if (collect.getType() == VideoCollect.TYPE_VIDEO) { //视频
             VideoDetailsActivity.startActivity(activity, collect);
         }
     }

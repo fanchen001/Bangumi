@@ -30,9 +30,11 @@ public interface A4dyService {
     @GET("{path}")
     @JsoupType(JsoupSource.A4DY)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path);
 
+    //vod-list-id-1-pg-2-order--by-time-class-76-year-0-letter--area--lang-.html
+    //vod-type-id-2-pg-2.html
     /**
      *
      * @param path
@@ -42,7 +44,7 @@ public interface A4dyService {
     @GET("vod-type-id-{path}-pg-{page}.html")
     @JsoupType(JsoupSource.A4DY)
     @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
 
     /**
@@ -54,7 +56,7 @@ public interface A4dyService {
     @GET("vod-search-pg-{page}-wd-{keyword}.html")
     @JsoupType(JsoupSource.A4DY)
     @MethodType(value = MethodSource.SEARCH)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("keyword") String keyword);
 
 
@@ -67,7 +69,7 @@ public interface A4dyService {
     @GET("vod-type-id-{path}-pg-{page}.html")
     @JsoupType(JsoupSource.A4DY)
     @MethodType(value = MethodSource.MORE)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> more(@Path("path") String pid, @Path("page") Integer page);
 
 
@@ -78,7 +80,7 @@ public interface A4dyService {
     @GET("vod-detail-id-{path}")
     @JsoupType(JsoupSource.A4DY)
     @MethodType(value = MethodSource.DETAILS)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IVideoDetails> details(@Path("path") String path);
 
     /**
@@ -88,6 +90,6 @@ public interface A4dyService {
     @GET("{path}")
     @JsoupType(JsoupSource.A4DY)
     @MethodType(value = MethodSource.PLAYURL)
-    @RetrofitType(isJsoupResponse = true)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IPlayUrls> playUrl(@Path("path") String path);
 }

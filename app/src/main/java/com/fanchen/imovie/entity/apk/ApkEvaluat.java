@@ -8,6 +8,7 @@ import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.jsoup.node.Node;
 
 /**
+ * ApkEvaluat
  * Created by fanchen on 2017/7/19.
  */
 public class ApkEvaluat implements Parcelable,IViewType {
@@ -148,7 +149,7 @@ public class ApkEvaluat implements Parcelable,IViewType {
         if(attr.contains("https://")){
             return attr;
         }
-        return "https://api.moeapk.com/" + new Node(content).attr("img","src");
+        return "https://api.apk.moe/" + new Node(content).attr("img","src");
     }
 
     @Override
