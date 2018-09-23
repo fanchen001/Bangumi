@@ -17,6 +17,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Url;
 
 /**
+ *
  * Created by fanchen on 2017/11/16.
  */
 @RetrofitType(RetrofitSource.IKANFAN_API)
@@ -25,14 +26,13 @@ public interface IKanFanService {
     /**
      *
      * @param path
-     * @param page
      * @return
      */
-    @GET("{path}/index{page}.html")
+    @GET("{path}/")
     @JsoupType(JsoupSource.IKANFAN)
     @MethodType(value = MethodSource.HOME)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IHomeRoot> home(@Path("path") String path,@Path("page")Integer page);
+    Call<IHomeRoot> home(@Path("path") String path);
 
     /**
      *
@@ -40,21 +40,33 @@ public interface IKanFanService {
      * @param keyword
      * @return
      */
-    @GET("search/{keyword}-{page}.html")
+    @GET("vod-search-wd-{keyword}-p-{page}.html")
     @JsoupType(JsoupSource.IKANFAN)
     @MethodType(value = MethodSource.SEARCH)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("keyword") String keyword);
 
     /**
+     *
+     * @param pid
+     * @param page
+     * @return
+     */
+    @GET("{path}/index{page}.html")
+    @JsoupType(JsoupSource.IKANFAN)
+    @MethodType(value = MethodSource.MORE)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    Call<IBangumiMoreRoot> more(@Path("path") String pid, @Path("page") Integer page);
+
+    /**
      * @param path
      * @return
      */
-    @GET("ac/{path}/")
+    @GET
     @JsoupType(JsoupSource.IKANFAN)
     @MethodType(value = MethodSource.DETAILS)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IVideoDetails> details(@Path("path") String path);
+    Call<IVideoDetails> details(@Url String path);
 
     /**
      * @param path

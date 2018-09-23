@@ -1,6 +1,5 @@
 package com.fanchen.imovie.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -26,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * DownloadAdapter
  * Created by fanchen on 2017/10/3.
  */
 public class DownloadAdapter extends BaseAdapter {
@@ -57,8 +57,7 @@ public class DownloadAdapter extends BaseAdapter {
         viewHolder.progressBar.setMax(100);
         int percent = entity.getPercent();
         long fileSize = entity.getFileSize();
-        if(fileSize <= 0 )
-            fileSize = Integer.MAX_VALUE;
+        if (fileSize <= 0) fileSize = Integer.MAX_VALUE;
         viewHolder.progressBar.setProgress(percent <= 0 ? (int) (entity.getCurrentProgress() * 100L / fileSize) : percent);
         viewHolder.downloadLength.setText(entity.getConvertSpeed());
         viewHolder.downloadName.setText(entity.getFileName());
@@ -69,6 +68,14 @@ public class DownloadAdapter extends BaseAdapter {
         viewHolder.btnPlay.setTag(entity);
         viewHolder.btnPlay.setOnClickListener(controlListener);
         viewHolder.btnDelete.setVisibility(View.GONE);
+        setBtnState(viewHolder, entity);
+        if (!isDeleteMode) return;
+        viewHolder.btnPlay.setVisibility(View.GONE);
+        viewHolder.downloadControl.setVisibility(View.GONE);
+        viewHolder.btnDelete.setVisibility(View.VISIBLE);
+    }
+
+    private void setBtnState(DownloadViewHolder viewHolder, DownloadEntity entity) {
         switch (entity.getState()) {
             case IEntity.STATE_STOP:
                 viewHolder.progressText.setText("停止");
@@ -109,11 +116,6 @@ public class DownloadAdapter extends BaseAdapter {
             default:
                 viewHolder.progressText.setText("未知状态");
         }
-        if (isDeleteMode) {
-            viewHolder.btnPlay.setVisibility(View.GONE);
-            viewHolder.downloadControl.setVisibility(View.GONE);
-            viewHolder.btnDelete.setVisibility(View.VISIBLE);
-        }
     }
 
     @Override
@@ -145,7 +147,7 @@ public class DownloadAdapter extends BaseAdapter {
     public void update(DownloadTask task) {
         if (task == null || getList() == null) return;
         for (DownloadEntityWrap e : (List<DownloadEntityWrap>) getList()) {
-            if (task.getDownloadUrl().equals(e.getEntity().getDownloadUrl())) {
+            if (task.getDownloadUrl().equals(e.getEntity().getUrl())) {
                 e.getEntity().setPercent(task.getPercent());
                 e.getEntity().setState(task.getState());
                 e.getEntity().setConvertSpeed(task.getConvertSpeed());
@@ -160,7 +162,7 @@ public class DownloadAdapter extends BaseAdapter {
         String[] split = suffix.split("/");
         for (String s : split) {
             for (DownloadEntity e : all) {
-                if (e.getDownloadUrl().contains(s)) {
+                if (e.getUrl().contains(s)) {
                     newList.add(new DownloadEntityWrap(e, newList.size()));
                 } else if (e.getFileName().contains(s)) {
                     newList.add(new DownloadEntityWrap(e, newList.size()));
@@ -178,7 +180,7 @@ public class DownloadAdapter extends BaseAdapter {
         int position = -1;
         for (DownloadEntityWrap e : (List<DownloadEntityWrap>) getList()) {
             position++;
-            if (entity.getDownloadUrl().equals(e.getEntity().getDownloadUrl())) {
+            if (entity.getUrl().equals(e.getEntity().getUrl())) {
                 break;
             }
         }

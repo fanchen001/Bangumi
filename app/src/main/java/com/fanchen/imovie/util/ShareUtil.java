@@ -4,6 +4,9 @@ import android.text.TextUtils;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.base.BaseActivity;
+import com.fanchen.imovie.entity.bmob.DialogBanner;
+import com.fanchen.imovie.entity.face.IVideoDetails;
+import com.google.gson.Gson;
 import com.umeng.socialize.ShareAction;
 import com.umeng.socialize.UMShareListener;
 import com.umeng.socialize.bean.SHARE_MEDIA;
@@ -20,16 +23,25 @@ import java.lang.ref.SoftReference;
  */
 public class ShareUtil {
 
+    public static void shareDialogBanner(IVideoDetails details, int version) {
+        DialogBanner banner = new DialogBanner();
+        banner.setTitle(details.getTitle());
+        banner.setCover(details.getCover());
+        banner.setBannerInt(version);
+        banner.setBaseJson(new Gson().toJson(details));
+        banner.setIntroduce(details.getIntroduce());
+        banner.save();
+    }
+
     /**
-     *
      * @param baseActivity
      * @param title
      * @param content
      * @param url
      */
-    public static void share(BaseActivity baseActivity,String title,String content,String url){
+    public static void share(BaseActivity baseActivity, String title, String content, String url) {
         ShareAction shareAction = new ShareAction(baseActivity);
-        shareAction.setShareboardclickCallback(new Boardlistener(baseActivity,title,content,url,false));
+        shareAction.setShareboardclickCallback(new Boardlistener(baseActivity, title, content, url, false));
         shareAction.setDisplayList(SHARE_MEDIA.WEIXIN, SHARE_MEDIA.QQ, SHARE_MEDIA.SINA, SHARE_MEDIA.EMAIL, SHARE_MEDIA.MORE);
         ShareBoardConfig config = new ShareBoardConfig();
         config.setShareboardPostion(ShareBoardConfig.SHAREBOARD_POSITION_CENTER);
@@ -38,13 +50,12 @@ public class ShareUtil {
     }
 
     /**
-     *
      * @param baseActivity
      * @param content
      */
-    public static void share(BaseActivity baseActivity,String content){
+    public static void share(BaseActivity baseActivity, String content) {
         ShareAction shareAction = new ShareAction(baseActivity);
-        shareAction.setShareboardclickCallback(new Boardlistener(baseActivity,null,content,null,true));
+        shareAction.setShareboardclickCallback(new Boardlistener(baseActivity, null, content, null, true));
         shareAction.setDisplayList(SHARE_MEDIA.WEIXIN, SHARE_MEDIA.QQ, SHARE_MEDIA.SINA, SHARE_MEDIA.EMAIL, SHARE_MEDIA.MORE);
         ShareBoardConfig config = new ShareBoardConfig();
         config.setShareboardPostion(ShareBoardConfig.SHAREBOARD_POSITION_CENTER);
@@ -53,21 +64,19 @@ public class ShareUtil {
     }
 
     /**
-     *
      * @param baseActivity
      * @param title
      * @param content
      */
-    public static void share(BaseActivity baseActivity,String title,String content){
+    public static void share(BaseActivity baseActivity, String title, String content) {
         share(baseActivity, title, content, null);
     }
 
     /**
-     *
      * @param baseActivity
      */
-    public static void share(BaseActivity baseActivity){
-        share(baseActivity,null,null);
+    public static void share(BaseActivity baseActivity) {
+        share(baseActivity, null, null);
     }
 
     private static class Boardlistener implements ShareBoardlistener {
@@ -78,18 +87,18 @@ public class ShareUtil {
         private String content;
         private String url;
 
-        private Boardlistener(BaseActivity activity,String title,String content,String url,boolean withText) {
+        private Boardlistener(BaseActivity activity, String title, String content, String url, boolean withText) {
             mActivity = new SoftReference(activity);
             this.withText = withText;
             this.content = TextUtils.isEmpty(content) ? activity.getString(R.string.def_content) : content;
-            this.title = TextUtils.isEmpty(title)?activity.getString(R.string.def_title) : title;
-            this.url = TextUtils.isEmpty(url)?activity.getString(R.string.def_url) : url;
+            this.title = TextUtils.isEmpty(title) ? activity.getString(R.string.def_title) : title;
+            this.url = TextUtils.isEmpty(url) ? activity.getString(R.string.def_url) : url;
         }
 
         @Override
         public void onclick(SnsPlatform snsPlatform, SHARE_MEDIA share_media) {
             BaseActivity settingsActivity = mActivity.get();
-            if(settingsActivity == null)return;
+            if (settingsActivity == null) return;
             if (share_media == SHARE_MEDIA.SMS || withText) {
                 new ShareAction(settingsActivity).
                         withText(content).
@@ -110,7 +119,9 @@ public class ShareUtil {
             }
         }
 
-    };
+    }
+
+    ;
 
     private static class CustomShareListener implements UMShareListener {
 
@@ -127,7 +138,7 @@ public class ShareUtil {
         @Override
         public void onResult(SHARE_MEDIA platform) {
             BaseActivity settingsActivity = mActivity.get();
-            if(settingsActivity == null)return;
+            if (settingsActivity == null) return;
             if (platform.name().equals("WEIXIN_FAVORITE")) {
                 settingsActivity.showSnackbar(platform + " 收藏成功啦");
             } else {
@@ -138,7 +149,7 @@ public class ShareUtil {
         @Override
         public void onError(SHARE_MEDIA platform, Throwable t) {
             BaseActivity settingsActivity = mActivity.get();
-            if(settingsActivity == null)return;
+            if (settingsActivity == null) return;
             if (platform.name().equals("WEIXIN_FAVORITE")) {
                 settingsActivity.showSnackbar(platform + " 收藏失败啦");
             } else {
@@ -149,7 +160,7 @@ public class ShareUtil {
         @Override
         public void onCancel(SHARE_MEDIA platform) {
             BaseActivity settingsActivity = mActivity.get();
-            if(settingsActivity == null)return;
+            if (settingsActivity == null) return;
             settingsActivity.showSnackbar(platform + " 分享取消了");
         }
     }

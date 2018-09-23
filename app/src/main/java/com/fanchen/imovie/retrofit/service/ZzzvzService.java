@@ -39,7 +39,7 @@ public interface ZzzvzService {
      * @param page
      * @return
      */
-    @GET("{path}/index{page}.html")
+    @GET("{path}/index-{page}.html")
     @JsoupType(JsoupSource.ZZZVZ)//index1.html
     @MethodType(value = MethodSource.HOME)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
@@ -51,7 +51,7 @@ public interface ZzzvzService {
      * @param keyword
      * @return
      */
-    @GET("vod-search-wd-{wd}-p-{page}.html")
+    @GET("search/{wd}-{page}.html")
     @JsoupType(JsoupSource.ZZZVZ)
     @MethodType(value = MethodSource.SEARCH)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
@@ -63,7 +63,7 @@ public interface ZzzvzService {
      * @param page
      * @return
      */
-    @GET("{path}/index{page}.html")
+    @GET("{path}/index-{page}.html")
     @JsoupType(JsoupSource.ZZZVZ)
     @MethodType(value = MethodSource.MORE)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
@@ -73,11 +73,11 @@ public interface ZzzvzService {
      * @param path
      * @return
      */
-    @GET("movie/{path}")
+    @GET
     @JsoupType(JsoupSource.ZZZVZ)
     @MethodType(value = MethodSource.DETAILS)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IVideoDetails> details(@Path("path") String path);
+    Call<IVideoDetails> details(@Url String path);
 
     /**
      * @param path

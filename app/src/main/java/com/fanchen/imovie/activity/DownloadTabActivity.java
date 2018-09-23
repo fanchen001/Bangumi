@@ -3,6 +3,7 @@ package com.fanchen.imovie.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -11,14 +12,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.arialyy.annotations.Download;
-import com.arialyy.aria.core.Aria;
 import com.arialyy.aria.core.download.DownloadTask;
 import com.fanchen.imovie.IMovieAppliction;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.adapter.pager.DownloadPagerAdapter;
 import com.fanchen.imovie.base.BaseTabActivity;
-import com.fanchen.imovie.fragment.DownloadFragment;
-import com.fanchen.imovie.util.LogUtil;
 
 /**
  * 下载管理   视频、应用
@@ -26,14 +24,14 @@ import com.fanchen.imovie.util.LogUtil;
  */
 public class DownloadTabActivity extends BaseTabActivity implements ViewPager.OnPageChangeListener, IMovieAppliction.OnTaskRuningListener {
 
-    private DownloadFragment mDownloadFragment;
+    private OnDownloadListernr mFragment;
     private boolean deleteMode = false;
 
     public static void startActivity(Context context) {
         try {
             Intent intent = new Intent(context, DownloadTabActivity.class);
             context.startActivity(intent);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -41,7 +39,7 @@ public class DownloadTabActivity extends BaseTabActivity implements ViewPager.On
     @Override
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
-        mDownloadFragment = (DownloadFragment) getVisibleFragment();
+        mFragment = (OnDownloadListernr) getVisibleFragment();
     }
 
     @Override
@@ -63,10 +61,10 @@ public class DownloadTabActivity extends BaseTabActivity implements ViewPager.On
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_delete:
-                DownloadFragment downloadFragment = (DownloadFragment) getVisibleFragment();
-                if(downloadFragment != null){
+                OnDownloadListernr downloadFragment = (OnDownloadListernr) getVisibleFragment();
+                if (downloadFragment != null) {
                     downloadFragment.setDeleteMode(deleteMode = true);
                 }
                 break;
@@ -81,12 +79,12 @@ public class DownloadTabActivity extends BaseTabActivity implements ViewPager.On
 
     @Override
     public void onBackPressed() {
-        if(deleteMode){
-            DownloadFragment downloadFragment = (DownloadFragment) getVisibleFragment();
-            if(downloadFragment != null){
+        if (deleteMode) {
+            OnDownloadListernr downloadFragment = (OnDownloadListernr) getVisibleFragment();
+            if (downloadFragment != null) {
                 downloadFragment.setDeleteMode(deleteMode = false);
             }
-        }else{
+        } else {
             super.onBackPressed();
         }
     }
@@ -94,7 +92,7 @@ public class DownloadTabActivity extends BaseTabActivity implements ViewPager.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(appliction != null){
+        if (appliction != null) {
             appliction.setRuningListener(this);
         }
     }
@@ -102,15 +100,14 @@ public class DownloadTabActivity extends BaseTabActivity implements ViewPager.On
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(appliction != null){
+        if (appliction != null) {
             appliction.setRuningListener(null);
         }
     }
 
     @Override
     public void onTaskUpdate(DownloadTask task) {
-        if (mDownloadFragment != null)
-            mDownloadFragment.onTaskUpdate(task);
+        if (mFragment != null) mFragment.onTaskUpdate(task);
     }
 
     @Download.onTaskCancel
@@ -124,10 +121,16 @@ public class DownloadTabActivity extends BaseTabActivity implements ViewPager.On
     @Override
     public void onPageSelected(int position) {
         deleteMode = false;
-        mDownloadFragment = (DownloadFragment) getUnVisibleFragment();
+        mFragment = (OnDownloadListernr) getUnVisibleFragment();
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
+    }
+
+    public interface OnDownloadListernr {
+        void setDeleteMode(boolean mode);
+
+        void onTaskUpdate(DownloadTask task);
     }
 }

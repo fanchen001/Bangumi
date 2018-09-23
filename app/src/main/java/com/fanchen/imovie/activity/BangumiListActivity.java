@@ -20,7 +20,6 @@ import com.fanchen.imovie.entity.face.IBangumiTitle;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.util.DialogUtil;
-import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.RegularUtil;
 import com.squareup.picasso.Picasso;
 
@@ -127,7 +126,6 @@ public class BangumiListActivity extends BaseRecyclerActivity {
     @Override
     protected void loadData(RetrofitManager retrofit, int page) {
         retrofit.enqueue(className, callback, "more", url, Integer.valueOf(page));
-        LogUtil.e("loadData", "url => " + url);
     }
 
     @Override

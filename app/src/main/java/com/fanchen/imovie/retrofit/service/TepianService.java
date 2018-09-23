@@ -14,6 +14,7 @@ import com.fanchen.imovie.entity.face.IVideoDetails;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 /**
@@ -62,11 +63,11 @@ public interface TepianService {
      * @param keyword
      * @return
      */
-    @GET("vod-search-wd-{keyword}-p-{page}.html")
+    @GET("search.php")
     @JsoupType(JsoupSource.TEPIAN)
     @MethodType(value = MethodSource.SEARCH)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("keyword") String keyword);
+    Call<IBangumiMoreRoot> search(@Query("page") Integer page, @Query("searchword") String keyword);
 
     /**
      *

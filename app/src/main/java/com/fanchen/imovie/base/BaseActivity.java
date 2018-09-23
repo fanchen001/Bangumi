@@ -634,8 +634,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         try {
             if (mBroadcastReceiver.contains(receiver)) {
                 mBroadcastReceiver.remove(receiver);
+                super.unregisterReceiver(receiver);
             }
-            super.unregisterReceiver(receiver);
         } catch (Exception e) {
             e.printStackTrace();
         }

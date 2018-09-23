@@ -35,7 +35,7 @@ public class VideoUrlUtil {
     private Context mContext;
     private WebView webView;
     private int timeOut = 20 * 1000;//解析超时时间
-    private int parserTime = 2000;//延时解析时间
+    private int parserTime = 5000;//延时解析时间
     private String referer = "";// referer
 
     private boolean isVideoJs = false;

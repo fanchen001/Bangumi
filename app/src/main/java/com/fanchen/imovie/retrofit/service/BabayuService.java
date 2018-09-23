@@ -38,7 +38,7 @@ public interface BabayuService {
      * @param page
      * @return
      */
-    @GET("{path}/index-{page}.html")
+    @GET("{path}/index_{page}_______1.html")
     @JsoupType(JsoupSource.BABAYU)
     @MethodType(value = MethodSource.HOME)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)

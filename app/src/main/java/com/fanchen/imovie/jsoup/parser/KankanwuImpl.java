@@ -16,6 +16,7 @@ import com.fanchen.imovie.entity.VideoPlayUrls;
 import com.fanchen.imovie.entity.VideoTitle;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
 import com.fanchen.imovie.jsoup.node.Node;
+import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.KankanService;
 import com.fanchen.imovie.util.LogUtil;
 
@@ -57,9 +58,13 @@ public class KankanwuImpl implements IVideoMoreParser {
                 String title = n.text("a > div > label.name");
                 if(TextUtils.isEmpty(title))
                     title = n.attr("a > div > img","alt");
+                if(TextUtils.isEmpty(title))
+                    title = n.text("h2");
                 String cover = n.attr("a > div > img", "src");
                 if(TextUtils.isEmpty(cover) || cover.contains("mstyle"))
                     cover = n.attr("a > div > img", "data-src");
+                if(TextUtils.isEmpty(cover))
+                    cover = n.attr("a > div > img", "data-original");
                 String clazz = n.textAt("div.list_info > p", 0);
                 String type = n.textAt("div.list_info > p", 1);
                 String author = n.textAt("div.list_info > p", 2);
@@ -68,7 +73,7 @@ public class KankanwuImpl implements IVideoMoreParser {
                 video.setCover(cover);
                 video.setHost(baseUrl);
                 video.setHasDetails(true);
-                video.setServiceClass(clazz);
+                video.setServiceClass(this.clazz);
                 video.setId(url);
                 video.setTitle(title);
                 video.setUrl(url);
@@ -99,11 +104,13 @@ public class KankanwuImpl implements IVideoMoreParser {
                         String src = n.attr("a > img", "src");
                         if(TextUtils.isEmpty(src) || src.contains("mstyle"))
                             src = n.attr("a > img", "data-original");
+                        if(TextUtils.isEmpty(src))
+                            src = n.attr("a > img", "data-src");
                         banner.setCover(src);
                         banner.setHost(baseUrl);
                         banner.setId(baseUrl + n.attr("a", "href"));
                         banner.setTitle(n.text("a > span"));
-                        banner.setServiceClass(clazz);
+                        banner.setServiceClass(this.clazz);
                         banner.setUrl(baseUrl + n.attr("a", "href"));
                         banners.add(banner);
                     }
@@ -123,7 +130,7 @@ public class KankanwuImpl implements IVideoMoreParser {
                     videoTitle.setId(topId);
                     videoTitle.setUrl(topUrl);
                     videoTitle.setList(videos);
-                    videoTitle.setServiceClass(clazz);
+                    videoTitle.setServiceClass(this.clazz);
                     for (Node sub : new Node(n.getElement().nextElementSibling()).list("div > ul > li")) {
                         String title = sub.text("a > div > label.name");
                         if(TextUtils.isEmpty(title))
@@ -137,8 +144,9 @@ public class KankanwuImpl implements IVideoMoreParser {
                         String hd = sub.text("a > div > label.title");
                         String url = baseUrl + sub.attr("a", "href");
                         Video video = new Video();
+                        video.setHost(baseUrl);
                         video.setHasDetails(true);
-                        video.setServiceClass(clazz);
+                        video.setServiceClass(this.clazz);
                         video.setCover(cover);
                         video.setId(url);
                         video.setTitle(title);
@@ -165,8 +173,9 @@ public class KankanwuImpl implements IVideoMoreParser {
                     String area = n.text("p");
                     String url = baseUrl + n.attr("a", "href");
                     Video video = new Video();
+                    video.setHost(baseUrl);
                     video.setHasDetails(true);
-                    video.setServiceClass(clazz);
+                    video.setServiceClass(this.clazz);
                     video.setCover(cover);
                     video.setId(url);
                     video.setAuthor(area);
@@ -203,7 +212,8 @@ public class KankanwuImpl implements IVideoMoreParser {
                 String url = baseUrl + n.attr("a", "href");
                 Video video = new Video();
                 video.setHasDetails(true);
-                video.setServiceClass(clazz);
+                video.setHost(baseUrl);
+                video.setServiceClass(this.clazz);
                 video.setCover(cover);
                 video.setId(url);
                 video.setTitle(title);
@@ -217,7 +227,7 @@ public class KankanwuImpl implements IVideoMoreParser {
             for (Node n : node.list("div.play-box > ul")) {
                 for (Node sub : n.list("li")) {
                     VideoEpisode episode = new VideoEpisode();
-                    episode.setServiceClass(clazz);
+                    episode.setServiceClass(this.clazz);
                     episode.setId(baseUrl + sub.attr("a", "href"));
                     episode.setUrl(baseUrl + sub.attr("a", "href"));
                     if (list.size() > count) {
@@ -229,8 +239,9 @@ public class KankanwuImpl implements IVideoMoreParser {
                 }
                 count++;
             }
+            details.setHost(baseUrl);
             details.setCanDownload(true);
-            details.setServiceClass(clazz);
+            details.setServiceClass(this.clazz);
             details.setCover(node.attr("div.vod-n-img > img.loading", "data-original"));
             details.setClazz(node.textAt("div.vod-n-l > p", 0));
             details.setType(node.textAt("div.vod-n-l > p", 1));
@@ -254,9 +265,16 @@ public class KankanwuImpl implements IVideoMoreParser {
             String tempHtml = "";
             if (start >= 0) {
                 tempHtml = html.substring(start);
-                int end = tempHtml.indexOf(".mp4");
-                if (end >= 0) {
-                    tempHtml = tempHtml.substring(0, end + 4);
+                if(tempHtml.contains(".mp4")){
+                    tempHtml = tempHtml.substring(0, tempHtml.indexOf(".mp4") + 4);
+                }else if(tempHtml.contains(".mkv")){
+                    tempHtml = tempHtml.substring(0, tempHtml.indexOf(".mkv") + 4);
+                }else if(tempHtml.contains(".rmvb")){
+                    tempHtml = tempHtml.substring(0, tempHtml.indexOf(".rmvb") + 5);
+                }else if(tempHtml.contains(".rm")){
+                    tempHtml = tempHtml.substring(0, tempHtml.indexOf(".rm") + 3);
+                }else if(tempHtml.contains(".avi")){
+                    tempHtml = tempHtml.substring(0, tempHtml.indexOf(".avi") + 4);
                 }
             }
             Map<String, String> mapUrl = new HashMap<>();
@@ -269,12 +287,7 @@ public class KankanwuImpl implements IVideoMoreParser {
             } else if(defM3u8){
                 String attr = new Node(html).attr("iframe", "src", "=", 1);
                 if (!TextUtils.isEmpty(attr)) {
-                    if (attr.startsWith("//")) {
-                        attr = "http:" + attr;
-                    } else if(attr.startsWith("/")){
-                        attr = baseUrl + attr;
-                    }
-                    mapUrl.put("标清", attr);
+                    mapUrl.put("标清", RetrofitManager.warpUrl(baseUrl, attr));
                     playUrl.setUrls(mapUrl);
                     playUrl.setUrlType(IPlayUrls.URL_M3U8);
                     playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
@@ -284,12 +297,7 @@ public class KankanwuImpl implements IVideoMoreParser {
                 Node node = new Node(html);
                 String attr = node.attr("iframe", "src");
                 if (!TextUtils.isEmpty(attr)){
-                    if (attr.startsWith("//")) {
-                        attr = "http:" + attr;
-                    } else if(attr.startsWith("/")){
-                        attr = baseUrl + attr;
-                    }
-                    mapUrl.put("标清", attr );
+                    mapUrl.put("标清", RetrofitManager.warpUrl(baseUrl, attr) );
                     playUrl.setUrls(mapUrl);
                     playUrl.setUrlType(IPlayUrls.URL_WEB);
                     playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);

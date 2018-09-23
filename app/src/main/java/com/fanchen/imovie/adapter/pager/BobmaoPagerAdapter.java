@@ -8,15 +8,15 @@ import com.fanchen.imovie.fragment.VideoListFragment;
 import com.fanchen.imovie.retrofit.service.BobmaoService;
 
 /**
+ * BobmaoPagerAdapter
  * Created by fanchen on 2017/9/24.
  */
 public class BobmaoPagerAdapter extends BaseFragmentAdapter{
 
-    private final String[] TITLES = new String[]{"首页","电影", "电视剧", "动漫","综艺","娱乐"};
-    private final String[] PATHS = new String[]{"","1", "2", "3","4","5"};
-    private final Boolean[] LOADS = new Boolean[]{false,true,true,true,true,true};
-
-    private final String REFERER = "https://www.bobmao.com/";
+    private final String[] TITLES = new String[]{"首页","电影", "电视剧", "动漫","综艺","小视频"};
+    private final String[] PATHS = new String[]{"","dianying", "dianshiju", "dongman","zongyi","weidianying"};
+    private final Boolean[] BANGUMI = new Boolean[]{true,false,false,false,false,false};
+    private final String REFERER = "http://m.haodianying.cc/";
 
     public BobmaoPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -29,7 +29,7 @@ public class BobmaoPagerAdapter extends BaseFragmentAdapter{
 
     @Override
     public Fragment createFragment(int position) {
-        return VideoListFragment.newInstance(PATHS[position],getExtendInfo().toString(),1,2,LOADS[position],false,false,REFERER,false);
+        return VideoListFragment.newInstance(PATHS[position], getExtendInfo().toString(), 1, 1, false, false, false, REFERER, BANGUMI[position]);
     }
 
     @Override
@@ -37,8 +37,4 @@ public class BobmaoPagerAdapter extends BaseFragmentAdapter{
         return BobmaoService.class.getName();
     }
 
-    @Override
-    public int getPageStart() {
-        return 2;
-    }
 }

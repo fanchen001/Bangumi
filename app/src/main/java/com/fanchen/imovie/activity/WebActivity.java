@@ -41,7 +41,6 @@ import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
 import com.xigua.p2p.P2PManager;
-import com.xigua.p2p.StorageUtils;
 
 
 import java.util.Arrays;
@@ -280,7 +279,6 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
             if (scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https")) {
                 view.loadUrl(url);
             } else if (scheme.equalsIgnoreCase("xg") && IMovieAppliction.app != null) {
-                StorageUtils.init(IMovieAppliction.app);
                 P2PManager.getInstance().init(IMovieAppliction.app);
                 P2PManager.getInstance().setAllow3G(true);
                 DialogUtil.showProgressDialog(WebActivity.this, getString(R.string.loading));

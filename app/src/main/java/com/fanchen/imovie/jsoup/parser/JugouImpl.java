@@ -31,7 +31,29 @@ public class JugouImpl implements IVideoMoreParser {
 
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {
-        return (IBangumiMoreRoot) home(retrofit, baseUrl, html);
+        Node node = new Node(html);
+        VideoHome root = new VideoHome();
+        List<Video> videos = new ArrayList<>();
+        try {
+            for (Node n : node.list("div.item.clearfix")){
+                Video video = new Video();
+                video.setHasDetails(true);
+                video.setServiceClass(JugouService.class.getName());
+                String style = n.attr("dl > dt > a", "style").replace("background: url(","").replace(") no-repeat; background-position:50% 50%; background-size: cover;","");
+                video.setCover(style);
+                video.setTitle(n.text("h3"));
+                video.setUrl(n.attr("dl > dt > a", "href"));
+                video.setId(video.getUrl());
+                video.setType(n.text("div.score"));
+                video.setDanmaku(n.text("ul > li"));
+                videos.add(video);
+            }
+            root.setSuccess(true);
+            root.setList(videos);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return root;
     }
 
     @Override

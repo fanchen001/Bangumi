@@ -263,13 +263,13 @@
     <string name="register_success">注册成功</string>
     <string name="error_phone_pwd">手机号或密码格式不正确</string>
     <string name="login_success">登录成功</string>
-    <string name="login_ing">正在登录...</string>
-    <string name="register_ing">正在注册...</string>
-    <string name="find_pass_ing">正在获取密码...</string>
+    <string name="login_ing">正在登录..</string>
+    <string name="register_ing">正在注册..</string>
+    <string name="find_pass_ing">正在获取密码..</string>
     <string name="find_pass_error">找回密码失败</string>
     <string name="error_download_type">该类型不支持下载</string>
     <string name="error_download_non">没有选中要下载的视频</string>
-    <string name="download_ing">正在下载...</string>
+    <string name="download_ing">正在下载..</string>
     <string name="delete_file">是否删除该下载任务?</string>
     <string name="task_exists">任务已经存在</string>
     <string name="hack">视频黑科技</string>
@@ -315,7 +315,7 @@
     <string name="vip">VIP</string>
     <string name="user_non">普通用户</string>
     <string name="qqqun">客服QQ群 541361788</string>
-    <string name="more_hit">【首页】数据来自吐槽C,原网站很多视频本身看不了,但是【分区】里面包含其他番剧(影视)源,这里面绝大部分视频是可以正常播放的，部分支持下载。【更多】里面有一些视频黑科技,首页搜不到,解析播放错误的视频可在【分区】【更多】里面寻找！！！</string>
+    <string name="more_hit"><![CDATA[<font color="red">次元番【首页,番剧,影视】来自吐槽C[www.tucao.tv],很多视频原本就看不了或者已经下架,不是APP的问题。</font>【分区】里面包含其他网站(影视)源,里面大部分视频可以正常播放，部分支持下载。【更多】里面有视频黑科技,首页搜不到,解析错误的视频可在【分区】【更多】里面寻找！！！]]></string>
     <string name="w_4k">4K影院</string>
     <string name="zz_player_network_invalid">网络异常，请检查后再试</string>
     <string name="bindphone">绑定手机</string>
@@ -339,10 +339,11 @@
     <string name="video_thit">【提醒】：部分视频的部分[播放源]可能无法播放，如果遇到这种问题可以切换[播放源]试试.如果切换播放源依然不能播放，可以切换[分区]观看</string>
     <string name="success_token">获取token成功</string>
     <string name="error_video_type">不支持的播放类型</string>
-    <string name="app_hit">喜欢观看漫画的小伙伴，可以支持一下我的另一个应用【爱搜云】哦。漫画,轻小说,美女图片,网盘搜索应有尽有...</string>
+    <string name="app_hit">喜欢观看漫画的小伙伴，可以支持一下我的另一个应用【爱搜云】哦。漫画,轻小说,美女图片,网盘搜索应有尽有..</string>
     <string name="alipay_hit">是否跳转支付宝领取《线下(余额宝)支付红包》,即可以省钱，又是对开发者的支持！！！！</string>
     <string name="video_src_hit">【提醒】：播放器默认使用ijkplayer，如碰到[声音不同步][没有声音]或者[播放失败]。可以点击右上角[┇]切换播放器,或者在系统设置里面设置默认播放器</string>
     <string name="clear_ing">正在删除..</string>
     <string name="item_tv">电视直播</string>
     <string name="tv_live">电视直播</string>
+    <string name="xigua_finish_hit">是否继续在后台缓存视频文件？缓存文件可以去[下载管理]-[西瓜视频]里查看！！</string>
 </resources>

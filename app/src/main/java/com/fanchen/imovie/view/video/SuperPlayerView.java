@@ -40,6 +40,7 @@ import android.widget.TextView;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.WebPlayerActivity;
+import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.NetworkUtil;
 
 import java.net.URI;
@@ -140,7 +141,6 @@ public class SuperPlayerView extends RelativeLayout {
 
     private int initWidth = 0;
     private int initHeight = 0;
-    private boolean isDestroy = false;
     private boolean isShowing;
     private boolean portrait;
     private float brightness = -1;
@@ -152,7 +152,7 @@ public class SuperPlayerView extends RelativeLayout {
     private OnPreparedListener onPreparedListener;
     private OnClickListener onErrorClickListener;
     private AdapterView.OnItemClickListener onItemClickListener;
-
+    private Handler mmH = new Handler(Looper.getMainLooper());
     private ListPopupWindow mPopupWindow;
 
     public void setDefinition(boolean isDefinition) {
@@ -314,8 +314,6 @@ public class SuperPlayerView extends RelativeLayout {
      * @param timeout
      */
     private void show(int timeout) {
-        Log.e("isHideControl", "=>" + isHideControl);
-        Log.e("isShowing", "=>" + isShowing);
         if (isHideControl) {
             showBottomControl(false);
             showCenterControl(false);
@@ -607,37 +605,32 @@ public class SuperPlayerView extends RelativeLayout {
     }
 
     /**
-     *
      * @param show
      */
-    public void setAutoSpeend(boolean show){
-        if(show){
+    public void setAutoSpeend(boolean show) {
+        if (show) {
             setShowSpeed(VISIBLE);
-            if(!isDestroy){
-                new Thread(speedRunnable).start();
-            }
-        }else{
+            mmH.removeCallbacks(speedRunnable);
+            mmH.postDelayed(speedRunnable, 1000);
+        } else {
             setShowSpeed(GONE);
-            isDestroy = false;
         }
     }
 
     /**
-     *
      * @param visible
      */
-    public void setShowSpeed(int visible){
-        if(mTextView != null)
+    public void setShowSpeed(int visible) {
+        if (mTextView != null)
             mTextView.setVisibility(visible);
     }
 
     /**
-     *
      * @param speed
      */
-    public void setSpeed(String speed){
+    public void setSpeed(String speed) {
         setShowSpeed(VISIBLE);
-        if(mTextView != null)
+        if (mTextView != null)
             mTextView.setText(speed);
     }
 
@@ -911,7 +904,7 @@ public class SuperPlayerView extends RelativeLayout {
      * 在activity中的onDestroy中需要回调
      */
     public void onDestroy() {
-        isDestroy = true;
+        mmH.removeCallbacks(speedRunnable);
         unregisterNetReceiver();// 取消网络变化的监听
         orientationEventListener.disable();
         handler.removeCallbacksAndMessages(null);
@@ -952,12 +945,12 @@ public class SuperPlayerView extends RelativeLayout {
         play(url, 0, null);
     }
 
-    public void play(String url,String referer) {
+    public void play(String url, String referer) {
         if (TextUtils.isEmpty(url)) return;
         this.url = url;
         $.id(R.id.app_video_loading).visible();
-        Map<String ,String> map = new HashMap<>();
-        map.put("Referer",referer);
+        Map<String, String> map = new HashMap<>();
+        map.put("Referer", referer);
         play(url, 0, map);
     }
 
@@ -975,7 +968,7 @@ public class SuperPlayerView extends RelativeLayout {
      * @see （一般用于记录上次播放的位置或者切换视频源）
      */
     public void play(String url, int currentPosition, Map<String, String> header) {
-        if(TextUtils.isEmpty(url))return;
+        if (TextUtils.isEmpty(url)) return;
         this.url = url;
         if (!isNetListener) {// 如果设置不监听网络的变化，则取消监听网络变化的广播
             unregisterNetReceiver();
@@ -992,7 +985,7 @@ public class SuperPlayerView extends RelativeLayout {
         } else {
             if (playerSupport) {
                 $.id(R.id.app_video_loading).visible();
-                if(TextUtils.isEmpty(url))return;
+                if (TextUtils.isEmpty(url)) return;
                 videoView.setVideoURI(Uri.parse(url), header);
                 if (isLive) {
                     videoView.seekTo(0);
@@ -1733,7 +1726,7 @@ public class SuperPlayerView extends RelativeLayout {
             }
             if (NetworkUtil.getNetworkType(activity) == 3) {// 网络是WIFI
                 onNetChangeListener.onWifi();
-            } else if (NetworkUtil.getNetworkType(activity) == 2  || NetworkUtil.getNetworkType(activity) == 4) {// 网络不是手机网络或者是以太网
+            } else if (NetworkUtil.getNetworkType(activity) == 2 || NetworkUtil.getNetworkType(activity) == 4) {// 网络不是手机网络或者是以太网
                 // TODO 更新状态是暂停状态
                 statusChange(STATUS_PAUSE);
                 videoView.pause();
@@ -1847,33 +1840,17 @@ public class SuperPlayerView extends RelativeLayout {
 
         @Override
         public void run() {
-            while (!isDestroy) {
-                if (mRelativeLayout != null && mTextView != null && videoView != null) {
-                    IMediaPlayer mediaPlayer = videoView.getMediaPlayer();
-                    if (mediaPlayer != null && mediaPlayer instanceof IjkMediaPlayer) {
-                        long tcpSpeed = ((IjkMediaPlayer) mediaPlayer).getTcpSpeed();
-                        final String size = getSize(tcpSpeed);
-                        mTextView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mTextView.setVisibility(View.VISIBLE);
-                                mTextView.setText(size);
-                            }
-                        });
-                    }
+            if (mRelativeLayout != null && mTextView != null && videoView != null) {
+            } else if (videoView != null && videoView.getMediaPlayer() != null) {
+                IMediaPlayer mediaPlayer = videoView.getMediaPlayer();
+                if (mediaPlayer instanceof IjkMediaPlayer) {
+                    long tcpSpeed = ((IjkMediaPlayer) mediaPlayer).getTcpSpeed();
+                    mTextView.setVisibility(View.VISIBLE);
+                    mTextView.setText(AppUtil.getSize(tcpSpeed));
                 }
-                SystemClock.sleep(1500);
             }
-
-        }
-
-        public String getSize(long var1) {
-            long var4 = var1;
-            if (var1 == 0L) {
-                var4 = 1L;
-            }
-            float var3 = (float) var4;
-            return var3 == 0.0F ? "-- KB" : (var3 < 1048576.0F ? (float) Math.round(var3 / 1024.0F * 10.0F) / 10.0F + " KB" : (var3 >= 1048576.0F && var3 < 1.07374195E9F ? (float) Math.round(var3 / 1024.0F / 1024.0F * 10.0F) / 10.0F + " MB" : (var3 >= 1.07374195E9F ? (float) Math.round(var3 / 1024.0F / 1024.0F / 1024.0F * 100.0F) / 100.0F + " GB" : "-- KB")));
+            mmH.removeCallbacks(this);
+            mmH.postDelayed(this, 1000);
         }
     };
 }

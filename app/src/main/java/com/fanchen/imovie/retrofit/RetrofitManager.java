@@ -67,24 +67,28 @@ public class RetrofitManager {
 //        retrofitMap.put(RetrofitSource.BABAYU_API, new Retrofit.Builder().baseUrl("http://m.babayu.com/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.BABAYU_API, new Retrofit.Builder().baseUrl("https://m.jukantv.com/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.A4DY_API, new Retrofit.Builder().baseUrl("http://m.aaqqc.com/").client(okHttpClient).addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.IKANFAN_API, new Retrofit.Builder().baseUrl("http://m.ikanfan.com").client(okHttpClient).addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.HALIHALI_API, new Retrofit.Builder().baseUrl("http://m.halihali.cc/").client(okHttpClient).addConverterFactory(animFactory).build());
+//        retrofitMap.put(RetrofitSource.IKANFAN_API, new Retrofit.Builder().baseUrl("http://m.ikanfan.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.IKANFAN_API, new Retrofit.Builder().baseUrl("https://m.ysba.cc/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.HALIHALI_API, new Retrofit.Builder().baseUrl("https://m.halihali.me/").client(okHttpClient).addConverterFactory(animFactory).build());
 //        retrofitMap.put(RetrofitSource.SMDY_API, new Retrofit.Builder().baseUrl("http://m.smdy.cc/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.SMDY_API, new Retrofit.Builder().baseUrl("http://m.sm5.cc/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.AISM_API, new Retrofit.Builder().baseUrl("http://m.aism.cc/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.WANDOU_API, new Retrofit.Builder().baseUrl("https://www.wandouys.com/").client(okHttpClient).addConverterFactory(animFactory).build());
 //        retrofitMap.put(RetrofitSource.WANDOU_API, new Retrofit.Builder().baseUrl("http://www.zyqdy.com/").client(okHttpClient).addConverterFactory(animFactory).build());
-
         retrofitMap.put(RetrofitSource.ZHANDI_API, new Retrofit.Builder().baseUrl("http://m.zhandi.cc/").client(okHttpClient).addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.BOBMAO_API, new Retrofit.Builder().baseUrl("https://www.bobmao.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+//        retrofitMap.put(RetrofitSource.BOBMAO_API, new Retrofit.Builder().baseUrl("https://www.bobmao.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.BOBMAO_API, new Retrofit.Builder().baseUrl("http://m.haodianying.cc/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.BILIBILI_API, new Retrofit.Builder().baseUrl("https://app.bilibili.com/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.KUPIAN_API, new Retrofit.Builder().baseUrl("http://m.kupian.cc/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.TAIHAN_API, new Retrofit.Builder().baseUrl("https://www.taijula.com/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.TEPIAN_API, new Retrofit.Builder().baseUrl("http://m.itepian.com/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.JUGOU_API, new Retrofit.Builder().baseUrl("http://video.jfenxiang.com/").client(okHttpClient).addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.LAOSIJI_API, new Retrofit.Builder().baseUrl("http://m.1055.tv/").client(okHttpClient).addConverterFactory(animFactory).build());
-        retrofitMap.put(RetrofitSource.ZZZVZ_API, new Retrofit.Builder().baseUrl("https://m.kuaikan.me/").client(okHttpClient).addConverterFactory(animFactory).build());
+//        retrofitMap.put(RetrofitSource.LAOSIJI_API, new Retrofit.Builder().baseUrl("http://m.1055.tv/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.LAOSIJI_API, new Retrofit.Builder().baseUrl("https://m.27sm.com/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.ZZZVZ_API, new Retrofit.Builder().baseUrl("https://m.kuaikan66.com/").client(okHttpClient).addConverterFactory(animFactory).build());
         retrofitMap.put(RetrofitSource.HLYY_API, new Retrofit.Builder().baseUrl("http://www.hlyy.cc/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.VIPYS_API, new Retrofit.Builder().baseUrl("http://m.vipys.net/").client(okHttpClient).addConverterFactory(animFactory).build());
+        retrofitMap.put(RetrofitSource.WEILAI_API, new Retrofit.Builder().baseUrl("http://m.weilai77.com/").client(okHttpClient).addConverterFactory(animFactory).build());
     }
 
 
@@ -111,6 +115,19 @@ public class RetrofitManager {
         return manager;
     }
 
+    public static String  warpUrl(String base,String url){
+        if(url.startsWith("http")){
+            return url;
+        }else if(url.startsWith("//")){
+            return base.split("/")[0]  + url;
+        }else if(url.startsWith("/")){
+            return base + url;
+        }else{
+            String[] split = RetrofitManager.REQUEST_URL.split("/");
+            String ssplit = split[split.length - 1];
+            return RetrofitManager.REQUEST_URL.replace(ssplit,"") + url;
+        }
+    }
 
     /**
      * @param method

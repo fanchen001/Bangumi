@@ -55,8 +55,8 @@ public class DialogUtil {
      * @param context
      * @param episodes
      */
-    public static void showDownloadDialog(BaseActivity context, IVideoDetails episodes) {
-        new DownloadDialog(context, episodes).show();
+    public static void showDownloadDialog(BaseActivity context, IVideoDetails episodes,DownloadDialog.OnDownloadSelectListener onDownloadSelectListener) {
+        new DownloadDialog(context, episodes,onDownloadSelectListener).show();
     }
 
     /**
@@ -216,7 +216,7 @@ public class DialogUtil {
         materialDialog.show();
     }
 
-    public static void showCancelableDialog(Context context, String content, String btn1, String btn2, OnButtonClickListener l) {
+    public static void showCancelableDialog(Context context, CharSequence content, String btn1, String btn2, OnButtonClickListener l) {
         closeDialog();
         MaterialDialog materialDialog = (MaterialDialog) (DialogUtil.materialDialog = dialog = new MaterialDialog(context));
         materialDialog.setTitleVisble(View.GONE);

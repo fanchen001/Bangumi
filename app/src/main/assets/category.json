@@ -138,5 +138,15 @@
     "position": 25,
     "title": "zzzvz影视",
     "type": 26
+  },
+  {
+    "position": 26,
+    "title": "VIP影视",
+    "type": 27
+  },
+  {
+    "position": 27,
+    "title": "未来影视",
+    "type": 28
   }
 ]

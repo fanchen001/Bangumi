@@ -17,7 +17,7 @@ import java.util.TimerTask;
  * 控制器抽象类
  */
 public abstract class NiceVideoPlayerController
-        extends FrameLayout implements View.OnTouchListener {
+        extends FrameLayout implements View.OnTouchListener, Runnable {
 
     private Context mContext;
     protected INiceVideoPlayer mNiceVideoPlayer;
@@ -70,13 +70,11 @@ public abstract class NiceVideoPlayerController
     public abstract void setLoadingVisible(int visible);
 
     /**
-     *
      * @param speed
      */
     public abstract void updateSpeed(String speed);
 
     /**
-     *
      * @param show
      */
     public abstract void showSpeed(boolean show);
@@ -86,7 +84,7 @@ public abstract class NiceVideoPlayerController
     /**
      * 设置总时长.
      */
-    public abstract void setLenght(long length);
+    public abstract NiceVideoPlayerController setLenght(long length);
 
     public abstract void setChangeClickListener(View.OnClickListener listener);
 
@@ -137,12 +135,7 @@ public abstract class NiceVideoPlayerController
             mUpdateProgressTimerTask = new TimerTask() {
                 @Override
                 public void run() {
-                    NiceVideoPlayerController.this.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateProgress();
-                        }
-                    });
+                    post(NiceVideoPlayerController.this);
                 }
             };
         }
@@ -175,11 +168,7 @@ public abstract class NiceVideoPlayerController
             return false;
         }
         // 只有在播放、暂停、缓冲的时候能够拖动改变位置、亮度和声音
-        if (mNiceVideoPlayer.isIdle()
-                || mNiceVideoPlayer.isError()
-                || mNiceVideoPlayer.isPreparing()
-                || mNiceVideoPlayer.isPrepared()
-                || mNiceVideoPlayer.isCompleted()) {
+        if (mNiceVideoPlayer.isIdle() || mNiceVideoPlayer.isError() || mNiceVideoPlayer.isPreparing() || mNiceVideoPlayer.isPrepared() || mNiceVideoPlayer.isCompleted()) {
             hideChangePosition();
             hideChangeBrightness();
             hideChangeVolume();
@@ -210,8 +199,7 @@ public abstract class NiceVideoPlayerController
                         if (mDownX < getWidth() * 0.5f) {
                             // 左侧改变亮度
                             mNeedChangeBrightness = true;
-                            mGestureDownBrightness = NiceUtil.scanForActivity(mContext)
-                                    .getWindow().getAttributes().screenBrightness;
+                            mGestureDownBrightness = NiceUtil.scanForActivity(mContext).getWindow().getAttributes().screenBrightness;
                         } else {
                             // 右侧改变声音
                             mNeedChangeVolume = true;
@@ -221,7 +209,8 @@ public abstract class NiceVideoPlayerController
                 }
                 if (mNeedChangePosition) {
                     long duration = mNiceVideoPlayer.getDuration();
-                    long toPosition = (long) (mGestureDownPosition + duration * deltaX / getWidth());
+                    int temp = (int)(duration / (1000 * 60 * 20)) + 2;
+                    long toPosition = (long) (mGestureDownPosition + duration * deltaX / getWidth() / temp);
                     mNewPosition = Math.max(0, Math.min(duration, toPosition));
                     int newPositionProgress = (int) (100f * mNewPosition / duration);
                     showChangePosition(duration, newPositionProgress);
@@ -232,8 +221,7 @@ public abstract class NiceVideoPlayerController
                     float newBrightness = mGestureDownBrightness + deltaBrightness;
                     newBrightness = Math.max(0, Math.min(newBrightness, 1));
                     float newBrightnessPercentage = newBrightness;
-                    WindowManager.LayoutParams params = NiceUtil.scanForActivity(mContext)
-                            .getWindow().getAttributes();
+                    WindowManager.LayoutParams params = NiceUtil.scanForActivity(mContext).getWindow().getAttributes();
                     params.screenBrightness = newBrightnessPercentage;
                     NiceUtil.scanForActivity(mContext).getWindow().setAttributes(params);
                     int newBrightnessProgress = (int) (100f * newBrightnessPercentage);
@@ -313,4 +301,9 @@ public abstract class NiceVideoPlayerController
      * 在手势ACTION_UP或ACTION_CANCEL时调用。
      */
     protected abstract void hideChangeBrightness();
+
+    @Override
+    public void run() {
+        updateProgress();
+    }
 }

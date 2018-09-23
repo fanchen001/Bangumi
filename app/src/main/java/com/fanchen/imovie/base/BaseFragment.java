@@ -440,7 +440,7 @@ public abstract class BaseFragment extends Fragment {
         Bundle savedInstanceState;
 
         public InitRunnable(BaseFragment fragment, View view, @Nullable Bundle savedInstanceState) {
-            softReference = new SoftReference<BaseFragment>(fragment);
+            softReference = new SoftReference<>(fragment);
             this.view = view;
             this.savedInstanceState = savedInstanceState;
         }

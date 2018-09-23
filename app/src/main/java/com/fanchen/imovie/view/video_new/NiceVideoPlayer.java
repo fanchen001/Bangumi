@@ -7,7 +7,10 @@ import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.Surface;
@@ -17,6 +20,9 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.webkit.WebSettings;
 import android.widget.FrameLayout;
+import android.widget.TextView;
+
+import com.fanchen.imovie.util.AppUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -33,7 +39,6 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 public class NiceVideoPlayer extends FrameLayout
         implements INiceVideoPlayer,
         TextureView.SurfaceTextureListener {
-    private boolean isRelease = false;
     /**
      * 播放错误
      **/
@@ -98,6 +103,11 @@ public class NiceVideoPlayer extends FrameLayout
     private int mCurrentMode = MODE_NORMAL;
 
     private Context mContext;
+    private boolean usingMediaCodec = false;
+    private boolean usingMediaCodecAutoRotate = false;
+    private boolean usingOpenSLES = false;
+    private String pixelFormat = "";// Auto Select=,RGB 565=fcc-rv16,RGB
+    // 888X=fcc-rv32,YV12=fcc-yv12,默认为RGB 888X
     private boolean isActivityFullScreen = false;
     private AudioManager mAudioManager;
     private IMediaPlayer mMediaPlayer;
@@ -112,6 +122,8 @@ public class NiceVideoPlayer extends FrameLayout
     private boolean continueFromLastPosition = true;
     private long skipToPosition;
     private IMediaPlayer.OnErrorListener onErrorListener;
+    private boolean showPlaySpeed = true;
+    private Handler mmH = new Handler(Looper.getMainLooper());
 
     public NiceVideoPlayer(Context context) {
         this(context, null);
@@ -126,9 +138,7 @@ public class NiceVideoPlayer extends FrameLayout
     private void init() {
         mContainer = new FrameLayout(mContext);
         mContainer.setBackgroundColor(Color.BLACK);
-        LayoutParams params = new LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         this.addView(mContainer, params);
     }
 
@@ -136,7 +146,8 @@ public class NiceVideoPlayer extends FrameLayout
         Map<String, String> map = new HashMap<>();
         map.put("Referer", ref);
         map.put("Connection", "keep-alive");
-        map.put("Accept-Encoding", "identity;q=1, *;q=0");
+        map.put("Accept-Encoding", "gzip, deflate");
+        map.put("Accept-Language", "zh-CN,zh;q=0.9");
         map.put("Accept", "i*/*");
         map.put("Origin", ref);
         map.put("User-Agent", getUserAgent(getContext()));
@@ -187,9 +198,7 @@ public class NiceVideoPlayer extends FrameLayout
         mController = controller;
         mController.reset();
         mController.setNiceVideoPlayer(this);
-        LayoutParams params = new LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         mContainer.addView(mController, params);
     }
 
@@ -224,7 +233,8 @@ public class NiceVideoPlayer extends FrameLayout
     @Override
     public void start() {
         if (mCurrentState == STATE_IDLE) {
-            new Thread(speedRunnable).start();
+            mmH.removeCallbacks(speedRunnable);
+            if (showPlaySpeed) mmH.postDelayed(speedRunnable, 1000);
             NiceVideoPlayerManager.instance().setCurrentNiceVideoPlayer(this);
             initAudioManager();
             initMediaPlayer();
@@ -233,6 +243,10 @@ public class NiceVideoPlayer extends FrameLayout
         } else {
             LogUtil.d("NiceVideoPlayer只有在mCurrentState == STATE_IDLE时才能调用start方法.");
         }
+    }
+
+    public void setPlaySpeed(boolean showPlaySpeed) {
+        this.showPlaySpeed = showPlaySpeed;
     }
 
     @Override
@@ -265,7 +279,12 @@ public class NiceVideoPlayer extends FrameLayout
             LogUtil.d("STATE_BUFFERING_PLAYING");
         } else if (mCurrentState == STATE_COMPLETED || mCurrentState == STATE_ERROR) {
             mMediaPlayer.reset();
-            openMediaPlayer();
+            try {
+                openMediaPlayer();
+            } catch (Exception e) {
+                mController.onPlayStateChanged(mCurrentState = STATE_ERROR);
+                e.printStackTrace();
+            }
         } else {
             LogUtil.d("NiceVideoPlayer在mCurrentState == " + mCurrentState + "时不能调用restart()方法.");
         }
@@ -422,17 +441,42 @@ public class NiceVideoPlayer extends FrameLayout
                 case TYPE_NATIVE:
                     mMediaPlayer = new AndroidMediaPlayer();
                     break;
-                case TYPE_IJK:
                 default:
-                    mMediaPlayer = new IjkMediaPlayer();
-                    ((IjkMediaPlayer) mMediaPlayer).setOption(1, "analyzemaxduration", 100L);
-                    ((IjkMediaPlayer) mMediaPlayer).setOption(1, "probesize", 10240L);
-                    ((IjkMediaPlayer) mMediaPlayer).setOption(1, "flush_packets", 1L);
-                    ((IjkMediaPlayer) mMediaPlayer).setOption(4, "packet-buffering", 0L);
-                    ((IjkMediaPlayer) mMediaPlayer).setOption(4, "framedrop", 1L);
+                    IjkMediaPlayer mediaPlayer = new IjkMediaPlayer();
+//                    ((IjkMediaPlayer) mMediaPlayer).setOption(1, "analyzemaxduration", 100L);
+//                    ((IjkMediaPlayer) mMediaPlayer).setOption(1, "flush_packets", 1L);
+//                    ((IjkMediaPlayer) mMediaPlayer).setOption(4, "packet-buffering", 0L);
+//                    ((IjkMediaPlayer) mMediaPlayer).setOption(4, "framedrop", 1L);
+                    if (usingMediaCodec) {
+                        mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1);
+                        if (usingMediaCodecAutoRotate) {
+                            mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 1);
+                        } else {
+                            mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 0);
+                        }
+                    } else {
+                        mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 0);
+                    }
+                    if (usingOpenSLES) {
+                        mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 1);
+                    } else {
+                        mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 0);
+                    }
+                    if (TextUtils.isEmpty(pixelFormat)) {
+                        mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", IjkMediaPlayer.SDL_FCC_RV32);
+                    } else {
+                        mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", pixelFormat);
+                    }
+                    mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-hevc", 1);//支持h265硬解;
+                    mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1);
+                    mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 0);
+                    mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0);
+                    mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "timeout", 10000000);
+                    mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "reconnect", 1);
+                    mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48);
+                    mMediaPlayer = mediaPlayer;
                     break;
             }
-            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         }
     }
 
@@ -445,10 +489,7 @@ public class NiceVideoPlayer extends FrameLayout
 
     private void addTextureView() {
         mContainer.removeView(mTextureView);
-        LayoutParams params = new LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                Gravity.CENTER);
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
         mContainer.addView(mTextureView, 0, params);
     }
 
@@ -456,13 +497,18 @@ public class NiceVideoPlayer extends FrameLayout
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
         if (mSurfaceTexture == null) {
             mSurfaceTexture = surfaceTexture;
-            openMediaPlayer();
+            try {
+                openMediaPlayer();
+            } catch (Exception e) {
+                mController.onPlayStateChanged(mCurrentState = STATE_ERROR);
+                e.printStackTrace();
+            }
         } else {
             mTextureView.setSurfaceTexture(mSurfaceTexture);
         }
     }
 
-    private void openMediaPlayer() {
+    private void openMediaPlayer() throws Exception {
         // 屏幕常亮
         mContainer.setKeepScreenOn(true);
         // 设置监听
@@ -472,21 +518,39 @@ public class NiceVideoPlayer extends FrameLayout
         mMediaPlayer.setOnErrorListener(mOnErrorListener);
         mMediaPlayer.setOnInfoListener(mOnInfoListener);
         mMediaPlayer.setOnBufferingUpdateListener(mOnBufferingUpdateListener);
-        // 设置dataSource
-        try {
-            mMediaPlayer.setDataSource(mContext.getApplicationContext(), Uri.parse(mUrl), mHeaders);
-            if (mSurface == null) {
-                mSurface = new Surface(mSurfaceTexture);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (mHeaders == null) {
+                mHeaders = new HashMap<>();
+                mHeaders.put("Accept-Encoding", "gzip, deflate");
+                mHeaders.put("Accept-Language", "zh-CN,zh;q=0.9");
+                mHeaders.put("User-Agent", "Mozilla/5.0 (iPhone; U; CPU iPhone OS 5_1_1 like Mac OS X; en-us) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9B206 Safari/7534.48.3 XiaoMi/MiuiBrowser/10.1.1");
             }
-            mMediaPlayer.setSurface(mSurface);
-            mMediaPlayer.prepareAsync();
-            mCurrentState = STATE_PREPARING;
-            mController.onPlayStateChanged(mCurrentState);
-            LogUtil.d("STATE_PREPARING");
-        } catch (IOException e) {
-            e.printStackTrace();
-            LogUtil.e("打开播放器发生错误", e);
+            mMediaPlayer.setDataSource(mContext.getApplicationContext(), Uri.parse(mUrl), mHeaders);
+        } else {
+            mMediaPlayer.setDataSource(mUrl);
         }
+        if (mSurface == null) mSurface = new Surface(mSurfaceTexture);
+        mMediaPlayer.setSurface(mSurface);
+        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mMediaPlayer.setScreenOnWhilePlaying(true);
+        mMediaPlayer.prepareAsync();
+        mController.onPlayStateChanged(mCurrentState = STATE_PREPARING);
+//
+//        // 设置dataSource
+//        try {
+//            mMediaPlayer.setDataSource(mContext.getApplicationContext(), Uri.parse(mUrl), mHeaders);
+//            if (mSurface == null) {
+//                mSurface = new Surface(mSurfaceTexture);
+//            }
+//            mMediaPlayer.setSurface(mSurface);
+//            mMediaPlayer.prepareAsync();
+//            mCurrentState = STATE_PREPARING;
+//            mController.onPlayStateChanged( mCurrentState = STATE_PREPARING);
+//            LogUtil.d("STATE_PREPARING");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            LogUtil.e("打开播放器发生错误", e);
+//        }
     }
 
     @Override
@@ -502,8 +566,8 @@ public class NiceVideoPlayer extends FrameLayout
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
     }
 
-    private IMediaPlayer.OnPreparedListener mOnPreparedListener
-            = new IMediaPlayer.OnPreparedListener() {
+    private IMediaPlayer.OnPreparedListener mOnPreparedListener = new IMediaPlayer.OnPreparedListener() {
+
         @Override
         public void onPrepared(IMediaPlayer mp) {
             mCurrentState = STATE_PREPARED;
@@ -511,7 +575,7 @@ public class NiceVideoPlayer extends FrameLayout
             LogUtil.d("onPrepared ——> STATE_PREPARED");
             mp.start();
             // 从上次的保存位置播放
-            if (continueFromLastPosition) {
+            if (continueFromLastPosition && skipToPosition <= 0) {
                 long savedPlayPosition = NiceUtil.getSavedPlayPosition(mContext, mUrl);
                 mp.seekTo(savedPlayPosition);
             }
@@ -522,8 +586,7 @@ public class NiceVideoPlayer extends FrameLayout
         }
     };
 
-    private IMediaPlayer.OnVideoSizeChangedListener mOnVideoSizeChangedListener
-            = new IMediaPlayer.OnVideoSizeChangedListener() {
+    private IMediaPlayer.OnVideoSizeChangedListener mOnVideoSizeChangedListener = new IMediaPlayer.OnVideoSizeChangedListener() {
         @Override
         public void onVideoSizeChanged(IMediaPlayer mp, int width, int height, int sar_num, int sar_den) {
             mTextureView.adaptVideoSize(width, height);
@@ -531,8 +594,7 @@ public class NiceVideoPlayer extends FrameLayout
         }
     };
 
-    private IMediaPlayer.OnCompletionListener mOnCompletionListener
-            = new IMediaPlayer.OnCompletionListener() {
+    private IMediaPlayer.OnCompletionListener mOnCompletionListener = new IMediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(IMediaPlayer mp) {
             mCurrentState = STATE_COMPLETED;
@@ -543,8 +605,7 @@ public class NiceVideoPlayer extends FrameLayout
         }
     };
 
-    private IMediaPlayer.OnErrorListener mOnErrorListener
-            = new IMediaPlayer.OnErrorListener() {
+    private IMediaPlayer.OnErrorListener mOnErrorListener = new IMediaPlayer.OnErrorListener() {
         @Override
         public boolean onError(IMediaPlayer mp, int what, int extra) {
             // 直播流播放时去调用mediaPlayer.getDuration会导致-38和-2147483648错误，忽略该错误
@@ -560,8 +621,7 @@ public class NiceVideoPlayer extends FrameLayout
         }
     };
 
-    private IMediaPlayer.OnInfoListener mOnInfoListener
-            = new IMediaPlayer.OnInfoListener() {
+    private IMediaPlayer.OnInfoListener mOnInfoListener = new IMediaPlayer.OnInfoListener() {
         @Override
         public boolean onInfo(IMediaPlayer mp, int what, int extra) {
             if (what == IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
@@ -622,26 +682,19 @@ public class NiceVideoPlayer extends FrameLayout
     @Override
     public void enterFullScreen() {
         if (mCurrentMode == MODE_FULL_SCREEN) return;
-
         // 隐藏ActionBar、状态栏，并横屏
         NiceUtil.hideActionBar(mContext);
-        NiceUtil.scanForActivity(mContext)
-                .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-        ViewGroup contentView = (ViewGroup) NiceUtil.scanForActivity(mContext)
-                .findViewById(android.R.id.content);
+        NiceUtil.scanForActivity(mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        ViewGroup contentView = (ViewGroup) NiceUtil.scanForActivity(mContext).findViewById(android.R.id.content);
         if (mCurrentMode == MODE_TINY_WINDOW) {
             contentView.removeView(mContainer);
         } else {
             this.removeView(mContainer);
         }
-        LayoutParams params = new LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         contentView.addView(mContainer, params);
-
         mCurrentMode = MODE_FULL_SCREEN;
-        mController.onPlayModeChanged(mCurrentMode);
+        if (mController != null) mController.onPlayModeChanged(mCurrentMode);
         LogUtil.d("MODE_FULL_SCREEN");
     }
 
@@ -656,17 +709,11 @@ public class NiceVideoPlayer extends FrameLayout
     public boolean exitFullScreen() {
         if (mCurrentMode == MODE_FULL_SCREEN) {
             NiceUtil.showActionBar(mContext);
-            NiceUtil.scanForActivity(mContext)
-                    .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-            ViewGroup contentView = (ViewGroup) NiceUtil.scanForActivity(mContext)
-                    .findViewById(android.R.id.content);
+            NiceUtil.scanForActivity(mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            ViewGroup contentView = (ViewGroup) NiceUtil.scanForActivity(mContext).findViewById(android.R.id.content);
             contentView.removeView(mContainer);
-            LayoutParams params = new LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT);
+            LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             this.addView(mContainer, params);
-
             mCurrentMode = MODE_NORMAL;
             mController.onPlayModeChanged(mCurrentMode);
             LogUtil.d("MODE_NORMAL");
@@ -682,13 +729,9 @@ public class NiceVideoPlayer extends FrameLayout
     public void enterTinyWindow() {
         if (mCurrentMode == MODE_TINY_WINDOW) return;
         this.removeView(mContainer);
-
-        ViewGroup contentView = (ViewGroup) NiceUtil.scanForActivity(mContext)
-                .findViewById(android.R.id.content);
+        ViewGroup contentView = (ViewGroup) NiceUtil.scanForActivity(mContext).findViewById(android.R.id.content);
         // 小窗口的宽度为屏幕宽度的60%，长宽比默认为16:9，右边距、下边距为8dp。
-        LayoutParams params = new LayoutParams(
-                (int) (NiceUtil.getScreenWidth(mContext) * 0.6f),
-                (int) (NiceUtil.getScreenWidth(mContext) * 0.6f * 9f / 16f));
+        LayoutParams params = new LayoutParams((int) (NiceUtil.getScreenWidth(mContext) * 0.6f), (int) (NiceUtil.getScreenWidth(mContext) * 0.6f * 9f / 16f));
         params.gravity = Gravity.BOTTOM | Gravity.END;
         params.rightMargin = NiceUtil.dp2px(mContext, 8f);
         params.bottomMargin = NiceUtil.dp2px(mContext, 8f);
@@ -711,14 +754,10 @@ public class NiceVideoPlayer extends FrameLayout
     @Override
     public boolean exitTinyWindow() {
         if (mCurrentMode == MODE_TINY_WINDOW) {
-            ViewGroup contentView = (ViewGroup) NiceUtil.scanForActivity(mContext)
-                    .findViewById(android.R.id.content);
+            ViewGroup contentView = (ViewGroup) NiceUtil.scanForActivity(mContext).findViewById(android.R.id.content);
             contentView.removeView(mContainer);
-            LayoutParams params = new LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT);
+            LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             this.addView(mContainer, params);
-
             mCurrentMode = MODE_NORMAL;
             mController.onPlayModeChanged(mCurrentMode);
             LogUtil.d("MODE_NORMAL");
@@ -777,49 +816,26 @@ public class NiceVideoPlayer extends FrameLayout
         if (mController != null) {
             mController.reset();
         }
-        isRelease = true;
+        mmH.removeCallbacks(speedRunnable);
         Runtime.getRuntime().gc();
-    }
-
-    public String getSize(long var1) {
-        long var4 = var1;
-        if (var1 == 0L) {
-            var4 = 1L;
-        }
-        float var3 = (float) var4;
-        return var3 == 0.0F ? "-- KB" : (var3 < 1048576.0F ? (float) Math.round(var3 / 1024.0F * 10.0F) / 20.0F + " KB" : (var3 >= 1048576.0F && var3 < 1.07374195E9F ? (float) Math.round(var3 / 1024.0F / 1024.0F * 10.0F) / 20.0F + " MB" : (var3 >= 1.07374195E9F ? (float) Math.round(var3 / 1024.0F / 1024.0F / 1024.0F * 100.0F) / 200.0F + " GB" : "-- KB")));
     }
 
     private Runnable speedRunnable = new Runnable() {
 
         @Override
         public void run() {
-            while (!isRelease) {
-                if (mController.getSpeedTextView() != null) {
-                    if (((View) mController.getSpeedTextView().getParent()).getVisibility() == View.VISIBLE) {
-                        post(runnable);
-                    }
-                }
-                SystemClock.sleep(2000);
+            if (mController == null || mMediaPlayer == null) {
+            } else if (mController.getSpeedTextView() == null || mController.getSpeedTextView().getParent() == null) {
+                mController.showSpeed(false);
+            } else if (((View) mController.getSpeedTextView().getParent()).getVisibility() == View.VISIBLE && mPlayerType == TYPE_IJK) {
+                long tcpSpeed = ((IjkMediaPlayer) mMediaPlayer).getTcpSpeed();
+                mController.showSpeed(true);
+                mController.updateSpeed( AppUtil.getSize(tcpSpeed));
+            } else {
+                mController.showSpeed(false);
             }
-        }
-
-    };
-
-    private Runnable runnable = new Runnable() {
-
-        @Override
-        public void run() {
-            if (mController != null && mMediaPlayer != null) {
-                if (mMediaPlayer instanceof IjkMediaPlayer) {
-                    long tcpSpeed = ((IjkMediaPlayer) mMediaPlayer).getTcpSpeed();
-                    final String size = getSize(tcpSpeed);
-                    mController.showSpeed(true);
-                    mController.updateSpeed(size + "/s");
-                } else {
-                    mController.showSpeed(false);
-                }
-            }
+            mmH.removeCallbacks(this);
+            mmH.postDelayed(this, 1000);
         }
 
     };

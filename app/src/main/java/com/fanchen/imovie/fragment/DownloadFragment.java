@@ -10,6 +10,7 @@ import android.view.View;
 import com.arialyy.aria.core.download.DownloadEntity;
 import com.arialyy.aria.core.download.DownloadTask;
 import com.arialyy.aria.core.inf.IEntity;
+import com.fanchen.imovie.activity.DownloadTabActivity;
 import com.fanchen.imovie.activity.VideoPlayerActivity;
 import com.fanchen.imovie.adapter.DownloadAdapter;
 import com.fanchen.imovie.base.BaseAdapter;
@@ -19,14 +20,16 @@ import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.SystemUtil;
+import com.fanchen.m3u8.M3u8Config;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 /**
+ * DownloadFragment
  * Created by fanchen on 2017/10/3.
  */
-public class DownloadFragment extends BaseRecyclerFragment {
+public class DownloadFragment extends BaseRecyclerFragment implements DownloadTabActivity.OnDownloadListernr {
 
     public static final String SUFFIX = "";
 
@@ -49,6 +52,8 @@ public class DownloadFragment extends BaseRecyclerFragment {
     protected void initFragment(@Nullable Bundle savedInstanceState, Bundle args) {
         super.initFragment(savedInstanceState, args);
         suffix = getArguments().getString(SUFFIX);
+        mTextView.setVisibility(View.VISIBLE);
+        mTextView.setText(String.format("下载路径：%s", M3u8Config.INSTANCE.getM3u8Path()));
     }
 
     @Override
@@ -62,21 +67,21 @@ public class DownloadFragment extends BaseRecyclerFragment {
     }
 
     @Override
-    public void loadData(Bundle savedInstanceState,RetrofitManager retrofit, int page) {
+    public void loadData(Bundle savedInstanceState, RetrofitManager retrofit, int page) {
         AsyTaskQueue.newInstance().execute(taskListener);
     }
 
+    @Override
     public void onTaskUpdate(DownloadTask task) {
-        if (mDownloadAdapter != null)
-            mDownloadAdapter.update(task);
+        if (mDownloadAdapter != null) mDownloadAdapter.update(task);
     }
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if(!(datas.get(position) instanceof DownloadEntityWrap))return ;
+        if (!(datas.get(position) instanceof DownloadEntityWrap)) return;
         DownloadEntityWrap entityWrap = (DownloadEntityWrap) datas.get(position);
         DownloadEntity entity = entityWrap.getEntity();
-        if(entity.getState() != IEntity.STATE_COMPLETE)return;
+        if (entity.getState() != IEntity.STATE_COMPLETE) return;
         String fileName = entity.getFileName();
         if (!TextUtils.isEmpty(fileName) && fileName.contains(".apk")) {
             SystemUtil.installApk(activity, entity.getDownloadPath());
@@ -85,9 +90,9 @@ public class DownloadFragment extends BaseRecyclerFragment {
         }
     }
 
-    public void setDeleteMode(boolean isDeleteMode){
-        if(mDownloadAdapter != null)
-            mDownloadAdapter.setDeleteMode(isDeleteMode);
+    @Override
+    public void setDeleteMode(boolean isDeleteMode) {
+        if (mDownloadAdapter != null) mDownloadAdapter.setDeleteMode(isDeleteMode);
     }
 
     private TaskRecyclerFragmentImpl<List<DownloadEntity>> taskListener = new TaskRecyclerFragmentImpl<List<DownloadEntity>>() {
@@ -95,7 +100,7 @@ public class DownloadFragment extends BaseRecyclerFragment {
         @Override
         public List<DownloadEntity> onTaskBackground() {
             if (getDownloadReceiver() == null) return null;
-            return getDownloadReceiver().getSimpleTaskList();
+            return getDownloadReceiver().getTaskList();
         }
 
         @Override
@@ -106,7 +111,7 @@ public class DownloadFragment extends BaseRecyclerFragment {
 
         @Override
         public void onTaskFinish() {
-            if(getSwipeRefreshLayout() == null)return;
+            if (getSwipeRefreshLayout() == null) return;
             super.onTaskFinish();
             getSwipeRefreshLayout().setEnabled(false);
         }

@@ -193,8 +193,9 @@ public class TxVideoPlayerController
     }
 
     @Override
-    public void setLenght(long length) {
+    public NiceVideoPlayerController setLenght(long length) {
         mLength.setText(NiceUtil.formatTime(length));
+        return this;
     }
 
     @Override

@@ -117,7 +117,8 @@ public class VideoDetails extends Video implements IVideoDetails {
 
     @Override
     public boolean canDownload() {
-        return episodes == null || episodes.size() == 0 ? false : canDownload;
+        return true;
+//        return episodes == null || episodes.size() == 0 ? false : canDownload;
     }
 
     @Override

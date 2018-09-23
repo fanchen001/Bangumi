@@ -11,9 +11,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+import android.text.TextUtils;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * APP 工具类<br>
@@ -30,6 +33,28 @@ public class AppUtil {
      */
     public static boolean hasHttpConnectionBug() {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO;
+    }
+
+    public static Map<String, String> getDownloadHeader(){
+        return getDownloadHeader("");
+    }
+
+    public static Map<String, String> getDownloadHeader(String ref) {
+        Map<String, String> map = new HashMap<>();
+        map.put("User-Agent", "Mozilla/5.0 (iPhone; U; CPU iPhone OS 5_1_1 like Mac OS X; en-us) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9B206 Safari/7534.48.3 XiaoMi/MiuiBrowser/10.1.1");
+        map.put("Accept-Encoding", "gzip, deflate");
+        map.put("Accept-Language", "zh-CN,zh;q=0.9");
+        if(!TextUtils.isEmpty(ref))map.put("Referer", ref);
+        return map;
+    }
+
+    public static String getSize(long var1) {
+        long var4 = var1;
+        if (var1 == 0L) {
+            var4 = 1L;
+        }
+        float var3 = (float) var4;
+        return var3 == 0.0F ? "-- KB" : (var3 < 1048576.0F ? (float) Math.round(var3 / 1024.0F * 10.0F) / 20.0F + " KB" : (var3 >= 1048576.0F && var3 < 1.07374195E9F ? (float) Math.round(var3 / 1024.0F / 1024.0F * 10.0F) / 20.0F + " MB" : (var3 >= 1.07374195E9F ? (float) Math.round(var3 / 1024.0F / 1024.0F / 1024.0F * 100.0F) / 200.0F + " GB" : "-- KB")));
     }
 
     public static void disableConnectionReuseIfNecessary() {

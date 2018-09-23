@@ -3,6 +3,7 @@ package com.fanchen.imovie.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
@@ -26,6 +27,7 @@ import com.fanchen.imovie.view.video.SuperPlayerView;
 import com.litesuits.orm.db.assit.QueryBuilder;
 import com.tencent.smtt.sdk.TbsVideo;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +45,6 @@ public class LivePlayerActivity extends BaseActivity {
 
     private IBaseVideo mVideo;
     private String mDefPlayer = "";
-    private SharedPreferences mSharedPreferences;
     private long preTime = System.currentTimeMillis();
 
 
@@ -95,7 +96,6 @@ public class LivePlayerActivity extends BaseActivity {
     @Override
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mVideo = getIntent().getParcelableExtra(VIDEO);
         mSuperPlayerView.setNetChangeListener(true);
         mSuperPlayerView.setScaleType(SuperPlayerView.SCALETYPE_FITPARENT);

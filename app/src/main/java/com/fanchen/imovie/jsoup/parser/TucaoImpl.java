@@ -83,10 +83,12 @@ public class TucaoImpl implements IBangumiParser {
                     JSONArray videos = jsonObject.getJSONArray("video");
                     for (int i = 0 ; i < videos.length() ; i ++){
                         JSONObject object = videos.getJSONObject(i);
+                        String file = object.has("file") ? object.getString("file") : "";
+                        if(TextUtils.isEmpty(file))continue;
                         TucaoEpisode episode = new TucaoEpisode();
                         episode.setTitle(object.has("title") ? object.getString("title") : "");
                         episode.setId(object.has("vid") ? object.getString("vid") : "");
-                        episode.setUrl(object.has("file") ? object.getString("file") : "");
+                        episode.setUrl(file);
                         episode.setPlayType(object.has("type") ? object.getString("type").contains("video") ? IVideoEpisode.PLAY_TYPE_VIDEO : IVideoEpisode.PLAY_TYPE_URL : IVideoEpisode.PLAY_TYPE_URL);
                         episode.setExtend(object.has("type") ? object.getString("type") : "");
                         episodes.add(episode);

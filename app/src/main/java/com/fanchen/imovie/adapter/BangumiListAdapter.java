@@ -14,12 +14,12 @@ import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.picasso.PicassoWrap;
 import com.fanchen.imovie.picasso.download.RefererDownloader;
-import com.fanchen.imovie.util.LogUtil;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 /**
+ * BangumiListAdapter
  * Created by fanchen on 2017/9/19.
  */
 public class BangumiListAdapter extends BaseAdapter {
@@ -50,7 +50,6 @@ public class BangumiListAdapter extends BaseAdapter {
     @Override
     public void bindViewHolder(RecyclerView.ViewHolder holder, List<IViewType> datas, int viewType, int position) {
         if(viewType == IViewType.TYPE_FOOTER){
-            LogUtil.e("bindViewHolder","IViewType TYPE_FOOTER");
             return;
         }
         IVideo videoItem = (IVideo) datas.get(position);
@@ -74,7 +73,6 @@ public class BangumiListAdapter extends BaseAdapter {
         }
         videoViewHolder.danmakuTextView.setVisibility(View.VISIBLE);
         videoViewHolder.danmakuTextView.setText(videoItem.getDanmaku());
-        LogUtil.e("bindViewHolder","getCover => " + videoItem.getCover());
         picassoWrap.loadHorizontal(videoItem.getCover(), BangumiListActivity.class, videoViewHolder.imageView);
     }
 

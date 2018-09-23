@@ -36,27 +36,15 @@ public interface BobmaoService {
 
     /**
      *
-     * @param path
-     * @param page
-     * @return
-     */
-    @GET("channel/index_{path}_{page}.html")
-    @JsoupType(JsoupSource.BOBMAO)
-    @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
-
-    /**
-     *
      * @param page
      * @param searchword
      * @return
      */
-    @GET("search.php")
+    @GET("search/{searchword}-{page}.html")
     @JsoupType(JsoupSource.BOBMAO)
     @MethodType(value = MethodSource.SEARCH)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IBangumiMoreRoot> search(@Query("page") Integer page, @Query("searchword") String searchword);
+    Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("searchword") String searchword);
 
     /**
      *
@@ -64,7 +52,7 @@ public interface BobmaoService {
      * @param page
      * @return
      */
-    @GET("channel/index_{path}_{page}.html")
+    @GET("{path}/index-{page}.html")
     @JsoupType(JsoupSource.BOBMAO)
     @MethodType(value = MethodSource.MORE)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
@@ -74,11 +62,11 @@ public interface BobmaoService {
      * @param path
      * @return
      */
-    @GET("html/{path}")
+    @GET
     @JsoupType(JsoupSource.BOBMAO)
     @MethodType(value = MethodSource.DETAILS)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IVideoDetails> details(@Path("path") String path);
+    Call<IVideoDetails> details(@Url String path);
 
 
     /**

@@ -184,6 +184,18 @@ public enum JsoupSource {
     ZZZVZ,
 
     /**
+     * http://www.vipys.net/
+     * vip电影
+     */
+    VIPYS,
+
+    /**
+     * http://m.weilai77.com
+     * 非凡电影
+     */
+    WEILAI,
+
+    /**
      * 快看直播
      * https://m.kuaikan.me
      */

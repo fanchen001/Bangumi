@@ -206,6 +206,18 @@ public enum RetrofitSource {
      * zzzvz电影
      */
     ZZZVZ_API,
-
+    /**
+     * http://m.vipys.net/
+     * vip影视
+     */
+    VIPYS_API,
+    /**
+     * http://m.weilai.com
+     * 未来影视
+     */
+    WEILAI_API,
+    /**
+     *
+     */
     HLYY_API
 }

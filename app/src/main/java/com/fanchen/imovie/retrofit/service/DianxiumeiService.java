@@ -12,6 +12,7 @@ import com.fanchen.imovie.entity.face.IPlayUrls;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
@@ -55,6 +56,7 @@ public interface DianxiumeiService {
     @JsoupType(JsoupSource.DIANXIUMEI)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.PLAYURL)
+    @Headers({"User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"})
     Call<IPlayUrls> playUrl(@Url String url);
 
 }

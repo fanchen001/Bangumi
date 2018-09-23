@@ -11,7 +11,6 @@ import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.adapter.pager.A4dyPagerAdapter;
@@ -35,7 +34,9 @@ import com.fanchen.imovie.adapter.pager.S80PagerAdapter;
 import com.fanchen.imovie.adapter.pager.SmdyPagerAdapter;
 import com.fanchen.imovie.adapter.pager.TaihanPagerAdapter;
 import com.fanchen.imovie.adapter.pager.TepianPagerAdapter;
+import com.fanchen.imovie.adapter.pager.VipysPagerAdapter;
 import com.fanchen.imovie.adapter.pager.WandouPagerAdapter;
+import com.fanchen.imovie.adapter.pager.WeilaiPagerAdapter;
 import com.fanchen.imovie.adapter.pager.XiaokabaPagerAdapter;
 import com.fanchen.imovie.adapter.pager.Xiu169PagerAdapter;
 import com.fanchen.imovie.adapter.pager.ZhandiPagerAdapter;
@@ -80,6 +81,8 @@ public class VideoTabActivity extends BaseTabActivity implements SearchDialogFra
     public static final int JUGOU = 24;
     public static final int LAOSIJI = 25;
     public static final int ZZZVZ = 26;
+    public static final int VIPYS = 27;
+    public static final int FEIFAN = 28;
 
     public static final String TYPE = "type";
     public static final String TITLE = "title";
@@ -193,6 +196,10 @@ public class VideoTabActivity extends BaseTabActivity implements SearchDialogFra
             mPagerAdapter = new LaosijiPagerAdapter(fm);
         } else if (type == ZZZVZ) {
             mPagerAdapter = new ZzzvzPagerAdapter(fm);
+        } else if (type == VIPYS) {
+            mPagerAdapter = new VipysPagerAdapter(fm);
+        } else if (type == FEIFAN) {
+            mPagerAdapter = new WeilaiPagerAdapter(fm);
         }
         return mPagerAdapter;
     }

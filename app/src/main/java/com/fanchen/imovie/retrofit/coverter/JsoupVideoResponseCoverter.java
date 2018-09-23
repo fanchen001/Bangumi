@@ -31,7 +31,9 @@ import com.fanchen.imovie.jsoup.parser.SmdyImpl;
 import com.fanchen.imovie.jsoup.parser.TaihanImpl;
 import com.fanchen.imovie.jsoup.parser.TepianImpl;
 import com.fanchen.imovie.jsoup.parser.TucaoImpl;
+import com.fanchen.imovie.jsoup.parser.VipysImpl;
 import com.fanchen.imovie.jsoup.parser.WandouImpl;
+import com.fanchen.imovie.jsoup.parser.WeilaiImpl;
 import com.fanchen.imovie.jsoup.parser.XiaokanbaImpl;
 import com.fanchen.imovie.jsoup.parser.ZhandiImpl;
 import com.fanchen.imovie.jsoup.parser.ZzzvzImpl;
@@ -86,6 +88,8 @@ public class JsoupVideoResponseCoverter extends StringResponseConverter {
         map.put(JsoupSource.JUGOU, new JugouImpl());
         map.put(JsoupSource.ZZZVZ, new ZzzvzImpl());
         map.put(JsoupSource.LAOSIJI, new LaosijiImpl());
+        map.put(JsoupSource.VIPYS, new VipysImpl());
+        map.put(JsoupSource.WEILAI, new WeilaiImpl());
     }
 
     public JsoupVideoResponseCoverter(Retrofit retrofit, MethodSource method, JsoupSource jsoup) {

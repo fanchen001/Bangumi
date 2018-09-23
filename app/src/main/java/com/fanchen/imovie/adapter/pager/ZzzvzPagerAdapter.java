@@ -14,8 +14,8 @@ import com.fanchen.imovie.retrofit.service.ZzzvzService;
 public class ZzzvzPagerAdapter extends BaseFragmentAdapter {
     private final String[] TITLES = new String[]{"首页","电视剧", "电影", "动漫","综艺"};
     private final String[] PATHS = new String[]{"","dsj", "dy", "Animation","Arts"};
-    private final Boolean[] LOADS = new Boolean[]{false,false,false,true,true,true};
-    private final Boolean[] BANGUMI = new Boolean[]{true,false,false,true,false,false};
+    private final Boolean[] LOADS = new Boolean[]{false,false,false,true,true};
+    private final Boolean[] BANGUMI = new Boolean[]{true,false,false,false,false};
 
     public ZzzvzPagerAdapter(FragmentManager fm) {
         super(fm);

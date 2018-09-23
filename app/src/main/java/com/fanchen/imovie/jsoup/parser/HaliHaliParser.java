@@ -84,7 +84,7 @@ public class HaliHaliParser implements IVideoMoreParser {
             for (Node n : node.list("div.swiper-wrapper > div.swiper-slide")) {
                 VideoBanner banner = new VideoBanner();
                 banner.setCover(n.attr("a", "data-background"));
-                banner.setId(baseUrl + n.attr("a", "href", "/", 2));
+                banner.setId( n.attr("a", "href", "/", 2));
                 banner.setTitle(n.text("a > div > div.sub_title"));
                 banner.setUrl(baseUrl + n.attr("a", "href"));
                 banner.setServiceClass(HaliHaliService.class.getName());

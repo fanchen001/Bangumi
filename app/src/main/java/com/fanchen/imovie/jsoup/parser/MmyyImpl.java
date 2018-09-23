@@ -1,32 +1,13 @@
 package com.fanchen.imovie.jsoup.parser;
 
-//import android.text.TextUtils;
-
 import com.fanchen.imovie.entity.VideoDetails;
 import com.fanchen.imovie.entity.VideoEpisode;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoDetails;
-//import com.fanchen.imovie.entity.face.IVideoEpisode;
-//import com.fanchen.imovie.entity.Video;
-//import com.fanchen.imovie.entity.VideoBanner;
-//import com.fanchen.imovie.entity.VideoDetails;
-//import com.fanchen.imovie.entity.VideoEpisode;
-//import com.fanchen.imovie.entity.VideoHome;
-//import com.fanchen.imovie.entity.VideoPlayUrls;
-import com.fanchen.imovie.entity.VideoTitle;
-import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
-//import com.fanchen.imovie.jsoup.node.Node;
-//import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.MmyyService;
-//import com.fanchen.imovie.util.JavaScriptUtil;
-//
-//import java.util.ArrayList;
-//import java.util.HashMap;
-//import java.util.List;
-//import java.util.Map;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,42 +20,43 @@ import retrofit2.Retrofit;
  */
 public class MmyyImpl implements IVideoMoreParser {
 
-    private KankanwuImpl smdyImpl = new KankanwuImpl(MmyyService.class.getName(),false);
+    private KankanwuImpl kankanwu = new KankanwuImpl(MmyyService.class.getName(), false);
 
     @Override
     public IBangumiMoreRoot more(Retrofit retrofit, String baseUrl, String html) {
-        return smdyImpl.more(retrofit, baseUrl, html);
+        return kankanwu.more(retrofit, baseUrl, html);
     }
 
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {
-        return smdyImpl.search(retrofit,baseUrl,html);
+        return kankanwu.search(retrofit, baseUrl, html);
     }
 
     @Override
     public IHomeRoot home(Retrofit retrofit, String baseUrl, String html) {
-        return smdyImpl.home(retrofit, baseUrl, html);
+        return kankanwu.home(retrofit, baseUrl, html);
     }
 
     @Override
     public IVideoDetails details(Retrofit retrofit, String baseUrl, String html) {
-        VideoDetails details = (VideoDetails) smdyImpl.details(retrofit, baseUrl, html);
+        VideoDetails details = (VideoDetails) kankanwu.details(retrofit, baseUrl, html);
         List<VideoEpisode> episodes = (List<VideoEpisode>) details.getEpisodes();
-        if(episodes != null && episodes.size() > 0){
-            List<VideoEpisode> newEpisodes = new ArrayList<>();
-            for (VideoEpisode episode : episodes){
-                if(!episode.getTitle().contains("迅雷") && !episode.getTitle().contains("网盘") && !episode.getTitle().contains("奇艺") && !episode.getTitle().contains("腾讯")&&!episode.getTitle().contains("优酷")&&!episode.getTitle().contains("芒果")){
-                    newEpisodes.add(episode);
-                }
+        if (episodes == null) return details;
+        List<VideoEpisode> newEpisodes = new ArrayList<>();
+        for (VideoEpisode episode : episodes) {
+            if (!episode.getTitle().contains("迅雷") && !episode.getTitle().contains("网盘") &&
+                    !episode.getTitle().contains("奇艺") && !episode.getTitle().contains("腾讯") &&
+                    !episode.getTitle().contains("优酷") && !episode.getTitle().contains("芒果")) {
+                newEpisodes.add(episode);
             }
-            details.setEpisodes(newEpisodes);
         }
+        details.setEpisodes(newEpisodes);
         return details;
     }
 
     @Override
     public IPlayUrls playUrl(Retrofit retrofit, String baseUrl, String html) {
-        return smdyImpl.playUrl(retrofit, baseUrl, html);
+        return kankanwu.playUrl(retrofit, baseUrl, html);
     }
 
 //    private static final String URL_MAT = "https://ckplayer.jjddyy.com/jx.php?id=%s";

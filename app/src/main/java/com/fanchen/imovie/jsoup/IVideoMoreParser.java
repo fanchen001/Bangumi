@@ -1,6 +1,7 @@
 package com.fanchen.imovie.jsoup;
 
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
+import com.fanchen.imovie.retrofit.RetrofitManager;
 
 import retrofit2.Retrofit;
 
@@ -17,4 +18,6 @@ public interface IVideoMoreParser extends IVideoParser{
      * @return
      */
     IBangumiMoreRoot more(Retrofit retrofit,String baseUrl,String html);
+
+
 }

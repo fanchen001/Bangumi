@@ -28,4 +28,24 @@ public interface RefreshCallback<T> extends RetrofitCallback<T>{
      * @param throwable
      */
     void onFailure(int enqueueKey, String throwable);
+
+    class RefreshCallbackImpl<T> implements RefreshCallback<T>{
+
+        @Override
+        public void onStart(int enqueueKey) {
+        }
+
+        @Override
+        public void onFinish(int enqueueKey) {
+        }
+
+        @Override
+        public void onFailure(int enqueueKey, String throwable) {
+        }
+
+        @Override
+        public void onSuccess(int enqueueKey, T response) {
+        }
+
+    }
 }

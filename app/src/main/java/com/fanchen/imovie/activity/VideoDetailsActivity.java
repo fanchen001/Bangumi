@@ -11,8 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -25,6 +23,7 @@ import com.fanchen.imovie.adapter.RecomAdapter;
 import com.fanchen.imovie.base.BaseActivity;
 import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.dialog.BaseAlertDialog;
+import com.fanchen.imovie.dialog.DownloadDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
 import com.fanchen.imovie.entity.bmob.BmobObj;
 import com.fanchen.imovie.entity.bmob.DialogBanner;
@@ -35,27 +34,31 @@ import com.fanchen.imovie.entity.bmob.VideoCollect;
 import com.fanchen.imovie.picasso.download.RefererDownloader;
 import com.fanchen.imovie.picasso.trans.BlurTransform;
 import com.fanchen.imovie.picasso.PicassoWrap;
-import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
+import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.DisplayUtil;
-import com.fanchen.imovie.util.LogUtil;
-import com.fanchen.imovie.util.SecurityUtil;
 import com.fanchen.imovie.util.ShareUtil;
 import com.fanchen.imovie.util.SystemUtil;
+import com.fanchen.imovie.util.VideoJsonUtil;
+import com.fanchen.imovie.util.VideoUrlUtil;
 import com.fanchen.imovie.view.CustomEmptyView;
 import com.fanchen.imovie.view.MaterialProgressBar;
 import com.fanchen.imovie.view.RoundCornerImageView;
+import com.fanchen.m3u8.M3u8Config;
+import com.fanchen.m3u8.M3u8Manager;
+import com.fanchen.m3u8.bean.M3u8;
+import com.fanchen.m3u8.bean.M3u8File;
+import com.fanchen.m3u8.listener.OnM3u8InfoListener;
 import com.google.gson.Gson;
-import com.litesuits.orm.LiteOrm;
 import com.litesuits.orm.db.assit.QueryBuilder;
-import com.squareup.picasso.Picasso;
+import com.xigua.p2p.P2PManager;
 
-import org.json.JSONObject;
-
+import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.InjectView;
 
@@ -63,8 +66,9 @@ import butterknife.InjectView;
  * 视频详情
  * Created by fanchen on 2017/8/14.
  */
-public class VideoDetailsActivity extends BaseActivity implements
-        View.OnClickListener, BaseAdapter.OnItemClickListener, DialogInterface.OnDismissListener {
+public class VideoDetailsActivity extends BaseActivity implements View.OnClickListener,
+        BaseAdapter.OnItemClickListener, DialogInterface.OnDismissListener,
+        DownloadDialog.OnDownloadSelectListener, OnM3u8InfoListener, VideoUrlUtil.OnParseWebUrlListener {
 
     public static final String VIDEO = "video";
     public static final String COLLECT = "collect";
@@ -127,6 +131,9 @@ public class VideoDetailsActivity extends BaseActivity implements
     private PicassoWrap picasso;
     private EpisodeAdapter mEpisodeAdapter;
     private RecomAdapter mRecomAdapter;
+    private VideoUrlUtil mVideoUrlUtil;
+    private DownloadDialog.DownloadTemp mDownload;
+    private List<DownloadDialog.DownloadTemp> mDownloads;
 
     /**
      * @param context
@@ -139,7 +146,7 @@ public class VideoDetailsActivity extends BaseActivity implements
             intent.putExtra(VID, id);
             intent.putExtra(CLASS_NAME, className);
             context.startActivity(intent);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -154,7 +161,7 @@ public class VideoDetailsActivity extends BaseActivity implements
             intent.putExtra(VIDEO, item);
             intent.putExtra(CLASS_NAME, className);
             context.startActivity(intent);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -164,7 +171,7 @@ public class VideoDetailsActivity extends BaseActivity implements
             Intent intent = new Intent(context, VideoDetailsActivity.class);
             intent.putExtra(VIDEO_BANNWE, banner.getBaseJson());
             context.startActivity(intent);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -179,7 +186,7 @@ public class VideoDetailsActivity extends BaseActivity implements
             intent.putExtra(COLLECT, (Parcelable) videoCollect);
             intent.putExtra(CLASS_NAME, videoCollect.getServiceClassName());
             context.startActivity(intent);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -209,6 +216,7 @@ public class VideoDetailsActivity extends BaseActivity implements
         mMoreEpisodeTextView.setOnClickListener(this);
         mEpisodeAdapter.setOnItemClickListener(this);
         mRecomAdapter.setOnItemClickListener(this);
+        M3u8Manager.INSTANCE.registerInfoListeners(this);
     }
 
     @Override
@@ -216,44 +224,9 @@ public class VideoDetailsActivity extends BaseActivity implements
         super.initActivity(savedState, inflater);
         mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
+        getIntentData(getIntent());
         mBackTitleTextView.setText(R.string.bangumi_details);
-        if (getIntent().getData() != null) {
-            String info = getIntent().getData().getQueryParameter("info");
-            try {
-                JSONObject jsonObject = new JSONObject(info);
-                if (jsonObject.has("thisClass")) {
-                    Class<?> forName = Class.forName(jsonObject.getString("thisClass"));
-                    mVideo = (IVideo) new Gson().fromJson(info, forName);
-                    className = mVideo.getServiceClass();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }else if(getIntent().hasExtra(VIDEO_BANNWE)){
-            try {
-                String decode = getIntent().getStringExtra(VIDEO_BANNWE);
-                JSONObject jsonObject = new JSONObject(decode);
-                if (jsonObject.has("thisClass")) {
-                    Class<?> forName = Class.forName(jsonObject.getString("thisClass"));
-                    mVideo = (IVideo) new Gson().fromJson(decode, forName);
-                    className = mVideo.getServiceClass();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (getIntent().hasExtra(VIDEO)) {
-            mVideo = getIntent().getParcelableExtra(VIDEO);
-        }
-        if (getIntent().hasExtra(COLLECT)) {
-            mVideoCollect = getIntent().getParcelableExtra(COLLECT);
-        }
-        if (getIntent().hasExtra(VID)) {
-            vid = getIntent().getStringExtra(VID);
-        }
-        if (getIntent().hasExtra(CLASS_NAME)) {
-            className = getIntent().getStringExtra(CLASS_NAME);
-        }
+        mVideoUrlUtil = VideoUrlUtil.getInstance().init(this);
         mEpisodeRecyclerView.setLayoutManager(new BaseAdapter.LinearLayoutManagerWrapper(this, BaseAdapter.LinearLayoutManagerWrapper.HORIZONTAL, false));
         mRecomRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         mEpisodeAdapter = new EpisodeAdapter(this);
@@ -267,18 +240,130 @@ public class VideoDetailsActivity extends BaseActivity implements
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onDestroy() {
+        super.onDestroy();
+        M3u8Manager.INSTANCE.unregisterInfoListeners(this);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return super.onCreateOptionsMenu(menu);
+    public void onDownloadSelect(List<DownloadDialog.DownloadTemp> downloads) {
+        this.mDownloads = downloads;
+        DialogUtil.showProgressDialog(this, getString(R.string.loading));
+        download(mDownloads.remove(0));
+    }
+
+    private void download(DownloadDialog.DownloadTemp temp) {
+        if (temp == null) return;
+        this.mDownload = temp;
+        if (this.mDownload.type == DownloadDialog.DownloadTemp.TYPE_MP4) {
+            String fileNmae = details.getTitle() + "_" + temp.episode.getTitle() + ".mp4";
+            String eurl = mDownload.episode.getUrl();
+            String path = new File(M3u8Config.INSTANCE.getM3u8Path(), fileNmae).getAbsolutePath();
+            Map<String, String> header = AppUtil.getDownloadHeader();
+            getDownloadReceiver().load(temp.url).setExtendField(eurl).setFilePath(path).addHeaders(header).start();
+            temp.episode.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
+            showToast(String.format("<%s>添加下载任务成功", fileNmae));
+            downloadNext();
+        } else if (this.mDownload.type == DownloadDialog.DownloadTemp.TYPE_XIGUA) {
+            P2PManager.getInstance().isConnect();
+            P2PManager.getInstance().setAllow3G(true);
+            P2PManager.getInstance().play(temp.url);
+            temp.episode.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
+            showToast(String.format("<%s>添加下载任务成功", temp.episode.getTitle()));
+            downloadNext();
+        } else if (this.mDownload.type == DownloadDialog.DownloadTemp.TYPE_M3U8) {
+            M3u8File m3u8File = new M3u8File();
+            m3u8File.setUrl(temp.m3u8Url);
+            m3u8File.setOnlyId(temp.getOnlyId());
+            m3u8File.setM3u8VideoName(String.format("%s_%s.mp4", details.getTitle(), temp.episode.getTitle()));
+            M3u8Manager.INSTANCE.download(m3u8File);
+        } else if (this.mDownload.type == DownloadDialog.DownloadTemp.TYPE_URL) {
+            mVideoUrlUtil.setLoadUrl(temp.url, temp.referer);
+            mVideoUrlUtil.setOnParseListener(this);
+            mVideoUrlUtil.startParse();
+        } else {
+            showToast(String.format("<%s>不支持下载", temp.episode.getTitle()));
+            downloadNext();
+        }
+    }
+
+    private void downloadNext() {
+        if (mDownloads != null && mDownloads.size() > 0) {
+            download(mDownloads.remove(0));
+        } else {
+            DialogUtil.closeProgressDialog();
+            if (mEpisodeAdapter != null) mEpisodeAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private void getIntentData(Intent data) {
+        if (data.getData() != null) {
+            mVideo = VideoJsonUtil.json2Video(data.getData().getQueryParameter("info"));
+            className = mVideo == null ? "" : mVideo.getServiceClass();
+        }
+        if (getIntent().hasExtra(VIDEO_BANNWE)) {
+            mVideo = VideoJsonUtil.json2Video(data.getStringExtra(VIDEO_BANNWE));
+            className = mVideo == null ? "" : mVideo.getServiceClass();
+        }
+        if (getIntent().hasExtra(VIDEO)) {
+            mVideo = getIntent().getParcelableExtra(VIDEO);
+        }
+        if (getIntent().hasExtra(COLLECT)) {
+            mVideoCollect = getIntent().getParcelableExtra(COLLECT);
+        }
+        if (getIntent().hasExtra(VID)) {
+            vid = getIntent().getStringExtra(VID);
+        }
+        if (getIntent().hasExtra(CLASS_NAME)) {
+            className = getIntent().getStringExtra(CLASS_NAME);
+        }
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+    public void onFindUrl(String url) {
+        if (mDownload == null || details == null) return;
+        String title = mDownload.episode.getTitle();
+        String format = String.format("%s_%s.mp4", details.getTitle(), title);
+        if (url.contains("=") && url.contains(".m3u")) {
+            M3u8File m3u8File = new M3u8File();
+            m3u8File.setUrl(url.split("=")[1]);
+            m3u8File.setOnlyId(mDownload.getOnlyId());
+            m3u8File.setM3u8VideoName(format);
+            M3u8Manager.INSTANCE.download(m3u8File);
+        } else if (url.contains(".rm") || url.contains(".mp4") || url.contains(".avi") || url.contains(".wmv")) {
+            mDownload.episode.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
+            String eurl = mDownload.episode.getUrl();
+            String path = new File(M3u8Config.INSTANCE.getM3u8Path(), format).getAbsolutePath();
+            Map<String, String> header = AppUtil.getDownloadHeader();
+            getDownloadReceiver().load(url).setExtendField(eurl).setFilePath(path).addHeaders(header).start();
+            showToast(String.format("<%s>添加下载任务成功", format));
+            downloadNext();
+        } else {
+            showToast(String.format("<%s>不支持下载", format));
+            downloadNext();
+        }
+    }
+
+    @Override
+    public void onError(String errorMsg) {
+        if (mDownload == null || mDownload.episode == null || details == null) return;
+        String format = String.format("%s_%s.mp4", details.getTitle(), mDownload.episode.getTitle());
+        showToast(String.format("<%s>解析M3u8任务失败", format));
+        downloadNext();
+    }
+
+    @Override
+    public void onSuccess(M3u8File m3u8File, List<M3u8> list) {
+        if (mDownload == null || mDownload.episode == null) return;
+        mDownload.episode.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
+        M3u8Manager.INSTANCE.download(list);
+        showToast(String.format("<%s>添加下载任务成功", m3u8File.getM3u8VideoName()));
+        downloadNext();
+    }
+
+    @Override
+    public void onError(M3u8File m3u8File, Throwable throwable) {
+        showToast(String.format("<%s>下载失败", m3u8File.getM3u8VideoName()));
     }
 
     @Override
@@ -302,24 +387,18 @@ public class VideoDetailsActivity extends BaseActivity implements
                 break;
             case R.id.ll_bangumi_collect:
                 if (checkLogin()) {
-                    DialogUtil.showMaterialDialog(this, String.format(getString(R.string.collect_hit), details.getTitle()), buttonClickListener);
+                    String format = String.format(getString(R.string.collect_hit), details.getTitle());
+                    DialogUtil.showMaterialDialog(this, format, buttonClickListener);
                 }
                 break;
             case R.id.ll_bangumi_share:
+//                ShareUtil.shareDialogBanner(details,20180910);
                 Uri.Builder info = Uri.parse("https://details").buildUpon().appendQueryParameter("info", new Gson().toJson(details));
                 ShareUtil.share(this, details.getTitle(), details.getIntroduce(), info.toString());
-//
-//                DialogBanner banner = new DialogBanner();
-//                banner.setTitle(details.getTitle());
-//                banner.setCover(details.getCover());
-//                banner.setBannerInt(20180803);
-//                banner.setBaseJson(new Gson().toJson(details));
-//                banner.setIntroduce(details.getIntroduce());
-//                banner.save();
                 break;
             case R.id.ll_bangumi_download:
                 if (details.canDownload()) {
-                    DialogUtil.showDownloadDialog(this, details);
+                    DialogUtil.showDownloadDialog(this, details, this);
                 } else {
                     showSnackbar(getString(R.string.not_download));
                 }
@@ -367,8 +446,7 @@ public class VideoDetailsActivity extends BaseActivity implements
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        if (mEpisodeAdapter != null)
-            mEpisodeAdapter.notifyDataSetChanged();
+        if (mEpisodeAdapter != null) mEpisodeAdapter.notifyDataSetChanged();
     }
 
     private RefreshCallback<IVideoDetails> callback = new RefreshCallback<IVideoDetails>() {
@@ -383,7 +461,6 @@ public class VideoDetailsActivity extends BaseActivity implements
                 mAblView.setVisibility(View.VISIBLE);
             if (mNsvView != null)
                 mNsvView.setVisibility(View.VISIBLE);
-
         }
 
         @Override
@@ -405,8 +482,8 @@ public class VideoDetailsActivity extends BaseActivity implements
 
         @Override
         public void onSuccess(int enqueueKey, IVideoDetails response) {
-            if (response == null || !response.isSuccess() || mRecomAdapter == null){
-                onFailure(enqueueKey,"未知錯誤");
+            if (response == null || !response.isSuccess() || mRecomAdapter == null) {
+                onFailure(enqueueKey, "未知錯誤");
                 return;
             }
             details = mVideo == null ? mVideoCollect == null ? response : response.setVideo(mVideoCollect) : response.setVideo(mVideo);
@@ -414,7 +491,7 @@ public class VideoDetailsActivity extends BaseActivity implements
                 picasso = new PicassoWrap(VideoDetailsActivity.this, new RefererDownloader(getApplicationContext(), response.getCoverReferer()));
                 mRecomAdapter.setPicasso(picasso);
             }
-            picasso.loadVertical(response.getCover(), VideoDetailsActivity.class,false, mRoundImageView);
+            picasso.loadVertical(response.getCover(), VideoDetailsActivity.class, false, mRoundImageView);
             if (!TextUtils.isEmpty(response.getCover())) {
                 picasso.getPicasso().load(response.getCover()).transform(new BlurTransform()).into(mBackgroudImageView);
             }
@@ -496,8 +573,6 @@ public class VideoDetailsActivity extends BaseActivity implements
 
     }
 
-    ;
-
     /**
      *
      */
@@ -529,7 +604,5 @@ public class VideoDetailsActivity extends BaseActivity implements
         }
 
     }
-
-    ;
 
 }

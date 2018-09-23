@@ -247,7 +247,7 @@ public class SplashActivity extends BaseActivity {
         public List<DownloadEntity> onTaskBackground() {
             if (appliction == null || getDownloadReceiver() == null) return null;
             List<DownloadEntity> list = new ArrayList<>();
-            List<DownloadEntity> simpleTaskList = getDownloadReceiver().getSimpleTaskList();
+            List<DownloadEntity> simpleTaskList = getDownloadReceiver().getTaskList();
             if (simpleTaskList != null) {
                 for (DownloadEntity entity : simpleTaskList) {
                     if (entity.getState() == IEntity.STATE_RUNNING || entity.getState() == IEntity.STATE_WAIT) {

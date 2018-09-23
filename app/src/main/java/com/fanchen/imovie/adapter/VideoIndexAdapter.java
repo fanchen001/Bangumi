@@ -10,8 +10,6 @@ import android.widget.TextView;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.BangumiListActivity;
-import com.fanchen.imovie.activity.RankingTabActivity;
-import com.fanchen.imovie.activity.TimeLineActivity;
 import com.fanchen.imovie.activity.VideoDetailsActivity;
 import com.fanchen.imovie.activity.VideoTabActivity;
 import com.fanchen.imovie.activity.WebActivity;
@@ -24,8 +22,6 @@ import com.fanchen.imovie.entity.face.IVideoBanner;
 import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.fragment.HomeIndexFragment;
 import com.fanchen.imovie.picasso.PicassoWrap;
-import com.fanchen.imovie.retrofit.service.TucaoService;
-import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.view.TriangleLabelView;
 import com.fanchen.imovie.view.pager.IBanner;
 import com.fanchen.imovie.view.pager.LoopViewPager;
@@ -80,7 +76,6 @@ public class VideoIndexAdapter extends BaseAdapter {
     public void bindViewHolder(RecyclerView.ViewHolder holder, List<IViewType> datas, int viewType, int position) {
         if (viewType == IViewType.TYPE_HEADER) {
             if (mHeaderHolder == null) mHeaderHolder = (HeaderViewHolder) holder;
-
             if (index != null) {
                 mHeaderHolder.itemView.setVisibility(View.VISIBLE);
                 mHeaderHolder.bannerView.setOnLoadImageViewListener(imageViewLoader);
@@ -123,8 +118,6 @@ public class VideoIndexAdapter extends BaseAdapter {
                     videoViewHolder.triangTextView.setVisibility(View.GONE);
                 }
                 videoViewHolder.titleTextView.setText(video.getTitle());
-                LogUtil.e("bindViewHolder", "" + video.getCover());
-                LogUtil.e("picasso", "" + picasso.getPicasso().toString());
                 picasso.loadVertical(video.getCover(), VideoTabActivity.class, videoViewHolder.imageView);
             }
         }
@@ -149,7 +142,6 @@ public class VideoIndexAdapter extends BaseAdapter {
     @Override
     public void addData(Object index) {
         if(index instanceof IBangumiRoot){
-            LogUtil.e("ins => ","index instanceof IBangumiRoot");
             this.index = (IBangumiRoot) index;
             clear();
             addAll(this.index.getAdapterResult(), false);

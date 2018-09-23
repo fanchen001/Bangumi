@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 /**
+ * RecycleImageView
  * Created by fanchen on 2017/11/26.
  */
 public class RecycleImageView extends ImageView {
@@ -21,10 +22,10 @@ public class RecycleImageView extends ImageView {
         super(context, attrs, defStyleAttr);
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        setImageDrawable(null);
-    }
+//    @Override
+//    protected void onDetachedFromWindow() {
+//        super.onDetachedFromWindow();
+//        setImageDrawable(null);
+//    }
 
 }

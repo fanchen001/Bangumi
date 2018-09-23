@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatDelegate;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -27,10 +28,8 @@ import com.fanchen.imovie.R;
 import com.fanchen.imovie.base.BaseActivity;
 import com.fanchen.imovie.dialog.BaseAlertDialog;
 import com.fanchen.imovie.dialog.MainBannerDialog;
-import com.fanchen.imovie.dialog.MaterialDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
 import com.fanchen.imovie.entity.AppEvent;
-import com.fanchen.imovie.entity.bmob.DialogBanner;
 import com.fanchen.imovie.entity.bmob.User;
 import com.fanchen.imovie.fragment.HomePagerFragment;
 import com.fanchen.imovie.picasso.PicassoWrap;
@@ -39,12 +38,9 @@ import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.SystemUtil;
 import com.fanchen.imovie.view.CircleImageView;
 
-import java.util.List;
 import java.util.Random;
 
 import butterknife.InjectView;
-import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.update.BmobUpdateAgent;
 
 /**
@@ -116,13 +112,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         FragmentManager sfm = getSupportFragmentManager();
         if (sfm.findFragmentByTag(MainActivity.class.getName()) == null) {
             Handler handler = new Handler(Looper.getMainLooper());
-            if(!mSharedPreferences.getString("alipay_time", "").equals(DateUtil.getCurrentDate("yyyy-MM-dd"))){
+            if (!mSharedPreferences.getString("alipay_time", "").equals(DateUtil.getCurrentDate("yyyy-MM-dd"))) {
                 handler.postDelayed(alipayRunnable, 200);
             }
-            if (mSharedPreferences.getBoolean("class_hit", true)) {
+            if (mSharedPreferences.getBoolean("new_class_hit", true)) {
                 handler.postDelayed(tipRunnable, 2000);
             }
-            if (mSharedPreferences.getBoolean("app_hit", true) && new Random().nextInt(5) == 1) {
+            if (mSharedPreferences.getBoolean("app_hit", true) && new Random().nextInt(10) == 1) {
                 handler.postDelayed(appRunnable, 5000);
             }
             HomePagerFragment homePagerFragment = new HomePagerFragment();
@@ -218,7 +214,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-    private void startAlipay(){
+    private void startAlipay() {
         try {
             Intent mIntent = new Intent();
             mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -226,7 +222,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             mIntent.setClassName("com.eg.android.AlipayGphone", "com.alipay.mobile.quinox.LauncherActivity.alias");
             mIntent.setData(Uri.parse("alipays://platformapi/startApp?appId=10000007&sourceId=&actionType=route&qrcode=https://qr.alipay.com/c1x094332eotzkcdjjmx7bf"));
             startActivity(mIntent);
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             showToast("请先下载支付宝");
             String url = "https://ds.alipay.com/?from=mobileweb";
@@ -359,10 +355,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
             dialog.dismiss();
             if (btn == OnButtonClickListener.RIGHT) {
-                startAlipay();
                 String currentDate = DateUtil.getCurrentDate("yyyy-MM-dd");
-                mSharedPreferences.edit().putString("alipay_time",currentDate).commit();
-            }else{
+                mSharedPreferences.edit().putString("alipay_time", currentDate).apply();
+                startAlipay();
+            } else {
                 showToast("你不是真爱(｀⌒´メ)");
             }
         }
@@ -375,7 +371,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
             dialog.dismiss();
             if (btn == OnButtonClickListener.RIGHT) {
-                mSharedPreferences.edit().putBoolean("class_hit", false).commit();
+                mSharedPreferences.edit().putBoolean("new_class_hit", false).apply();
             }
         }
 
@@ -387,7 +383,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
             dialog.dismiss();
             if (btn == OnButtonClickListener.RIGHT) {
-                mSharedPreferences.edit().putBoolean("app_hit", false).commit();
+                mSharedPreferences.edit().putBoolean("app_hit", false).apply();
                 SystemUtil.startThreeApp(MainActivity.this, "https://www.coolapk.com/apk/com.fanchen.aisou");
             }
         }
@@ -410,7 +406,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         @Override
         public void run() {
             if (isFinishing()) return;
-            DialogUtil.showCancelableDialog(MainActivity.this, getString(R.string.more_hit), "继续提醒", "不要再说了", buttonClickListener);
+            DialogUtil.showCancelableDialog(MainActivity.this, Html.fromHtml(getString(R.string.more_hit)), "继续提醒", "不要再说了", buttonClickListener);
         }
 
     };

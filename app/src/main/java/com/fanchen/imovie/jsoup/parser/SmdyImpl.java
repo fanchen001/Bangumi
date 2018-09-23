@@ -18,8 +18,6 @@ import com.fanchen.imovie.jsoup.IVideoMoreParser;
 import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.SmdyService;
-import com.fanchen.imovie.util.LogUtil;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,7 +88,6 @@ public class SmdyImpl implements IVideoMoreParser {
         Node node = new Node(html);
         VideoHome home = new VideoHome();
         try {
-
             List<Node> modo_title = node.list("div.modo_title.top");
             if (modo_title != null && modo_title.size() > 0) {
                 List<VideoBanner> banners = new ArrayList<>();
@@ -99,6 +96,9 @@ public class SmdyImpl implements IVideoMoreParser {
                     banner.setServiceClass(clazz);
                     banner.setCover(n.attr("a > img", "data-src"));
                     banner.setId(n.attr("a", "href", "/", 4));
+                    if(TextUtils.isEmpty(banner.getId())){
+                        banner.setId(n.attr("a", "href", "/", 2));
+                    }
                     banner.setTitle(n.text("a > span"));
                     banner.setUrl(baseUrl + n.attr("a", "href"));
                     banners.add(banner);
@@ -135,12 +135,10 @@ public class SmdyImpl implements IVideoMoreParser {
                         String score = sub.text("a > div > label.score");
                         String author = sub.text("p");
                         String url = baseUrl + sub.attr("a", "href");
-                        LogUtil.e("Node ", "url = > " + url);
                         Video video = new Video();
                         video.setHasDetails(true);
                         video.setServiceClass(clazz);
                         video.setCover(cover);
-                        LogUtil.e("Node ", "id = > " + n.attr("a", "href", "/", 2));
                         video.setId(sub.attr("a", "href", "/", 2));
                         video.setDanmaku("评分:" + score);
                         video.setExtras("演员:" + author);

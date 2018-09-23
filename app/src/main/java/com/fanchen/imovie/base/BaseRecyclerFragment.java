@@ -6,6 +6,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.TextView;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.db.LiteOrmManager;
@@ -43,6 +44,8 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
     protected SwipeRefreshLayout mSwipeRefreshLayout;
     @InjectView(R.id.empty_layout)
     protected CustomEmptyView mCustomEmptyView;
+    @InjectView(R.id.tv_recycler_bottom)
+    protected TextView mTextView;
 
     private int page = 1;
     private int pageStart = 1;
