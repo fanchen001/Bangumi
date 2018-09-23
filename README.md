@@ -31,7 +31,7 @@ SET.3   编写一个parser类XxxImpl 实现 [IVideoParser](https://github.com/fa
 
 SET.4   编写一个serivce 接口 XxxService 具体可以参考 [KankanService](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/retrofit/service/KankanService.java) 
 
-set.5  在 [JsoupVideoResponseCoverter](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/retrofit/coverter/JsoupVideoResponseCoverter.java) 的静态方法注册 map.put(JsoupSource.XXX, new XxxImpl());
+SET.5  在 [JsoupVideoResponseCoverter](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/retrofit/coverter/JsoupVideoResponseCoverter.java) 的静态方法注册 map.put(JsoupSource.XXX, new XxxImpl());
 
 SET.6   编写一个pagerAdapter XxxPagerAdapter 参考 [KankanPagerAdapter](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/adapter/pager/KankanPagerAdapter.java)
 
