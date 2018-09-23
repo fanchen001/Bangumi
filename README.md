@@ -23,7 +23,8 @@
 关于新增视频播放源
 ========
 
-set.1 在RetrofitManager![url](http://www.baidu.com)
+set.1 在[RetrofitManager](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/retrofit/RetrofitManager.java)  的static方法中retrofitMap.put一个视频源地址,[RetrofitSource](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/annotation/RetrofitSource.java)和[JsoupSource](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/annotation/JsoupSource.java)增加相应的枚举类型。
+
 
 声明
 =======
