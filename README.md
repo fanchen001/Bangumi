@@ -23,21 +23,21 @@
 关于新增视频播放源
 ========
 
-set.1 在[RetrofitSource](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/annotation/RetrofitSource.java)和[JsoupSource](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/annotation/JsoupSource.java)增加相应的视频源枚举类型,例如：JsoupSource.BILIBILI,RetrofitSource.BILI_API。
+SET.1   在[RetrofitSource](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/annotation/RetrofitSource.java)和[JsoupSource](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/annotation/JsoupSource.java)增加相应的视频源枚举类型,例如：JsoupSource.BILIBILI,RetrofitSource.BILI_API。
 
-set.2 然后在[RetrofitManager](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/retrofit/RetrofitManager.java)  的static静态方法中给 retrofitMap.put 一个视频源地址。
+SET.2   然后在[RetrofitManager](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/retrofit/RetrofitManager.java)  的static静态方法中给 retrofitMap.put 一个视频源地址。
 
-set.3 编写一个parser类XxxImpl 实现 [IVideoParser](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/jsoup/IVideoParser.java)或者[IVideoMoreParser](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/jsoup/IVideoMoreParser.java),这个类是核心。主要用来解析网页。提取程序关心的数据
+SET.3   编写一个parser类XxxImpl 实现 [IVideoParser](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/jsoup/IVideoParser.java)或者[IVideoMoreParser](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/jsoup/IVideoMoreParser.java),这个类是核心。主要用来解析网页。提取程序关心的数据
 
-set.4 编写一个serivce 接口 XxxService 具体可以参考[KankanService](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/retrofit/service/KankanService.java)
+SET.4   编写一个serivce 接口 XxxService 具体可以参考[KankanService](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/retrofit/service/KankanService.java)
 
-set.5 在[JsoupVideoResponseCoverter](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/retrofit/coverter/JsoupVideoResponseCoverter.java)的静态方法注册 map.put(JsoupSource.XXX, new XxxImpl());
+set.5  在[JsoupVideoResponseCoverter](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/retrofit/coverter/JsoupVideoResponseCoverter.java)的静态方法注册 map.put(JsoupSource.XXX, new XxxImpl());
 
-set.6 编写一个pagerAdapter XxxPagerAdapter 参考 [KankanPagerAdapter](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/adapter/pager/KankanPagerAdapter.java)
+SET.6   编写一个pagerAdapter XxxPagerAdapter 参考 [KankanPagerAdapter](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/adapter/pager/KankanPagerAdapter.java)
 
-set.7 在[VideoTabActivity](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/activity/VideoTabActivity.java) getAdapter 方法里增加if分支，返回XxxPagerAdapter
+SET.7   在[VideoTabActivity](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/java/com/fanchen/imovie/activity/VideoTabActivity.java) getAdapter 方法里增加if分支，返回XxxPagerAdapter
 
-set.8 在[category.json](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/assets/category.json)增加视频源。大功告成
+SET.8   在[category.json](https://github.com/fanchen001/Bangumi/blob/master/app/src/main/assets/category.json)增加视频源。大功告成
 
 声明
 =======
