@@ -7,8 +7,6 @@ import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.text.TextUtils;
 import android.view.ContextMenu;
@@ -23,16 +21,12 @@ import com.fanchen.imovie.R;
 import com.fanchen.imovie.base.BaseToolbarActivity;
 import com.fanchen.imovie.dialog.BaseAlertDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
-import com.fanchen.imovie.entity.Video;
-import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.util.DialogUtil;
-import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.ShareUtil;
 import com.fanchen.imovie.util.SystemUtil;
 import com.fanchen.imovie.util.VideoUrlUtil;
 import com.fanchen.imovie.view.ContextMenuTitleView;
 import com.fanchen.imovie.view.webview.SwipeWebView;
-import com.tencent.smtt.export.external.interfaces.JsResult;
 import com.tencent.smtt.export.external.interfaces.SslError;
 import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
 import com.tencent.smtt.sdk.TbsVideo;
@@ -40,7 +34,6 @@ import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
-import com.xigua.p2p.P2PManager;
 
 
 import java.util.Arrays;
@@ -65,7 +58,6 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
     private String url;
     private VideoUrlUtil mVideoUrlUtil;
     private List<String> mVideoUrls = null;
-    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     /**
      * @param context
@@ -279,10 +271,7 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
             if (scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https")) {
                 view.loadUrl(url);
             } else if (scheme.equalsIgnoreCase("xg") && IMovieAppliction.app != null) {
-                P2PManager.getInstance().init(IMovieAppliction.app);
-                P2PManager.getInstance().setAllow3G(true);
-                DialogUtil.showProgressDialog(WebActivity.this, getString(R.string.loading));
-                mHandler.postDelayed(new XiguaRunnable(url), 2000);
+                VideoPlayerActivity.startActivity(WebActivity.this, url);
             } else {
                 String title = String.format("网页<%s>想打开本地应用，是否允许？", mWebview.getWebView().getOriginalUrl());
                 DialogUtil.showCancelableDialog(WebActivity.this, title, new AppButtonClickListener(url));
@@ -366,22 +355,6 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
             return true;
         }
     };
-
-    private class XiguaRunnable implements Runnable {
-
-        private String xiguaUrl = "";
-
-        public XiguaRunnable(String url) {
-            this.xiguaUrl = url;
-        }
-
-        @Override
-        public void run() {
-            DialogUtil.closeProgressDialog();
-            VideoPlayerActivity.startActivity(WebActivity.this, xiguaUrl);
-        }
-
-    }
 
     private class AppButtonClickListener implements OnButtonClickListener {
         private String inteniUrl;

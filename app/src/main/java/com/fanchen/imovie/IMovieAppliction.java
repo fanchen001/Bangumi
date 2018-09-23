@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.support.multidex.MultiDexApplication;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.arialyy.annotations.Download;
 import com.arialyy.aria.core.Aria;
@@ -98,36 +99,62 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
     @Override
     public void onCreate() {
         super.onCreate();
+        startService(new Intent(this, EmptyService.class));
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(app = this);
+        multithreading = getMultithreading(mSharedPreferences);
+        boolean swith_mode = mSharedPreferences.getBoolean("swith_mode", true);
+        AppCompatDelegate.setDefaultNightMode(swith_mode ? AppCompatDelegate.MODE_NIGHT_NO : AppCompatDelegate.MODE_NIGHT_YES);
+        initSdk(getApplicationContext(), AppUtil.isMainProcess(this));
+    }
+
+    /**
+     * initSdk
+     * @param context
+     * @param mainProcess
+     */
+    private void initSdk(Context context, boolean mainProcess) {
         try {
-            multithreading = Integer.parseInt(mSharedPreferences.getString("multithreading", "1"));
-        } catch (Exception e) {
-        }
-        AppCompatDelegate.setDefaultNightMode(mSharedPreferences.getBoolean("swith_mode", true) ? AppCompatDelegate.MODE_NIGHT_NO : AppCompatDelegate.MODE_NIGHT_YES);
-        CrashReport.UserStrategy strategy = new CrashReport.UserStrategy(this); // App的策略Bean
-        strategy.setAppChannel(getPackageName()).setAppVersion(AppUtil.getVersionName(this)).setAppReportDelay(100).setCrashHandleCallback(new AppCrashHandleCallback()); // 设置渠道
-        CrashReport.initCrashReport(this, "7110e4106c", false, strategy); // 自定义策略生效，必须在初始化SDK前调用
-        initXigua(getApplicationContext());
-        if (AppUtil.isMainProcess(this) && !isInitSdk) {
-            startService(new Intent(this, EmptyService.class));
-            initM3u8Config(getApplicationContext());
-            initMainSdk();
-        } else {
-            initX5Sdk();
+            CrashReport.UserStrategy strategy = new CrashReport.UserStrategy(this); // App的策略Bean
+            strategy.setAppChannel(getPackageName()).setAppVersion(AppUtil.getVersionName(this)).setAppReportDelay(100).setCrashHandleCallback(new AppCrashHandleCallback()); // 设置渠道
+            CrashReport.initCrashReport(this, "7110e4106c", false, strategy); // 自定义策略生效，必须在初始化SDK前调用
+            initXigua(context);
+            if (mainProcess && !isInitSdk) {
+                registerReceiver(mNetworkReceiver, new IntentFilter(NET_ACTION)); //网络改变
+                initM3u8Config(context);
+                initMainSdk();
+            } else {
+                initX5Sdk();
+            }
+        } catch (Throwable e) {
+            String format = String.format("应用初始化错误 <%s>", e.toString());
+            Toast.makeText(this, format, Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void initXigua(Context context) {
+    /**
+     * 初始化西瓜SDK
+     *
+     * @param context
+     * @throws Exception
+     */
+    private void initXigua(Context context) throws Throwable {
         StorageUtils.init(context);
         String packageName = context.getPackageName();
         String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
         String format = String.format("%s%s%s%s%s%s%s%s%s", absolutePath, File.separator, "Android", File.separator, "data", File.separator, packageName, File.separator, "xigua");
         StorageUtils.setCachePath(format);
         P2PManager.getInstance().init(context);
+        P2PManager.getInstance().setAllow3G(true);
         P2PManager.getInstance().isConnect();
     }
 
-    private void initM3u8Config(Context context) {
+    /**
+     * 初始化m3u8下载器
+     *
+     * @param context
+     * @throws Exception
+     */
+    private void initM3u8Config(Context context) throws Throwable {
         M3u8Config config = M3u8Config.INSTANCE;
         String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
         String packageName = AppUtil.getPackageName(context);
@@ -140,20 +167,34 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
         config.setM3u8Path(format);
     }
 
-    public void initMainSdk() {
+    /**
+     * 初始化友盟，bmob
+     *
+     * @throws Exception
+     */
+    public void initMainSdk() throws Throwable {
         UMShareAPI.init(this, "5978868307fe65109c0002fd");
         SMSSDK.initSDK(this, "216b8e0cd94ee", "81a4a9361ea6a111657619b8d613f8f8");
         Bmob.initialize(this, "0b1a20f9d304da48959020d40655ee3d");
         PlatformConfig.setWeixin("wx11d8a2cfc060c228", "20426f9814f9f05da2ae37d89616c577");
         PlatformConfig.setSinaWeibo("3553472100", "bb22aa0b924586301609c10c7ad1afc3", "http://sns.whalecloud.com/sina2/callback");
         PlatformConfig.setQQZone("1106461216", "hUIMorZnPWKdiOYG");
-        registerReceiver(mNetworkReceiver, new IntentFilter(NET_ACTION)); //网络改变
         getDownloadReceiver().register();
         Aria.get(this).getDownloadConfig().setMaxTaskNum(multithreading);
         isInitSdk = true;
     }
 
-    public void initX5Sdk() {
+    private int getMultithreading(SharedPreferences preferences) {
+        try {
+            String string = preferences.getString("multithreading", "1");
+            return Integer.parseInt(string);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 3;
+    }
+
+    public void initX5Sdk() throws Exception {
         QbSdk.initX5Environment(this, this);
         isInitSdk = true;
     }

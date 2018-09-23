@@ -224,11 +224,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             startActivity(mIntent);
         } catch (Exception e) {
             e.printStackTrace();
-            showToast("请先下载支付宝");
-            String url = "https://ds.alipay.com/?from=mobileweb";
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(url));
-            startActivity(intent);
+            try {
+                showToast("请先下载支付宝");
+                String url = "https://ds.alipay.com/?from=mobileweb";
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
+            }catch (Exception ee){
+                ee.printStackTrace();
+            }
         }
     }
 

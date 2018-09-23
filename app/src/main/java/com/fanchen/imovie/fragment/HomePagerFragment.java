@@ -35,6 +35,7 @@ import butterknife.InjectView;
 
 
 /**
+ * HomePagerFragment
  * Created by fanchen on 2017/2/24.
  */
 public class HomePagerFragment extends BaseFragment implements Toolbar.OnMenuItemClickListener,

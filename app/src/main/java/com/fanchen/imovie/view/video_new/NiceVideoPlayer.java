@@ -281,7 +281,7 @@ public class NiceVideoPlayer extends FrameLayout
             mMediaPlayer.reset();
             try {
                 openMediaPlayer();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 mController.onPlayStateChanged(mCurrentState = STATE_ERROR);
                 e.printStackTrace();
             }
@@ -499,7 +499,7 @@ public class NiceVideoPlayer extends FrameLayout
             mSurfaceTexture = surfaceTexture;
             try {
                 openMediaPlayer();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 mController.onPlayStateChanged(mCurrentState = STATE_ERROR);
                 e.printStackTrace();
             }
@@ -508,7 +508,7 @@ public class NiceVideoPlayer extends FrameLayout
         }
     }
 
-    private void openMediaPlayer() throws Exception {
+    private void openMediaPlayer() throws Throwable {
         // 屏幕常亮
         mContainer.setKeepScreenOn(true);
         // 设置监听
@@ -535,22 +535,6 @@ public class NiceVideoPlayer extends FrameLayout
         mMediaPlayer.setScreenOnWhilePlaying(true);
         mMediaPlayer.prepareAsync();
         mController.onPlayStateChanged(mCurrentState = STATE_PREPARING);
-//
-//        // 设置dataSource
-//        try {
-//            mMediaPlayer.setDataSource(mContext.getApplicationContext(), Uri.parse(mUrl), mHeaders);
-//            if (mSurface == null) {
-//                mSurface = new Surface(mSurfaceTexture);
-//            }
-//            mMediaPlayer.setSurface(mSurface);
-//            mMediaPlayer.prepareAsync();
-//            mCurrentState = STATE_PREPARING;
-//            mController.onPlayStateChanged( mCurrentState = STATE_PREPARING);
-//            LogUtil.d("STATE_PREPARING");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            LogUtil.e("打开播放器发生错误", e);
-//        }
     }
 
     @Override

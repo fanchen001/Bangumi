@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.entity.face.IViewType;
-import com.fanchen.imovie.util.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,9 +109,9 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
                 if (hasFooterView() && isLoad && position == getItemCount() - 1) {
                     return IViewType.TYPE_FOOTER;
                 }
-                if(mList.size() > position - 2){
+                if (mList.size() > position - 2) {
                     return mList.get(position - 2).getViewType();
-                }else{
+                } else {
                     return IViewType.TYPE_FOOTER;
                 }
             }
@@ -123,9 +122,9 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
                 if (hasFooterView() && isLoad && position == getItemCount() - 1) {
                     return IViewType.TYPE_FOOTER;
                 }
-                if(mList.size() > position - 1){
+                if (mList.size() > position - 1) {
                     return mList.get(position - 1).getViewType();
-                }else{
+                } else {
                     return IViewType.TYPE_FOOTER;
                 }
             }
@@ -136,9 +135,9 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
                 if (hasFooterView() && isLoad && position == getItemCount() - 1) {
                     return IViewType.TYPE_FOOTER;
                 }
-                if(mList.size() > position - 1){
+                if (mList.size() > position - 1) {
                     return mList.get(position - 1).getViewType();
-                }else{
+                } else {
                     return IViewType.TYPE_FOOTER;
                 }
             }
@@ -150,9 +149,9 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
             if (mList == null || mList.size() <= position) {
                 return IViewType.TYPE_HEADER;
             }
-            if(mList.size() > position){
+            if (mList.size() > position) {
                 return mList.get(position).getViewType();
-            }else{
+            } else {
                 return IViewType.TYPE_FOOTER;
             }
         }
@@ -338,7 +337,7 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
             if (onLoadListener != null && isLoad && !isLoading && mList != null && mList.size() >= loadMinSize) {
                 isLoading = true;
                 onLoadListener.onLoad();
-            } else if(onLoadListener != null && mList != null && mList.size() > 0){
+            } else if (onLoadListener != null && mList != null && mList.size() > 0) {
                 isLoad = false;
                 holder.itemView.postDelayed(new Runnable() {
 
@@ -481,7 +480,31 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
         public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
             try {
                 super.onLayoutChildren(recycler, state);
-            } catch (IndexOutOfBoundsException e) {
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static class GridLayoutManagerWrapper extends GridLayoutManager {
+
+        public GridLayoutManagerWrapper(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+            super(context, attrs, defStyleAttr, defStyleRes);
+        }
+
+        public GridLayoutManagerWrapper(Context context, int spanCount) {
+            super(context, spanCount);
+        }
+
+        public GridLayoutManagerWrapper(Context context, int spanCount, int orientation, boolean reverseLayout) {
+            super(context, spanCount, orientation, reverseLayout);
+        }
+
+        @Override
+        public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+            try {
+                super.onLayoutChildren(recycler, state);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

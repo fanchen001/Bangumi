@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.fanchen.imovie.R;
+import com.fanchen.imovie.base.BaseActivity;
 import com.fanchen.imovie.util.DisplayUtil;
 import com.fanchen.imovie.view.ShowImagesViewPager;
 import com.fanchen.imovie.view.photo.PhotoView;
@@ -35,7 +36,7 @@ import java.util.List;
 public class ShowImagesDialog extends Dialog implements ViewPager.OnPageChangeListener {
 
     private View mView;
-    private Context mContext;
+    private BaseActivity mActivity;
     private ShowImagesViewPager mViewPager;
     private TextView mIndexText;
     private List<? extends IPhotoImage> mImgUrls;
@@ -48,7 +49,7 @@ public class ShowImagesDialog extends Dialog implements ViewPager.OnPageChangeLi
      * @param context
      * @param imgUrls
      */
-    public static void showDialog(@NonNull Context context, List<? extends IPhotoImage> imgUrls) {
+    public static void showDialog(@NonNull BaseActivity context, List<? extends IPhotoImage> imgUrls) {
         new ShowImagesDialog(context, imgUrls).show();
     }
 
@@ -57,7 +58,7 @@ public class ShowImagesDialog extends Dialog implements ViewPager.OnPageChangeLi
      * @param imgUrls
      * @param position
      */
-    public static void showDialog(@NonNull Context context, List<? extends IPhotoImage> imgUrls, int position) {
+    public static void showDialog(@NonNull BaseActivity context, List<? extends IPhotoImage> imgUrls, int position) {
         new ShowImagesDialog(context, imgUrls, position).show();
     }
 
@@ -65,7 +66,7 @@ public class ShowImagesDialog extends Dialog implements ViewPager.OnPageChangeLi
      * @param context
      * @param imgUrls
      */
-    private ShowImagesDialog(@NonNull Context context, List<? extends IPhotoImage> imgUrls) {
+    private ShowImagesDialog(@NonNull BaseActivity context, List<? extends IPhotoImage> imgUrls) {
         this(context, imgUrls, 0);
     }
 
@@ -74,9 +75,9 @@ public class ShowImagesDialog extends Dialog implements ViewPager.OnPageChangeLi
      * @param imgUrls
      * @param pos
      */
-    private ShowImagesDialog(@NonNull Context context, List<? extends IPhotoImage> imgUrls, int pos) {
+    private ShowImagesDialog(@NonNull BaseActivity context, List<? extends IPhotoImage> imgUrls, int pos) {
         super(context, R.style.transparentDialog);
-        this.mContext = context;
+        this.mActivity = context;
         this.mImgUrls = imgUrls;
         this.position = pos;
         initView();
@@ -84,7 +85,7 @@ public class ShowImagesDialog extends Dialog implements ViewPager.OnPageChangeLi
     }
 
     private void initView() {
-        mView = View.inflate(mContext, R.layout.dialog_images_brower, null);
+        mView = View.inflate(mActivity, R.layout.dialog_images_brower, null);
         mViewPager = (ShowImagesViewPager) mView.findViewById(R.id.vp_images);
         mIndexText = (TextView) mView.findViewById(R.id.tv_image_index);
         mTitles = new ArrayList<>();
@@ -117,8 +118,14 @@ public class ShowImagesDialog extends Dialog implements ViewPager.OnPageChangeLi
             photoView.setTag(position);
             photoView.enable();
             View loadView = inflate.findViewById(R.id.lv_photo);
-            if(!TextUtils.isEmpty(mImgUrls.get(i).getCover()))
-                Picasso.with(getContext()).load(mImgUrls.get(i).getCover()).config(Bitmap.Config.RGB_565).error(R.drawable.image_load_h_error).into(photoView, new PicassoCallback(loadView));
+            if(mActivity != null && !TextUtils.isEmpty(mImgUrls.get(i).getCover())){
+                Picasso picasso = mActivity.getPicasso();
+                if(picasso != null)
+                    picasso.load(mImgUrls.get(i).getCover())
+                            .config(Bitmap.Config.RGB_565)
+                            .error(R.drawable.image_load_h_error)
+                            .into(photoView, new PicassoCallback(loadView));
+            }
             mViews.add(inflate);
             mTitles.add(i + "");
         }

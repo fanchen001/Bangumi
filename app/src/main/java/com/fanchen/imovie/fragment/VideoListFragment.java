@@ -153,6 +153,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
     @Override
     protected void setListener() {
         super.setListener();
+        if(mVideoAdapter != null)
         mVideoAdapter.setOnItemLongClickListener(this);
     }
 

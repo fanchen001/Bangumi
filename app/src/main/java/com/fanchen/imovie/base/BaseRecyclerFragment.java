@@ -33,6 +33,7 @@ import java.util.List;
 import butterknife.InjectView;
 
 /**
+ *
  * Created by fanchen on 2017/7/22.
  */
 public abstract class BaseRecyclerFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener,

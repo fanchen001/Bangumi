@@ -246,7 +246,6 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
             mPlayerController.setTitle(Uri.parse(Uri.decode(videoUrl)).getLastPathSegment());
             mPlayerController.setLoadingVisible(View.VISIBLE);
             mSuperPlayerView.setPlaySpeed(false);
-            P2PManager.getInstance().setAllow3G(true);
             P2PManager.getInstance().isConnect();
             P2PManager.getInstance().play(xiguaPlayUrl);
         } else if (data.hasExtra(VIDEO_URL) && data.hasExtra(VIDEO_TITLE)) {//直接播放的url
@@ -334,6 +333,7 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
             if (!TextUtils.isEmpty(speed)) mPlayerController.updateSpeed(speed);
             if (!TextUtils.isEmpty(title)) mPlayerController.setTitle(title);
             mSuperPlayerView.setOnErrorListener(new OnPlayerErrorListener(videoUrl, referer));
+            if(!TextUtils.isEmpty(xiguaPlayUrl))mSuperPlayerView.setPlayerType(NiceVideoPlayer.TYPE_IJK);
             if (TextUtils.isEmpty(referer)) mSuperPlayerView.setUp(videoUrl);
             else mSuperPlayerView.setUp(videoUrl, referer);
         }
@@ -409,7 +409,6 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
             xiguaPlayUrl = url.replace("xg://", "ftp://");
             mPlayerController.setTitle(Uri.parse(xiguaPlayUrl).getLastPathSegment());
             mSuperPlayerView.setPlaySpeed(false);
-            P2PManager.getInstance().setAllow3G(true);
             P2PManager.getInstance().isConnect();
             P2PManager.getInstance().play(xiguaPlayUrl);
         } else if (playType == IVideoEpisode.PLAY_TYPE_WEB) {
@@ -460,11 +459,14 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
                 VideoPlayerActivity.this.finish();
             } else if (!TextUtils.isEmpty(playerUrl)) {
                 mSuperPlayerView.release();
-                int type = position == 1 ? NiceVideoPlayer.TYPE_NATIVE : NiceVideoPlayer.TYPE_IJK;
-                mSuperPlayerView.setPlayerType(type); // IjkPlayer or MediaPlayer
+                if (position == 1 && TextUtils.isEmpty(xiguaPlayUrl)) {
+                    mSuperPlayerView.setPlayerType(NiceVideoPlayer.TYPE_NATIVE); // IjkPlayer or MediaPlayer
+                } else {//西瓜视频用自动播放器放不了，只能用ijk
+                    mSuperPlayerView.setPlayerType(NiceVideoPlayer.TYPE_IJK); // IjkPlayer or MediaPlayer
+                }
                 mSuperPlayerView.setActivityFullScreen(true);
                 mSuperPlayerView.enterFullScreen();
-                mSuperPlayerView.start();
+                mSuperPlayerView.setUp(playerUrl);
             }
         }
 
@@ -498,7 +500,8 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
                 if (infos == null || infos.isEmpty()) return;
                 for (TaskVideoInfo info : infos) {
                     if (info.getLocalSize() <= 0) continue;
-                    if (!info.getUrl().equalsIgnoreCase(xiguaPlayUrl)) continue;
+                    String infoUrl = info.getUrl();
+                    if (infoUrl == null || !infoUrl.equalsIgnoreCase(xiguaPlayUrl)) continue;
                     xiguaLocalFile = true;
                 }
             } else if (what == 258 && intent.hasExtra("play_url")) {

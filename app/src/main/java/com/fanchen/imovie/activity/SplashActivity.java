@@ -98,7 +98,7 @@ public class SplashActivity extends BaseActivity {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String versionName = AppUtil.getVersionName(this);
         if (!preferences.getString("app_version", "").equals(versionName)) {
-            preferences.edit().putString("app_version", versionName).commit();
+            preferences.edit().putString("app_version", versionName).apply();
             AsyTaskQueue.newInstance().execute(databaseListener);
         }
         File headerDir = AppUtil.getExternalHeaderDir(this);
@@ -148,7 +148,7 @@ public class SplashActivity extends BaseActivity {
         String versionName = AppUtil.getVersionName(getApplication());
         SharedPreferences pf = getPreferences(Context.MODE_PRIVATE);
         if (!pf.getString(APP_VERSION, "").equals(versionName)) {
-            pf.edit().putString(APP_VERSION, versionName).commit();
+            pf.edit().putString(APP_VERSION, versionName).apply();
             // 如果是第一次进入页面加载引导界面
             MainActivity.startActivity(this);
         } else {
@@ -292,7 +292,7 @@ public class SplashActivity extends BaseActivity {
                 IMovieAppliction.KANKAN_COOKIE = splashScreen.getKankanCookie();
                 if (splashScreen.getStartTime() < timeMillis && splashScreen.getEndTime() > timeMillis && version < splashScreen.getVersion()) {
                     FileUtil.downloadBackgroud(splashScreen.getScreenImage(), file);
-                    preferences.edit().putInt(IMAGE_VERSION, splashScreen.getVersion()).commit();
+                    preferences.edit().putInt(IMAGE_VERSION, splashScreen.getVersion()).apply();
                     return;
                 }
             }

@@ -3,6 +3,8 @@ package com.fanchen.imovie.activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -228,7 +230,7 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
         mBackTitleTextView.setText(R.string.bangumi_details);
         mVideoUrlUtil = VideoUrlUtil.getInstance().init(this);
         mEpisodeRecyclerView.setLayoutManager(new BaseAdapter.LinearLayoutManagerWrapper(this, BaseAdapter.LinearLayoutManagerWrapper.HORIZONTAL, false));
-        mRecomRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        mRecomRecyclerView.setLayoutManager(new BaseAdapter.GridLayoutManagerWrapper(this, 3));
         mEpisodeAdapter = new EpisodeAdapter(this);
         mEpisodeRecyclerView.setAdapter(mEpisodeAdapter);
         mEpisodeRecyclerView.setNestedScrollingEnabled(false);
@@ -266,7 +268,6 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
             downloadNext();
         } else if (this.mDownload.type == DownloadDialog.DownloadTemp.TYPE_XIGUA) {
             P2PManager.getInstance().isConnect();
-            P2PManager.getInstance().setAllow3G(true);
             P2PManager.getInstance().play(temp.url);
             temp.episode.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
             showToast(String.format("<%s>添加下载任务成功", temp.episode.getTitle()));
@@ -393,8 +394,18 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
                 break;
             case R.id.ll_bangumi_share:
 //                ShareUtil.shareDialogBanner(details,20180910);
-                Uri.Builder info = Uri.parse("https://details").buildUpon().appendQueryParameter("info", new Gson().toJson(details));
-                ShareUtil.share(this, details.getTitle(), details.getIntroduce(), info.toString());
+                try {
+                    PackageManager manager = getPackageManager();
+                    List<ApplicationInfo> infos = manager.getInstalledApplications(128);
+                    if (infos == null || infos.isEmpty()) {
+                        showToast("获取可分享应用信息失败,请给应用授权");
+                    } else {
+                        Uri.Builder info = Uri.parse("https://details").buildUpon().appendQueryParameter("info", new Gson().toJson(details));
+                        ShareUtil.share(this, details.getTitle(), details.getIntroduce(), info.toString());
+                    }
+                } catch (Throwable e) {
+                    showToast(String.format("分享失败 <%s>", e.toString()));
+                }
                 break;
             case R.id.ll_bangumi_download:
                 if (details.canDownload()) {

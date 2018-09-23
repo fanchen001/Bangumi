@@ -61,11 +61,13 @@ public abstract class BaseActivity extends AppCompatActivity {
     private LiteOrm mLiteOrm;
     private SwipeBackPage mBackPage;
     private RetrofitManager mRetrofitManager;
+    private boolean isDestroy = false;
     private List<BroadcastReceiver> mBroadcastReceiver = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isDestroy = false;
         init(savedInstanceState);
     }
 
@@ -79,6 +81,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        isDestroy = true;
         for (BroadcastReceiver receiver : mBroadcastReceiver) {
             try {
                 super.unregisterReceiver(receiver);
@@ -660,11 +663,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         @Override
         public void run() {
             BaseActivity baseActivity = softReference.get();
-            if (baseActivity != null && !baseActivity.isDestroyed()) {
-                baseActivity.findView(view);
-                baseActivity.initActivity(savedState, inflater);
-                baseActivity.setListener();
-            }
+            if (baseActivity == null || baseActivity.isDestroy) return;
+            baseActivity.findView(view);
+            baseActivity.initActivity(savedState, inflater);
+            baseActivity.setListener();
         }
     }
 }

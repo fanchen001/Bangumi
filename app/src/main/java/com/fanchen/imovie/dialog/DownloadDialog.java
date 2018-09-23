@@ -53,7 +53,7 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
     public View onCreateView() {
         View inflate = View.inflate(getContext(), R.layout.dialog_download, null);
         mRecyclerView = (RecyclerView) inflate.findViewById(R.id.rv_download_list);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        mRecyclerView.setLayoutManager(new BaseAdapter.GridLayoutManagerWrapper(getContext(), 3));
         mRecyclerView.setAdapter(mEpisodeAdapter);
         mDownButton = (Button) inflate.findViewById(R.id.bt_download_selete);
         return inflate;

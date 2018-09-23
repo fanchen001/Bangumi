@@ -111,7 +111,7 @@ public abstract class BaseFragment extends Fragment {
      * @return
      */
     public Picasso getPicasso() {
-        if (activity == null)
+        if (activity != null)
             return activity.getPicasso();
         if(IMovieAppliction.app != null)
             return IMovieAppliction.app.getPicasso();
@@ -161,7 +161,7 @@ public abstract class BaseFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //用户可见，并且没有初始化
-        if (!isPrepared && getUserVisibleHint() && view != null) {
+        if (!isPrepared && getUserVisibleHint() && view != null && isAdded()) {
             mMainView.post(new InitRunnable(this, view,mSaveState));
         }
     }
@@ -181,7 +181,7 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (getUserVisibleHint() && mMainView != null && !isPrepared) {
+        if (getUserVisibleHint() && mMainView != null && !isPrepared && isAdded()) {
             mMainView.post(new InitRunnable(this, mMainView, mSaveState));
         }
     }

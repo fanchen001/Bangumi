@@ -32,7 +32,7 @@ public class LiteOrmManager {
      * @param isSingle
      * @return
      */
-    public LiteOrm getLiteOrm(String db, boolean isSingle){
+    public synchronized LiteOrm getLiteOrm(String db, boolean isSingle){
         String key = db + isSingle;
         LiteOrm liteOrm = map.get(key);
         if(liteOrm == null){
@@ -51,7 +51,7 @@ public class LiteOrmManager {
      * @param db
      * @return
      */
-    public LiteOrm getLiteOrm(String db){
+    public synchronized LiteOrm getLiteOrm(String db){
         return getLiteOrm(db,true);
     }
 

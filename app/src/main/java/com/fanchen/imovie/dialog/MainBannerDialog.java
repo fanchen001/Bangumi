@@ -1,7 +1,5 @@
 package com.fanchen.imovie.dialog;
 
-import android.app.Activity;
-import android.content.Context;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,6 +7,7 @@ import android.widget.TextView;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.VideoDetailsActivity;
+import com.fanchen.imovie.base.BaseActivity;
 import com.fanchen.imovie.entity.bmob.DialogBanner;
 import com.fanchen.imovie.picasso.PicassoWrap;
 import com.squareup.picasso.Picasso;
@@ -28,9 +27,11 @@ public class MainBannerDialog extends MaterialDialog implements OnButtonClickLis
     private TextView textView2;
     private ImageView imageView;
     private DialogBanner banner;
+    private BaseActivity activity;
 
-    public MainBannerDialog(Context context, DialogBanner banner) {
+    public MainBannerDialog(BaseActivity context, DialogBanner banner) {
         super(context, R.layout.dialog_main_banner);
+        this.activity = context;
         this.banner = banner;
         btnText("知道了", "马上去看");
         setButtonClickListener(this);
@@ -45,7 +46,7 @@ public class MainBannerDialog extends MaterialDialog implements OnButtonClickLis
         textView2.setText(banner.getIntroduce());
         textView1.setText(banner.getTitle());
         tv_title.setTextSize(18);
-        new PicassoWrap(Picasso.with(context)).loadHorizontal(banner.getCover(), imageView);
+        new PicassoWrap(activity.getPicasso()).loadHorizontal(banner.getCover(), imageView);
     }
 
     @Override
@@ -56,19 +57,19 @@ public class MainBannerDialog extends MaterialDialog implements OnButtonClickLis
     @Override
     public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
         if (btn == RIGHT) VideoDetailsActivity.startActivity(context, banner);
-        PreferenceManager.getDefaultSharedPreferences(context).edit().putInt("banner_int", banner.getBannerInt()).commit();
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putInt("banner_int", banner.getBannerInt()).apply();
         dismiss();
     }
 
-    public static void showMainBanner(final Activity context) {
+    public static void showMainBanner(final BaseActivity context) {
         BmobQuery<DialogBanner> dialogBannerBmobQuery = new BmobQuery<>();
         dialogBannerBmobQuery.findObjects(context.getApplication(), new OnFindListener(context));
     }
 
     private static class OnFindListener extends FindListener<DialogBanner> {
-        private Context context;
+        private BaseActivity context;
 
-        private OnFindListener(Context context) {
+        private OnFindListener(BaseActivity context) {
             this.context = context;
         }
 

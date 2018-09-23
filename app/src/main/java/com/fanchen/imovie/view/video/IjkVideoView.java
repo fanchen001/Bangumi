@@ -110,7 +110,7 @@ public class IjkVideoView extends FrameLayout implements
 	private IRenderView mRenderView;
 	private int mVideoSarNum;
 	private int mVideoSarDen;
-	private boolean usingAndroidPlayer = true;
+	private boolean usingAndroidPlayer = false;
 	private boolean usingMediaCodec = false;
 	private boolean usingMediaCodecAutoRotate = false;
 	private boolean usingOpenSLES = false;
