@@ -46,7 +46,7 @@ public class MainBannerDialog extends MaterialDialog implements OnButtonClickLis
         textView2.setText(banner.getIntroduce());
         textView1.setText(banner.getTitle());
         tv_title.setTextSize(18);
-        new PicassoWrap(activity.getPicasso()).loadHorizontal(banner.getCover(), imageView);
+        if(activity != null) new PicassoWrap(activity.getPicasso()).loadHorizontal(banner.getCover(), imageView);
     }
 
     @Override

@@ -333,7 +333,7 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
             if (!TextUtils.isEmpty(speed)) mPlayerController.updateSpeed(speed);
             if (!TextUtils.isEmpty(title)) mPlayerController.setTitle(title);
             mSuperPlayerView.setOnErrorListener(new OnPlayerErrorListener(videoUrl, referer));
-            if(!TextUtils.isEmpty(xiguaPlayUrl))mSuperPlayerView.setPlayerType(NiceVideoPlayer.TYPE_IJK);
+            if(!TextUtils.isEmpty(xiguaPlayUrl))mSuperPlayerView.setPlayerType(NiceVideoPlayer.TYPE_IJK);//西瓜视频用自带播放器放不了，只能用ijk
             if (TextUtils.isEmpty(referer)) mSuperPlayerView.setUp(videoUrl);
             else mSuperPlayerView.setUp(videoUrl, referer);
         }
@@ -342,7 +342,7 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
     @Override
     protected void setListener() {
         super.setListener();
-        mPlayerController.setChangeClickListener(this);
+        if(mPlayerController != null) mPlayerController.setChangeClickListener(this);
     }
 
     @Override
@@ -461,7 +461,7 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
                 mSuperPlayerView.release();
                 if (position == 1 && TextUtils.isEmpty(xiguaPlayUrl)) {
                     mSuperPlayerView.setPlayerType(NiceVideoPlayer.TYPE_NATIVE); // IjkPlayer or MediaPlayer
-                } else {//西瓜视频用自动播放器放不了，只能用ijk
+                } else {//西瓜视频用自带播放器放不了，只能用ijk
                     mSuperPlayerView.setPlayerType(NiceVideoPlayer.TYPE_IJK); // IjkPlayer or MediaPlayer
                 }
                 mSuperPlayerView.setActivityFullScreen(true);

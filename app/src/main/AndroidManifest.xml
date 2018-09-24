@@ -287,6 +287,7 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
         <!--新浪微博-->
         <activity
             android:name="com.umeng.socialize.media.WBShareCallBackActivity"

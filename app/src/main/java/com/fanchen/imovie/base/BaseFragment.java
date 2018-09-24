@@ -14,6 +14,7 @@ import com.arialyy.aria.core.download.DownloadReceiver;
 import com.fanchen.imovie.IMovieAppliction;
 import com.fanchen.imovie.entity.AppEvent;
 import com.fanchen.imovie.retrofit.RetrofitManager;
+import com.fanchen.imovie.util.LogUtil;
 import com.litesuits.orm.LiteOrm;
 import com.squareup.picasso.Picasso;
 
@@ -163,6 +164,8 @@ public abstract class BaseFragment extends Fragment {
         //用户可见，并且没有初始化
         if (!isPrepared && getUserVisibleHint() && view != null && isAdded()) {
             mMainView.post(new InitRunnable(this, view,mSaveState));
+        }else{
+            LogUtil.e("onViewCreated", "not post");
         }
     }
 
@@ -183,6 +186,8 @@ public abstract class BaseFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         if (getUserVisibleHint() && mMainView != null && !isPrepared && isAdded()) {
             mMainView.post(new InitRunnable(this, mMainView, mSaveState));
+        }else{
+            LogUtil.e("setUserVisibleHint","not post");
         }
     }
 

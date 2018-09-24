@@ -70,7 +70,8 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
     public void onItemClick(List<?> datas, View v, int position) {
         if (!(datas.get(position) instanceof IVideoEpisode)) return;
         IVideoEpisode videoEpisode = (IVideoEpisode) datas.get(position);
-        if (!videoEpisode.getUrl().contains("http")) {
+        String url = videoEpisode.getUrl();
+        if (TextUtils.isEmpty(url) || (!url.contains("http") && !url.contains("xg") && !url.contains("ftp"))) {
             activity.showToast("该视频不支持下载");
         } else if (mEpisodeAdapter.getSelect().size() >= 3 && videoEpisode.getDownloadState() == IVideoEpisode.DOWNLOAD_NON) {
             activity.showToast("一次最多支持选中下载3个");

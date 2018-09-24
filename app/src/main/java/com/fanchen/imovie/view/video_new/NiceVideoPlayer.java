@@ -282,8 +282,8 @@ public class NiceVideoPlayer extends FrameLayout
             try {
                 openMediaPlayer();
             } catch (Throwable e) {
+                LogUtil.d("STATE_ERROR");
                 mController.onPlayStateChanged(mCurrentState = STATE_ERROR);
-                e.printStackTrace();
             }
         } else {
             LogUtil.d("NiceVideoPlayer在mCurrentState == " + mCurrentState + "时不能调用restart()方法.");
@@ -500,8 +500,8 @@ public class NiceVideoPlayer extends FrameLayout
             try {
                 openMediaPlayer();
             } catch (Throwable e) {
+                LogUtil.d("STATE_ERROR");
                 mController.onPlayStateChanged(mCurrentState = STATE_ERROR);
-                e.printStackTrace();
             }
         } else {
             mTextureView.setSurfaceTexture(mSurfaceTexture);

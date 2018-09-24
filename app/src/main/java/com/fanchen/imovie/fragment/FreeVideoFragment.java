@@ -77,8 +77,7 @@ public class FreeVideoFragment extends BaseFragment implements
         mWebRecyclerView.setAdapter(mVideoAdapter);
         try {
             String json = new String(StreamUtil.stream2bytes(activity.getAssets().open("free_video.json")));
-            List<VideoWeb> list = new Gson().fromJson(json, new TypeToken<List<VideoWeb>>() {
-            }.getType());
+            List<VideoWeb> list = new Gson().fromJson(json, new TypeToken<List<VideoWeb>>() {}.getType());
             mVideoAdapter.addAll(list);
         } catch (Exception e) {
             e.printStackTrace();

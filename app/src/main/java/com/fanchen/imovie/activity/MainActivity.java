@@ -223,7 +223,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             mIntent.setData(Uri.parse("alipays://platformapi/startApp?appId=10000007&sourceId=&actionType=route&qrcode=https://qr.alipay.com/c1x094332eotzkcdjjmx7bf"));
             startActivity(mIntent);
         } catch (Exception e) {
-            e.printStackTrace();
             try {
                 showToast("请先下载支付宝");
                 String url = "https://ds.alipay.com/?from=mobileweb";

@@ -285,7 +285,7 @@ public class SplashActivity extends BaseActivity {
 
         @Override
         public void onSuccess(List<SplashScreen> list) {
-            if (list == null || list.size() == 0) return;
+            if (list == null || list.size() == 0 || preferences == null) return;
             long timeMillis = System.currentTimeMillis();
             int version = preferences.getInt(IMAGE_VERSION, 0);
             for (SplashScreen splashScreen : list) {

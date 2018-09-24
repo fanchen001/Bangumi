@@ -9,6 +9,7 @@ import java.util.Map;
 
 /**
  * LiteOrmManager
+ *
  * Created by fanchen on 2017/7/25.
  */
 public class LiteOrmManager {

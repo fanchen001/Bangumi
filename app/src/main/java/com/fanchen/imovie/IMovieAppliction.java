@@ -191,7 +191,7 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return 3;
+        return multithreading;
     }
 
     public void initX5Sdk() throws Exception {

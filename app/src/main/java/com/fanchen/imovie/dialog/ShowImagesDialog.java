@@ -131,7 +131,7 @@ public class ShowImagesDialog extends Dialog implements ViewPager.OnPageChangeLi
         }
         mAdapter = new ShowImagesAdapter(mViews, mTitles);
         mViewPager.setAdapter(mAdapter);
-        mIndexText.setText((position + 1) + "/" + mImgUrls.size());
+        mIndexText.setText(String.format("%d/%d",(position + 1) , mImgUrls.size()));
         mViewPager.setCurrentItem(position);
         mViewPager.addOnPageChangeListener(this);
     }

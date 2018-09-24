@@ -270,7 +270,7 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
             String scheme = localUri.getScheme();
             if (scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https")) {
                 view.loadUrl(url);
-            } else if (scheme.equalsIgnoreCase("xg") && IMovieAppliction.app != null) {
+            } else if (!TextUtils.isEmpty(url) && (scheme.equalsIgnoreCase("xg") || scheme.equalsIgnoreCase("ftp"))&& IMovieAppliction.app != null) {
                 VideoPlayerActivity.startActivity(WebActivity.this, url);
             } else {
                 String title = String.format("网页<%s>想打开本地应用，是否允许？", mWebview.getWebView().getOriginalUrl());

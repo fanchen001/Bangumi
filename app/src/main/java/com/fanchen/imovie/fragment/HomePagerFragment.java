@@ -169,7 +169,7 @@ public class HomePagerFragment extends BaseFragment implements Toolbar.OnMenuIte
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.toolbar:
-                if (activity instanceof MainActivity) {
+                if (activity != null && activity instanceof MainActivity) {
                     ((MainActivity) activity).toggleDrawer();
                 }
                 break;

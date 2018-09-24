@@ -480,7 +480,7 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
         public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
             try {
                 super.onLayoutChildren(recycler, state);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
@@ -504,7 +504,7 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
         public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
             try {
                 super.onLayoutChildren(recycler, state);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }

@@ -611,8 +611,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         try {
             if (!mBroadcastReceiver.contains(receiver)) {
                 mBroadcastReceiver.add(receiver);
+                return super.registerReceiver(receiver, filter);
             }
-            return super.registerReceiver(receiver, filter);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -624,8 +624,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         try {
             if (!mBroadcastReceiver.contains(receiver)) {
                 mBroadcastReceiver.add(receiver);
+                return super.registerReceiver(receiver, filter, broadcastPermission, scheduler);
             }
-            return super.registerReceiver(receiver, filter, broadcastPermission, scheduler);
         } catch (Exception e) {
             e.printStackTrace();
         }

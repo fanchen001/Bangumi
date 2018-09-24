@@ -393,8 +393,8 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
                 }
                 break;
             case R.id.ll_bangumi_share:
-//                ShareUtil.shareDialogBanner(details,20180910);
                 try {
+                    // ShareUtil.shareDialogBanner(details,20180910);
                     PackageManager manager = getPackageManager();
                     List<ApplicationInfo> infos = manager.getInstalledApplications(128);
                     if (infos == null || infos.isEmpty()) {

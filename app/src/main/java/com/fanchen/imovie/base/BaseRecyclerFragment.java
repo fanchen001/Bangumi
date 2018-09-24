@@ -64,7 +64,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
         this.savedInstanceState = savedInstanceState;
         setHasOptionsMenu(true);
         TypedValue typedValue = new TypedValue();
-        activity.getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
+        if(activity != null) activity.getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
         if (!checkFieldNull()) {
             mSwipeRefreshLayout.setColorSchemeColors(typedValue.data);
             mSwipeRefreshLayout.setEnabled(hasRefresh());
