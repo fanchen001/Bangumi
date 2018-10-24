@@ -18,7 +18,7 @@
 6.美女热舞在线直播<br/>
 7.最新热门短视频播放<br/>
 8.New 支持M3U8视频下载缓存 -> [M3u8Download](https://github.com/fanchen001/M3u8Download)<br/>
-9.New 支持下载缓存西瓜视频 -> [XiguaP2p](https://github.com/fanchen001/XiguaP2p)br/>
+9.New 支持下载缓存西瓜视频 -> [XiguaP2p](https://github.com/fanchen001/XiguaP2p)<br/>
 10.New 支持H264视频播放
 
 关于新增视频播放源
