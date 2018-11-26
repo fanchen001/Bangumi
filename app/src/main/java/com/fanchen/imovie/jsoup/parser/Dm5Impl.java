@@ -115,6 +115,7 @@ public class Dm5Impl implements IVideoMoreParser {
     public IVideoDetails details(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
         VideoDetails details = new VideoDetails();
+        details.setServiceClass(Dm5Service.class.getName());
         try {
             details.setIntroduce(node.text("div.video-conent > div.item-content.toggled > p"));
             details.setExtras(node.text("div.video-conent > div.item-tax-list"));

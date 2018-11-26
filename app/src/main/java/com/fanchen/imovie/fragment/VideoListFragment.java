@@ -3,7 +3,6 @@ package com.fanchen.imovie.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -16,7 +15,6 @@ import com.fanchen.imovie.adapter.VideoIndexAdapter;
 import com.fanchen.imovie.adapter.VideoListAdapter;
 import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.base.BaseRecyclerFragment;
-import com.fanchen.imovie.entity.Video;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideo;
@@ -158,7 +156,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
 
     @Override
     public RecyclerView.LayoutManager getLayoutManager() {
-        return new GridLayoutManager(activity, 3);
+        return new BaseAdapter.GridLayoutManagerWrapper(activity, 3);
     }
 
     @Override
@@ -280,7 +278,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
             List<? extends IViewType> adapterResult = date.getAdapterResult();
             if (adapterResult == null || adapterResult.size() == 0) {
                 mVideoAdapter.setLoad(false);
-                showSnackbar(getString(R.string.not_more));
+                showSnackbar(getStringFix(R.string.not_more));
             } else {
                 mVideoAdapter.setLoad(hasLoad);
                 mVideoAdapter.addData(date);
@@ -297,7 +295,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
             List<? extends IViewType> adapterResult = response.getAdapterResult();
             if (adapterResult == null || adapterResult.size() == 0) {
                 mVideoAdapter.setLoad(false);
-                showSnackbar(getString(R.string.not_more));
+                showSnackbar(getStringFix(R.string.not_more));
             } else {
                 mVideoAdapter.setLoad(hasLoad);
                 mVideoAdapter.addData(response);
@@ -335,16 +333,16 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
                         if ((value.startsWith("http") || value.startsWith("ftp")) && !getDownloadReceiver().load(value).taskExists()) {
                             getDownloadReceiver().load(value).setDownloadPath(new File(videoPath, "video_" + System.currentTimeMillis() + ".mp4").getAbsolutePath()).start();
                         } else {
-                            showSnackbar(getString(R.string.task_exists));
+                            showSnackbar(getStringFix(R.string.task_exists));
                         }
                     } else {
-                        showSnackbar(getString(R.string.task_exists));
+                        showSnackbar(getStringFix(R.string.task_exists));
                     }
                 } else {
-                    showSnackbar(getString(R.string.error_download_type));
+                    showSnackbar(getStringFix(R.string.error_download_type));
                 }
             } else {
-                showToast(getString(R.string.error_play_conn));
+                showToast(getStringFix(R.string.error_play_conn));
             }
         }
 

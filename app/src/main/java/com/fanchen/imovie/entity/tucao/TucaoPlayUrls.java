@@ -6,9 +6,10 @@ import com.fanchen.imovie.entity.face.IVideoEpisode;
 import java.util.Map;
 
 /**
+ * TucaoPlayUrls
  * Created by fanchen on 2017/9/28.
  */
-public class TucaoPlayUrls implements IPlayUrls{
+public class TucaoPlayUrls implements IPlayUrls {
 
     private boolean success;
     private String message;
@@ -37,6 +38,18 @@ public class TucaoPlayUrls implements IPlayUrls{
     @Override
     public boolean m3u8Referer() {
         return false;
+    }
+
+    @Override
+    public String getMainUrl() {
+        if (urls == null || urls.isEmpty()) return "";
+        return urls.values().iterator().next();
+    }
+
+    @Override
+    public boolean isDirectPlay() {
+        String mainUrl = getMainUrl();
+        return mainUrl.startsWith("http://") || mainUrl.startsWith("https://");
     }
 
     @Override

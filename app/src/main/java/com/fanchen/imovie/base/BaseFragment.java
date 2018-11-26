@@ -22,6 +22,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
 import java.lang.ref.SoftReference;
 
 import butterknife.ButterKnife;
@@ -108,6 +110,15 @@ public abstract class BaseFragment extends Fragment {
             EventBus.getDefault().unregister(this);
     }
 
+    @Override
+    public void dump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {
+        try{//FastPrintWriter.println  NullPointerException
+            super.dump(prefix, fd, writer, args);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     /**
      * @return
      */
@@ -176,6 +187,15 @@ public abstract class BaseFragment extends Fragment {
             setListener();
             isPrepared = true;
         }
+    }
+
+    /**
+     * fix bug getString()
+     * @param id
+     * @return
+     */
+    public String getStringFix(int id){
+        return activity != null ? activity.getString(id) : "";
     }
 
     /**

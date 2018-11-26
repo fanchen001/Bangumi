@@ -156,6 +156,7 @@ public class WandouImpl implements IVideoMoreParser {
     public IVideoDetails details(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
         VideoDetails details = new VideoDetails();
+        details.setServiceClass(WandouService.class.getName());
         try {
             List<VideoEpisode> episodes = new ArrayList<>();
             List<Video> videos = new ArrayList<>();

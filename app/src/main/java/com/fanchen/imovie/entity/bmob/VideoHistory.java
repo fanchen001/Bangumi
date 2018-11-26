@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import com.fanchen.imovie.entity.face.IBaseVideo;
+import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.entity.face.IViewType;
@@ -19,7 +20,7 @@ import com.litesuits.orm.db.enums.AssignType;
  * Created by fanchen on 2017/9/22.
  */
 @Table("tab_video_history")
-public class VideoHistory extends BmobObj implements IViewType, Parcelable {
+public class VideoHistory extends BmobObj implements IViewType, IVideoEpisode {
     public static final int TYPE_VIDEO = 1;
     public static final int TYPE_LIVE = 2;
     public static final int TYPE_TORRENT = 3;
@@ -169,6 +170,7 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
         this.time = time;
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -187,6 +189,11 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
 
     public int getSource() {
         return source;
+    }
+
+    @Override
+    public int getPlayerType() {
+        return getPlayType();
     }
 
     public void setSource(int source) {
@@ -221,8 +228,27 @@ public class VideoHistory extends BmobObj implements IViewType, Parcelable {
         dest.writeInt(playType);
     }
 
+    @Override
     public String getServiceClassName() {
         return serviceClassName;
+    }
+
+    @Override
+    public int getDownloadState() {
+        return IVideoEpisode.DOWNLOAD_NON;
+    }
+
+    @Override
+    public void setDownloadState(int state) {
+    }
+
+    @Override
+    public void setFilePath(String path) {
+    }
+
+    @Override
+    public IPlayUrls toPlayUrls(int palyType, int urlType) {
+        return null;
     }
 
     public void setServiceClassName(String serviceClassName) {

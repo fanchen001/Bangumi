@@ -111,7 +111,7 @@ public class ShortVideoFragment extends BaseRecyclerFragment{
                 mVideoAdapter.addAll(body);
                 mVideoAdapter.setLoad(true);
             }else{
-                showSnackbar(getString(R.string.not_more));
+                showSnackbar(getStringFix(R.string.not_more));
                 mVideoAdapter.setLoad(false);
             }
         }
@@ -128,7 +128,7 @@ public class ShortVideoFragment extends BaseRecyclerFragment{
                 mVideoAdapter.addAll(body);
                 mVideoAdapter.setLoad(true);
             }else{
-                showSnackbar(getString(R.string.not_more));
+                showSnackbar(getStringFix(R.string.not_more));
                 mVideoAdapter.setLoad(false);
             }
         }

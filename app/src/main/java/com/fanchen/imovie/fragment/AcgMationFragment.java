@@ -147,13 +147,13 @@ public class AcgMationFragment extends BaseRecyclerFragment {
 
         @Override
         public void onFinish(int enqueueKey) {
-            showToast(getString(R.string.success_token));
+            showToast(getStringFix(R.string.success_token));
         }
 
         @Override
         public void onFailure(int enqueueKey, String throwable) {
             if(mSwipeRefreshLayout == null)return;
-            showToast(getString(R.string.error_token));
+            showToast(getStringFix(R.string.error_token));
             mSwipeRefreshLayout.setRefreshing(false);
         }
 

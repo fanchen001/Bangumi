@@ -33,6 +33,7 @@ public interface IVideoEpisode extends IViewType,Parcelable{
     int PLAY_TYPE_VIDEO_WEB = 7;
 
     int PLAY_TYPE_VIDEO_M3U8 = 8;
+
     /**
      * 不支持在线播放
      */
@@ -103,4 +104,5 @@ public interface IVideoEpisode extends IViewType,Parcelable{
     void setFilePath(String path);
 
     IPlayUrls toPlayUrls(int palyType,int urlType);
+
 }

@@ -36,15 +36,27 @@ public interface BobmaoService {
 
     /**
      *
+     * @param path
+     * @param page
+     * @return
+     */
+    @GET("frim/index{path}-{page}.html")
+    @JsoupType(JsoupSource.BOBMAO)
+    @MethodType(value = MethodSource.HOME)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    Call<IHomeRoot> home(@Path("path") String path,@Path("page")Integer page);
+
+    /**
+     *
      * @param page
      * @param searchword
      * @return
      */
-    @GET("search/{searchword}-{page}.html")
+    @GET("search.php")
     @JsoupType(JsoupSource.BOBMAO)
     @MethodType(value = MethodSource.SEARCH)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("searchword") String searchword);
+    Call<IBangumiMoreRoot> search(@Query("page") Integer page, @Query("searchword") String searchword);
 
     /**
      *
@@ -52,30 +64,30 @@ public interface BobmaoService {
      * @param page
      * @return
      */
-    @GET("{path}/index-{page}.html")
+    @GET("frim/index{path}-{page}.html")
     @JsoupType(JsoupSource.BOBMAO)
     @MethodType(value = MethodSource.MORE)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> more(@Path("path") String pid, @Path("page") Integer page);
 
     /**
-     * @param path
+     * @param pid
      * @return
      */
-    @GET
+    @GET("/movie/index{pid}.html")
     @JsoupType(JsoupSource.BOBMAO)
     @MethodType(value = MethodSource.DETAILS)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IVideoDetails> details(@Url String path);
+    Call<IVideoDetails> details(@Path("pid") String pid);
 
 
     /**
      * @param path
      * @return
      */
-    @GET
+    @GET("/play/{path}")
     @JsoupType(JsoupSource.BOBMAO)
     @MethodType(value = MethodSource.PLAYURL)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IPlayUrls> playUrl(@Url String path);
+    Call<IPlayUrls> playUrl(@Path("path") String path);
 }

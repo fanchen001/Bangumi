@@ -44,7 +44,7 @@
             app:labelCenterPadding="0dp"
             app:labelTopPadding="12dp"
             app:primaryTextColor="@color/white"
-            app:primaryTextSize="12sp"
+            app:primaryTextSize="8sp"
             app:secondaryTextSize="8sp" />
 
     </android.support.v7.widget.CardView>

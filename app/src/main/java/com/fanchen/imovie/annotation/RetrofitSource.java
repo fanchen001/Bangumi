@@ -219,5 +219,22 @@ public enum RetrofitSource {
     /**
      *
      */
-    HLYY_API
+    HLYY_API,
+
+    /**
+     *http://m.haoqu.net/
+     */
+    HAOQU_API,
+
+    /**
+     * i看tv
+     * http://m.icantv.cn/
+     */
+    ICAN_API,
+
+    /**
+     * zzyo
+     * http://m.zzyo.cn/
+     */
+    ZZYO_API
 }

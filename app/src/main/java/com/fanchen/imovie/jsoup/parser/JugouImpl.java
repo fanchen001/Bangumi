@@ -1,5 +1,7 @@
 package com.fanchen.imovie.jsoup.parser;
 
+import android.text.TextUtils;
+
 import com.fanchen.imovie.entity.Video;
 import com.fanchen.imovie.entity.VideoDetails;
 import com.fanchen.imovie.entity.VideoEpisode;
@@ -40,6 +42,7 @@ public class JugouImpl implements IVideoMoreParser {
                 video.setHasDetails(true);
                 video.setServiceClass(JugouService.class.getName());
                 String style = n.attr("dl > dt > a", "style").replace("background: url(","").replace(") no-repeat; background-position:50% 50%; background-size: cover;","");
+                if(TextUtils.isEmpty(style))continue;
                 video.setCover(style);
                 video.setTitle(n.text("h3"));
                 video.setUrl(n.attr("dl > dt > a", "href"));

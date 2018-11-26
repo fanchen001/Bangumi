@@ -1,7 +1,9 @@
 package com.fanchen.imovie.jsoup.parser;
 
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.fanchen.imovie.entity.VideoBanner;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
@@ -33,26 +35,87 @@ import java.util.Map;
 import retrofit2.Retrofit;
 
 /**
+ * XiaokanbaImpl
  * Created by fanchen on 2017/10/16.
  */
 public class XiaokanbaImpl implements IVideoMoreParser {
 
+    private String serviceName = XiaokanbaService.class.getName();
+
+    public XiaokanbaImpl() {
+    }
+
+    public XiaokanbaImpl(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
     @Override
-    public IBangumiMoreRoot search(Retrofit retrofit,String baseUrl,String html) {
+    public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
         VideoHome root = new VideoHome();
         try {
             List<Video> videos = new ArrayList<>();
-            for (Node n : node.list("div.item > ul.clearfix > li")) {
-                Video video = new Video();
-                video.setHasDetails(true);
-                video.setServiceClass(XiaokanbaService.class.getName());
-                video.setCover(n.attr("a", "data-original"));
-                video.setId(n.attr("a", "href", "/", 1));
-                video.setTitle(n.attr("a", "title"));
-                video.setUrl(baseUrl + n.attr("a", "href").replace(".", ""));
-                video.setDanmaku("评分:" + n.text("a > span.score"));
-                videos.add(video);
+            List<Node> list = node.list("div.hy-video-details.active.clearfix");
+            if(list == null || list.isEmpty()) {
+                for (Node n : node.list("div.item > ul.clearfix > li")) {
+                    Video video = new Video();
+                    video.setHasDetails(true);
+                    video.setServiceClass(serviceName);
+                    String original = n.attr("a", "data-original");
+                    if(original.startsWith("http")){
+                        video.setCover(original);
+                    }else{
+                        video.setCover(baseUrl + original);
+                    }
+                    video.setTitle(n.attr("a", "title"));
+                    String text = n.text("span.score");
+                    String text1 = n.text("div.subtitle.text-muted.text-muted.text-overflow.hidden-xs");
+                    if(TextUtils.isEmpty(text))text = n.textAt("span.text-muted", 0);
+                    if(TextUtils.isEmpty(text1))text1 = n.textAt("span.text-muted", 1);
+                    video.setExtras("评分:" + (TextUtils.isEmpty(text) ? "0.0" : text));
+                    video.setLast(text1);
+                    String href = n.attr("a", "href");
+                    String[] split = href.split("/");
+                    if (split.length == 2) {
+                        video.setId(split[1]);
+                    } else if (split.length == 3) {
+                        video.setId(split[2].replace("index", "").replace(".html", ""));
+                    }
+                    if (href.startsWith(".")) {
+                        video.setUrl(baseUrl + href.replace(".", ""));
+                    } else {
+                        video.setUrl(baseUrl + href);
+                    }
+                    videos.add(video);
+                }
+            }else{
+                for (Node n : list) {
+                    Video video = new Video();
+                    video.setHasDetails(true);
+                    video.setServiceClass(serviceName);
+                    String style = n.attr("a.videopic", "style").replace("background: url(", "").replace(")  no-repeat; background-position:50% 50%; background-size: cover;", "");
+                    if(style.startsWith("http")){
+                        video.setCover(style);
+                    }else{
+                        video.setCover(baseUrl + style);
+                    }
+                    video.setTitle(n.text("h3"));
+                    video.setExtras(n.textAt("li.col-md-6.hidden-md.hidden-sm.hidden-xs.padding-0",0));
+                    video.setLast(n.textAt("li.col-md-6.hidden-md.hidden-sm.hidden-xs.padding-0",1));
+                    String href = n.attr("a.videopic","href");
+                    String[] split = href.split("/");
+                    if (split.length == 2) {
+                        video.setId(split[1]);
+                    } else if (split.length == 3) {
+                        video.setId(split[2].replace("index", "").replace(".html", ""));
+                    }
+                    if (href.startsWith(".")) {
+                        video.setUrl(baseUrl + href.replace(".", ""));
+                    } else {
+                        video.setUrl(baseUrl + href);
+                    }
+                    videos.add(video);
+                }
             }
             root.setSuccess(true);
             root.setList(videos);
@@ -63,49 +126,137 @@ public class XiaokanbaImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IHomeRoot home(Retrofit retrofit,String baseUrl,String html) {
+    public IHomeRoot home(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
         VideoHome root = new VideoHome();
         try {
+            List<Node> slides = node.list("div.hy-video-slide");
+            if (slides != null && !slides.isEmpty()) {
+                List<VideoBanner> banners = new ArrayList<>();
+                for (Node n : slides) {
+                    VideoBanner banner = new VideoBanner();
+                    banner.setTitle(n.attr("a", "title"));
+                    banner.setUrl(baseUrl + n.attr("a", "href"));
+                    banner.setServiceClass(serviceName);
+                    String[] split1 = n.attr("a", "href").split("/");
+                    if (split1.length == 2) {
+                        banner.setId(split1[1]);
+                    } else if (split1.length == 3) {
+                        banner.setId(split1[2].replace("index", "").replace(".html", ""));
+                    }
+                    String replace = n.attr("a", "style").replace("padding-top: 60%; background: url(", "").replace(")  no-repeat; background-position:50% 50%; background-size: cover;", "");
+                    if(replace.startsWith("http")){
+                        banner.setCover(replace);
+                    }else{
+                        banner.setCover(baseUrl + replace);
+                    }
+                    banners.add(banner);
+                }
+                root.setHomeBanner(banners);
+            }
             List<Node> list = node.list("div.hy-video-head");
             if (list != null && list.size() > 0) {
                 int count = 0;
                 List<VideoTitle> titles = new ArrayList<>();
                 for (Node n : list) {
                     VideoTitle title = new VideoTitle();
-                    titles.add(title);
-                    title.setServiceClass(XiaokanbaService.class.getName());
+                    title.setServiceClass(serviceName);
                     title.setUrl(baseUrl + n.attr("li > a", "href").replace(".", ""));
                     title.setTitle(n.text("h3"));
-                    title.setId(n.attr("li > a", "href", "/", 1));
+                    String href1 = n.attr("li > a", "href");
+                    if (TextUtils.isEmpty(href1)) href1 = n.attr("a", "href");
+                    String[] split1 = href1.split("/");
+                    if (href1.startsWith(".") && split1.length == 2) {
+                        title.setMore(true);
+                        title.setId(split1[1]);
+                    } else if (split1.length == 3) {
+                        title.setMore(true);
+                        title.setId(split1[2].replace("index", "").replace(".html", ""));
+                    } else {
+                        title.setMore(false);
+                    }
                     title.setDrawable(SEASON[count++ % SEASON.length]);
                     List<Video> videos = new ArrayList<>();
                     title.setList(videos);
-                    for (Node sub : new Node(n.getElement().nextElementSibling()).list("div.col-md-2.col-sm-3.col-xs-4")) {
+                    Node nextNode = new Node(n.getElement().nextElementSibling());
+                    List<Node> nextList = nextNode.list("div.col-md-2.col-sm-3.col-xs-4");
+                    if (nextList == null || nextList.isEmpty())
+                        nextList = nextNode.list("div.col-md-3.col-sm-3.col-xs-4");
+                    for (Node sub : nextList) {
                         Video video = new Video();
                         video.setHasDetails(true);
-                        video.setServiceClass(XiaokanbaService.class.getName());
-                        video.setCover(sub.attr("a", "data-original"));
-                        video.setId(sub.attr("a", "href", "/", 1));
+                        video.setServiceClass(serviceName);
+                        String original = sub.attr("a", "data-original");
+                        if(original.startsWith("http")){
+                            video.setCover(original);
+                        }else{
+                            video.setCover(baseUrl + original);
+                        }
+                        String href = sub.attr("a", "href");
+                        String[] split = href.split("/");
+                        if (split.length == 2) {
+                            video.setId(split[1]);
+                        } else if (split.length == 3) {
+                            video.setId(split[2].replace("index", "").replace(".html", ""));
+                        }
                         video.setTitle(sub.attr("a", "title"));
-                        video.setUrl(baseUrl + sub.attr("a", "href").replace(".", ""));
-                        video.setDanmaku("评分:" + sub.text("a > span.score"));
+                        if (href.startsWith(".")) {
+                            video.setUrl(baseUrl + href.replace(".", ""));
+                        } else {
+                            video.setUrl(baseUrl + href);
+                        }
+                        String score = sub.text("a > span.score");
+                        if (!TextUtils.isEmpty(score)) {
+                            video.setDanmaku("评分:" + score);
+                        } else {
+                            video.setDanmaku(sub.text("span.note.textbg"));
+                        }
                         videos.add(video);
                     }
+                    if (!videos.isEmpty()) titles.add(title);
                 }
                 root.setSuccess(true);
                 root.setHomeResult(titles);
             } else {
                 List<Video> videos = new ArrayList<>();
-                for (Node n : node.list("div.item > ul.clearfix > li")) {
+                for (Node n : node.list("div.hy-video-list > div.item > ul.clearfix > li")) {
                     Video video = new Video();
                     video.setHasDetails(true);
-                    video.setServiceClass(XiaokanbaService.class.getName());
-                    video.setCover(n.attr("a", "data-original"));
-                    video.setId(n.attr("a", "href", "/", 1));
-                    video.setTitle(n.attr("a", "title"));
-                    video.setUrl(baseUrl + n.attr("a", "href").replace(".", ""));
-                    video.setDanmaku("评分:" + n.text("a > span.score"));
+                    video.setServiceClass(serviceName);
+                    String original = n.attr("a", "data-original");
+                    if(original.startsWith("http")){
+                        video.setCover(original);
+                    }else if(!TextUtils.isEmpty(original)){
+                        video.setCover(baseUrl + original);
+                    }
+                    String title = n.attr("a", "title");
+                    if(!TextUtils.isEmpty(title)){
+                        video.setTitle(title);
+                    }else{
+                        video.setTitle(n.text("h5"));
+                    }
+                    String href = n.attr("a", "href");
+                    video.setUrl(href);
+                    String[] split = href.split("/");
+                    if (split.length == 2) {
+                        video.setId(split[1]);
+                    } else if (split.length == 3) {
+                        video.setId(split[2].replace("index", "").replace(".html", ""));
+                    }
+                    if (href.startsWith(".")) {
+                        video.setUrl(baseUrl + href.replace(".", ""));
+                    } else {
+                        video.setUrl(baseUrl + href);
+                    }
+                    String score = n.text("a > span.score");
+                    String text = n.text("span.note.textbg");
+                    if (!TextUtils.isEmpty(score)) {
+                        video.setDanmaku("评分:" + score);
+                    } else if(!TextUtils.isEmpty(text)) {
+                        video.setDanmaku(n.text("span.note.textbg"));
+                    }else{
+                        video.setDanmaku(n.text("div.subtitle.text-muted.text-overflow.hidden-xs"));
+                    }
                     videos.add(video);
                 }
                 root.setSuccess(true);
@@ -118,7 +269,7 @@ public class XiaokanbaImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IVideoDetails details(Retrofit retrofit,String baseUrl,String html) {
+    public IVideoDetails details(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
         VideoDetails details = new VideoDetails();
         try {
@@ -126,33 +277,89 @@ public class XiaokanbaImpl implements IVideoMoreParser {
             List<VideoEpisode> episodes = new ArrayList<>();
             details.setTitle(node.text("div.head > h3"));
             details.setIntroduce(node.text("div.plot"));
-            details.setLast(node.textAt("span.text-muted", 3));
-            details.setExtras(node.textAt("span.text-muted", 4));
-            details.setAuthor(node.textAt("span.text-muted", 1));
-            for (Node n : node.list("div.item > div.col-md-2.col-sm-3.col-xs-4 ")) {
+            String s1 = node.textAt("ul > li.col-md-6.col-sm-6.hidden-xs.padding-0", 0);
+            String s2 = node.textAt("ul > li.col-md-6.col-sm-6.hidden-xs.padding-0", 1);
+            String s3 = node.textAt("ul > li.col-md-6.hidden-sm.hidden-xs.padding-0", 0);
+            if (TextUtils.isEmpty(s1)) {
+                details.setLast(node.textAt("span.text-muted", 3));
+            } else {
+                details.setLast(s1);
+            }
+            if (TextUtils.isEmpty(s2)) {
+                details.setExtras(node.textAt("span.text-muted", 4));
+            } else {
+                details.setExtras(s2);
+            }
+            if (TextUtils.isEmpty(s3)) {
+                details.setAuthor(node.textAt("span.text-muted", 1));
+            } else {
+                details.setAuthor(s3);
+            }
+            String style = node.attr("a.videopic", "style").replace("background: url(", "").replace(")  no-repeat; background-position:50% 50%; background-size: cover;", "");
+            if(style.startsWith("http")){
+                details.setCover(style);
+            }else{
+                details.setCover(baseUrl + style);
+            }
+            List<Node> list = node.list("div.item > div.col-md-2.col-sm-3.col-xs-4 ");
+            if (list == null || list.isEmpty())
+                list = node.list("div.swiper-wrapper > div > div.item");
+            for (Node n : list) {
                 Video video = new Video();
                 video.setHasDetails(true);
-                video.setServiceClass(XiaokanbaService.class.getName());
-                video.setCover(n.attr("a", "data-original"));
-                video.setId(n.attr("a", "href", "/", 1));
+                video.setServiceClass(serviceName);
+                String original = n.attr("a", "data-original");
+                if(original.startsWith("http")){
+                    video.setCover(original);
+                }else{
+                    video.setCover(baseUrl + original);
+                }
                 video.setTitle(n.attr("a", "title"));
-                video.setUrl(baseUrl + n.attr("a", "href").replace(".", ""));
-                video.setDanmaku("评分:" + n.text("a > span.score"));
+                String score = n.text("a > span.score");
+                if (!TextUtils.isEmpty(score)) {
+                    video.setDanmaku("评分:" + score);
+                } else {
+                    video.setDanmaku(n.text("span.note.textbg"));
+                }
+                String href = n.attr("a", "href");
+                String[] split = href.split("/");
+                if (split.length == 2) {
+                    video.setId(split[1]);
+                } else if (split.length == 3) {
+                    video.setId(split[2].replace("index", "").replace(".html", ""));
+                }
+                if (href.startsWith(".")) {
+                    video.setUrl(baseUrl + href.replace(".", ""));
+                } else {
+                    video.setUrl(baseUrl + href);
+                }
                 reco.add(video);
             }
             int source = 1;
             for (Node n : node.list("div[id^=playlist]")) {
                 for (Node sub : n.list("ul > li > a")) {
                     VideoEpisode episode = new VideoEpisode();
-                    episode.setServiceClass(XiaokanbaService.class.getName());
+                    episode.setServiceClass(serviceName);
                     episode.setTitle("播放源" + source + ":" + sub.text());
-                    episode.setUrl(baseUrl + sub.attr("href").replace(".", ""));
-                    episode.setId(sub.attr("href", "/", 1));
+                    String href = sub.attr("href");
+                    if(href.startsWith(".")){
+                        episode.setUrl(baseUrl + href.substring(1));
+                        episode.setId(href.split("/")[1]);
+                    }else if(href.startsWith("/play")){
+                        episode.setUrl(baseUrl + href);
+                        episode.setId(href.split("/")[2]);
+                    }else if(href.startsWith("/")){
+                        episode.setUrl(baseUrl + href);
+                        episode.setId(href.split("/")[1]);
+                    }else{
+                        episode.setUrl(href);
+                        episode.setUrl(href);
+                    }
                     episodes.add(episode);
                 }
                 source++;
             }
-            details.setServiceClass(XiaokanbaService.class.getName());
+            details.setServiceClass(serviceName);
             details.setEpisodes(episodes);
             details.setRecomm(reco);
             details.setSuccess(true);
@@ -163,7 +370,7 @@ public class XiaokanbaImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IPlayUrls playUrl(Retrofit retrofit,String baseUrl,String html) {
+    public IPlayUrls playUrl(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
         VideoPlayUrls playUrl = new VideoPlayUrls();
         try {
@@ -241,37 +448,37 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                 }
                 if (!TextUtils.isEmpty(videoUrl)) {
                     long millis = System.currentTimeMillis();
-                    if(videoUrl.contains("video.qq.com")){
+                    if (videoUrl.contains("video.qq.com")) {
                         videoUrl = "https:" + videoUrl + "&filename=video.mp4&callback=getvideo&_=" + millis;
-                        String guid = JavaScriptUtil.match("guid=[\\w\\d]+&",videoUrl,0,5,1);
-                        String sdtfrom = JavaScriptUtil.match("sdtfrom=[\\w\\d]+&",videoUrl,0,8,1);
+                        String guid = JavaScriptUtil.match("guid=[\\w\\d]+&", videoUrl, 0, 5, 1);
+                        String sdtfrom = JavaScriptUtil.match("sdtfrom=[\\w\\d]+&", videoUrl, 0, 8, 1);
                         videoUrl = StreamUtil.url2String(videoUrl);
                         if (!TextUtils.isEmpty(videoUrl)) {
                             JSONObject jsonObject = new JSONObject(videoUrl.substring(9, videoUrl.length() - 1));
-                            String vkey =  jsonObject.getString("key");
-                            String filename =  jsonObject.getString("filename");
-                            videoUrl = String.format("http://36.250.4.15/vlive.qqvideo.tc.qq.com/AIenJ3VT8eg39eYtdbkbKkgK-16e2gf8Q5enMzE50BsY/%s?sdtfrom=%s&guid=%s&vkey=%s",filename,sdtfrom,guid,vkey);
+                            String vkey = jsonObject.getString("key");
+                            String filename = jsonObject.getString("filename");
+                            videoUrl = String.format("http://36.250.4.15/vlive.qqvideo.tc.qq.com/AIenJ3VT8eg39eYtdbkbKkgK-16e2gf8Q5enMzE50BsY/%s?sdtfrom=%s&guid=%s&vkey=%s", filename, sdtfrom, guid, vkey);
                         }
                     }
-                    if(videoUrl.contains("http://cache.m.iqiyi.com/jp/tmts/")){
+                    if (videoUrl.contains("http://cache.m.iqiyi.com/jp/tmts/")) {
                         videoUrl = new JSONObject(StreamUtil.url2String(videoUrl).replace("var tvInfoJs=", "")).getJSONObject("data").getJSONArray("vidl").getJSONObject(0).getString("m3u");
                     }
-                    if(videoUrl.contains("https://ups.youku.com") || videoUrl.contains("http://ups.youku.com")){
+                    if (videoUrl.contains("https://ups.youku.com") || videoUrl.contains("http://ups.youku.com")) {
                         String vid = JavaScriptUtil.match("vid=[\\w\\d]+==&", videoUrl, 0, 4, 3);
-                        String ccode = JavaScriptUtil.match("ccode=[\\w\\d]+&", videoUrl, 0, 6,1);
-                        videoUrl = "https://ups.youku.com/ups/get.json?callback=json" + millis + "&vid=" + vid +"&ccode="+ccode+"&client_ip="+ SystemUtil.getHostIP()+"&utid=U7a%2FEW4SsSsCAdzKmCvvEJEf&client_ts=" + millis;
+                        String ccode = JavaScriptUtil.match("ccode=[\\w\\d]+&", videoUrl, 0, 6, 1);
+                        videoUrl = "https://ups.youku.com/ups/get.json?callback=json" + millis + "&vid=" + vid + "&ccode=" + ccode + "&client_ip=" + SystemUtil.getHostIP() + "&utid=U7a%2FEW4SsSsCAdzKmCvvEJEf&client_ts=" + millis;
                         videoUrl = StreamUtil.url2String(videoUrl);
-                        if(!TextUtils.isEmpty(videoUrl)){
-                            videoUrl = new JSONObject(videoUrl.substring(18,videoUrl.length()-1)).getJSONObject("data").getJSONArray("stream").getJSONObject(0).getString("m3u8_url");
+                        if (!TextUtils.isEmpty(videoUrl)) {
+                            videoUrl = new JSONObject(videoUrl.substring(18, videoUrl.length() - 1)).getJSONObject("data").getJSONArray("stream").getJSONObject(0).getString("m3u8_url");
                         }
                     }
-                    if(!TextUtils.isEmpty(videoUrl)){
+                    if (!TextUtils.isEmpty(videoUrl)) {
                         Map<String, String> playMap = new HashMap<>();
                         playMap.put("标清", videoUrl);
-                        if(videoUrl.contains("response-content-type=video/mp4") || videoUrl.contains(".mp4")){
+                        if (videoUrl.contains("response-content-type=video/mp4") || videoUrl.contains(".mp4")) {
                             playUrl.setUrlType(IPlayUrls.URL_FILE);
                         }
-                        if(videoUrl.startsWith("http://cn-")){
+                        if (videoUrl.startsWith("http://cn-")) {
                             playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_ZZPLAYER);
                         }
                         playUrl.setSuccess(true);
@@ -279,7 +486,7 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                     }
                 }
             }
-            if(!playUrl.isSuccess() || playUrl.getUrls() == null || playUrl.getUrls().isEmpty()){
+            if (!playUrl.isSuccess() || playUrl.getUrls() == null || playUrl.getUrls().isEmpty()) {
                 Map<String, String> playMap = new HashMap<>();
                 playMap.put("标清", url);
                 playUrl.setUrlType(IPlayUrls.URL_WEB);
@@ -294,8 +501,8 @@ public class XiaokanbaImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IBangumiMoreRoot more(Retrofit retrofit,String baseUrl,String html) {
-        return search(retrofit,baseUrl,html);
+    public IBangumiMoreRoot more(Retrofit retrofit, String baseUrl, String html) {
+        return search(retrofit, baseUrl, html);
     }
 
 }

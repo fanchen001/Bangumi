@@ -1,11 +1,14 @@
 package com.fanchen.imovie.activity;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.design.internal.NavigationMenuView;
@@ -16,6 +19,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.Html;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -24,6 +28,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fanchen.imovie.IMovieAppliction;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.base.BaseActivity;
 import com.fanchen.imovie.dialog.BaseAlertDialog;
@@ -112,9 +117,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         FragmentManager sfm = getSupportFragmentManager();
         if (sfm.findFragmentByTag(MainActivity.class.getName()) == null) {
             Handler handler = new Handler(Looper.getMainLooper());
-            if (!mSharedPreferences.getString("alipay_time", "").equals(DateUtil.getCurrentDate("yyyy-MM-dd"))) {
-                handler.postDelayed(alipayRunnable, 200);
-            }
+//            if (!mSharedPreferences.getString("alipay_time", "").equals(DateUtil.getCurrentDate("yyyy-MM-dd"))) {
+//                handler.postDelayed(alipayRunnable, 200);
+//            }
             if (mSharedPreferences.getBoolean("new_class_hit", true)) {
                 handler.postDelayed(tipRunnable, 2000);
             }
@@ -220,7 +225,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mIntent.setAction("android.intent.action.VIEW");
             mIntent.setClassName("com.eg.android.AlipayGphone", "com.alipay.mobile.quinox.LauncherActivity.alias");
-            mIntent.setData(Uri.parse("alipays://platformapi/startApp?appId=10000007&sourceId=&actionType=route&qrcode=https://qr.alipay.com/c1x094332eotzkcdjjmx7bf"));
+            //https://render.alipay.com/p/f/fd-j6lzqrgm/guiderofmklvtvw.html?channel=qrCode&shareId=2088702958620520&sign=2UqdV74VmNSDBAaBkyvz%2BvQ2R3N4mQrJ%2Bpg79QKkcMA%3D&scene=offlinePaymentNewSns&campStr=p1j%2BdzkZl018zOczaHT4Z5CLdPVCgrEXq89JsWOx1gdt05SIDMPg3PTxZbdPw9dL&token=c1x094332eotzkcdjjmx7bf
+            mIntent.setData(Uri.parse(IMovieAppliction.ALIPAYS));
             startActivity(mIntent);
         } catch (Exception e) {
             try {
@@ -229,7 +235,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));
                 startActivity(intent);
-            }catch (Exception ee){
+            } catch (Exception ee) {
                 ee.printStackTrace();
             }
         }
@@ -322,7 +328,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     GirlTabActivity.startActivity(this);
                     break;
                 case R.id.item_tv:
-                    TvLiveActivity.startActivity(this);
+                    if (mSharedPreferences == null) return;
+                    String string = mSharedPreferences.getString("lives", "ican");
+                    if ("hlzb".equalsIgnoreCase(string)) {
+                        TvLiveActivity.startActivity(this);
+                    } else {
+                        VideoTabActivity.startLiveActivity(this, string);
+                    }
                     break;
                 case R.id.item_short:
                     ShortVideoTabActivity.startActivity(this);
@@ -352,21 +364,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     }
 
-    private OnButtonClickListener alipayClickListener = new OnButtonClickListener() {
-
-        @Override
-        public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
-            dialog.dismiss();
-            if (btn == OnButtonClickListener.RIGHT) {
-                String currentDate = DateUtil.getCurrentDate("yyyy-MM-dd");
-                mSharedPreferences.edit().putString("alipay_time", currentDate).apply();
-                startAlipay();
-            } else {
-                showToast("你不是真爱(｀⌒´メ)");
-            }
-        }
-
-    };
+//    private OnButtonClickListener alipayClickListener = new OnButtonClickListener() {
+//
+//        @Override
+//        public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
+//            dialog.dismiss();
+//            if (btn == OnButtonClickListener.RIGHT) {
+//                String currentDate = DateUtil.getCurrentDate("yyyy-MM-dd");
+//                mSharedPreferences.edit().putString("alipay_time", currentDate).apply();
+//                startAlipay();
+//            } else {
+//                showToast("你不是真爱(｀⌒´メ)");
+//            }
+//        }
+//
+//    };
 
     private OnButtonClickListener buttonClickListener = new OnButtonClickListener() {
 
@@ -394,15 +406,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     };
 
 
-    private Runnable alipayRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            if (isFinishing()) return;
-            DialogUtil.showCancelableDialog(MainActivity.this, getString(R.string.alipay_hit), "滚,关我屁事", "好的,马上", alipayClickListener);
-        }
-
-    };
+//    private Runnable alipayRunnable = new Runnable() {
+//
+//        @Override
+//        public void run() {
+//            if (isFinishing()) return;
+//            Spanned spanned = Html.fromHtml(getString(R.string.alipay_hit));
+//            DialogUtil.showCancelableDialog(MainActivity.this,spanned, "滚,关我屁事", "好的,马上", alipayClickListener);
+//        }
+//
+//    };
 
     private Runnable tipRunnable = new Runnable() {
 

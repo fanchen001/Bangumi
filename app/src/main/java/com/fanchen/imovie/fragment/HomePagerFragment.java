@@ -108,7 +108,7 @@ public class HomePagerFragment extends BaseFragment implements Toolbar.OnMenuIte
                 new PicassoWrap(getPicasso()).loadVertical(user.getHeader().getFileUrl(activity.appliction),mCircleImageView);
             }
         }else{
-            mNameTextView.setText(getString(R.string.not_login));
+            mNameTextView.setText(getStringFix(R.string.not_login));
             mCircleImageView.setImageResource(R.drawable.ico_user_default);
         }
     }

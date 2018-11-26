@@ -23,9 +23,6 @@ import cn.bmob.v3.listener.FindListener;
  */
 public class MainBannerDialog extends MaterialDialog implements OnButtonClickListener {
 
-    private TextView textView1;
-    private TextView textView2;
-    private ImageView imageView;
     private DialogBanner banner;
     private BaseActivity activity;
 
@@ -40,9 +37,9 @@ public class MainBannerDialog extends MaterialDialog implements OnButtonClickLis
     @Override
     public void setUiBeforShow() {
         super.setUiBeforShow();
-        textView1 = (TextView) view.findViewById(R.id.tv_banner_title);
-        textView2 = (TextView) view.findViewById(R.id.tv_banner_info);
-        imageView = (ImageView) view.findViewById(R.id.iv_banner_image);
+        TextView textView1 = (TextView) view.findViewById(R.id.tv_banner_title);
+        TextView textView2 = (TextView) view.findViewById(R.id.tv_banner_info);
+        ImageView imageView = (ImageView) view.findViewById(R.id.iv_banner_image);
         textView2.setText(banner.getIntroduce());
         textView1.setText(banner.getTitle());
         tv_title.setTextSize(18);

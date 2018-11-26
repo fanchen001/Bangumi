@@ -3,6 +3,7 @@ package com.fanchen.imovie.entity.face;
 import java.util.Map;
 
 /**
+ * IPlayUrls
  * Created by fanchen on 2017/9/28.
  */
 public interface IPlayUrls extends IRoot{
@@ -12,7 +13,7 @@ public interface IPlayUrls extends IRoot{
     int URL_WEB = 1;
     /*** 支持下载*/
     int URL_FILE = 2;
-
+    int URL_XUNLEI = 4;
     int URL_XIGUA = 3;
 
     /**
@@ -40,5 +41,21 @@ public interface IPlayUrls extends IRoot{
      */
     String getReferer();
 
+    /**
+     *
+     * @return
+     */
     boolean m3u8Referer();
+
+    /**
+     * 獲取主播放url
+     * @return
+     */
+    String getMainUrl();
+
+    /**
+     * 是否可以直接播放
+     * @return
+     */
+    boolean isDirectPlay();
 }

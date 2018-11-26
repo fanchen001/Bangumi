@@ -371,11 +371,11 @@ public class ApkDetails implements Parcelable {
     }
 
     public String getIco() {
-        return String.format("http://cdn.moeapk.com/statics/apk/%s/%s.thumbnail?%s", packageName, packageName, currentversioncode);
+        return String.format("http://apk.moe/statics/apk/%s/%s.thumbnail?%s", packageName, packageName, currentversioncode);
     }
 
     public String getCover() {
-        return String.format("http://cdn.moeapk.com/statics/apk/%s/header.image?%s", packageName, currentversioncode);
+        return String.format("http://apk.moe/statics/apk/%s/header.image?%s", packageName, currentversioncode);
     }
 
     @Override
@@ -464,7 +464,7 @@ public class ApkDetails implements Parcelable {
         }
 
         public String getSourceurl() {
-            return String.format("http://cdn.moeapk.com/statics/images/app/%s/%s.thumbnail",packageName,filename);
+            return String.format("http://apk.moe/statics/images/app/%s/%s.thumbnail",packageName,filename);
         }
 
         public void setRank(String rank) {
@@ -485,7 +485,7 @@ public class ApkDetails implements Parcelable {
 
         @Override
         public String getCover() {
-            return String.format("http://cdn.moeapk.com/statics/images/app/%s/%s.image", packageName, filename);
+            return String.format("http://apk.moe/statics/images/app/%s/%s.image", packageName, filename);
         }
 
         @Override

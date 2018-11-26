@@ -6,6 +6,8 @@
         <item>百域解析</item>
         <item>无名解析</item>
         <item>瑟瑟解析</item>
+        <item>北漂鱼解析</item>
+        <item>177537解析</item>
     </string-array>
 
     <string-array name="video_web">
@@ -187,6 +189,18 @@
         <item>native</item>
         <item>tbs</item>
     </string-array>
+    <string-array name="pref_def_lives_titles">
+        <item>爱看TV</item>
+        <item>电影天堂</item>
+        <item>华龙直播</item>
+        <item>好趣直播</item>
+    </string-array>
+    <string-array name="pref_def_lives_values">
+        <item>ican</item>
+        <item>dytt</item>
+        <item>hlzb</item>
+        <item>haoqu</item>
+    </string-array>
     <string-array name="pref_sync_frequency_titles">
         <item>1任务</item>
         <item>2任务</item>
@@ -340,10 +354,11 @@
     <string name="success_token">获取token成功</string>
     <string name="error_video_type">不支持的播放类型</string>
     <string name="app_hit">喜欢观看漫画的小伙伴，可以支持一下我的另一个应用【爱搜云】哦。漫画,轻小说,美女图片,网盘搜索应有尽有..</string>
-    <string name="alipay_hit">是否跳转支付宝领取《线下(余额宝)支付红包》,即可以省钱，又是对开发者的支持！！！！</string>
+    <string name="alipay_hit"><![CDATA[是否跳转领取[线下(余额宝)支付宝<font color="red">红包</font>],即可以省钱，又是对开发者的支持！！！！<font color="red">一定要记得消费哦</font>]]></string>
     <string name="video_src_hit">【提醒】：播放器默认使用ijkplayer，如碰到[声音不同步][没有声音]或者[播放失败]。可以点击右上角[┇]切换播放器,或者在系统设置里面设置默认播放器</string>
     <string name="clear_ing">正在删除..</string>
     <string name="item_tv">电视直播</string>
     <string name="tv_live">电视直播</string>
     <string name="xigua_finish_hit">是否继续在后台缓存视频文件？缓存文件可以去[下载管理]-[西瓜视频]里查看！！</string>
+    <string name="xunlei_hit">磁力链不支持断点续传，请等待磁力链下载完成后，再添加第二条磁力链</string>
 </resources>

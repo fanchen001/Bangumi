@@ -17,6 +17,25 @@ public interface INiceVideoPlayer {
     void setUp(String url, Map<String, String> headers);
 
     /**
+     *
+     * @param url
+     * @param ref
+     * @param position
+     */
+     void setUp(String url, String ref,long position);
+    /**
+     *
+     * @param url
+     * @param position
+     */
+    void setUp(String url,long position);
+    /**
+     *
+     * @param url
+     */
+    void setUp(String url);
+
+    /**
      * 开始播放
      */
     void start();
@@ -66,6 +85,13 @@ public interface INiceVideoPlayer {
     void setSpeed(float speed);
 
     /**
+     * 设置播放器类型
+     *
+     * @param playerType IjkPlayer or MediaPlayer.
+     */
+    void setPlayerType(int playerType);
+
+    /**
      * 开始播放时，是否从上一次的位置继续播放
      *
      * @param continueFromLastPosition true 接着上次的位置继续播放，false从头开始播放
@@ -76,20 +102,30 @@ public interface INiceVideoPlayer {
      * 以下9个方法是播放器在当前的播放状态
      **********************************/
     boolean isIdle();
+
     boolean isPreparing();
+
     boolean isPrepared();
+
     boolean isBufferingPlaying();
+
     boolean isBufferingPaused();
+
     boolean isPlaying();
+
     boolean isPaused();
+
     boolean isError();
+
     boolean isCompleted();
 
     /*********************************
      * 以下3个方法是播放器的模式
      **********************************/
     boolean isFullScreen();
+
     boolean isTinyWindow();
+
     boolean isNormal();
 
     /**
@@ -178,4 +214,5 @@ public interface INiceVideoPlayer {
      * 并且控制器的UI也应该恢复到最初始的状态.
      */
     void release();
+
 }

@@ -3,6 +3,7 @@
 
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
@@ -161,7 +162,7 @@
         <activity
             android:name=".activity.VideoPlayerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait"
+            android:screenOrientation="sensorLandscape"
             android:theme="@style/BaseAppThemeMain"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
@@ -236,9 +237,25 @@
         <activity
             android:name=".activity.DownloadTabActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/BaseDownloadTheme"
-            android:windowSoftInputMode="stateUnchanged|adjustPan" />
+            android:windowSoftInputMode="stateUnchanged|adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="xg" />
+                <data android:scheme="xgadd" />
+                <data android:scheme="xgplay" />
+                <data android:scheme="ftp" />
+                <data android:scheme="thunder" />
+                <data android:scheme="ed2k" />
+                <data android:scheme="magnet" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activity.WebPlayerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -320,6 +337,26 @@
             android:label="P2P服务"
             android:process=":remote" />
 
+        <service
+            android:name="com.xunlei.downloadlib.XLService"
+            android:label="迅雷服务"
+            android:process=":remote" />
+
+        <service
+            android:name="org.fourthline.cling.android.AndroidUpnpServiceImpl"
+            android:label="DLNA服务" />
+
+        <provider
+            android:name="com.xunlei.XLProvider"
+            android:authorities="${applicationId}.xunlei.autosize-init-provider"
+            android:exported="false"
+            android:multiprocess="true" />
+
+        <provider
+            android:name="com.xigua.p2p.XiguaProvider"
+            android:authorities="${applicationId}.xigua.autosize-init-provider"
+            android:exported="false"
+            android:multiprocess="true" />
     </application>
 
 </manifest>

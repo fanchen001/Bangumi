@@ -1,7 +1,10 @@
 package com.fanchen.imovie.view.video_new;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -68,6 +71,8 @@ public abstract class NiceVideoPlayerController
     public abstract ImageView imageView();
 
     public abstract void setLoadingVisible(int visible);
+
+    public abstract void release();
 
     /**
      * @param speed
@@ -259,6 +264,39 @@ public abstract class NiceVideoPlayerController
         return false;
     }
 
+    public void setBrightness(float brightness){
+        if(mContext == null)return;
+        WindowManager.LayoutParams params = NiceUtil.scanForActivity(mContext).getWindow().getAttributes();
+        params.screenBrightness = brightness;
+        NiceUtil.scanForActivity(mContext).getWindow().setAttributes(params);
+    }
+
+    public void setVideoState(VideoState state){
+        setBrightness(state.brightness);
+        setVolume(state.volume);
+        setTitle(state.title);
+        if (TextUtils.isEmpty(state.referer)){
+            mNiceVideoPlayer.setUp(state.url, state.duration);
+        }else{
+            mNiceVideoPlayer.setUp(state.url, state.referer, state.duration);
+        }
+    }
+
+    public void setVolume(int volume){
+        if(mNiceVideoPlayer == null)return;
+        mNiceVideoPlayer.setVolume(volume);
+    }
+
+    public float getBrightness(){
+        if(mContext == null)return 0;
+        return NiceUtil.scanForActivity(mContext).getWindow().getAttributes().screenBrightness;
+    }
+
+    public int getVolume(){
+        if(mNiceVideoPlayer == null)return 0;
+        return mNiceVideoPlayer.getVolume();
+    }
+
     /**
      * 手势左右滑动改变播放位置时，显示控制器中间的播放位置变化视图，
      * 在手势滑动ACTION_MOVE的过程中，会不断调用此方法。
@@ -305,5 +343,67 @@ public abstract class NiceVideoPlayerController
     @Override
     public void run() {
         updateProgress();
+    }
+
+    public abstract VideoState getVideoState();
+
+    public static class VideoState implements Parcelable {
+        public String url = "";
+        public String title = "";
+        public String referer = "";
+        public long duration;
+        public int volume;
+        public float brightness;
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(this.url);
+            dest.writeString(this.title);
+            dest.writeString(this.referer);
+            dest.writeLong(this.duration);
+            dest.writeInt(this.volume);
+            dest.writeFloat(this.brightness);
+        }
+
+        public VideoState() {
+        }
+
+        protected VideoState(Parcel in) {
+            this.url = in.readString();
+            this.title = in.readString();
+            this.referer = in.readString();
+            this.duration = in.readLong();
+            this.volume = in.readInt();
+            this.brightness = in.readFloat();
+        }
+
+        public static final Parcelable.Creator<VideoState> CREATOR = new Parcelable.Creator<VideoState>() {
+            @Override
+            public VideoState createFromParcel(Parcel source) {
+                return new VideoState(source);
+            }
+
+            @Override
+            public VideoState[] newArray(int size) {
+                return new VideoState[size];
+            }
+        };
+
+        @Override
+        public String toString() {
+            return "VideoState{" +
+                    "url='" + url + '\'' +
+                    ", title='" + title + '\'' +
+                    ", referer='" + referer + '\'' +
+                    ", duration=" + duration +
+                    ", volume=" + volume +
+                    ", brightness=" + brightness +
+                    '}';
+        }
     }
 }

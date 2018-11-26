@@ -5,7 +5,9 @@ import android.text.TextUtils;
 import com.fanchen.imovie.annotation.JsoupSource;
 import com.fanchen.imovie.annotation.MethodSource;
 import com.fanchen.imovie.jsoup.ITvParser;
+import com.fanchen.imovie.jsoup.parser.HaoQuImpl;
 import com.fanchen.imovie.jsoup.parser.HlyyTvParser;
+import com.fanchen.imovie.jsoup.parser.ICanTvParser;
 import com.fanchen.imovie.util.StreamUtil;
 
 import java.io.ByteArrayInputStream;
@@ -30,35 +32,14 @@ public class JsoupLiveResponseCoverter extends StringResponseConverter {
 
     static {
         map.put(JsoupSource.KUAIKAN_TV,new HlyyTvParser());
+        map.put(JsoupSource.HAOQU,new HaoQuImpl());
+        map.put(JsoupSource.ICANTV,new ICanTvParser());
     }
 
     public JsoupLiveResponseCoverter(Retrofit retrofit, MethodSource method, JsoupSource jsoup) {
         super(retrofit);
         this.method = method;
         this.jsoup = jsoup;
-    }
-
-    @Override
-    public Object convert(ResponseBody responseBody) throws IOException {
-        if (this.jsoup == JsoupSource.KANKAN) {
-            try {
-                byte[] bs = null;
-                if (responseBody == null) {
-                    throw new IOException("response body is empty");
-                }
-                bs = responseBody.bytes();
-                if (bs == null || bs.length == 0) {
-                    throw new IOException("response body is empty");
-                }
-                return convertString(new String(StreamUtil.stream2bytes(new GZIPInputStream(new ByteArrayInputStream(bs))), getCharset()));
-            } catch (Exception e) {
-                throw new IOException("charset is not supported.");
-            } finally {
-                if (responseBody != null)
-                    responseBody.close();
-            }
-        }
-        return super.convert(responseBody);
     }
 
     @Override
@@ -75,6 +56,11 @@ public class JsoupLiveResponseCoverter extends StringResponseConverter {
             object = videoParser.liveUrl(retrofit, baseUrl.substring(0, baseUrl.length() - 1), str);
         }
         return object;
+    }
+
+    @Override
+    protected String getCharset() {
+        return this.jsoup == JsoupSource.HAOQU ? "GBK" : super.getCharset();
     }
 
 }

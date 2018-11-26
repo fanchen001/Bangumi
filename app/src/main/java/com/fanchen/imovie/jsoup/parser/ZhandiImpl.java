@@ -191,7 +191,12 @@ public class ZhandiImpl implements IVideoMoreParser {
                     } else {
                         episode.setTitle(sub.text());
                     }
-                    if (!episode.getTitle().contains("迅雷") && !episode.getTitle().contains("网盘")
+                    if(episode.getTitle().contains("迅雷")) {
+                        episode.setPlayType(IVideoEpisode.PLAY_TYPE_XUNLEI);
+                        String replace = episode.getUrl().replace(baseUrl, "");
+                        episode.setUrl(replace);
+                        episodes.add(episode);
+                    }else if (!episode.getTitle().contains("网盘")
                             && !episode.getTitle().contains("奇艺") && !episode.getTitle().contains("腾讯")
                             &&!episode.getTitle().contains("优酷")&&!episode.getTitle().contains("芒果")) {
                         episodes.add(episode);
@@ -199,6 +204,7 @@ public class ZhandiImpl implements IVideoMoreParser {
                 }
                 count++;
             }
+            details.setServiceClass(ZhandiService.class.getName());
             details.setCover(node.attr("div.posterPic > img", "src"));
             details.setLast(node.textAt("div.introTxt > div > span", 0));
             details.setExtras(node.textAt("div.introTxt > div > span", 1));

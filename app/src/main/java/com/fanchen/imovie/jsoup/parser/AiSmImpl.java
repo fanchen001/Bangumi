@@ -204,7 +204,12 @@ public class AiSmImpl implements IVideoMoreParser {
                     } else {
                         episode.setTitle(sub.text());
                     }
-                    if (!episode.getTitle().contains("迅雷") && !episode.getTitle().contains("网盘") && !episode.getTitle().contains("下载")) {
+                    if(episode.getTitle().contains("迅雷")) {
+                        episode.setPlayType(IVideoEpisode.PLAY_TYPE_XUNLEI);
+                        String replace = episode.getUrl().replace(baseUrl, "");
+                        episode.setUrl(replace);
+                        episodes.add(episode);
+                    }else if (!episode.getTitle().contains("网盘") && !episode.getTitle().contains("下载")) {
                         episodes.add(episode);
                     }
                 }
@@ -217,6 +222,7 @@ public class AiSmImpl implements IVideoMoreParser {
             details.setTitle(node.text("div.introTxt > h1"));
             details.setIntroduce(node.text("div.introTxt > div > p"));
             details.setEpisodes(episodes);
+            details.setServiceClass(AismService.class.getName());
             details.setRecomm(videos);
             details.setSuccess(true);
         } catch (Exception e) {

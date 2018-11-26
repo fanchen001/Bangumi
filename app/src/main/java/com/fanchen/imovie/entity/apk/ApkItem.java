@@ -7,6 +7,7 @@ import com.fanchen.imovie.entity.face.IViewType;
 
 
 /**
+ * ApkItem
  * Created by fanchen on 2017/7/19.
  */
 public class ApkItem  implements Parcelable,IViewType{
@@ -140,11 +141,11 @@ public class ApkItem  implements Parcelable,IViewType{
     }
 
     public String getIco(){
-        return String.format("http://cdn.moeapk.com/statics/apk/%s/%s.thumbnail?%s",packageName,packageName,currentversioncode);
+        return String.format("http://apk.moe/statics/apk/%s/%s.thumbnail?%s",packageName,packageName,currentversioncode);
     }
 
     public String getCover() {
-        return String.format("http://cdn.moeapk.com/statics/apk/%s/header.image?%s",packageName,currentversioncode);
+        return String.format("http://apk.moe/statics/apk/%s/header.image?%s",packageName,currentversioncode);
     }
 
     @Override

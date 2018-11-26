@@ -40,7 +40,7 @@ public interface SmdyService {
      * @param page
      * @return
      */
-    @GET("{path}/index{page}.html")
+    @GET("dytt/{path}-p-{page}.html")
     @JsoupType(JsoupSource.SMDY)//index1.html
     @MethodType(value = MethodSource.HOME)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
@@ -52,7 +52,7 @@ public interface SmdyService {
      * @param keyword
      * @return
      */
-    @GET("vod-search-wd-{wd}-p-{page}.html")
+    @GET("sousuo-{wd}-p-{page}.html")
     @JsoupType(JsoupSource.SMDY)
     @MethodType(value = MethodSource.SEARCH)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
@@ -64,7 +64,7 @@ public interface SmdyService {
      * @param page
      * @return
      */
-    @GET("{path}/index{page}.html")
+    @GET("dytt/{path}-p-{page}.html")
     @JsoupType(JsoupSource.SMDY)
     @MethodType(value = MethodSource.MORE)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
@@ -74,7 +74,7 @@ public interface SmdyService {
      * @param path
      * @return
      */
-    @GET("movie/{path}")
+    @GET("sm_vod/{path}")
     @JsoupType(JsoupSource.SMDY)
     @MethodType(value = MethodSource.DETAILS)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)

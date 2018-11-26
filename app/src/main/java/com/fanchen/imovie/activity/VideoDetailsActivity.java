@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -42,6 +41,7 @@ import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
 import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.DisplayUtil;
+import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.ShareUtil;
 import com.fanchen.imovie.util.SystemUtil;
 import com.fanchen.imovie.util.VideoJsonUtil;
@@ -57,6 +57,7 @@ import com.fanchen.m3u8.listener.OnM3u8InfoListener;
 import com.google.gson.Gson;
 import com.litesuits.orm.db.assit.QueryBuilder;
 import com.xigua.p2p.P2PManager;
+import com.xunlei.XLManager;
 
 import java.io.File;
 import java.util.List;
@@ -236,6 +237,7 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
         mEpisodeRecyclerView.setNestedScrollingEnabled(false);
         mRecomAdapter = new RecomAdapter(this, picasso = new PicassoWrap(getPicasso()));
         mRecomRecyclerView.setAdapter(mRecomAdapter);
+        mEpisodeRecyclerView.setNestedScrollingEnabled(false);
         mRecomRecyclerView.setNestedScrollingEnabled(false);
         String path = mVideo == null ? mVideoCollect == null ? vid : mVideoCollect.getId() : mVideo.getId();
         getRetrofitManager().enqueue(className, callback, "details", path);
@@ -249,6 +251,7 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
 
     @Override
     public void onDownloadSelect(List<DownloadDialog.DownloadTemp> downloads) {
+        if (downloads == null || downloads.isEmpty()) return;
         this.mDownloads = downloads;
         DialogUtil.showProgressDialog(this, getString(R.string.loading));
         download(mDownloads.remove(0));
@@ -267,14 +270,22 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
             showToast(String.format("<%s>添加下载任务成功", fileNmae));
             downloadNext();
         } else if (this.mDownload.type == DownloadDialog.DownloadTemp.TYPE_XIGUA) {
-            P2PManager.getInstance().isConnect();
             P2PManager.getInstance().play(temp.url);
+            temp.episode.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
+            showToast(String.format("<%s>添加下载任务成功", temp.episode.getTitle()));
+            downloadNext();
+        } else if (this.mDownload.type == DownloadDialog.DownloadTemp.TYPE_XUNLEI) {
+            XLManager.get(this).addTask(temp.url);
             temp.episode.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
             showToast(String.format("<%s>添加下载任务成功", temp.episode.getTitle()));
             downloadNext();
         } else if (this.mDownload.type == DownloadDialog.DownloadTemp.TYPE_M3U8) {
             M3u8File m3u8File = new M3u8File();
-            m3u8File.setUrl(temp.m3u8Url);
+            if(temp.m3u8Url != null && temp.m3u8Url.contains("=") && temp.m3u8Url.split("=")[1].contains(".m3u")){
+                m3u8File.setUrl(temp.m3u8Url.split("=")[1]);
+            }else if(temp.m3u8Url != null){
+                m3u8File.setUrl(temp.m3u8Url);
+            }
             m3u8File.setOnlyId(temp.getOnlyId());
             m3u8File.setM3u8VideoName(String.format("%s_%s.mp4", details.getTitle(), temp.episode.getTitle()));
             M3u8Manager.INSTANCE.download(m3u8File);
@@ -325,9 +336,13 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
         if (mDownload == null || details == null) return;
         String title = mDownload.episode.getTitle();
         String format = String.format("%s_%s.mp4", details.getTitle(), title);
-        if (url.contains("=") && url.contains(".m3u")) {
+        if (url.contains(".m3u")) {
             M3u8File m3u8File = new M3u8File();
-            m3u8File.setUrl(url.split("=")[1]);
+            if(url.contains("=") && url.split("=")[1].contains(".m3u")){
+                m3u8File.setUrl(url.split("=")[1]);
+            }else{
+                m3u8File.setUrl(url);
+            }
             m3u8File.setOnlyId(mDownload.getOnlyId());
             m3u8File.setM3u8VideoName(format);
             M3u8Manager.INSTANCE.download(m3u8File);
@@ -365,6 +380,7 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
     @Override
     public void onError(M3u8File m3u8File, Throwable throwable) {
         showToast(String.format("<%s>下载失败", m3u8File.getM3u8VideoName()));
+        downloadNext();
     }
 
     @Override
@@ -394,7 +410,7 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
                 break;
             case R.id.ll_bangumi_share:
                 try {
-                    // ShareUtil.shareDialogBanner(details,20180910);
+//                     ShareUtil.shareDialogBanner(details,20180910);
                     PackageManager manager = getPackageManager();
                     List<ApplicationInfo> infos = manager.getInstalledApplications(128);
                     if (infos == null || infos.isEmpty()) {
@@ -442,8 +458,7 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
                 if (!(datas.get(position) instanceof IVideoEpisode)) return;
                 IVideoEpisode episode = (IVideoEpisode) datas.get(position);
                 if (episode.getPlayerType() == IVideoEpisode.PLAY_TYPE_XUNLEI) {
-                    showSnackbar(getString(R.string.video_xunlei));
-                    SystemUtil.startThreeApp(this, episode.getUrl());
+                    VideoPlayerActivity.startActivity(this, episode.getUrl());
                 } else if (episode.getPlayerType() == IVideoEpisode.PLAY_TYPE_NOT) {
                     showSnackbar(getString(R.string.video_not_play));
                 } else {

@@ -1,7 +1,6 @@
 package com.fanchen.imovie.dialog;
 
 import android.content.DialogInterface;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -18,6 +17,8 @@ import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.retrofit.service.Dm5Service;
 import com.fanchen.imovie.util.DialogUtil;
+import com.xigua.p2p.P2PManager;
+import com.xunlei.XLManager;
 
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
@@ -71,8 +72,8 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
         if (!(datas.get(position) instanceof IVideoEpisode)) return;
         IVideoEpisode videoEpisode = (IVideoEpisode) datas.get(position);
         String url = videoEpisode.getUrl();
-        if (TextUtils.isEmpty(url) || (!url.contains("http") && !url.contains("xg") && !url.contains("ftp"))) {
-            activity.showToast("该视频不支持下载");
+        if (TextUtils.isEmpty(url) || !XLManager.isXLUrl(url)) {
+            activity.showToast("不支持的下载类型");
         } else if (mEpisodeAdapter.getSelect().size() >= 3 && videoEpisode.getDownloadState() == IVideoEpisode.DOWNLOAD_NON) {
             activity.showToast("一次最多支持选中下载3个");
         } else {
@@ -101,14 +102,14 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
         this.mDownload = select;
         if (this.mDownload == null) return;
         if (IVideoEpisode.PLAY_TYPE_VIDEO == select.getPlayerType() && !TextUtils.isEmpty(select.getUrl())) {//可以直接下载
-            DownloadTemp temp = new DownloadTemp(mDownload, DownloadTemp.TYPE_MP4);
-            temp.url = mDownload.getUrl();
-            mDownloadTemps.add(temp);
+            mDownloadTemps.add(new DownloadTemp(mDownload,mDownload.getUrl(),"",DownloadTemp.TYPE_MP4));
             callback.onFinish(-1);
         } else if (IVideoEpisode.PLAY_TYPE_VIDEO_M3U8 == select.getPlayerType()) {//M3u8
-            DownloadTemp temp = new DownloadTemp(mDownload, DownloadTemp.TYPE_M3U8);
-            temp.m3u8Url = mDownload.getUrl();
-            mDownloadTemps.add(temp);
+            mDownloadTemps.add(new DownloadTemp(mDownload,mDownload.getUrl(),""));
+        }else if (IVideoEpisode.PLAY_TYPE_XUNLEI == select.getPlayerType() && XLManager.isXLUrlNoHttp(select.getUrl())) {//迅雷
+            mDownloadTemps.add(new DownloadTemp(mDownload, select.getUrl(),"" , DownloadTemp.TYPE_XUNLEI));
+        }else if (IVideoEpisode.PLAY_TYPE_XIGUA == select.getPlayerType() && P2PManager.isXiguaUrl(select.getUrl())) {//西瓜视频
+            mDownloadTemps.add(new DownloadTemp(mDownload, select.getUrl(),"" , DownloadTemp.TYPE_XIGUA));
         } else if (IVideoEpisode.PLAY_TYPE_URL == select.getPlayerType()) {//需要去解析
             String className = select.getServiceClassName();
             RetrofitManager with = RetrofitManager.with(activity.getApplicationContext());
@@ -132,7 +133,7 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
             } else if (onDownloadSelectListener != null) {
                 DialogUtil.closeProgressDialog();
                 OnDownloadSelectListener listener = onDownloadSelectListener.get();
-                if (listener != null && mDownloadTemps != null) {
+                if (listener != null && mDownloadTemps != null && !mDownloadTemps.isEmpty()) {
                     listener.onDownloadSelect(mDownloadTemps);
                 }
                 DownloadDialog.this.dismiss();
@@ -149,28 +150,18 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
             if (mDownload != null && isEmpty(response)) {
                 activity.showToast(mDownload.getTitle() + "下载失败");
             } else if (mDownload != null) {
-                String value = response.getUrls().entrySet().iterator().next().getValue();
-                if (value.contains("=") && value.contains(".m3u")) value = value.split("=")[1];
-                if(value.startsWith("ftp://") || value.startsWith("xg://")){
-                    DownloadTemp temp = new DownloadTemp(mDownload, DownloadTemp.TYPE_XIGUA);
-                    temp.referer = response.getReferer();
-                    temp.url = value;
-                    mDownloadTemps.add(temp);
-                }else if (response.getUrlType() == IPlayUrls.URL_FILE) {
-                    DownloadTemp temp = new DownloadTemp(mDownload, DownloadTemp.TYPE_MP4);
-                    temp.referer = response.getReferer();
-                    temp.url = value;
-                    mDownloadTemps.add(temp);
-                } else if (response.getPlayType() == IPlayUrls.URL_M3U8 || value.contains(".m3u")) {
-                    DownloadTemp temp = new DownloadTemp(mDownload, DownloadTemp.TYPE_M3U8);
-                    temp.referer = response.getReferer();
-                    temp.m3u8Url = value;
-                    mDownloadTemps.add(temp);
+                String mainUrl = response.getMainUrl();
+                if (mainUrl.contains("=") && mainUrl.contains(".m3u")) mainUrl = mainUrl.split("=")[1];
+                if(response.getUrlType() == IPlayUrls.URL_XIGUA && P2PManager.isXiguaUrl(mainUrl)){//西瓜
+                    mDownloadTemps.add(new DownloadTemp(mDownload,mainUrl,response.getReferer(),DownloadTemp.TYPE_XIGUA));
+                }else if (response.getUrlType() == IPlayUrls.URL_FILE) {//直接下载的文件
+                    mDownloadTemps.add(new DownloadTemp(mDownload,mainUrl,response.getReferer(),DownloadTemp.TYPE_MP4));
+                }else if (response.getUrlType() == IPlayUrls.URL_XUNLEI && XLManager.isXLUrlNoHttp(mainUrl)) {//迅雷
+                    mDownloadTemps.add(new DownloadTemp(mDownload,mainUrl,response.getReferer(),DownloadTemp.TYPE_XUNLEI));
+                } else if (response.getPlayType() == IPlayUrls.URL_M3U8 || mainUrl.contains(".m3u")) {//m3u8
+                    mDownloadTemps.add(new DownloadTemp(mDownload,mainUrl,response.getReferer()));
                 } else if (response.getPlayType() == IPlayUrls.URL_WEB) {
-                    DownloadTemp temp = new DownloadTemp(mDownload, DownloadTemp.TYPE_URL);
-                    temp.referer = response.getReferer();
-                    temp.url = value;
-                    mDownloadTemps.add(temp);
+                    mDownloadTemps.add(new DownloadTemp(mDownload,mainUrl,response.getReferer(),DownloadTemp.TYPE_URL));
                 } else {
                     activity.showToast(mDownload.getTitle() + "不支持下载");
                 }
@@ -203,6 +194,7 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
         public static final int TYPE_MP4 = 2;
         public static final int TYPE_URL = 3;
         public static final int TYPE_XIGUA = 4;
+        public static final int TYPE_XUNLEI = 5;
         public IVideoEpisode episode;
         public String m3u8Url = "";
         public String url = "";
@@ -212,6 +204,20 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
         public DownloadTemp(IVideoEpisode episode, int type) {
             this.episode = episode;
             this.type = type;
+        }
+
+        public DownloadTemp(IVideoEpisode episode, String url, String referer, int type) {
+            this.episode = episode;
+            this.url = url;
+            this.referer = referer;
+            this.type = type;
+        }
+
+        public DownloadTemp(IVideoEpisode episode,String m3u8Url, String referer) {
+            this.m3u8Url = m3u8Url;
+            this.episode = episode;
+            this.referer = referer;
+            this.type = TYPE_M3U8;
         }
 
         public String getOnlyId(){

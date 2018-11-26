@@ -61,33 +61,37 @@ public class ActiveUtil {
 
     public static boolean checkActive(Object o) {
         Object outerClass = getExternalClass(o);
-        if (outerClass != null && outerClass instanceof Activity) {
-            Activity activity = (Activity) outerClass;
-            if (activity.isFinishing() || activity.isDestroyed()) {
-                LogUtil.e("ActiveUtil", "Activity已经销毁");
-                return false;
+        try{
+            if (outerClass != null && outerClass instanceof Activity) {
+                Activity activity = (Activity) outerClass;
+                if (activity.isFinishing() || activity.isDestroyed()) {
+                    LogUtil.e("ActiveUtil", "Activity已经销毁");
+                    return false;
+                }
+            } else if (outerClass != null && outerClass instanceof Fragment) {
+                Fragment fragment = (Fragment) outerClass;
+                if (!fragment.isAdded() || fragment.isDetached()) {
+                    LogUtil.e("ActiveUtil", "Fragment已经销毁或没有被添加到Activity");
+                    return false;
+                }
+            } else if (outerClass != null && outerClass instanceof android.app.Fragment) {
+                android.app.Fragment fragment = (android.app.Fragment) outerClass;
+                if (!fragment.isAdded() || fragment.isDetached()) {
+                    LogUtil.e("ActiveUtil", "android.app.Fragment已经销毁或没有被添加到Activity");
+                    return false;
+                }
+            }else if(outerClass != null && outerClass instanceof Dialog){
+                Dialog dialog = (Dialog) outerClass;
+                if(!dialog.isShowing()){
+                    LogUtil.e("ActiveUtil", "Dialog已经销毁");
+                    return false;
+                }
             }
-        } else if (outerClass != null && outerClass instanceof Fragment) {
-            Fragment fragment = (Fragment) outerClass;
-            if (!fragment.isAdded() || fragment.isDetached()) {
-                LogUtil.e("ActiveUtil", "Fragment已经销毁或没有被添加到Activity");
-                return false;
+            if (outerClass != null) {
+                return true;
             }
-        } else if (outerClass != null && outerClass instanceof android.app.Fragment) {
-            android.app.Fragment fragment = (android.app.Fragment) outerClass;
-            if (!fragment.isAdded() || fragment.isDetached()) {
-                LogUtil.e("ActiveUtil", "android.app.Fragment已经销毁或没有被添加到Activity");
-                return false;
-            }
-        }else if(outerClass != null && outerClass instanceof Dialog){
-            Dialog dialog = (Dialog) outerClass;
-            if(!dialog.isShowing()){
-                LogUtil.e("ActiveUtil", "Dialog已经销毁");
-                return false;
-            }
-        }
-        if (outerClass != null) {
-            return true;
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return false;
     }

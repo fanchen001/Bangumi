@@ -7,16 +7,15 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.arialyy.aria.core.download.DownloadTask;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.DownloadTabActivity;
 import com.fanchen.imovie.activity.VideoPlayerActivity;
-import com.fanchen.imovie.adapter.pager.XiguaAdapter;
+import com.fanchen.imovie.adapter.XiguaAdapter;
 import com.fanchen.imovie.base.BaseAdapter;
+import com.fanchen.imovie.base.BaseDownloadAdapter;
 import com.fanchen.imovie.base.BaseRecyclerFragment;
 import com.fanchen.imovie.dialog.BaseAlertDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
@@ -36,8 +35,8 @@ import java.util.List;
  * XiguaFragment
  * Created by fanchen on 2018/9/21.
  */
-public class XiguaFragment extends BaseRecyclerFragment implements DownloadTabActivity.OnDownloadListernr,
-        XiguaAdapter.OnXiguaControlListener {
+public class XiguaFragment extends BaseRecyclerFragment implements DownloadTabActivity.OnDeleteListernr,
+        BaseDownloadAdapter.OnDownloadControlListener<XiguaDownload> {
 
     private boolean isRegister = false;
     private XiguaAdapter mAdapter;
@@ -48,7 +47,7 @@ public class XiguaFragment extends BaseRecyclerFragment implements DownloadTabAc
 
     @Override
     public RecyclerView.LayoutManager getLayoutManager() {
-        return new LinearLayoutManager(activity);
+        return new BaseAdapter.LinearLayoutManagerWrapper(activity);
     }
 
     @Override
@@ -66,7 +65,7 @@ public class XiguaFragment extends BaseRecyclerFragment implements DownloadTabAc
     @Override
     protected void setListener() {
         super.setListener();
-        mAdapter.setOnXiguaControlListener(this);
+        mAdapter.setOnDownloadControlListener(this);
     }
 
     @Override
@@ -79,7 +78,7 @@ public class XiguaFragment extends BaseRecyclerFragment implements DownloadTabAc
         super.setUserVisibleHint(isVisibleToUser);
         if (activity == null) return;
         if (isVisibleToUser && !isRegister) {
-            activity.registerReceiver(mReceiver, new IntentFilter(P2PMessageWhat.p2p_callback));
+            activity.registerReceiver(mReceiver, new IntentFilter(P2PMessageWhat.P2P_CALLBACK));
             isRegister = true;
         } else if (!isVisibleToUser && isRegister) {
             activity.unregisterReceiver(mReceiver);
@@ -91,33 +90,27 @@ public class XiguaFragment extends BaseRecyclerFragment implements DownloadTabAc
     public void onItemClick(List<?> datas, View v, int position) {
         if (!(datas.get(position) instanceof XiguaDownload)) return;
         XiguaDownload warp = (XiguaDownload) datas.get(position);
-        if (warp.taskVideoInfo.getLocalSize() <= 0) return;
+        if (warp.data.getLocalSize() <= 0) return;
         VideoPlayerActivity.startActivity(activity, warp.getXiguaUrl());
     }
 
     @Override
-    public void onControl(BaseAdapter adapter, int control, TaskVideoInfo info) {
+    public void onControl(BaseAdapter adapter, int control, XiguaDownload info) {
         if (control == START) {
-            P2PManager.getInstance().play(info.getUrl());
+            P2PManager.getInstance().play(info.data.getUrl());
         } else if (control == STOP) {
-            P2PManager.getInstance().pause(info.getUrl());
+            P2PManager.getInstance().pause(info.data.getUrl());
         } else if (control == DELETE) {
-            DeleteListener listener = new DeleteListener(info);
-            DialogUtil.showMaterialDialog(activity, getString(R.string.delete_file), listener);
+            DeleteListener listener = new DeleteListener(info.data);
+            DialogUtil.showMaterialDialog(activity, getStringFix(R.string.delete_file), listener);
         } else if (control == PLAY) {
-            String replace = info.getUrl().replace("ftp://", "xg://");
-            VideoPlayerActivity.startActivity(activity, replace);
+            VideoPlayerActivity.startActivity(activity, info.data.getXiguaUrl());
         }
     }
 
     @Override
     public void setDeleteMode(boolean mode) {
         if (mAdapter != null) mAdapter.setDeleteMode(mode);
-    }
-
-    @Override
-    public void onTaskUpdate(DownloadTask task) {
-
     }
 
     private class DeleteListener implements OnButtonClickListener {
@@ -145,14 +138,14 @@ public class XiguaFragment extends BaseRecyclerFragment implements DownloadTabAc
         @Override
         public void onReceive(Context context, Intent intent) {
             if (mAdapter == null || intent == null) return;
-            if (intent.getIntExtra("what", 0) != 2 || !intent.hasExtra("data")) return;
-            mSwipeRefreshLayout.setRefreshing(false);
-            mSwipeRefreshLayout.setEnabled(false);
-            List<TaskVideoInfo> infos = intent.getParcelableArrayListExtra("data");
-            if (infos == null || infos.isEmpty()) {
-                mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_EMPTY);
-            } else {
-                mAdapter.setTaskVideoInfos(infos);
+            if (intent.getIntExtra(P2PMessageWhat.WHAT, 0) == P2PMessageWhat.MESSAGE_TASK_LIST) {
+                mSwipeRefreshLayout.setRefreshing(false);
+                mSwipeRefreshLayout.setEnabled(false);
+                if (intent.hasExtra(P2PMessageWhat.DATA)) {
+                    List<TaskVideoInfo> infos = intent.getParcelableArrayListExtra(P2PMessageWhat.DATA);
+                    mAdapter.setTaskVideoInfos(infos);
+                }
+                mCustomEmptyView.setEmptyType(mAdapter.getList().isEmpty() ? CustomEmptyView.TYPE_EMPTY : CustomEmptyView.TYPE_NON);
             }
         }
 

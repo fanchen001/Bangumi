@@ -24,6 +24,7 @@ import com.fanchen.imovie.dialog.MaterialListDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
 import com.fanchen.imovie.entity.bmob.BmobObj;
 import com.fanchen.imovie.entity.bmob.VideoCollect;
+import com.fanchen.imovie.entity.dytt.DyttLive;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.retrofit.RetrofitManager;
@@ -55,8 +56,8 @@ public class DialogUtil {
      * @param context
      * @param episodes
      */
-    public static void showDownloadDialog(BaseActivity context, IVideoDetails episodes,DownloadDialog.OnDownloadSelectListener onDownloadSelectListener) {
-        new DownloadDialog(context, episodes,onDownloadSelectListener).show();
+    public static void showDownloadDialog(BaseActivity context, IVideoDetails episodes, DownloadDialog.OnDownloadSelectListener onDownloadSelectListener) {
+        new DownloadDialog(context, episodes, onDownloadSelectListener).show();
     }
 
     /**
@@ -117,14 +118,13 @@ public class DialogUtil {
 
 
     /**
-     *
      * @param context
      * @param clickListener
      * @param taskListener
      * @param datas
      * @param position
      */
-    public static void showMaterialDeleteDialog(Context context,BaseAdapter.OnItemClickListener clickListener,AsyTaskListener<?> taskListener, List<?> datas, int position){
+    public static void showMaterialDeleteDialog(Context context, BaseAdapter.OnItemClickListener clickListener, AsyTaskListener<?> taskListener, List<?> datas, int position) {
         closeDialog();
         showMaterialListDialog(context, new String[]{"删除记录", "直接打开"}, new DeletClickListener(clickListener, taskListener, datas, position));
     }
@@ -182,7 +182,7 @@ public class DialogUtil {
         materialDialog.setTitleVisble(View.GONE);
         materialDialog.setCancelable(false);
         materialDialog.btnNum(3);
-        materialDialog.btnText("TBS播放","取消","网页浏览器");
+        materialDialog.btnText("TBS播放", "取消", "网页浏览器");
         materialDialog.setCanceledOnTouchOutside(true);
         materialDialog.content("视频播放失败！！！可以尝试使用其他方式重试");
         materialDialog.setButtonClickListener(l);
@@ -229,11 +229,11 @@ public class DialogUtil {
         materialDialog.show();
     }
 
-    public static void showMaterialDialog(Context context, String content, String btn1, String btn2,String btn3, OnButtonClickListener l) {
+    public static void showMaterialDialog(Context context, String content, String btn1, String btn2, String btn3, OnButtonClickListener l) {
         closeDialog();
         MaterialDialog materialDialog = (MaterialDialog) (DialogUtil.materialDialog = dialog = new MaterialDialog(context));
         materialDialog.setTitleVisble(View.GONE);
-        materialDialog.btnText(btn1, btn2,btn3);
+        materialDialog.btnText(btn1, btn2, btn3);
         materialDialog.btnNum(3);
         materialDialog.content(content);
         materialDialog.setButtonClickListener(l);
@@ -310,10 +310,16 @@ public class DialogUtil {
         DialogUtil.showMaterialListDialog(fragment.activity, new String[]{"直接打开", "加入收藏", "下载视频"}, new ItemClickListener(position, video, videos, fragment, (BaseAdapter.OnItemClickListener) fragment, callback));
     }
 
+    public static void showOperationDialog(BaseFragment fragment, DyttLive video, List<DyttLive> videos, int position) {
+        if (!(fragment instanceof BaseAdapter.OnItemClickListener)) return;
+        DialogUtil.showMaterialListDialog(fragment.activity, new String[]{"打开详情", "加入收藏"}, new ItemClickListener(position, video, videos, fragment, (BaseAdapter.OnItemClickListener) fragment));
+    }
+
     private static class ItemClickListener implements AdapterView.OnItemClickListener {
 
         private int position;
         private IVideo item;
+        private DyttLive liveBody;
         private List<?> datas;
         private SoftReference<BaseActivity> activity;
         private SoftReference<BaseFragment> fragment;
@@ -359,13 +365,20 @@ public class DialogUtil {
             this.downloadCallback = new SoftReference<RetrofitCallback<?>>(callback);
         }
 
+        public ItemClickListener(int position, DyttLive item, List<?> datas, BaseFragment fragment, BaseAdapter.OnItemClickListener onItemClick) {
+            this.position = position;
+            this.liveBody = item;
+            this.datas = datas;
+            this.fragment = new SoftReference<>(fragment);
+            this.onItemClick = new SoftReference<>(onItemClick);
+        }
+
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             switch (position) {
                 case 0:
                     BaseAdapter.OnItemClickListener listener = onItemClick.get();
-                    if (listener != null)
-                        listener.onItemClick(datas, view, this.position);
+                    if (listener != null) listener.onItemClick(datas, view, this.position);
                     break;
                 case 1:
                     if (activity != null) {
@@ -373,6 +386,8 @@ public class DialogUtil {
                         if (baseActivity != null && baseActivity.checkLogin()) {
                             if (item != null) {
                                 DialogUtil.showMaterialDialog(baseActivity, String.format(baseActivity.getString(R.string.collect_hit), item.getTitle()), new ButtonClickListener(item, activity));
+                            } else if (liveBody != null) {
+                                DialogUtil.showMaterialDialog(baseActivity, String.format(baseActivity.getString(R.string.collect_hit), liveBody.getTitle()), new ButtonClickListener(liveBody, activity));
                             }
                         }
                     }
@@ -381,6 +396,8 @@ public class DialogUtil {
                         if (baseFragment != null && baseFragment.activity.checkLogin()) {
                             if (item != null) {
                                 DialogUtil.showMaterialDialog(baseFragment.activity, String.format(baseFragment.activity.getString(R.string.collect_hit), item.getTitle()), new ButtonClickListener(item, new SoftReference<>(baseFragment.activity)));
+                            } else if (liveBody != null) {
+                                DialogUtil.showMaterialDialog(baseFragment.activity, String.format(baseFragment.activity.getString(R.string.collect_hit), liveBody.getTitle()), new ButtonClickListener(liveBody, new SoftReference<>(baseFragment.activity)));
                             }
                         }
                     }
@@ -421,6 +438,7 @@ public class DialogUtil {
     private static class ButtonClickListener implements OnButtonClickListener {
 
         private IVideo item;
+        private DyttLive liveBody;
         private SoftReference<BaseActivity> activity;
 
         public ButtonClickListener(IVideo item, SoftReference<BaseActivity> activity) {
@@ -428,7 +446,8 @@ public class DialogUtil {
             this.activity = activity;
         }
 
-        public ButtonClickListener(SoftReference<BaseActivity> activity) {
+        public ButtonClickListener(DyttLive item, SoftReference<BaseActivity> activity) {
+            this.liveBody = item;
             this.activity = activity;
         }
 
@@ -440,6 +459,14 @@ public class DialogUtil {
                     long count = baseActivity.getLiteOrm().queryCount(new QueryBuilder<>(VideoCollect.class).where("id = ?", item.getId()));
                     if (count <= 0) {
                         VideoCollect collect = new VideoCollect(item);
+                        collect.save(new CollectListener(collect, activity));
+                    } else {
+                        baseActivity.showSnackbar(baseActivity.getString(R.string.collect_repetition));
+                    }
+                } else if (liveBody != null) {
+                    long count = baseActivity.getLiteOrm().queryCount(new QueryBuilder<>(VideoCollect.class).where("id = ?", String.valueOf(liveBody.getId())));
+                    if (count <= 0) {
+                        VideoCollect collect = new VideoCollect(liveBody);
                         collect.save(new CollectListener(collect, activity));
                     } else {
                         baseActivity.showSnackbar(baseActivity.getString(R.string.collect_repetition));
@@ -485,7 +512,6 @@ public class DialogUtil {
 
         @Override
         public void onFailure(int i, String s) {
-            LogUtil.e("onFailure","onFailure=>" + s);
             BaseActivity activity = softReference.get();
             if (activity == null || activity.isFinishing()) return;
             activity.showSnackbar(activity.getString(R.string.collect_asy_error));
@@ -512,7 +538,8 @@ public class DialogUtil {
         @Override
         public Integer onTaskBackground() {
             BaseActivity baseActivity = activity.get();
-            if (baseActivity == null || collect == null || baseActivity.getLiteOrm() == null) return ERROR;
+            if (baseActivity == null || collect == null || baseActivity.getLiteOrm() == null)
+                return ERROR;
             baseActivity.getLiteOrm().insert(collect);
             return SUCCESS;
         }
@@ -523,7 +550,7 @@ public class DialogUtil {
             if (baseActivity == null || baseActivity.isFinishing()) return;
             if (data == SUCCESS) {
                 baseActivity.showSnackbar(baseActivity.getString(R.string.collect_success));
-            }else {
+            } else {
                 baseActivity.showSnackbar(baseActivity.getString(R.string.collect_error));
             }
         }
@@ -535,12 +562,12 @@ public class DialogUtil {
      */
     private static class DeletClickListener implements AdapterView.OnItemClickListener {
 
-        private SoftReference< BaseAdapter.OnItemClickListener> fragmentReference;
+        private SoftReference<BaseAdapter.OnItemClickListener> fragmentReference;
         private List<?> datas;
         private SoftReference<AsyTaskListener<?>> taskReference;
         private int position;
 
-        public DeletClickListener( BaseAdapter.OnItemClickListener clickListener, AsyTaskListener<?> taskListener,List<?> datas, int position) {
+        public DeletClickListener(BaseAdapter.OnItemClickListener clickListener, AsyTaskListener<?> taskListener, List<?> datas, int position) {
             fragmentReference = new SoftReference<>(clickListener);
             taskReference = new SoftReference<AsyTaskListener<?>>(taskListener);
             this.datas = datas;
@@ -552,12 +579,12 @@ public class DialogUtil {
             switch (position) {
                 case 0:
                     AsyTaskListener<?> asyTaskListener = taskReference.get();
-                    if(asyTaskListener == null)return;
+                    if (asyTaskListener == null) return;
                     AsyTaskQueue.newInstance().execute(asyTaskListener);
                     break;
                 case 1:
                     BaseAdapter.OnItemClickListener clickListener = fragmentReference.get();
-                    if(clickListener == null)return;
+                    if (clickListener == null) return;
                     clickListener.onItemClick(datas, view, this.position);
                     break;
                 default:

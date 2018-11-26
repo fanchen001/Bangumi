@@ -6,6 +6,7 @@ import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.VideoDetails;
 import com.fanchen.imovie.entity.VideoEpisode;
+import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
 import com.fanchen.imovie.retrofit.service.IKanFanService;
 
@@ -44,7 +45,12 @@ public class IKanFanParser implements IVideoMoreParser {
         if (episodes == null) return details;
         List<VideoEpisode> newEpisodes = new ArrayList<>();
         for (VideoEpisode episode : episodes) {
-            if (!episode.getTitle().contains("迅雷") && !episode.getTitle().contains("网盘")) {
+            if(episode.getTitle().contains("迅雷")) {
+                episode.setPlayType(IVideoEpisode.PLAY_TYPE_XUNLEI);
+                String replace = episode.getUrl().replace(baseUrl, "");
+                episode.setUrl(replace);
+                episodes.add(episode);
+            }else if (!episode.getTitle().contains("网盘")) {
                 newEpisodes.add(episode);
             }
         }

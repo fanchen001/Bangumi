@@ -7,6 +7,7 @@ import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.text.TextUtils;
 import android.view.ContextMenu;
@@ -21,12 +22,15 @@ import com.fanchen.imovie.R;
 import com.fanchen.imovie.base.BaseToolbarActivity;
 import com.fanchen.imovie.dialog.BaseAlertDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
+import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.util.DialogUtil;
+import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.ShareUtil;
 import com.fanchen.imovie.util.SystemUtil;
 import com.fanchen.imovie.util.VideoUrlUtil;
 import com.fanchen.imovie.view.ContextMenuTitleView;
 import com.fanchen.imovie.view.webview.SwipeWebView;
+import com.tencent.smtt.export.external.interfaces.JsResult;
 import com.tencent.smtt.export.external.interfaces.SslError;
 import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
 import com.tencent.smtt.sdk.TbsVideo;
@@ -34,10 +38,8 @@ import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
-
-
-import java.util.Arrays;
-import java.util.List;
+import com.xigua.p2p.P2PManager;
+import com.xunlei.XLManager;
 
 import butterknife.InjectView;
 
@@ -46,7 +48,8 @@ import butterknife.InjectView;
  * webView自定义浏览器页面
  * Created by fanchen on 2017/8/6.
  */
-public class WebActivity extends BaseToolbarActivity implements View.OnClickListener {
+public class WebActivity extends BaseToolbarActivity implements View.OnClickListener,
+        VideoUrlUtil.OnParseWebUrlListener {
 
     public static final String URL = "url";
     public static final String TITLE = "title";
@@ -56,8 +59,6 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
     protected FloatingActionButton mButton;
 
     private String url;
-    private VideoUrlUtil mVideoUrlUtil;
-    private List<String> mVideoUrls = null;
 
     /**
      * @param context
@@ -108,9 +109,7 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
         WebView webView = mWebview.getWebView();
-        mVideoUrls = Arrays.asList(getResources().getStringArray(R.array.video_web));
-        mVideoUrlUtil = VideoUrlUtil.getInstance().init(this);
-        mVideoUrlUtil.setParserTime(5 * 1000);
+        VideoUrlUtil.getInstance().init(this).setParserTime(2 * 1000).setOnParseListener(this).setAutoDestroy(false);
         WebSettings webSetting = webView.getSettings();
         webSetting.setJavaScriptCanOpenWindowsAutomatically(true);
         webSetting.setJavaScriptEnabled(true);
@@ -134,6 +133,7 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
         webView.setWebViewClient(webViewClient);
         webView.setWebChromeClient(webChromeClient);
         registerForContextMenu(webView);
+        new Thread(sniffingRunnable).start();
         if (getIntent().hasExtra(URL)) {
             mWebview.loadUrl(getIntent().getStringExtra(URL));
         }
@@ -203,9 +203,7 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
         if (mWebview != null && mWebview.getWebView() != null) {
             mWebview.getWebView().destroy();
         }
-        if(mVideoUrlUtil != null){
-            mVideoUrlUtil.destroy();
-        }
+        VideoUrlUtil.getInstance().destroy();
         super.onDestroy();
     }
 
@@ -228,18 +226,34 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
         super.onBackPressed();
     }
 
-    private boolean contains(String url) {
-        if (mVideoUrls != null && mVideoUrls.size() > 0) {
-            for (String tUrl : mVideoUrls) {
-                if (url.contains(tUrl)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    @Override
+    public void onFindUrl(String url) {
+        TbsVideo.openVideo(WebActivity.this, url);
+        DialogUtil.closeProgressDialog();
+    }
+
+    @Override
+    public void onError(String errorMsg) {
+        showToast("视频解析错误");
+        DialogUtil.closeProgressDialog();
     }
 
     private WebChromeClient webChromeClient = new WebChromeClient() {
+
+        @Override
+        public boolean onJsConfirm(WebView webView, String s, String s1, JsResult jsResult) {
+            Node node = new Node(s1);
+            String video = node.attr("video", "src");
+            String source = node.attr("source", "src");
+            String iframe = node.attr("iframe", "src");
+            if (!TextUtils.isEmpty(video) || !TextUtils.isEmpty(iframe) || !TextUtils.isEmpty(source)) {
+                if (mButton != null && mButton.getVisibility() != View.VISIBLE) {
+                    mButton.setVisibility(View.VISIBLE);
+                }
+            }
+            jsResult.cancel();
+            return true;
+        }
 
         @Override
         public void onProgressChanged(WebView view, int newProgress) {
@@ -270,7 +284,7 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
             String scheme = localUri.getScheme();
             if (scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https")) {
                 view.loadUrl(url);
-            } else if (!TextUtils.isEmpty(url) && (scheme.equalsIgnoreCase("xg") || scheme.equalsIgnoreCase("ftp"))&& IMovieAppliction.app != null) {
+            } else if (!TextUtils.isEmpty(url) && IMovieAppliction.app != null && (P2PManager.isXiguaUrl(url) || XLManager.isXLUrlNoHttp(url))) {
                 VideoPlayerActivity.startActivity(WebActivity.this, url);
             } else {
                 String title = String.format("网页<%s>想打开本地应用，是否允许？", mWebview.getWebView().getOriginalUrl());
@@ -315,7 +329,6 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
                 }
                 getTitleView().setText(title);
             }
-            mButton.setVisibility(contains(url) ? View.VISIBLE : View.GONE);
             mWebview.getWebView().getSettings().setBlockNetworkImage(false);
         }
 
@@ -332,6 +345,18 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
             super.onScaleChanged(view, oldScale, newScale);
             view.requestFocus();
             view.requestFocusFromTouch();
+        }
+
+    };
+
+    private Runnable sniffingRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            while (!isFinishing() && mWebview != null && mWebview.getWebView() != null) {
+                SystemClock.sleep(3000);
+                mWebview.loadUrl("javascript:confirm(document.getElementsByTagName('html')[0].innerHTML);");
+            }
         }
 
     };
@@ -372,30 +397,6 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
 
     }
 
-    private class WebUrlListener implements VideoUrlUtil.OnParseWebUrlListener {
-        private String rawUrl = "";
-        private int position = 0;
-
-        public WebUrlListener(String rawUrl, int position) {
-            this.rawUrl = rawUrl;
-            this.position = position;
-        }
-
-        @Override
-        public void onFindUrl(String videoUrl) {
-            TbsVideo.openVideo(WebActivity.this, videoUrl);
-            DialogUtil.closeProgressDialog();
-        }
-
-        @Override
-        public void onError(String errorMsg) {
-            String referer = "http://movie.vr-seesee.com/vip";
-            WebPlayerActivity.startActivity(WebActivity.this, rawUrl, referer, position);
-            DialogUtil.closeProgressDialog();
-        }
-
-    }
-
     private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
 
         @Override
@@ -405,8 +406,7 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
             String parserUrl = String.format(WebPlayerActivity.LUXIANS[position], url);
             DialogUtil.showProgressDialog(WebActivity.this, "正在解析视频...");
             String referer = "http://movie.vr-seesee.com/vip";
-            mVideoUrlUtil.setOnParseListener(new WebUrlListener(parserUrl,position));
-            mVideoUrlUtil.setLoadUrl(parserUrl, referer).startParse();
+            VideoUrlUtil.getInstance().setLoadUrl(parserUrl, referer).startParse();
         }
 
     };

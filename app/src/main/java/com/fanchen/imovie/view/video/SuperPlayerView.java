@@ -608,9 +608,9 @@ public class SuperPlayerView extends RelativeLayout {
      * @param show
      */
     public void setAutoSpeend(boolean show) {
+        mmH.removeCallbacks(speedRunnable);
         if (show) {
             setShowSpeed(VISIBLE);
-            mmH.removeCallbacks(speedRunnable);
             mmH.postDelayed(speedRunnable, 1000);
         } else {
             setShowSpeed(GONE);
@@ -1244,9 +1244,11 @@ public class SuperPlayerView extends RelativeLayout {
         this.fullScreenOnly = fullScreenOnly;
         tryFullScreen(fullScreenOnly);
         if (fullScreenOnly) {
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        } else {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        } else if(!isLive){
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+        } else {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
         }
         updateFullScreenButton();
     }
@@ -1840,8 +1842,7 @@ public class SuperPlayerView extends RelativeLayout {
 
         @Override
         public void run() {
-            if (mRelativeLayout != null && mTextView != null && videoView != null) {
-            } else if (videoView != null && videoView.getMediaPlayer() != null) {
+            if (videoView != null && videoView.getMediaPlayer() != null && mTextView != null) {
                 IMediaPlayer mediaPlayer = videoView.getMediaPlayer();
                 if (mediaPlayer instanceof IjkMediaPlayer) {
                     long tcpSpeed = ((IjkMediaPlayer) mediaPlayer).getTcpSpeed();

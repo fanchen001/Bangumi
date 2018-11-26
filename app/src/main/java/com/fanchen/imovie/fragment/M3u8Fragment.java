@@ -3,18 +3,17 @@ package com.fanchen.imovie.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.arialyy.aria.core.download.DownloadTask;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.DownloadTabActivity;
 import com.fanchen.imovie.activity.VideoPlayerActivity;
 import com.fanchen.imovie.adapter.M3u8Adapter;
 import com.fanchen.imovie.base.BaseAdapter;
+import com.fanchen.imovie.base.BaseDownloadAdapter;
 import com.fanchen.imovie.base.BaseRecyclerFragment;
 import com.fanchen.imovie.dialog.BaseAlertDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
@@ -34,7 +33,6 @@ import com.fanchen.m3u8.listener.OnM3u8FileListener;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,8 +40,8 @@ import java.util.List;
  * M3u8Fragment
  * Created by fanchen on 2018/9/17.
  */
-public class M3u8Fragment extends BaseRecyclerFragment implements OnM3u8DownloadListenr,
-        DownloadTabActivity.OnDownloadListernr, OnM3u8FileListener, M3u8Adapter.OnM3u8ControlListener, OnM3u8DeleteListener {
+public class M3u8Fragment extends BaseRecyclerFragment implements OnM3u8DownloadListenr,DownloadTabActivity.OnDeleteListernr,
+        OnM3u8FileListener, BaseDownloadAdapter.OnDownloadControlListener<M3u8Warp>, OnM3u8DeleteListener {
 
     private long timeMillis = System.currentTimeMillis();
     private M3u8Adapter mAdapter;
@@ -71,7 +69,7 @@ public class M3u8Fragment extends BaseRecyclerFragment implements OnM3u8Download
 
     @Override
     public RecyclerView.LayoutManager getLayoutManager() {
-        return new LinearLayoutManager(activity);
+        return new BaseAdapter.LinearLayoutManagerWrapper(activity);
     }
 
     @Override
@@ -82,7 +80,7 @@ public class M3u8Fragment extends BaseRecyclerFragment implements OnM3u8Download
     @Override
     protected void setListener() {
         super.setListener();
-        mAdapter.setOnM3u8ControlListener(this);
+        mAdapter.setOnDownloadControlListener(this);
     }
 
     @Override
@@ -101,8 +99,8 @@ public class M3u8Fragment extends BaseRecyclerFragment implements OnM3u8Download
     public void onItemClick(List<?> datas, View v, int position) {
         if (!(datas.get(position) instanceof M3u8Warp)) return;
         M3u8Warp warp = (M3u8Warp) datas.get(position);
-        if (warp.m3u8File.getState() != M3u8State.INSTANCE.getSTETE_SUCCESS()) return;
-        playM3u8File(warp.m3u8File);
+        if (warp.data.getState() != M3u8State.INSTANCE.getSTETE_SUCCESS()) return;
+        playM3u8File(warp.data);
     }
 
     @Override
@@ -172,10 +170,6 @@ public class M3u8Fragment extends BaseRecyclerFragment implements OnM3u8Download
     }
 
     @Override
-    public void onTaskUpdate(DownloadTask task) {
-    }
-
-    @Override
     public void onQueryFile(LinkedList<M3u8File> linkedList) {
         if (mAdapter == null || mAdapter.getList() == null) return;
         mSwipeRefreshLayout.setEnabled(false);
@@ -209,17 +203,17 @@ public class M3u8Fragment extends BaseRecyclerFragment implements OnM3u8Download
     }
 
     @Override
-    public void onControl(BaseAdapter adapter, int control, M3u8File m3u8File) {
+    public void onControl(BaseAdapter adapter, int control, M3u8Warp m3u8File) {
         if (control == STOP) {
-            M3u8Manager.INSTANCE.stop(m3u8File);
+            M3u8Manager.INSTANCE.stop( m3u8File.data);
         } else if (control == START) {
-            M3u8Manager.INSTANCE.start(m3u8File);
-            m3u8File.setState(M3u8State.INSTANCE.getSTETE_NON());
+            M3u8Manager.INSTANCE.start( m3u8File.data);
+            m3u8File.data.setState(M3u8State.INSTANCE.getSTETE_NON());
         } else if (control == PLAY) {
-            playM3u8File(m3u8File);
+            playM3u8File( m3u8File.data);
         } else if (control == DELETE) {
-            DeleteListener listener = new DeleteListener(m3u8File);
-            DialogUtil.showMaterialDialog(activity, getString(R.string.delete_file), listener);
+            DeleteListener listener = new DeleteListener( m3u8File.data);
+            DialogUtil.showMaterialDialog(activity, getStringFix(R.string.delete_file), listener);
         }
     }
 

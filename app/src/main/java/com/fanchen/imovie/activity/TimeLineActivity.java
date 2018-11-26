@@ -2,7 +2,6 @@ package com.fanchen.imovie.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -41,7 +40,7 @@ public class TimeLineActivity extends BaseRecyclerActivity {
 
     @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
-        return new GridLayoutManager(this, 3);
+        return new BaseAdapter.GridLayoutManagerWrapper(this, 3);
     }
 
     @Override

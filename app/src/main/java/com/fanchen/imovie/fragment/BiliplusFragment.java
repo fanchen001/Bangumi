@@ -73,7 +73,7 @@ public class BiliplusFragment extends BaseFragment implements View.OnClickListen
                     break;
             }
         } else {
-            showSnackbar(getString(R.string.av_error_hit));
+            showSnackbar(getStringFix(R.string.av_error_hit));
         }
     }
 
@@ -82,7 +82,7 @@ public class BiliplusFragment extends BaseFragment implements View.OnClickListen
         @Override
         public void onStart(int enqueueKey) {
             if (activity == null) return;
-            DialogUtil.showProgressDialog(activity, getString(R.string.loading));
+            DialogUtil.showProgressDialog(activity, getStringFix(R.string.loading));
         }
 
         @Override
@@ -99,9 +99,9 @@ public class BiliplusFragment extends BaseFragment implements View.OnClickListen
         public void onSuccess(int enqueueKey, IPlayUrls response) {
             if (response != null && response.isSuccess() && response instanceof VideoPlayUrls && activity != null) {
                 Map<String, String> urls = response.getUrls();
-                DialogUtil.showMaterialListDialog(activity, getString(R.string.plase_select), urls.keySet(), new OnListListener(urls));
+                DialogUtil.showMaterialListDialog(activity, getStringFix(R.string.plase_select), urls.keySet(), new OnListListener(urls));
             } else {
-                showSnackbar(getString(R.string.get_video_info_error));
+                showSnackbar(getStringFix(R.string.get_video_info_error));
             }
         }
 
@@ -124,12 +124,12 @@ public class BiliplusFragment extends BaseFragment implements View.OnClickListen
             if (!TextUtils.isEmpty(s) && !TextUtils.isEmpty(videoPath)) {
                 if ((s.startsWith("http") || s.startsWith("ftp")) && !getDownloadReceiver().taskExists(s)) {
                     getDownloadReceiver().load(s).setDownloadPath(videoPath + "/" + key + "_" + System.currentTimeMillis() + ".mp4").start();
-                    showSnackbar(getString(R.string.download_add));
+                    showSnackbar(getStringFix(R.string.download_add));
                 }else {
-                    showSnackbar(getString(R.string.task_exists));
+                    showSnackbar(getStringFix(R.string.task_exists));
                 }
             } else {
-                showSnackbar(getString(R.string.task_exists));
+                showSnackbar(getStringFix(R.string.task_exists));
             }
         }
 

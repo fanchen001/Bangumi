@@ -3,7 +3,6 @@ package com.fanchen.imovie.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -69,7 +68,7 @@ public class CollectFragment extends BaseRecyclerFragment implements
 
     @Override
     public RecyclerView.LayoutManager getLayoutManager() {
-        return collectType == VideoCollect.TYPE_LIVE ? new BaseAdapter.LinearLayoutManagerWrapper(activity) : new GridLayoutManager(activity, 3);
+        return collectType == VideoCollect.TYPE_LIVE ? new BaseAdapter.LinearLayoutManagerWrapper(activity) : new BaseAdapter.GridLayoutManagerWrapper(activity, 3);
     }
 
     @Override
@@ -167,7 +166,7 @@ public class CollectFragment extends BaseRecyclerFragment implements
             if (collects == null || mVideoAdapter == null || collects.size() <= pisotion || pisotion < 0)
                 return;
             if (data == DELETEERROR) {
-                showSnackbar(getString(R.string.delete_error));
+                showSnackbar(getStringFix(R.string.delete_error));
             } else {
                 if (data == DELETEALL) {
                     if (IMovieAppliction.app != null) {
@@ -196,13 +195,13 @@ public class CollectFragment extends BaseRecyclerFragment implements
         @Override
         public void onSuccess() {
             if (isDetached() || !isAdded()) return;
-            showSnackbar(getString(R.string.delete_asy_success));
+            showSnackbar(getStringFix(R.string.delete_asy_success));
         }
 
         @Override
         public void onFailure(int i, String s) {
             if (isDetached() || !isAdded()) return;
-            showSnackbar(getString(R.string.delete_asy_error));
+            showSnackbar(getStringFix(R.string.delete_asy_error));
         }
 
     };

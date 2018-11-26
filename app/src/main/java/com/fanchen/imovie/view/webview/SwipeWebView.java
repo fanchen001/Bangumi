@@ -1,43 +1,16 @@
 package com.fanchen.imovie.view.webview;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.fanchen.imovie.R;
-import com.tencent.smtt.export.external.interfaces.ClientCertRequest;
-import com.tencent.smtt.export.external.interfaces.ConsoleMessage;
-import com.tencent.smtt.export.external.interfaces.GeolocationPermissionsCallback;
-import com.tencent.smtt.export.external.interfaces.HttpAuthHandler;
-import com.tencent.smtt.export.external.interfaces.IX5WebChromeClient;
-import com.tencent.smtt.export.external.interfaces.JsPromptResult;
-import com.tencent.smtt.export.external.interfaces.JsResult;
-import com.tencent.smtt.export.external.interfaces.SslError;
-import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
-import com.tencent.smtt.export.external.interfaces.WebResourceError;
-import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
-import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
-import com.tencent.smtt.sdk.TbsVideo;
-import com.tencent.smtt.sdk.ValueCallback;
-import com.tencent.smtt.sdk.WebChromeClient;
-import com.tencent.smtt.sdk.WebSettings;
-import com.tencent.smtt.sdk.WebStorage;
 import com.tencent.smtt.sdk.WebView;
-import com.tencent.smtt.sdk.WebViewClient;
-import com.tencent.tbs.video.interfaces.IUserStateChangedListener;
-import com.tencent.tbs.video.interfaces.a;
 
 import java.util.Map;
 

@@ -96,6 +96,8 @@ public class LivePlayerActivity extends BaseActivity {
     @Override
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
+        VideoUrlUtil.getInstance().setTimeOut(8 * 1000);
+        VideoUrlUtil.getInstance().setParserTime(2 * 1000);
         mVideo = getIntent().getParcelableExtra(VIDEO);
         mSuperPlayerView.setNetChangeListener(true);
         mSuperPlayerView.setScaleType(SuperPlayerView.SCALETYPE_FITPARENT);
@@ -107,7 +109,7 @@ public class LivePlayerActivity extends BaseActivity {
             mSuperPlayerView.setTitle(mVideo.getTitle());
             RetrofitManager retrofit = getRetrofitManager();
             String serviceClassName = mVideo.getServiceClass();
-            String url = mVideo.getUrl();
+            String url = RetrofitManager.REQUEST_URL = mVideo.getUrl();
             String method = mVideo instanceof IVideo ? "playUrl" : "liveUrl";
             retrofit.enqueue(serviceClassName, callback, method, url);
         } else {
@@ -141,6 +143,8 @@ public class LivePlayerActivity extends BaseActivity {
         if (mSuperPlayerView != null) {
             mSuperPlayerView.onDestroy();
         }
+        VideoUrlUtil.getInstance().setParserTime(VideoUrlUtil.PARSER_TIME);
+        VideoUrlUtil.getInstance().setTimeOut(VideoUrlUtil.DEFAULT_TIME);
         VideoUrlUtil.getInstance().destroy();
         savePlayHistory();
     }

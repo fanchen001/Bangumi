@@ -1,11 +1,13 @@
 package com.fanchen.imovie.retrofit.coverter;
 
-import android.util.Log;
+import com.fanchen.imovie.util.StreamUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
 
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
@@ -38,11 +40,21 @@ public class StringResponseConverter implements Converter<ResponseBody, Object> 
         }
         String str = null;
         try {
-            str = new String(bs,getCharset());
-        }catch (UnsupportedEncodingException e){
+            String charset = getCharset();
+            if (isGzip(bs)) {
+                byte[] gzip = gzip(bs);
+                if (gzip != null && gzip.length > 0) {
+                    str = new String(gzip, charset);
+                } else {
+                    str = new String(bs, charset);
+                }
+            } else {
+                str = new String(bs, charset);
+            }
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             throw new IOException("charset is not supported.");
-        }finally {
+        } finally {
             responseBody.close();
         }
         return convertString(str);
@@ -53,21 +65,51 @@ public class StringResponseConverter implements Converter<ResponseBody, Object> 
      * @return
      * @throws IOException
      */
-    protected Object convertString(String str) throws IOException{
+    protected Object convertString(String str) throws IOException {
         return str;
     }
 
     /**
-     *
      * @return
      */
-    protected String getCharset(){
+    protected String getCharset() {
         return "UTF-8";
     }
 
-    protected boolean isJson(String s){
-        if(s == null)return false;
+    protected boolean isJson(String s) {
+        if (s == null) return false;
         s = s.trim();
-        return (s.indexOf("{") == 0 && s.lastIndexOf("}") == s.length() - 1) || (s.indexOf("[") == 0 && s.lastIndexOf("]") == s.length() -1);
+        return (s.indexOf("{") == 0 && s.lastIndexOf("}") == s.length() - 1) || (s.indexOf("[") == 0 && s.lastIndexOf("]") == s.length() - 1);
+    }
+
+    private boolean isGzip(byte[] bs) {
+        if(bs == null || bs.length < 2) return false;
+        int ss = (bs[0] & 0xff) | ((bs[1] & 0xff) << 8);
+        if (ss == GZIPInputStream.GZIP_MAGIC) {
+            return true;
+        }
+        return false;
+    }
+
+    protected byte[] gzip(byte[] bs) {
+        try {
+            ByteArrayInputStream is = new ByteArrayInputStream(bs);
+            GZIPInputStream gis = new GZIPInputStream(is);
+            return StreamUtil.stream2bytes(gis);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    protected byte[] inflater(byte[] bs) {
+        try {
+            ByteArrayInputStream is = new ByteArrayInputStream(bs);
+            InflaterInputStream iis = new InflaterInputStream(is, new Inflater(true));
+            return StreamUtil.stream2bytes(iis);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

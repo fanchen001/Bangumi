@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--仿淘宝头条 向上滚动视图——双行-->
+    <declare-styleable name="MarqueeViewUp">
+        <attr name="isSetAlphaAnim" format="boolean" /><!--是否显示淡入淡出动画-->
+        <attr name="interval" format="integer" /><!--切换间隔时间-->
+        <attr name="animDuration" format="integer" /><!--动画时间-->
+    </declare-styleable>
+
     <declare-styleable name="FlowLayout">
         <attr name="lineSpacing" format="dimension" />
         <attr name="maxLine" format="integer" />

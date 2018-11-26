@@ -2,6 +2,7 @@ package com.fanchen.imovie.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,8 +45,12 @@ public class RecomAdapter extends BaseAdapter {
         IVideo video = (IVideo) datas.get(position);
         VideoViewHolder itemViewHolder = (VideoViewHolder) holder;
         itemViewHolder.titleTextView.setText(video.getTitle());
-        itemViewHolder.tipTextView.setText(video.getExtras());
-        itemViewHolder.triangTextView.setPrimaryText(video.getDanmaku());
+        String extras = video.getExtras();
+        itemViewHolder.tipTextView.setText(extras);
+        itemViewHolder.tipTextView.setVisibility(TextUtils.isEmpty(extras) ? View.GONE : View.VISIBLE);
+        String danmaku = video.getDanmaku();
+        itemViewHolder.triangTextView.setPrimaryText(danmaku);
+        itemViewHolder.triangTextView.setVisibility(TextUtils.isEmpty(danmaku) ? View.GONE : View.VISIBLE);
         picasso.loadVertical(video.getCover(), VideoTabActivity.class, itemViewHolder.imageView);
     }
 

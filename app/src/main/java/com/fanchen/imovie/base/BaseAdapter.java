@@ -98,6 +98,11 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
         return mList;
     }
 
+    public void setList(List<IViewType> mList) {
+        this.mList = mList;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemViewType(int position) {
         if (hasHeaderView() && hasCategoryView()) {
@@ -484,6 +489,26 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
                 e.printStackTrace();
             }
         }
+
+        @Override
+        public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
+            try {
+                return super.scrollVerticallyBy(dy, recycler, state);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+            return 0;
+        }
+
+        @Override
+        public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
+            try {
+                return super.scrollHorizontallyBy(dx, recycler, state);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+            return 0;
+        }
     }
 
     public static class GridLayoutManagerWrapper extends GridLayoutManager {
@@ -507,6 +532,26 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
             } catch (Throwable e) {
                 e.printStackTrace();
             }
+        }
+
+        @Override
+        public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
+            try {
+                return super.scrollVerticallyBy(dy, recycler, state);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+            return 0;
+        }
+
+        @Override
+        public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
+            try {
+                return super.scrollHorizontallyBy(dx, recycler, state);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+            return 0;
         }
     }
 

@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -20,11 +19,9 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.webkit.WebSettings;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.fanchen.imovie.util.AppUtil;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,6 +100,7 @@ public class NiceVideoPlayer extends FrameLayout
     private int mCurrentMode = MODE_NORMAL;
 
     private Context mContext;
+    private String referer = "";
     private boolean usingMediaCodec = false;
     private boolean usingMediaCodecAutoRotate = false;
     private boolean usingOpenSLES = false;
@@ -142,20 +140,35 @@ public class NiceVideoPlayer extends FrameLayout
         this.addView(mContainer, params);
     }
 
+    @Override
+    public void setUp(String url, String ref,long position){
+        this.skipToPosition = position;
+        setUp(url, ref);
+    }
+
     public void setUp(String url, String ref) {
-        Map<String, String> map = new HashMap<>();
-        map.put("Referer", ref);
-        map.put("Connection", "keep-alive");
-        map.put("Accept-Encoding", "gzip, deflate");
-        map.put("Accept-Language", "zh-CN,zh;q=0.9");
-        map.put("Accept", "i*/*");
-        map.put("Origin", ref);
-        map.put("User-Agent", getUserAgent(getContext()));
-        setUp(url, map);
+        if(TextUtils.isEmpty(ref)){
+            setUp(url);
+        }else{
+            this.referer = ref;
+            Map<String, String> map = new HashMap<>();
+            map.put("Referer", referer);
+            map.put("Connection", "keep-alive");
+            map.put("Accept-Encoding", "gzip, deflate");
+            map.put("Accept-Language", "zh-CN,zh;q=0.9");
+            map.put("Accept", "i*/*");
+            map.put("Origin", referer);
+            map.put("User-Agent", getUserAgent(getContext()));
+            setUp(url, map);
+        }
     }
 
     public void setOnErrorListener(IMediaPlayer.OnErrorListener onErrorListener) {
         this.onErrorListener = onErrorListener;
+    }
+
+    public String getReferer() {
+        return referer;
     }
 
     private String getUserAgent(Context context) {
@@ -181,10 +194,17 @@ public class NiceVideoPlayer extends FrameLayout
         return sb.toString();
     }
 
+    @Override
+    public void setUp(String url,long position) {
+        setUp(url, null,position);
+    }
+
+    @Override
     public void setUp(String url) {
         setUp(url, (Map<String, String>) null);
     }
 
+    @Override
     public void setUp(String url, Map<String, String> headers) {
         mUrl = url;
         mHeaders = headers;
@@ -207,6 +227,7 @@ public class NiceVideoPlayer extends FrameLayout
      *
      * @param playerType IjkPlayer or MediaPlayer.
      */
+    @Override
     public void setPlayerType(int playerType) {
         mPlayerType = playerType;
     }
@@ -235,7 +256,7 @@ public class NiceVideoPlayer extends FrameLayout
         if (mCurrentState == STATE_IDLE) {
             mmH.removeCallbacks(speedRunnable);
             if (showPlaySpeed) mmH.postDelayed(speedRunnable, 1000);
-            NiceVideoPlayerManager.instance().setCurrentNiceVideoPlayer(this);
+            NiceVideoManager.instance().setCurrent(this);
             initAudioManager();
             initMediaPlayer();
             initTextureView();
@@ -252,6 +273,11 @@ public class NiceVideoPlayer extends FrameLayout
     @Override
     public void setActivityFullScreen(boolean full) {
         this.isActivityFullScreen = full;
+    }
+
+    public void setActivityFullScreen(boolean full,boolean enter) {
+        setActivityFullScreen(full);
+        if(enter)enterFullScreen();
     }
 
     @Override
@@ -668,7 +694,7 @@ public class NiceVideoPlayer extends FrameLayout
         if (mCurrentMode == MODE_FULL_SCREEN) return;
         // 隐藏ActionBar、状态栏，并横屏
         NiceUtil.hideActionBar(mContext);
-        NiceUtil.scanForActivity(mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        NiceUtil.scanForActivity(mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         ViewGroup contentView = (ViewGroup) NiceUtil.scanForActivity(mContext).findViewById(android.R.id.content);
         if (mCurrentMode == MODE_TINY_WINDOW) {
             contentView.removeView(mContainer);

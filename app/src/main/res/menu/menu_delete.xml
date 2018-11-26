@@ -7,6 +7,12 @@
         android:icon="@drawable/icon_btn_delete"
         android:orderInCategory="90"
         android:title="删除"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/action_add"
+        android:icon="@drawable/ic_download_add"
+        android:orderInCategory="90"
+        android:title="添加下载"
+        app:showAsAction="never"/>
 </menu>

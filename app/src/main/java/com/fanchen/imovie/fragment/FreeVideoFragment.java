@@ -3,7 +3,6 @@ package com.fanchen.imovie.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -77,7 +76,8 @@ public class FreeVideoFragment extends BaseFragment implements
         mWebRecyclerView.setAdapter(mVideoAdapter);
         try {
             String json = new String(StreamUtil.stream2bytes(activity.getAssets().open("free_video.json")));
-            List<VideoWeb> list = new Gson().fromJson(json, new TypeToken<List<VideoWeb>>() {}.getType());
+            List<VideoWeb> list = new Gson().fromJson(json, new TypeToken<List<VideoWeb>>() {
+            }.getType());
             mVideoAdapter.addAll(list);
         } catch (Exception e) {
             e.printStackTrace();
@@ -113,8 +113,15 @@ public class FreeVideoFragment extends BaseFragment implements
                     break;
             }
         } else {
-            showSnackbar(getString(R.string.url_error_hit));
+            showSnackbar(getStringFix(R.string.url_error_hit));
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mVideoUrlUtil != null) mVideoUrlUtil.destroy();
+        mVideoUrlUtil = null;
     }
 
     private class FreeVideoListener implements VideoUrlUtil.OnParseWebUrlListener {
@@ -127,12 +134,14 @@ public class FreeVideoFragment extends BaseFragment implements
 
         @Override
         public void onFindUrl(String videoUrl) {
+            if (activity == null) return;
             TbsVideo.openVideo(activity, videoUrl);
             DialogUtil.closeProgressDialog();
         }
 
         @Override
         public void onError(String errorMsg) {
+            if (mSpinner == null) return;
             int position = mSpinner.getSelectedItemPosition();
             String referer = "http://movie.vr-seesee.com/vip";
             WebPlayerActivity.startActivity(activity, url, referer, position);

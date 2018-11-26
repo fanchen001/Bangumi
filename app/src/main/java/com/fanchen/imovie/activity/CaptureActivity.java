@@ -64,7 +64,7 @@ public class CaptureActivity extends BaseToolbarActivity {
 
     private boolean hasCameraPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            //申请WRITE_EXTERNAL_STORAGE权限
+            //申请CAMERA权限
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, RESULT_FIRST_USER);
             return false;
         } else {
@@ -76,7 +76,7 @@ public class CaptureActivity extends BaseToolbarActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == RESULT_FIRST_USER) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length >= 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 initCaptureFragment();
             } else {
                 showToast(getResources().getString(R.string.permission_tip));

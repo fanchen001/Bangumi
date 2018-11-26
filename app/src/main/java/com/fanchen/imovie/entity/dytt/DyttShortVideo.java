@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import com.fanchen.imovie.entity.face.IViewType;
 
 /**
+ * DyttShortVideo
  * Created by fanchen on 2017/9/22.
  */
 public class DyttShortVideo implements Parcelable,IViewType{

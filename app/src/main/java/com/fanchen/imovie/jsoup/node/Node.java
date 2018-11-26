@@ -55,14 +55,14 @@ public class Node {
     }
 
     public String text() {
-        return element != null ? element.text() : "";
+        return element != null ? element.text().trim() : "";
     }
 
     public String text(String cssQuery) {
         if (element == null) return "";
         Elements select = element.select(cssQuery);
         if (select != null && select.first() != null) {
-            return select.first().text();
+            return select.first().text().trim();
         }
         return "";
     }
@@ -71,7 +71,7 @@ public class Node {
         if (element == null) return "";
         Elements select = element.select(cssQuery);
         if (select != null && select.size() > position) {
-            return select.get(position).text();
+            return select.get(position).text().trim();
         }
         return "";
     }

@@ -3,13 +3,18 @@ package com.fanchen.imovie.entity.bmob;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.fanchen.imovie.entity.dytt.DyttLive;
+import com.fanchen.imovie.entity.dytt.DyttLiveEpgs;
 import com.fanchen.imovie.entity.face.IVideo;
+import com.google.gson.Gson;
 import com.litesuits.orm.db.annotation.Column;
 import com.litesuits.orm.db.annotation.Table;
 
+import java.util.List;
 
 
 /**
+ * VideoCollect
  * Created by fanchen on 2017/9/22.
  */
 @Table("tab_video_collect")
@@ -22,6 +27,22 @@ public class VideoCollect extends VideoHistory implements Parcelable {
 
 
     public VideoCollect() {
+        if(User.getLoginUser() != null)
+            setUserId(User.getLoginUser().getObjectId());
+    }
+
+    public VideoCollect(DyttLive item) {
+        setType(TYPE_LIVE);
+        List<DyttLiveEpgs> epgs = item.getEpgs();
+        if(epgs != null && epgs.size() > 0){
+            extras = epgs.get(0).getTitle();
+            danmaku = epgs.get(epgs.size() - 1).getTitle();
+            setTime(epgs.get(0).getTag());
+        }
+        setTitle(item.getTitle());
+        setId(String.valueOf(item.getId()));
+        setCover(item.getThumb_x());
+        setExtend(new Gson().toJson(item));
         if(User.getLoginUser() != null)
             setUserId(User.getLoginUser().getObjectId());
     }

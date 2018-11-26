@@ -1,6 +1,5 @@
 package com.fanchen.imovie.view.video_new;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,14 +10,26 @@ import android.support.annotation.DrawableRes;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fanchen.imovie.R;
+import com.fanchen.imovie.base.BaseActivity;
+import com.fanchen.imovie.dlna.DLNADialog;
+import com.fanchen.imovie.dlna.DLNAPlayer;
+import com.fanchen.imovie.util.DialogUtil;
+import com.tencent.smtt.sdk.TbsVideo;
+import com.xigua.p2p.P2PManager;
+
+import org.fourthline.cling.controlpoint.ControlPoint;
+import org.fourthline.cling.model.meta.Device;
+import org.fourthline.cling.model.meta.DeviceDetails;
+import org.fourthline.cling.support.model.MediaInfo;
+import org.fourthline.cling.support.model.PositionInfo;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,19 +41,17 @@ import java.util.Locale;
  * Created by fanchen on 2017/6/21.
  * 仿腾讯视频热点列表页播放器控制器.
  */
-public class TxVideoPlayerController
-        extends NiceVideoPlayerController
-        implements View.OnClickListener,
-        SeekBar.OnSeekBarChangeListener,
-        ChangeClarityDialog.OnClarityChangedListener {
+public class TxVideoPlayerController extends NiceVideoPlayerController implements
+        View.OnClickListener, SeekBar.OnSeekBarChangeListener, ChangeClarityDialog.OnClarityChangedListener {
 
-    private Activity mContext;
+    private BaseActivity mContext;
     private ImageView mImage;
-    private ImageView mCenterStart;
+//    private ImageView mCenterStart;
 
     private LinearLayout mTop;
     private ImageView mBack;
     private TextView mTitle;
+    private TextView mDLNA;
     private LinearLayout mBatteryTime;
     private ImageView mBattery;
     private TextView mTime;
@@ -75,22 +84,25 @@ public class TxVideoPlayerController
 
     private LinearLayout mCompleted;
     private TextView mReplay;
-//    private TextView mShare;
+    //    private TextView mShare;
     private View mChange;
     private TextView mSpeed;
 
     private boolean topBottomVisible;
     private OnClickListener clickListener;
+    private OnClarityListener onClarityListener;
     private CountDownTimer mDismissTopBottomCountDownTimer;
 
     private List<Clarity> clarities;
     private int defaultClarityIndex;
-
+    private DLNADialog dlnaDialog = null;
     private ChangeClarityDialog mClarityDialog;
+    private DLNAPlayer mPlayer = new DLNAPlayer();
+    private DLNADialog.OnSelectDLNAListener onSelectDLNAListener = null;
 
     private boolean hasRegisterBatteryReceiver; // 是否已经注册了电池广播
 
-    public TxVideoPlayerController(Activity context) {
+    public TxVideoPlayerController(BaseActivity context) {
         super(context);
         mContext = context;
         init();
@@ -98,9 +110,10 @@ public class TxVideoPlayerController
 
     private void init() {
         LayoutInflater.from(mContext).inflate(R.layout.tx_video_palyer_controller, this, true);
-        mCenterStart = (ImageView) findViewById(R.id.center_start);
+//        mCenterStart = (ImageView) findViewById(R.id.center_start);
         mImage = (ImageView) findViewById(R.id.image);
         mSpeed = (TextView) findViewById(R.id.speed);
+        mDLNA = (TextView) findViewById(R.id.center_dlna);
         mTop = (LinearLayout) findViewById(R.id.top);
         mBack = (ImageView) findViewById(R.id.back);
         mTitle = (TextView) findViewById(R.id.title);
@@ -136,9 +149,8 @@ public class TxVideoPlayerController
 
         mCompleted = (LinearLayout) findViewById(R.id.completed);
         mReplay = (TextView) findViewById(R.id.replay);
-//        mShare = (TextView) findViewById(R.id.share);
 
-        mCenterStart.setOnClickListener(this);
+//        mCenterStart.setOnClickListener(this);
         mBack.setOnClickListener(this);
         mChange.setOnClickListener(this);
         mRestartPause.setOnClickListener(this);
@@ -146,14 +158,22 @@ public class TxVideoPlayerController
         mClarity.setOnClickListener(this);
         mRetry.setOnClickListener(this);
         mReplay.setOnClickListener(this);
-//        mShare.setOnClickListener(this);
+        mDLNA.setOnClickListener(this);
         mSeek.setOnSeekBarChangeListener(this);
         this.setOnClickListener(this);
     }
 
+    public void setOnClarityListener(OnClarityListener onClarityListener) {
+        this.onClarityListener = onClarityListener;
+    }
+
+    public void setOnSelectDLNAListener(DLNADialog.OnSelectDLNAListener onSelectDLNAListener) {
+        this.onSelectDLNAListener = onSelectDLNAListener;
+    }
+
     @Override
     public void setTitle(String title) {
-        mTitle.setText(title);
+        if (!TextUtils.isEmpty(title)) mTitle.setText(title);
     }
 
     @Override
@@ -163,23 +183,37 @@ public class TxVideoPlayerController
 
     @Override
     public void setLoadingVisible(int visible) {
-        if(mLoading != null)
+        if (mLoading != null)
             mLoading.setVisibility(View.VISIBLE);
-        if(visible == View.VISIBLE){
-            mCenterStart.setVisibility(View.GONE);
+//        if (visible == View.VISIBLE) {
+//            mCenterStart.setVisibility(View.GONE);
+//        }
+    }
+
+    @Override
+    public void release() {
+        cancelDismissTopBottomTimer();
+        if (dlnaDialog != null && dlnaDialog.isShowing()) {
+            dlnaDialog.dismiss();
         }
+        dlnaDialog = null;
+        if (mClarityDialog != null && mClarityDialog.isShowing()) {
+            mClarityDialog.dismiss();
+        }
+        mClarityDialog = null;
+        onClarityListener = null;
+        onSelectDLNAListener = null;
     }
 
     @Override
     public void updateSpeed(String speed) {
-        if(mSpeed != null)
-        mSpeed.setText(speed);
+        if (!TextUtils.isEmpty(speed)) if (mSpeed != null)mSpeed.setText(speed);
     }
 
     @Override
     public void showSpeed(boolean show) {
-        if(mSpeed != null)
-        mSpeed.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (mSpeed != null)
+            mSpeed.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -212,19 +246,22 @@ public class TxVideoPlayerController
         }
     }
 
+    public void setClarity(List<Clarity> clarities, int defaultClarityIndex) {
+        setClarity(clarities, defaultClarityIndex, null);
+    }
+
     /**
      * 设置清晰度
      *
      * @param clarities 清晰度及链接
      */
-    public void setClarity(List<Clarity> clarities, int defaultClarityIndex) {
+    public void setClarity(List<Clarity> clarities, int defaultClarityIndex, OnClarityListener listener) {
         if (clarities != null && clarities.size() > 1) {
             this.clarities = clarities;
             this.defaultClarityIndex = defaultClarityIndex;
-
             List<String> clarityGrades = new ArrayList<>();
             for (Clarity clarity : clarities) {
-                clarityGrades.add(clarity.grade + " " + clarity.p);
+                clarityGrades.add(clarity.grade);
             }
             mClarity.setText(clarities.get(defaultClarityIndex).grade);
             // 初始化切换清晰度对话框
@@ -232,8 +269,10 @@ public class TxVideoPlayerController
             mClarityDialog.setClarityGrade(clarityGrades, defaultClarityIndex);
             mClarityDialog.setOnClarityCheckedListener(this);
             // 给播放器配置视频链接地址
-            if (mNiceVideoPlayer != null) {
+            if (mNiceVideoPlayer != null && listener == null) {
                 mNiceVideoPlayer.setUp(clarities.get(defaultClarityIndex).videoUrl, null);
+            } else if (mNiceVideoPlayer != null) {
+                listener.onClarityPlay(mNiceVideoPlayer, clarities.get(defaultClarityIndex), 0);
             }
         }
     }
@@ -251,7 +290,8 @@ public class TxVideoPlayerController
                 mCompleted.setVisibility(View.GONE);
                 mTop.setVisibility(View.GONE);
                 mBottom.setVisibility(View.GONE);
-                mCenterStart.setVisibility(View.GONE);
+                mDLNA.setVisibility(View.GONE);
+//                mCenterStart.setVisibility(View.GONE);
                 mLength.setVisibility(View.GONE);
                 break;
             case NiceVideoPlayer.STATE_PREPARED:
@@ -370,10 +410,11 @@ public class TxVideoPlayerController
         mSeek.setProgress(0);
         mSeek.setSecondaryProgress(0);
 
-        mCenterStart.setVisibility(View.VISIBLE);
+//        mCenterStart.setVisibility(View.VISIBLE);
         mImage.setVisibility(View.VISIBLE);
 
         mBottom.setVisibility(View.GONE);
+        mDLNA.setVisibility(View.GONE);
         mFullScreen.setImageResource(R.drawable.ic_player_enlarge);
 
         mLength.setVisibility(View.VISIBLE);
@@ -392,17 +433,31 @@ public class TxVideoPlayerController
      */
     @Override
     public void onClick(View v) {
-        if (v == mCenterStart) {
+        /*if (v == mCenterStart) {
             if (mNiceVideoPlayer.isIdle()) {
                 mNiceVideoPlayer.start();
             }
-        }  else if (v == mChange) {
-            if(clickListener != null && mNiceVideoPlayer != null && !TextUtils.isEmpty(mNiceVideoPlayer.getPlayerUrl()))
-                clickListener.onClick(mChange);
+        } else */if (v == mDLNA) {
+            if (dlnaDialog == null) {
+                mPlayer.addListener(dlnaListener);
+                dlnaDialog = new DLNADialog(getContext());
+                if(onSelectDLNAListener == null) onSelectDLNAListener = defaultDLNAListener;
+                dlnaDialog.setOnSelectDLNAListener(onSelectDLNAListener);
+            }
+            if (!dlnaDialog.isShowing()) dlnaDialog.show();
+        } else if (v == mChange) {
+            if (mNiceVideoPlayer != null && !TextUtils.isEmpty(mNiceVideoPlayer.getPlayerUrl())) {
+                if (clickListener != null) {
+                    clickListener.onClick(mChange);
+                } else {//默認用來手動切換播放器
+                    String[] titles = new String[]{"TbsVideo", "系统播放器", "IjkPlayer"};
+                    DialogUtil.showMaterialListDialog(getContext(), titles, itemClickListener);
+                }
+            }
         } else if (v == mBack) {
-            if(mNiceVideoPlayer.isActivityFullScreen() && mContext != null){
+            if (mNiceVideoPlayer.isActivityFullScreen() && mContext != null) {
                 mContext.finish();
-            }else if (mNiceVideoPlayer.isFullScreen()) {
+            } else if (mNiceVideoPlayer.isFullScreen()) {
                 mNiceVideoPlayer.exitFullScreen();
             } else if (mNiceVideoPlayer.isTinyWindow()) {
                 mNiceVideoPlayer.exitTinyWindow();
@@ -441,12 +496,18 @@ public class TxVideoPlayerController
     @Override
     public void onClarityChanged(int clarityIndex) {
         // 根据切换后的清晰度索引值，设置对应的视频链接地址，并从当前播放位置接着播放
+        if (mNiceVideoPlayer == null || clarities == null || clarities.size() <= clarityIndex)
+            return;
         Clarity clarity = clarities.get(clarityIndex);
         mClarity.setText(clarity.grade);
         long currentPosition = mNiceVideoPlayer.getCurrentPosition();
         mNiceVideoPlayer.releasePlayer();
-        mNiceVideoPlayer.setUp(clarity.videoUrl, null);
-        mNiceVideoPlayer.start(currentPosition);
+        if (onClarityListener == null) {
+            mNiceVideoPlayer.setUp(clarity.videoUrl, null);
+            mNiceVideoPlayer.start(currentPosition);
+        } else {
+            onClarityListener.onClarityPlay(mNiceVideoPlayer, clarity, currentPosition);
+        }
     }
 
     @Override
@@ -463,6 +524,7 @@ public class TxVideoPlayerController
     private void setTopBottomVisible(boolean visible) {
         mTop.setVisibility(visible ? View.VISIBLE : View.GONE);
         mBottom.setVisibility(visible ? View.VISIBLE : View.GONE);
+        mDLNA.setVisibility(visible ? View.VISIBLE : View.GONE);
         topBottomVisible = visible;
         if (visible) {
             if (!mNiceVideoPlayer.isPaused() && !mNiceVideoPlayer.isBufferingPaused()) {
@@ -572,5 +634,132 @@ public class TxVideoPlayerController
     @Override
     protected void hideChangeBrightness() {
         mChangeBrightness.setVisibility(View.GONE);
+    }
+
+    @Override
+    public VideoState getVideoState() {
+        VideoState state = new VideoState();
+        state.brightness = getBrightness();
+        state.volume = getVolume();
+        if (mNiceVideoPlayer == null || mTitle == null) return state;
+        state.title = mTitle.getText().toString();
+        state.url = mNiceVideoPlayer.getPlayerUrl();
+        state.duration = mNiceVideoPlayer.getDuration();
+        return state;
+    }
+
+    /**
+     * 右上角更多操作
+     * 默認是選擇播放器
+     */
+    private AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (mNiceVideoPlayer == null || mContext == null) return;
+            String playerUrl = mNiceVideoPlayer.getPlayerUrl();
+            if (position == 0 && !TextUtils.isEmpty(playerUrl)) {
+                TbsVideo.openVideo(mContext, playerUrl);
+                mContext.finish();
+            } else if (!TextUtils.isEmpty(playerUrl)) {
+                mNiceVideoPlayer.release();
+                if (position == 1 && !P2PManager.isXiguaUrl(playerUrl)) {
+                    mNiceVideoPlayer.setPlayerType(NiceVideoPlayer.TYPE_NATIVE); // IjkPlayer or MediaPlayer
+                } else {//西瓜视频用自带播放器放不了，只能用ijk
+                    mNiceVideoPlayer.setPlayerType(NiceVideoPlayer.TYPE_IJK); // IjkPlayer or MediaPlayer
+                }
+                mNiceVideoPlayer.setActivityFullScreen(true);
+                mNiceVideoPlayer.enterFullScreen();
+                mNiceVideoPlayer.setUp(playerUrl);
+            }
+        }
+
+    };
+
+    /**
+     * defaultDLNAListener
+     * 默認DLNAListener
+     */
+    private DLNADialog.OnSelectDLNAListener defaultDLNAListener = new DLNADialog.OnSelectDLNAListener() {
+
+        @Override
+        public void onSelectDLNA(Device device, ControlPoint controlPoint) {
+            DialogUtil.showProgressDialog(getContext(), "正在投屏,请稍后...");
+            mPlayer.setUp(device, controlPoint);
+            DeviceDetails details = device.getDetails();
+            String format = String.format("已连接：%s", details.getFriendlyName());
+            NiceVideoPlayerController.VideoState state = TxVideoPlayerController.this.getVideoState();
+            TxVideoPlayerController.this.setTitle(format);
+            mPlayer.play(state.title, state.url);
+        }
+
+    };
+
+    /**
+     * dlnaListener
+     * 監聽投屏動作
+     */
+    private DLNAPlayer.EventListener dlnaListener = new DLNAPlayer.EventListener() {
+
+        @Override
+        public void onPlay() {
+            if(mContext == null)return;
+            mContext.showToast("投屏成功，请到DLNA设备上观看视频");
+            if (mNiceVideoPlayer != null) mNiceVideoPlayer.pause();
+            DialogUtil.closeProgressDialog();
+        }
+
+        @Override
+        public void onGetMediaInfo(MediaInfo mediaInfo) {
+            DialogUtil.closeProgressDialog();
+        }
+
+        @Override
+        public void onPlayerError() {
+            if(mContext == null)return;
+            mContext.showToast("投屏失败");
+            DialogUtil.closeProgressDialog();
+        }
+
+        @Override
+        public void onTimelineChanged(PositionInfo positionInfo) {
+            DialogUtil.closeProgressDialog();
+        }
+
+        @Override
+        public void onSeekCompleted() {
+            DialogUtil.closeProgressDialog();
+        }
+
+        @Override
+        public void onPaused() {
+            DialogUtil.closeProgressDialog();
+        }
+
+        @Override
+        public void onMuteStatusChanged(boolean isMute) {
+            DialogUtil.closeProgressDialog();
+        }
+
+        @Override
+        public void onVolumeChanged(int volume) {
+            DialogUtil.closeProgressDialog();
+        }
+
+        @Override
+        public void onStop() {
+            DialogUtil.closeProgressDialog();
+        }
+
+    };
+
+    /**
+     *onClarityPlay
+     */
+    public interface OnClarityListener {
+        /**
+         * @param clarity
+         */
+        void onClarityPlay(INiceVideoPlayer videoPlayer, Clarity clarity, long current);
     }
 }

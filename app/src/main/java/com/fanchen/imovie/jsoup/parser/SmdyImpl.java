@@ -234,6 +234,7 @@ public class SmdyImpl implements IVideoMoreParser {
             details.setTitle(node.text("div.vod-n-l > h1"));
             details.setIntroduce(node.text("div.vod_content"));
             details.setEpisodes(episodes);
+            details.setServiceClass(clazz);
             details.setRecomm(videos);
             details.setSuccess(true);
         } catch (Exception e) {

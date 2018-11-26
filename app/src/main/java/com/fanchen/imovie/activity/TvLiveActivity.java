@@ -2,7 +2,6 @@ package com.fanchen.imovie.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -28,38 +27,6 @@ public class TvLiveActivity extends BaseRecyclerActivity {
     private TvLiveAdapter mLiveAdapter;
 
     /**
-     *
-     * @param context
-     * @param path
-     */
-    public static void startActivity(Context context,String path) {
-        try {
-            Intent intent = new Intent(context, TvLiveActivity.class);
-            intent.putExtra("",path);
-            context.startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     *
-     * @param context
-     * @param classService
-     * @param path
-     */
-    public static void startActivity(Context context,String classService,String path) {
-        try {
-            Intent intent = new Intent(context, TvLiveActivity.class);
-            intent.putExtra("",classService);
-            intent.putExtra("",path);
-            context.startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * @param context
      */
     public static void startActivity(Context context) {
@@ -79,7 +46,7 @@ public class TvLiveActivity extends BaseRecyclerActivity {
 
     @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
-        return new GridLayoutManager(this, 2);
+        return new BaseAdapter.GridLayoutManagerWrapper(this, 2);
     }
 
     @Override

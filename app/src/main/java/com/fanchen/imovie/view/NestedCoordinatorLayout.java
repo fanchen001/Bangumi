@@ -6,9 +6,10 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 /**
+ * NestedCoordinatorLayout
  * Created by fanchen on 2017/7/16.
  */
-public class NestedCoordinatorLayout extends CoordinatorLayout {
+public class NestedCoordinatorLayout extends InterceptCoordinatorLayout  {
     public NestedCoordinatorLayout(Context context) {
         super(context);
     }

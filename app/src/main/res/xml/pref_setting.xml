@@ -38,7 +38,17 @@
         android:title="功能相关">
 
         <ListPreference
-            android:defaultValue="ijkplayer"
+            android:defaultValue="ican"
+            android:entries="@array/pref_def_lives_titles"
+            android:entryValues="@array/pref_def_lives_values"
+            android:key="lives"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:textColor="@color/black"
+            android:title="电视直播源" />
+
+        <ListPreference
+            android:defaultValue="ijk"
             android:entries="@array/pref_def_player_titles"
             android:entryValues="@array/pref_def_player_values"
             android:key="defPlayer"

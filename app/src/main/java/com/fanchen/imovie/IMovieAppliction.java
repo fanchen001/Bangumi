@@ -14,7 +14,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.support.multidex.MultiDexApplication;
+import android.support.multidex.MultiDex;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -25,7 +25,7 @@ import com.arialyy.aria.core.download.DownloadEntity;
 import com.arialyy.aria.core.download.DownloadReceiver;
 import com.arialyy.aria.core.download.DownloadTask;
 import com.arialyy.aria.core.inf.IEntity;
-import com.fanchen.imovie.picasso.download.HttpsDownLoader;
+import com.fanchen.imovie.picasso.download.HttpRedirectDownLoader;
 import com.fanchen.imovie.service.EmptyService;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
@@ -39,11 +39,9 @@ import com.tencent.bugly.crashreport.CrashReport;
 import com.tencent.smtt.sdk.QbSdk;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;
-import com.xigua.p2p.P2PManager;
-import com.xigua.p2p.StorageUtils;
+import com.xunlei.XLAppliction;
 
 import java.io.File;
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,8 +58,9 @@ import okhttp3.Protocol;
  * 整个应用上下文
  * Created by fanchen on 2017/9/15.
  */
-public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreInitCallback {
+public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallback {
     public static String KANKAN_COOKIE = "";
+    public static String ALIPAYS = "alipays://platformapi/startapp?appId=20000067&__open_alipay__=YES&url=https://qr.alipay.com/c1x094332eotzkcdjjmx7bf";
     private static final String NET_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
     private final static int TASK_UPDATE = 1;
     private final static int TASK_DELETE = 0;
@@ -70,7 +69,6 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
     // 当前应用程序fragment队列，主要是用来处理activity中的onBackPresseds事件
     private List<Fragment> mFragments = new ArrayList<>();
 
-    private SoftReference<OnTaskRuningListener> runingListener;
     private Picasso picasso;
     //全局下载管理器
     private DownloadReceiver downloadReceiver;
@@ -79,22 +77,29 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
     public String mAcg12Token = "";
     public int multithreading = 3;
     private SharedPreferences mSharedPreferences;
+    private List<OnTaskRuningListener> runingListener = new ArrayList<>();
 
     private Handler mHandler = new Handler(Looper.getMainLooper()) {
 
         @Override
         public void handleMessage(Message msg) {
-            if (runingListener == null || msg == null) return;
-            OnTaskRuningListener onTaskRuningListener = runingListener.get();
-            if (onTaskRuningListener == null) return;
-            if (msg.what == TASK_DELETE) {
-                onTaskRuningListener.onTaskCancel((DownloadTask) msg.obj);
-            } else if (msg.what == TASK_UPDATE) {
-                onTaskRuningListener.onTaskUpdate((DownloadTask) msg.obj);
+            if (runingListener == null || msg == null || runingListener.isEmpty()) return;
+            for (OnTaskRuningListener onTaskRuningListener : runingListener) {
+                if (msg.what == TASK_DELETE) {
+                    onTaskRuningListener.onTaskCancel((DownloadTask) msg.obj);
+                } else if (msg.what == TASK_UPDATE) {
+                    onTaskRuningListener.onTaskUpdate((DownloadTask) msg.obj);
+                }
             }
         }
 
     };
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 
     @Override
     public void onCreate() {
@@ -109,6 +114,7 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
 
     /**
      * initSdk
+     *
      * @param context
      * @param mainProcess
      */
@@ -117,7 +123,7 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
             CrashReport.UserStrategy strategy = new CrashReport.UserStrategy(this); // App的策略Bean
             strategy.setAppChannel(getPackageName()).setAppVersion(AppUtil.getVersionName(this)).setAppReportDelay(100).setCrashHandleCallback(new AppCrashHandleCallback()); // 设置渠道
             CrashReport.initCrashReport(this, "7110e4106c", false, strategy); // 自定义策略生效，必须在初始化SDK前调用
-            initXigua(context);
+//            P2PApi.init(context);
             if (mainProcess && !isInitSdk) {
                 registerReceiver(mNetworkReceiver, new IntentFilter(NET_ACTION)); //网络改变
                 initM3u8Config(context);
@@ -129,23 +135,6 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
             String format = String.format("应用初始化错误 <%s>", e.toString());
             Toast.makeText(this, format, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    /**
-     * 初始化西瓜SDK
-     *
-     * @param context
-     * @throws Exception
-     */
-    private void initXigua(Context context) throws Throwable {
-        StorageUtils.init(context);
-        String packageName = context.getPackageName();
-        String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        String format = String.format("%s%s%s%s%s%s%s%s%s", absolutePath, File.separator, "Android", File.separator, "data", File.separator, packageName, File.separator, "xigua");
-        StorageUtils.setCachePath(format);
-        P2PManager.getInstance().init(context);
-        P2PManager.getInstance().setAllow3G(true);
-        P2PManager.getInstance().isConnect();
     }
 
     /**
@@ -281,10 +270,7 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
         if (picasso == null) {
             synchronized (IMovieAppliction.class) {
                 if (picasso == null) {
-                    File cacheDir = AppUtil.getExternalCacheDir(this);
-                    if (!cacheDir.exists()) cacheDir.mkdirs();
-                    OkHttpClient client = new OkHttpClient.Builder().cache(new Cache(cacheDir, 64 * 1024 * 1024)).protocols(Collections.singletonList(Protocol.HTTP_1_1)).build();
-                    picasso = new Picasso.Builder(this).downloader(new HttpsDownLoader(client)).build();
+                    picasso = new Picasso.Builder(this).downloader(new HttpRedirectDownLoader(getImageCacheClient())).build();
                     Picasso.setSingletonInstance(picasso);
                 }
             }
@@ -292,9 +278,26 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
         return picasso;
     }
 
+    public OkHttpClient getImageCacheClient() {
+        File cacheDir = AppUtil.getExternalCacheDir(this);
+        if (!cacheDir.exists()) cacheDir.mkdirs();
+        return new OkHttpClient.Builder().cache(new Cache(cacheDir, 64 * 1024 * 1024)).protocols(Collections.singletonList(Protocol.HTTP_1_1)).build();
+    }
 
-    public void setRuningListener(OnTaskRuningListener runingListener) {
-        this.runingListener = new SoftReference<>(runingListener);
+    /**
+     *
+     * @param listener
+     */
+    public void addRuningListener(OnTaskRuningListener listener) {
+        if(!runingListener.contains(listener))runingListener.add(listener);
+    }
+
+    /**
+     *
+     * @param listener
+     */
+    public void removeRuningListener(OnTaskRuningListener listener){
+        runingListener.remove(listener);
     }
 
     /**
@@ -369,12 +372,12 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
 
     @Override
     public void onCoreInitFinished() {
-        LogUtil.e("X5Core", "onCoreInitFinished");
+        LogUtil.e(getClass().getSimpleName(), "onCoreInitFinished");
     }
 
     @Override
     public void onViewInitFinished(boolean b) {
-        LogUtil.e("X5Core", "onViewInitFinished");
+        LogUtil.e(getClass().getSimpleName(), "onViewInitFinished");
     }
 
     // bugly回调
@@ -393,27 +396,32 @@ public class IMovieAppliction extends MultiDexApplication implements QbSdk.PreIn
 
     @Download.onTaskStop
     public void onTaskStop(DownloadTask task) {
-        if (mHandler != null) mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
+        if (mHandler != null && runingListener != null&& !runingListener.isEmpty())
+            mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
     }
 
     @Download.onTaskRunning
     public void onTaskRunning(DownloadTask task) {
-        if (mHandler != null) mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
+        if (mHandler != null && runingListener != null && !runingListener.isEmpty())
+            mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
     }
 
     @Download.onTaskFail
     public void onTaskFail(DownloadTask task) {
-        if (mHandler != null) mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
+        if (mHandler != null && runingListener != null&& !runingListener.isEmpty())
+            mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
     }
 
     @Download.onTaskComplete
     public void onTaskComplete(DownloadTask task) {
-        if (mHandler != null) mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
+        if (mHandler != null && runingListener != null&& !runingListener.isEmpty())
+            mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
     }
 
     @Download.onTaskCancel
     public void onTaskCancel(DownloadTask task) {
-        if (mHandler != null) mHandler.obtainMessage(TASK_DELETE, task).sendToTarget();
+        if (mHandler != null && runingListener != null&& !runingListener.isEmpty())
+            mHandler.obtainMessage(TASK_DELETE, task).sendToTarget();
     }
 
     /**

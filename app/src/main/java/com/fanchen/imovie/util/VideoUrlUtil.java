@@ -22,6 +22,7 @@ import com.tencent.smtt.sdk.WebViewClient;
 
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,13 +30,16 @@ import java.util.Map;
  * Created by fanchen on 2018/6/8.
  */
 public class VideoUrlUtil {
+    public static final int DEFAULT_TIME = 20 * 1000;
+    public static final int PARSER_TIME = 4 * 1000;
     private static VideoUrlUtil parseWebUrlHelper;
 
     private String webUrl = "";
     private Context mContext;
     private WebView webView;
-    private int timeOut = 20 * 1000;//解析超时时间
-    private int parserTime = 5000;//延时解析时间
+    private boolean autoDestroy = true;
+    private int timeOut = DEFAULT_TIME;//解析超时时间
+    private int parserTime = PARSER_TIME;//延时解析时间
     private String referer = "";// referer
 
     private boolean isVideoJs = false;
@@ -45,7 +49,6 @@ public class VideoUrlUtil {
 
     private SoftReference<ViewGroup> mMainViewReference;//content view
     private OnParseWebUrlListener mOnParseWebUrlListener;//解析回掉
-
 
     public static VideoUrlUtil getInstance() {
         if (parseWebUrlHelper == null) {
@@ -58,7 +61,6 @@ public class VideoUrlUtil {
     }
 
     /**
-     *
      * @param act
      * @param url
      * @return
@@ -68,7 +70,6 @@ public class VideoUrlUtil {
     }
 
     /**
-     *
      * @param act
      * @return
      */
@@ -78,14 +79,13 @@ public class VideoUrlUtil {
     }
 
     /**
-     *
      * @param act
      * @param url
      * @param referer
      * @return
      */
     public VideoUrlUtil init(Activity act, String url, String referer) {
-        synchronized (VideoUrlUtil.class){
+        synchronized (VideoUrlUtil.class) {
             this.mContext = act.getApplication();
             this.webUrl = url;
             this.referer = referer;
@@ -103,6 +103,7 @@ public class VideoUrlUtil {
 
     /**
      * 設置超時時間
+     *
      * @param timeOut
      * @return
      */
@@ -113,6 +114,7 @@ public class VideoUrlUtil {
 
     /**
      * 設置延時解析時間
+     *
      * @param parserTime
      * @return
      */
@@ -123,6 +125,7 @@ public class VideoUrlUtil {
 
     /**
      * 設置url 和 referer
+     *
      * @param url
      * @param referer
      * @return
@@ -135,6 +138,7 @@ public class VideoUrlUtil {
 
     /**
      * 設置url
+     *
      * @param url
      * @return
      */
@@ -143,16 +147,24 @@ public class VideoUrlUtil {
         return this;
     }
 
-    /**
-     * 釋放資源
-     */
-    public void destroy() {
-        referer = "";
+    public VideoUrlUtil stop() {
+        if (webView != null)
+            webView.stopLoading();
         if (handler != null) {
             handler.removeCallbacks(timeoutRunnable);
             handler.removeCallbacks(confirmRunnable);
             handler.removeCallbacks(parserRunnable);
         }
+        return this;
+    }
+
+    /**
+     * 釋放資源
+     */
+    public void destroy() {
+        stop();
+        referer = "";
+        autoDestroy = true;
         if (mMainViewReference != null) {
             final ViewGroup viewGroup = mMainViewReference.get();
             if (viewGroup != null && webView != null) {
@@ -166,6 +178,7 @@ public class VideoUrlUtil {
 
     /**
      * 設置解析回掉
+     *
      * @param onParseListener
      * @return
      */
@@ -176,13 +189,14 @@ public class VideoUrlUtil {
 
     /**
      * 開始解析
+     *
      * @return
      */
     public VideoUrlUtil startParse() {
-        if(TextUtils.isEmpty(webUrl))return this;
+        if (TextUtils.isEmpty(webUrl)) return this;
         isTimeout = false;
         isVideoJs = false;
-        postDelayed(timeoutRunnable,timeOut);//每次開始解析的時候，復位超時Runnable
+        postDelayed(timeoutRunnable, timeOut);//每次開始解析的時候，復位超時Runnable
         if (!TextUtils.isEmpty(referer)) {
             Map<String, String> map = new HashMap<>();
             map.put("Referer", referer);
@@ -198,6 +212,9 @@ public class VideoUrlUtil {
         return this;
     }
 
+    public void setAutoDestroy(boolean autoDestroy) {
+        this.autoDestroy = autoDestroy;
+    }
 
     private void initWebSettings() {
         WebView mWebView = this.webView;
@@ -266,6 +283,7 @@ public class VideoUrlUtil {
 
     /**
      * 延時執行某個 run
+     *
      * @param r
      * @param time
      */
@@ -277,6 +295,7 @@ public class VideoUrlUtil {
 
     /**
      * 執行js 獲取 html
+     *
      * @param js
      */
     private void evalScript(String js) {
@@ -288,6 +307,7 @@ public class VideoUrlUtil {
 
     /**
      * 對url進行包裝
+     *
      * @param url
      * @return
      */
@@ -298,15 +318,24 @@ public class VideoUrlUtil {
             } else if (url.startsWith("/")) {
                 String[] split = webUrl.split("/");
                 url = split[0] + "//" + split[2] + url;
+            } else if (url.startsWith(".") && (webUrl.contains("url=") || webUrl.contains("v="))) {
+                String[] split = webUrl.split("=");
+                int i = split[0].lastIndexOf("/");
+                url = split[0].substring(0, i) + url.substring(1);
+            } else if (url.startsWith(".")) {
+                int i = webUrl.lastIndexOf("/");
+                url = webUrl.substring(0, i) + url.substring(1);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        LogUtil.e("warpUrl","url -> " + url);
         return url;
     }
 
     /**
      * 解析
+     *
      * @param html
      */
     private synchronized void parserUrl(String html) {
@@ -317,26 +346,53 @@ public class VideoUrlUtil {
             String video = node.attr("video", "src");
             String source = node.attr("source", "src");
             String iframe = node.attr("iframe", "src");
-            if (!TextUtils.isEmpty(video) || ! TextUtils.isEmpty(source)) {//找到了video url
+            if (!TextUtils.isEmpty(video) || !TextUtils.isEmpty(source)) {//找到了video url
                 handler.removeCallbacks(timeoutRunnable);//找到了视频地址，移除超时runnable
                 video = TextUtils.isEmpty(video) ? source : video;
                 String newUrl = warpUrl(video);
-                if(mOnParseWebUrlListener != null)
+                if (mOnParseWebUrlListener != null)
                     mOnParseWebUrlListener.onFindUrl(newUrl);
                 LogUtil.e(VideoUrlUtil.class.getSimpleName(), "onFindUrl url => " + newUrl);
-                destroy();
+                if(autoDestroy)destroy();
             } else if (!TextUtils.isEmpty(iframe)) {//还需要请求一次
-                webUrl = warpUrl(iframe);
-                startParse();
-                LogUtil.e(VideoUrlUtil.class.getSimpleName(), "包裹了iframe 需要再次解析 url => " + webUrl);
+                List<Node> iframes = node.list("iframe");
+                if (iframes.size() <= 1) {
+                    webUrl = warpUrl(iframe);
+                    startParse();
+                    LogUtil.e(VideoUrlUtil.class.getSimpleName(), "包裹了iframe 需要再次解析 url => " + webUrl);
+                } else {
+                    for (Node ifran : iframes) {
+                        String aClass = ifran.attr("class");
+                        String id = ifran.attr("id");
+                        String name = ifran.attr("name");
+                        if (aClass.toLowerCase().contains("player") || id.toLowerCase().contains("player") || name.toLowerCase().contains("player")) {
+                            iframe = ifran.attr("src");
+                        } else if (aClass.toLowerCase().contains("video") || id.toLowerCase().contains("video") || name.toLowerCase().contains("video")) {
+                            iframe = ifran.attr("src");
+                        } else if (aClass.toLowerCase().contains("m3u") || id.toLowerCase().contains("m3u") || name.toLowerCase().contains("m3u")) {
+                            iframe = ifran.attr("src");
+                        } else {
+                            iframe = "";
+                        }
+                    }
+                    if (!TextUtils.isEmpty(iframe)) {
+                        webUrl = warpUrl(iframe);
+                        startParse();
+                        LogUtil.e(VideoUrlUtil.class.getSimpleName(), "包裹了iframe 需要再次解析 url => " + webUrl);
+                    } else {
+                        LogUtil.e(VideoUrlUtil.class.getSimpleName(), "未获取到视频地址");
+                        if (mOnParseWebUrlListener != null)
+                            mOnParseWebUrlListener.onError("未获取到视频地址");
+                    }
+                }
             } else {
                 LogUtil.e(VideoUrlUtil.class.getSimpleName(), "未获取到视频地址");
-                if(mOnParseWebUrlListener != null)
+                if (mOnParseWebUrlListener != null)
                     mOnParseWebUrlListener.onError("未获取到视频地址");
             }
         } else if (isTimeout) {
             isTimeout = false;//标记复位
-            if(mOnParseWebUrlListener != null)
+            if (mOnParseWebUrlListener != null)
                 mOnParseWebUrlListener.onError("获取视频地址  超時");
             LogUtil.e(VideoUrlUtil.class.getSimpleName(), "获取视频地址  超時");
         }

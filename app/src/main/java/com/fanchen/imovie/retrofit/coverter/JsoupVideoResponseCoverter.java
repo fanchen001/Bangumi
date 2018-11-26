@@ -36,6 +36,7 @@ import com.fanchen.imovie.jsoup.parser.WandouImpl;
 import com.fanchen.imovie.jsoup.parser.WeilaiImpl;
 import com.fanchen.imovie.jsoup.parser.XiaokanbaImpl;
 import com.fanchen.imovie.jsoup.parser.ZhandiImpl;
+import com.fanchen.imovie.jsoup.parser.ZzyoImpl;
 import com.fanchen.imovie.jsoup.parser.ZzzvzImpl;
 import com.fanchen.imovie.util.StreamUtil;
 
@@ -90,35 +91,13 @@ public class JsoupVideoResponseCoverter extends StringResponseConverter {
         map.put(JsoupSource.LAOSIJI, new LaosijiImpl());
         map.put(JsoupSource.VIPYS, new VipysImpl());
         map.put(JsoupSource.WEILAI, new WeilaiImpl());
+        map.put(JsoupSource.ZZYO, new ZzyoImpl());
     }
 
     public JsoupVideoResponseCoverter(Retrofit retrofit, MethodSource method, JsoupSource jsoup) {
         super(retrofit);
         this.method = method;
         this.jsoup = jsoup;
-    }
-
-    @Override
-    public Object convert(ResponseBody responseBody) throws IOException {
-        if (this.jsoup == JsoupSource.KANKAN) {
-            try {
-                byte[] bs = null;
-                if (responseBody == null) {
-                    throw new IOException("response body is empty");
-                }
-                bs = responseBody.bytes();
-                if (bs == null || bs.length == 0) {
-                    throw new IOException("response body is empty");
-                }
-                return convertString(new String(StreamUtil.stream2bytes(new GZIPInputStream(new ByteArrayInputStream(bs))), getCharset()));
-            } catch (Exception e) {
-                throw new IOException("charset is not supported.");
-            } finally {
-                if (responseBody != null)
-                    responseBody.close();
-            }
-        }
-        return super.convert(responseBody);
     }
 
     @Override

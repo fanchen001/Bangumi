@@ -2,6 +2,7 @@ package com.fanchen.imovie.entity.dytt;
 
 
 /**
+ * DyttRoot
  * Created by fanchen on 2017/8/2.
  */
 public class DyttRoot<T> {
@@ -35,6 +36,5 @@ public class DyttRoot<T> {
     public void setBody(T body) {
         this.body = body;
     }
-
 
 }

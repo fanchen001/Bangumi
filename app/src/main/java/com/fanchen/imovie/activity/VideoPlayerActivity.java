@@ -12,13 +12,17 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.arialyy.aria.core.download.DownloadEntity;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.base.BaseActivity;
 import com.fanchen.imovie.dialog.BaseAlertDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
+import com.fanchen.imovie.entity.VideoPlayUrls;
+import com.fanchen.imovie.entity.dytt.DyttLive;
+import com.fanchen.imovie.entity.dytt.DyttLiveBody;
+import com.fanchen.imovie.entity.dytt.DyttLiveUrls;
+import com.fanchen.imovie.entity.dytt.DyttRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
@@ -27,25 +31,32 @@ import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.retrofit.callback.RetrofitCallback;
 import com.fanchen.imovie.retrofit.service.Dm5Service;
+import com.fanchen.imovie.retrofit.service.DyttService;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
-import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.DateUtil;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.VideoUrlUtil;
+import com.fanchen.imovie.view.video_new.Clarity;
+import com.fanchen.imovie.view.video_new.INiceVideoPlayer;
+import com.fanchen.imovie.view.video_new.NiceVideoManager;
 import com.fanchen.imovie.view.video_new.NiceVideoPlayer;
 import com.fanchen.imovie.view.video_new.NiceVideoPlayerController;
-import com.fanchen.imovie.view.video_new.NiceVideoPlayerManager;
 import com.fanchen.imovie.view.video_new.TxVideoPlayerController;
+import com.litesuits.orm.LiteOrm;
 import com.litesuits.orm.db.assit.QueryBuilder;
 import com.tencent.smtt.sdk.TbsVideo;
+import com.vbyte.p2p.old.P2PHandler;
+import com.vbyte.p2p.old.P2PModule;
 import com.xigua.p2p.P2PManager;
 import com.xigua.p2p.P2PMessageWhat;
-import com.xigua.p2p.TaskVideoInfo;
+import com.xunlei.XLAppliction;
+import com.xunlei.XLManager;
+import com.xunlei.downloadlib.XLService;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.InjectView;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
@@ -55,7 +66,7 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
  * 视频播放页面
  * Created by fanchen on 2017/8/14.
  */
-public class VideoPlayerActivity extends BaseActivity implements View.OnClickListener {
+public class VideoPlayerActivity extends BaseActivity {
     public static final String VIDEO_URL = "url";
     public static final String VIDEO_TITLE = "title";
     public static final String ISLIVE = "islive";
@@ -64,26 +75,26 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
     public static final String LOCAL_VIDEO = "localVideo";
     public static final String FILE_VIDEO = "fileVideo";
     public static final String VIDEO_HISTORY = "videoHistory";
+    public static final String DYTT_LIVE = "dyttLive";
     public static final String ORIENTATION = "orientation";
+    public static final String STATE_VIDEO = "stateVideo";
 
     public static final String IJK = "ijk";
     public static final String NATIVE = "native";
     public static final String TBS = "tbs";
 
     @InjectView(R.id.nice_video_player)
-    protected NiceVideoPlayer mSuperPlayerView;
+    protected NiceVideoPlayer mVideoPlayer;
 
     private String videoUrl = "";
     private String videoTitle = "";
-    private String xiguaPlayUrl;
-    private boolean xiguaLocalFile = false;
-    private VideoHistory mVideoHistory;
     private IVideo mVideo;
+    private DyttLive mDyttLive;
     private IVideoEpisode mVideoEpisode;
-
-    private NiceVideoPlayerController mPlayerController;
+    private NiceVideoPlayerController.VideoState videoState = null;
     private String mDefPlayer = "";
-    private SharedPreferences mSharedPreferences;
+    private SharedPreferences mPreferences;
+    private TxVideoPlayerController mPlayerController;
 
     /**
      * @param context
@@ -93,6 +104,16 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
         try {
             Intent intent = new Intent(context, VideoPlayerActivity.class);
             intent.putExtra(LOCAL_VIDEO, body);
+            context.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void startActivity(Context context, DyttLive dyttLive) {
+        try {
+            Intent intent = new Intent(context, VideoPlayerActivity.class);
+            intent.putExtra(DYTT_LIVE, dyttLive);
             context.startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
@@ -194,26 +215,38 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
     @Override
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        registerReceiver(mP2pReceiver, new IntentFilter(P2PMessageWhat.p2p_callback));
-        mDefPlayer = mSharedPreferences.getString("defPlayer", IJK);
         Intent intent = getIntent();
-        if (IJK.equals(mDefPlayer) || intent.hasExtra(FILE_VIDEO) || intent.hasExtra(LOCAL_VIDEO)) {
-            mSuperPlayerView.setPlayerType(NiceVideoPlayer.TYPE_IJK);//本地文件用native播放时间不对，所以只能用ijk
-        } else if (mVideoEpisode != null && mVideoEpisode.getDownloadState() == IVideoEpisode.DOWNLOAD_SUCCESS) {
-            mSuperPlayerView.setPlayerType(NiceVideoPlayer.TYPE_IJK);
-        } else {
-            mSuperPlayerView.setPlayerType(NiceVideoPlayer.TYPE_NATIVE);
+        registerReceiver(mP2pReceiver, getFilter());
+
+        P2PModule.getInstance().setP2PHandler(new P2PHandler());
+
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mVideoPlayer.setPlayerType(getDefaultPlayer(intent, mPreferences));
+        mVideoPlayer.setController(mPlayerController = new TxVideoPlayerController(this));
+        mVideoPlayer.setActivityFullScreen(true, true);
+        mPlayerController.setLoadingVisible(View.VISIBLE);
+        if (savedState != null && (videoState = savedState.getParcelable(STATE_VIDEO)) != null && !TextUtils.isEmpty(videoState.url)) {
+            OnPlayerErrorListener listener = new OnPlayerErrorListener(videoState.url, videoState.referer);
+            mPlayerController.setVideoState(videoState);
+            mVideoPlayer.setOnErrorListener(listener);
+            if (!TextUtils.isEmpty(videoUrl))mVideoPlayer.setPlayerType(NiceVideoPlayer.TYPE_IJK);//西瓜视频用自带播放器放不了，只能用ijk
+        } else {//加载网络数据
+            getVideoData(intent);
+            loadVideo(intent);
+            if (mPreferences.getBoolean("video_src_hit", true)) {
+                PlayerHitListener listener = new PlayerHitListener();
+                getMainView().postDelayed(listener, 2000);
+            }
         }
-        mPlayerController = new TxVideoPlayerController(this).setLenght(98000);
-        mSuperPlayerView.setController(mPlayerController);
-        mSuperPlayerView.setActivityFullScreen(true);
-        mSuperPlayerView.enterFullScreen();
-        getVideoData(intent);
-        loadVideo(intent);
-        if (mSharedPreferences.getBoolean("video_src_hit", true)) {
-            getMainView().postDelayed(runnable, 2000);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle arg0) {
+        if (mPlayerController != null) {
+            videoState = mPlayerController.getVideoState();
+            if (videoState != null) arg0.putParcelable(STATE_VIDEO, videoState);
         }
+        super.onSaveInstanceState(arg0);
     }
 
     /**
@@ -222,88 +255,140 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
      * @param data
      */
     private void getVideoData(Intent data) {
-        mVideoHistory = data.getParcelableExtra(VIDEO_HISTORY);
-        mVideoEpisode = data.getParcelableExtra(VIDEO_EPISODE);
         mVideo = data.getParcelableExtra(VIDEO);
         videoUrl = data.getStringExtra(VIDEO_URL);
         videoTitle = data.getStringExtra(VIDEO_TITLE);
+        mDyttLive = getIntent().getParcelableExtra(DYTT_LIVE);
+        if (data.hasExtra(VIDEO_HISTORY)) {
+            mVideoEpisode = data.getParcelableExtra(VIDEO_HISTORY);
+        } else if (data.hasExtra(VIDEO_EPISODE)) {
+            mVideoEpisode = data.getParcelableExtra(VIDEO_EPISODE);
+        }
+    }
+
+    /**
+     * 获取默认的播放器
+     *
+     * @param data
+     * @param preferences
+     * @return
+     */
+    private int getDefaultPlayer(Intent data, SharedPreferences preferences) {
+        mDefPlayer = preferences.getString("defPlayer", IJK);
+        if (IJK.equals(mDefPlayer) || data.hasExtra(FILE_VIDEO) || data.hasExtra(LOCAL_VIDEO)
+                || (mVideoEpisode != null && mVideoEpisode.getDownloadState() == IVideoEpisode.DOWNLOAD_SUCCESS)) {
+            return NiceVideoPlayer.TYPE_IJK;//本地文件用native播放时间不对，所以只能用ijk
+        } else {
+            return NiceVideoPlayer.TYPE_NATIVE;
+        }
+    }
+
+    private IntentFilter getFilter() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(P2PMessageWhat.P2P_CALLBACK);
+        filter.addAction(XLService.GET_PLAY_URL);
+        return filter;
     }
 
     /**
      * 加載播放數據
+     * 播放历史记录,剧集跳转过来的
      *
      * @param data
      */
     private void loadVideo(Intent data) {
+        RetrofitManager retrofit = getRetrofitManager();
         if (data.hasExtra(FILE_VIDEO)) {//M3u8 下载列表跳转过来的
             File file = (File) data.getSerializableExtra(FILE_VIDEO);
             openVideo(file.getAbsolutePath(), file.getName(), "本地文件");
         } else if (data.hasExtra(LOCAL_VIDEO)) {//视频下载列表跳转过来的
             DownloadEntity entity = data.getParcelableExtra(LOCAL_VIDEO);
             openVideo(entity.getDownloadPath(), entity.getFileName(), "本地文件");
-        } else if (data.hasExtra(VIDEO_URL) && videoUrl.contains("xg://")) {//西瓜视频
-            xiguaPlayUrl = videoUrl.replace("xg://", "ftp://");
-            mPlayerController.setTitle(Uri.parse(Uri.decode(videoUrl)).getLastPathSegment());
-            mPlayerController.setLoadingVisible(View.VISIBLE);
-            mSuperPlayerView.setPlaySpeed(false);
-            P2PManager.getInstance().isConnect();
-            P2PManager.getInstance().play(xiguaPlayUrl);
+        } else if (data.hasExtra(VIDEO_URL) && XLManager.isXLUrlNoHttp(videoUrl)) {//迅雷视频
+            XLManager.get(this).addAndPlay(videoUrl);
+        } else if (data.hasExtra(VIDEO_URL) && P2PManager.isXiguaUrl(videoUrl)) {//西瓜视频
+            P2PManager.getInstance().play(videoUrl);
         } else if (data.hasExtra(VIDEO_URL) && data.hasExtra(VIDEO_TITLE)) {//直接播放的url
-            openVideo(videoUrl, videoTitle, "");
+            openVideo(videoUrl, videoTitle);
         } else if (data.hasExtra(VIDEO_URL)) {//直接播放的url
-            openVideo(videoUrl, Uri.parse(videoUrl).getLastPathSegment(), "");
-        } else if (data.hasExtra(VIDEO_HISTORY)) {//播放历史记录跳转过来的
-            mPlayerController.setTitle(mVideoHistory.getTitle());
-            RetrofitManager.REQUEST_URL = mVideoHistory.getUrl();
-            RetrofitManager retrofit = getRetrofitManager();
-            String serviceClass = mVideoHistory.getServiceClassName();
-            if (mVideoHistory.getPlayType() == IVideoEpisode.PLAY_TYPE_URL && Dm5Service.class.getName().equals(serviceClass)) {//五弹幕
-                mPlayerController.setLoadingVisible(View.VISIBLE);
-                String[] split = mVideoHistory.getId().split("\\?");
+            Uri parse = Uri.parse(Uri.decode(videoUrl));
+            openVideo(videoUrl, parse.getLastPathSegment());
+        } else if (mVideoEpisode != null && mVideoEpisode.getDownloadState() == IVideoEpisode.DOWNLOAD_SUCCESS) {//已经下载完成了
+            openVideo(mVideoEpisode.getUrl(), mVideoEpisode.getTitle(), "本地文件");
+        } else if (data.hasExtra(DYTT_LIVE)) {//电视直播
+            mPlayerController.setTitle(mDyttLive.getTitle());
+            String contentId = mDyttLive.getContentId();
+            long l = System.currentTimeMillis();
+            retrofit.enqueue(DyttService.class, liveCallback, "livesInfo", contentId, "6560", l);
+        } else if (data.hasExtra(VIDEO) && !data.hasExtra(VIDEO_EPISODE)) {//169秀跳转过来的
+            mPlayerController.setTitle(mVideo.getTitle());
+            RetrofitManager.REQUEST_URL = mVideo.getUrl();
+            String aClass = mVideo.getServiceClass();
+            retrofit.enqueue(aClass, callback, "playUrl", mVideo.getUrl());
+        } else if (data.hasExtra(VIDEO_EPISODE) || data.hasExtra(VIDEO_HISTORY)) {
+            String id = mVideoEpisode.getId();
+            RetrofitManager.REQUEST_URL = mVideoEpisode.getUrl();
+            String serviceClass = mVideoEpisode.getServiceClassName();
+            if (mVideoEpisode.getPlayerType() == IVideoEpisode.PLAY_TYPE_URL && Dm5Service.class.getName().equals(serviceClass)) {
+                mPlayerController.setTitle(mVideoEpisode.getTitle());
+                String[] split = id.split("\\?");//五弹幕需要特殊处理
                 retrofit.enqueue(serviceClass, callback, "playUrl", split[0], split[1].replace("link=", ""));
-            } else if (mVideoHistory.getPlayType() == IVideoEpisode.PLAY_TYPE_URL) {//其他视频
-                mPlayerController.setLoadingVisible(View.VISIBLE);
-                retrofit.enqueue(serviceClass, callback, "playUrl", mVideoHistory.getId());
-            } else if (mVideoHistory.getPlayType() == IVideoEpisode.PLAY_TYPE_VIDEO) {
-                openVideo(mVideoHistory.getUrl(), "", "");//直接播放
-            } else {//不支持的播放类型
+            } else if (mVideoEpisode.getPlayerType() == IVideoEpisode.PLAY_TYPE_URL) {
+                mPlayerController.setTitle(mVideoEpisode.getTitle());
+                retrofit.enqueue(serviceClass, callback, "playUrl", id);//联网获取播放地址
+            } else if (mVideoEpisode.getPlayerType() == IVideoEpisode.PLAY_TYPE_XUNLEI) {
+                videoUrl = mVideoEpisode.getUrl();
+                openVideo(mVideoEpisode.toPlayUrls(IVideoEpisode.PLAY_TYPE_XUNLEI, IPlayUrls.URL_FILE), videoUrl);
+            } else if (mVideoEpisode.getPlayerType() == IVideoEpisode.PLAY_TYPE_VIDEO_M3U8) {
+                openVideo(mVideoEpisode.getUrl(), mVideoEpisode.getTitle());//直接M3U8播放地址
+            } else if (mVideoEpisode.getPlayerType() == IVideoEpisode.PLAY_TYPE_VIDEO) {
+                openVideo(mVideoEpisode.getUrl(), mVideoEpisode.getTitle());//直接视频播放地址
+            } else if (mVideoEpisode.getPlayerType() == IVideoEpisode.PLAY_TYPE_VIDEO_WEB) {
+                openVideo(mVideoEpisode.toPlayUrls(IVideoEpisode.PLAY_TYPE_WEB, IPlayUrls.URL_WEB), mVideoEpisode.getUrl());
+            } else {
                 showToast(getString(R.string.error_video_type));
             }
-        } else if (data.hasExtra(VIDEO_EPISODE)) {//video 章節跳過來的
-            if (mVideoEpisode.getDownloadState() == IVideoEpisode.DOWNLOAD_SUCCESS) {
-                openVideo(mVideoEpisode.getUrl(), mVideoEpisode.getTitle(), "本地文件");
-            } else {
-                mPlayerController.setTitle(mVideoEpisode.getTitle());
-                RetrofitManager.REQUEST_URL = mVideoEpisode.getUrl();
-                RetrofitManager retrofit = getRetrofitManager();
-                String serviceClass = mVideoEpisode.getServiceClassName();
-                if (mVideoEpisode.getPlayerType() == IVideoEpisode.PLAY_TYPE_URL && Dm5Service.class.getName().equals(serviceClass)) { //五弹幕需要特殊处理
-                    mPlayerController.setLoadingVisible(View.VISIBLE);
-                    String[] split = mVideoEpisode.getId().split("\\?");
-                    retrofit.enqueue(serviceClass, callback, "playUrl", split[0], split[1].replace("link=", ""));
-                } else if (mVideoEpisode.getPlayerType() == IVideoEpisode.PLAY_TYPE_URL) {
-                    mPlayerController.setLoadingVisible(View.VISIBLE);
-                    retrofit.enqueue(serviceClass, callback, "playUrl", mVideoEpisode.getId());
-                } else if (mVideoEpisode.getPlayerType() == IVideoEpisode.PLAY_TYPE_VIDEO) {
-                    openVideo(mVideoEpisode.getUrl(), "", "");
-                } else if (mVideoEpisode.getPlayerType() == IVideoEpisode.PLAY_TYPE_VIDEO_WEB) {
-                    mPlayerController.setTitle(mVideoEpisode.getTitle());
-                    mPlayerController.setLoadingVisible(View.VISIBLE);
-                    playerVideo(mVideoEpisode.toPlayUrls(IVideoEpisode.PLAY_TYPE_WEB, IPlayUrls.URL_WEB), mVideoEpisode.getUrl());
-                } else if (mVideoEpisode.getPlayerType() == IVideoEpisode.PLAY_TYPE_VIDEO_M3U8) {
-                    openVideo(mVideoEpisode.getUrl(), mVideoEpisode.getTitle(), "");
-                } else {
-                    showToast(getString(R.string.error_video_type));
-                }
-            }
-        } else if (data.hasExtra(VIDEO)) {//169秀跳转过来的
-            mPlayerController.setTitle(mVideo.getTitle());
-            mPlayerController.setLoadingVisible(View.VISIBLE);
-            RetrofitManager retrofit = getRetrofitManager();
-            retrofit.enqueue(mVideo.getServiceClass(), callback, "playUrl", mVideo.getUrl());
         } else {
             showToast(getString(R.string.error_video_type));
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mP2pReceiver);
+        NiceVideoManager.instance().release();
+        P2PModule.getInstance().stopPlay();
+        VideoUrlUtil.getInstance().destroy();
+        if (mPlayerController != null) mPlayerController.release();
+        savePlayHistory(mVideoPlayer == null ? 0 : mVideoPlayer.getCurrentPosition());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        NiceVideoManager.instance().resume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        NiceVideoManager.instance().pause();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (NiceVideoManager.instance().onBackPressd()) return;
+        super.onBackPressed();
+    }
+
+    /**
+     * 開始播放
+     *
+     * @param videoUrl
+     */
+    private void openVideo(String videoUrl, String title) {
+        openVideo(videoUrl, title, "");
     }
 
     /**
@@ -326,71 +411,54 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
      * @param speed
      */
     private void openVideo(String videoUrl, String referer, String title, String speed) {
-        if (TBS.equals(mDefPlayer) && TextUtils.isEmpty(xiguaPlayUrl)) {//TBS播放
+        if (TBS.equals(mDefPlayer) && !P2PManager.isXiguaUrl(videoUrl) && !XLManager.isXLUrlNoHttp(videoUrl)) {//TBS播放
             TbsVideo.openVideo(this, videoUrl);//西瓜视频不能用TBS播放
             VideoPlayerActivity.this.finish();
-        } else {
-            if (!TextUtils.isEmpty(speed)) mPlayerController.updateSpeed(speed);
-            if (!TextUtils.isEmpty(title)) mPlayerController.setTitle(title);
-            mSuperPlayerView.setOnErrorListener(new OnPlayerErrorListener(videoUrl, referer));
-            if(!TextUtils.isEmpty(xiguaPlayUrl))mSuperPlayerView.setPlayerType(NiceVideoPlayer.TYPE_IJK);//西瓜视频用自带播放器放不了，只能用ijk
-            if (TextUtils.isEmpty(referer)) mSuperPlayerView.setUp(videoUrl);
-            else mSuperPlayerView.setUp(videoUrl, referer);
+        } else {//西瓜视频用自带播放器放不了，只能用ijk
+            mVideoPlayer.setOnErrorListener(new OnPlayerErrorListener(videoUrl, referer));
+            if (P2PManager.isXiguaUrl(videoUrl))
+                mVideoPlayer.setPlayerType(NiceVideoPlayer.TYPE_IJK);
+            mPlayerController.updateSpeed(speed);
+            mPlayerController.setTitle(title);
+            mVideoPlayer.setUp(videoUrl, referer);
         }
     }
 
-    @Override
-    protected void setListener() {
-        super.setListener();
-        if(mPlayerController != null) mPlayerController.setChangeClickListener(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
-        VideoUrlUtil.getInstance().destroy();
-        unregisterReceiver(mP2pReceiver);
-    }
-
-    @Override
-    public void finish() {
-        savePlayHistory();
-        if (!TextUtils.isEmpty(xiguaPlayUrl) && !xiguaLocalFile) {
-            String title = getString(R.string.xigua_finish_hit);
-            DialogUtil.showCancelableDialog(this, title, downloadClick);
+    /**
+     * 開始播放
+     *
+     * @param playUrls
+     * @param url
+     */
+    private void openVideo(IPlayUrls playUrls, String url) {
+        int playType = playUrls.getPlayType();
+        if (playType == IVideoEpisode.PLAY_TYPE_XIGUA || P2PManager.isXiguaUrl(url)) {//西瓜视频
+            P2PManager.getInstance().play(url);
+        } else if (playType == IVideoEpisode.PLAY_TYPE_XUNLEI || XLManager.isXLUrlNoHttp(url)) {//迅雷视频
+            XLManager.get(this).addAndPlay(url);
+        } else if (playType == IVideoEpisode.PLAY_TYPE_WEB) {//需要 webview 解析视频链接
+            String referer = playUrls.getReferer();
+            ParseUrlListener parseWebUrl = new ParseUrlListener(playUrls);
+            VideoUrlUtil init = VideoUrlUtil.getInstance().init(this, url, referer);
+            init.setOnParseListener(parseWebUrl).startParse();
+        } else if (playType == IVideoEpisode.PLAY_TYPE_WEB_V) {//横向网页，跳转网页播放
+            String title = "该视频需要跳转到原网页下载或播放";
+            ParseUrlListener listener = new ParseUrlListener(url, playType);
+            DialogUtil.showCancelableDialog(this, title, listener);
+        } else if (playUrls.isDirectPlay()) {
+            openVideo(videoUrl = url, "");
         } else {
-            super.finish();
+            showToast(getString(R.string.error_video_type));
         }
     }
 
-    @Override
-    protected void onResume() {
-        NiceVideoPlayerManager.instance().resumeNiceVideoPlayer();
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        NiceVideoPlayerManager.instance().pauseNiceVideoPlayer();
-        super.onPause();
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (NiceVideoPlayerManager.instance().onBackPressd()) return;
-        super.onBackPressed();
-    }
-
-    @Override
-    public void onClick(View v) {
-        String[] titles = new String[]{"TbsVideo", "系统播放器", "IjkPlayer"};
-        DialogUtil.showMaterialListDialog(this, titles, itemClickListener);
-    }
-
-    public void savePlayHistory() {
-        if (mSuperPlayerView == null) return;
-        long position = mSuperPlayerView.getCurrentPosition();
+    /**
+     * 保存播放记录
+     * savePlayHistory
+     *
+     * @param position
+     */
+    public void savePlayHistory(long position) {
         AsyTaskQueue queue = AsyTaskQueue.newInstance();
         if (mVideo != null && mVideoEpisode != null) {
             queue.execute(new SaveTaskListener(new VideoHistory(mVideo, mVideoEpisode, position)));
@@ -400,120 +468,58 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
     }
 
     /**
-     * @param playUrls
-     * @param url
+     * setLoading
+     *
+     * @param visible
      */
-    private void playerVideo(IPlayUrls playUrls, String url) {
-        int playType = playUrls.getPlayType();
-        if (url.startsWith("ftp://") || url.startsWith("xg://")) {
-            xiguaPlayUrl = url.replace("xg://", "ftp://");
-            mPlayerController.setTitle(Uri.parse(xiguaPlayUrl).getLastPathSegment());
-            mSuperPlayerView.setPlaySpeed(false);
-            P2PManager.getInstance().isConnect();
-            P2PManager.getInstance().play(xiguaPlayUrl);
-        } else if (playType == IVideoEpisode.PLAY_TYPE_WEB) {
-            String referer = playUrls.getReferer();
-            ParseWebUrl parseWebUrl = new ParseWebUrl(playUrls);
-            VideoUrlUtil.getInstance().init(this, url, referer).setOnParseListener(parseWebUrl).startParse();
-        } else if (playType == IVideoEpisode.PLAY_TYPE_WEB_V) {
-            String title = "该视频需要跳转到原网页下载或播放";
-            PlayerListener listener = new PlayerListener(url, playType);
-            DialogUtil.showCancelableDialog(this, title, listener);
-        } else if (playType == IVideoEpisode.PLAY_TYPE_ZZPLAYER || playType == IVideoEpisode.PLAY_TYPE_VIDEO || playType == IVideoEpisode.PLAY_TYPE_VIDEO_M3U8) {
-            openVideo(url, "", "");
-        } else {
-            showToast(getString(R.string.error_video_type));
-        }
+    private void setLoading(boolean visible) {
+        if (mPlayerController == null) return;
+        mPlayerController.setLoadingVisible(visible ? View.VISIBLE : View.GONE);
     }
 
-    private Runnable runnable = new Runnable() {
+    //选择清晰程度播放
+    private TxVideoPlayerController.OnClarityListener clarityListener = new TxVideoPlayerController.OnClarityListener() {
 
         @Override
-        public void run() {
-            String string = getString(R.string.video_src_hit);
-            DialogUtil.showCancelableDialog(VideoPlayerActivity.this, string, "继续提醒", "不要再说了", buttonClickListener);
-        }
-
-    };
-
-    private OnButtonClickListener downloadClick = new OnButtonClickListener() {
-
-        @Override
-        public void onButtonClick(BaseAlertDialog<?> baseAlertDialog, int btn) {
-            baseAlertDialog.dismiss();
-            if (btn != RIGHT && !TextUtils.isEmpty(xiguaPlayUrl))
-                P2PManager.getInstance().remove(xiguaPlayUrl);
-            VideoPlayerActivity.super.finish();
-        }
-
-    };
-
-    private AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (mSuperPlayerView == null) return;
-            String playerUrl = mSuperPlayerView.getPlayerUrl();
-            if (position == 0 && !TextUtils.isEmpty(playerUrl)) {
-                TbsVideo.openVideo(VideoPlayerActivity.this, playerUrl);
-                VideoPlayerActivity.this.finish();
-            } else if (!TextUtils.isEmpty(playerUrl)) {
-                mSuperPlayerView.release();
-                if (position == 1 && TextUtils.isEmpty(xiguaPlayUrl)) {
-                    mSuperPlayerView.setPlayerType(NiceVideoPlayer.TYPE_NATIVE); // IjkPlayer or MediaPlayer
-                } else {//西瓜视频用自带播放器放不了，只能用ijk
-                    mSuperPlayerView.setPlayerType(NiceVideoPlayer.TYPE_IJK); // IjkPlayer or MediaPlayer
-                }
-                mSuperPlayerView.setActivityFullScreen(true);
-                mSuperPlayerView.enterFullScreen();
-                mSuperPlayerView.setUp(playerUrl);
+        public void onClarityPlay(INiceVideoPlayer videoPlayer, Clarity clarity, long current) {
+            P2PModule.getInstance().stopPlay();
+            DyttLiveUrls urls = (DyttLiveUrls) clarity.ext;
+            String p2p_url = urls.getP2p_url().replace("p2p://", "");
+            if (!TextUtils.isEmpty(p2p_url)) {
+                String payUrl = P2PModule.getInstance().getPlayPath(p2p_url, 1, 0);
+                videoPlayer.setUp(payUrl);
+            } else {
+                showToast("获取播放地址失败");
             }
-        }
-
-    };
-
-    private OnButtonClickListener buttonClickListener = new OnButtonClickListener() {
-
-        @Override
-        public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
-            dialog.dismiss();
-            if (mSharedPreferences == null || btn != OnButtonClickListener.RIGHT) return;
-            mSharedPreferences.edit().putBoolean("video_src_hit", false).apply();
         }
 
     };
 
     /**
-     * 西瓜播放器播放广播接受者
+     * 西瓜播放器，迅雷邊下邊播播放广播接受者
      */
     private BroadcastReceiver mP2pReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (mPlayerController == null || TextUtils.isEmpty(xiguaPlayUrl)) return;
-            int what = intent.getIntExtra("what", 0);
-            if (what == 1 && intent.hasExtra("data")) {
-                TaskVideoInfo var5 = intent.getParcelableExtra("data");
-                mPlayerController.updateSpeed(AppUtil.getSize(var5.getSpeed()));
-            } else if (what == 2 && intent.hasExtra("data")) {
-                List<TaskVideoInfo> infos = intent.getParcelableArrayListExtra("data");
-                if (infos == null || infos.isEmpty()) return;
-                for (TaskVideoInfo info : infos) {
-                    if (info.getLocalSize() <= 0) continue;
-                    String infoUrl = info.getUrl();
-                    if (infoUrl == null || !infoUrl.equalsIgnoreCase(xiguaPlayUrl)) continue;
-                    xiguaLocalFile = true;
-                }
-            } else if (what == 258 && intent.hasExtra("play_url")) {
-                String url = intent.getStringExtra("play_url");
-                xiguaLocalFile = intent.getIntExtra("islocal", -1) == 1;
-                String[] xigua = xiguaPlayUrl.split("/");
-                openVideo(url, xigua[xigua.length - 1], xiguaLocalFile ? "本地文件" : "0.0KB");
+            if (mPlayerController == null) return;
+            String action = intent.getAction();
+            if (XLService.GET_PLAY_URL.equals(action)) {
+                openVideo(intent.getStringExtra(XLService.DATA), "");
+            } else if (P2PMessageWhat.P2P_CALLBACK.equals(action) && intent.hasExtra(P2PMessageWhat.PLAY_URL)) {//西瓜視頻播放
+                String xigua = intent.getStringExtra(P2PMessageWhat.PLAY_URL);
+                boolean localFile = intent.getBooleanExtra(P2PMessageWhat.LOCAL_FILE, false);
+                String segment = Uri.parse(Uri.decode(videoUrl)).getLastPathSegment();
+                openVideo(xigua, segment, localFile ? "本地文件" : "0.0KB");
             }
         }
 
     };
 
+    /**
+     * 播放記錄保存Task
+     * SaveTaskListener
+     */
     private class SaveTaskListener extends AsyTaskListenerImpl<Void> {
 
         private VideoHistory mVideoHistory;
@@ -524,102 +530,100 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
 
         @Override
         public Void onTaskBackground() {
-            if (getLiteOrm() == null || mVideoHistory == null) return null;
-            List<VideoHistory> query = getLiteOrm().query(new QueryBuilder<>(VideoHistory.class).where("cover=?", mVideoHistory.getCover()));
+            if (mVideoHistory == null) return null;
+            LiteOrm liteOrm = getLiteOrm();
+            if (liteOrm == null) return null;
+            QueryBuilder<VideoHistory> builder = new QueryBuilder<>(VideoHistory.class);
+            List<VideoHistory> query = liteOrm.query(builder.where("cover=?", mVideoHistory.getCover()));
             if (query == null || query.size() == 0) {
-                getLiteOrm().insert(mVideoHistory);
+                liteOrm.insert(mVideoHistory);
             } else {
                 VideoHistory history = query.get(0);
                 history.setTime(DateUtil.getCurrentDate("yyyy-MM-dd HH:mm:ss"));
                 history.setPlayPosition(mVideoHistory.getPlayPosition());
-                getLiteOrm().update(history);
+                liteOrm.update(history);
             }
             return super.onTaskBackground();
         }
 
     }
 
-    private class OtherPlayerListener implements OnButtonClickListener {
-        private String url;
-        private String referer = "";
+    /**
+     * 视频播放提示 Runnable
+     * PlayerHitListener
+     */
+    private class PlayerHitListener implements Runnable, OnButtonClickListener {
 
-        public OtherPlayerListener(String url, String referer) {
-            this.url = url;
-            this.referer = referer;
+        @Override
+        public void run() {
+            String string = getString(R.string.video_src_hit);
+            DialogUtil.showCancelableDialog(VideoPlayerActivity.this, string, "继续提醒", "不要再说了", this);
         }
 
         @Override
-        public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
-            dialog.dismiss();
-            if (btn == LIFT) {
-                TbsVideo.openVideo(VideoPlayerActivity.this, url);
-                VideoPlayerActivity.this.finish();
-            } else if (btn == CENTRE) {
-                WebPlayerActivity.startActivity(VideoPlayerActivity.this, url, referer);
-                VideoPlayerActivity.this.finish();
-            }
-        }
-    }
-
-    private class PlayerListener implements OnButtonClickListener {
-        private String url = "";
-        private String referer = "";
-        private int playType = IVideoEpisode.PLAY_TYPE_WEB;
-
-        public PlayerListener(String url, int playType) {
-            this.url = url;
-            this.playType = playType;
-        }
-
-        public PlayerListener(String url, String referer) {
-            this.url = url;
-            this.referer = referer;
-        }
-
-        @Override
-        public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
-            dialog.dismiss();
-            if (btn != RIGHT) {
-                VideoPlayerActivity.this.finish();
-                return;
-            }
-            if (playType == IVideoEpisode.PLAY_TYPE_WEB_V) {
-                WebActivity.startActivity(VideoPlayerActivity.this, url);
-                VideoPlayerActivity.this.finish();
-            } else if (playType == IVideoEpisode.PLAY_TYPE_WEB) {
-                WebPlayerActivity.startActivity(VideoPlayerActivity.this, url, referer);
-                VideoPlayerActivity.this.finish();
-            }
+        public void onButtonClick(BaseAlertDialog<?> baseAlertDialog, int btn) {
+            baseAlertDialog.dismiss();
+            if (mPreferences == null || btn != RIGHT) return;
+            mPreferences.edit().putBoolean("video_src_hit", false).apply();
         }
 
     }
 
-    private class ParseWebUrl implements VideoUrlUtil.OnParseWebUrlListener {
+    /**
+     * webview解析視頻鏈接的回掉
+     * ParseUrlListener
+     */
+    private class ParseUrlListener implements VideoUrlUtil.OnParseWebUrlListener, OnButtonClickListener {
+
         private IPlayUrls playUrls;
 
-        public ParseWebUrl(IPlayUrls playUrls) {
+        public ParseUrlListener(IPlayUrls playUrls) {
+            this.playUrls = playUrls;
+        }
+
+        public ParseUrlListener(String url, int type) {
+            VideoPlayUrls playUrls = new VideoPlayUrls();
+            HashMap<String, String> map = new HashMap<>();
+            map.put("標清", url);
+            playUrls.setPlayType(type);
+            playUrls.setUrls(map);
+            playUrls.setSuccess(true);
             this.playUrls = playUrls;
         }
 
         @Override
         public void onFindUrl(String videourl) {
-            if (mSuperPlayerView == null || playUrls == null) return;
-            String referer = playUrls.getReferer();
-            referer = playUrls.m3u8Referer() ? referer : "";
-            openVideo(videourl, referer, "", "");
+            if (mVideoPlayer == null || playUrls == null) return;//解析成功，播放視頻
+            openVideo(videourl, playUrls.getReferer(), "", "");
         }
 
         @Override
         public void onError(String errorMsg) {
-            if (playUrls == null) return;
+            if (playUrls == null) return;//解析失敗，提示用戶打開網頁播放
             String title = "该视频需要使用网页播放";
-            String url = playUrls.getUrls().entrySet().iterator().next().getValue();
-            DialogUtil.showCancelableDialog(VideoPlayerActivity.this, title, new PlayerListener(url, playUrls.getReferer()));
+            DialogUtil.showCancelableDialog(VideoPlayerActivity.this, title, this);
         }
 
+        @Override
+        public void onButtonClick(BaseAlertDialog<?> baseAlertDialog, int btn) {
+            baseAlertDialog.dismiss();
+            if (playUrls == null) return;
+            String mainUrl = playUrls.getMainUrl();
+            if (btn == RIGHT && playUrls.getPlayType() == IVideoEpisode.PLAY_TYPE_WEB_V) {
+                WebActivity.startActivity(VideoPlayerActivity.this, mainUrl);
+            } else if (btn == RIGHT && playUrls.getPlayType() == IVideoEpisode.PLAY_TYPE_WEB) {
+                String referer = playUrls.getReferer();
+                WebPlayerActivity.startActivity(VideoPlayerActivity.this, mainUrl, referer);
+            }
+            VideoPlayerActivity.this.finish();
+        }
     }
 
-    private class OnPlayerErrorListener implements IMediaPlayer.OnErrorListener {
+    /**
+     * NiceVideoPlayer 播放視頻錯誤后的回掉方法
+     * OnPlayerErrorListener
+     */
+    private class OnPlayerErrorListener implements IMediaPlayer.OnErrorListener, OnButtonClickListener {
 
         private String url;
         private String referer = "";
@@ -631,42 +635,73 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
 
         @Override
         public boolean onError(IMediaPlayer iMediaPlayer, int i, int i1) {
-            OtherPlayerListener listener = new OtherPlayerListener(url, referer);
-            DialogUtil.showOtherPlayerDialog(VideoPlayerActivity.this, listener);
+            DialogUtil.showOtherPlayerDialog(VideoPlayerActivity.this, this);
             return false;
+        }
+
+        @Override
+        public void onButtonClick(BaseAlertDialog<?> baseAlertDialog, int btn) {
+            baseAlertDialog.dismiss();
+            if (btn == OnButtonClickListener.LIFT) {
+                TbsVideo.openVideo(VideoPlayerActivity.this, url);
+                VideoPlayerActivity.this.finish();
+            } else if (btn == OnButtonClickListener.CENTRE) {
+                WebPlayerActivity.startActivity(VideoPlayerActivity.this, url, referer);
+                VideoPlayerActivity.this.finish();
+            }
         }
 
     }
 
-    private RetrofitCallback<IPlayUrls> callback = new RefreshCallback<IPlayUrls>() {
+    /**
+     * RetrofitCallback
+     * 電視直播網絡請求回掉
+     */
+    private RetrofitCallback<DyttRoot<DyttLiveBody>> liveCallback = new RefreshCallback.RefreshCallbackImpl<DyttRoot<DyttLiveBody>>() {
 
         @Override
         public void onStart(int enqueueKey) {
-            if (mPlayerController == null) return;
-            mPlayerController.setLoadingVisible(View.VISIBLE);
-        }
-
-        @Override
-        public void onFinish(int enqueueKey) {
+            setLoading(true);
         }
 
         @Override
         public void onFailure(int enqueueKey, String throwable) {
-            if (mPlayerController == null) return;
-            mPlayerController.setLoadingVisible(View.GONE);
+            setLoading(false);
+            showToast(throwable);
+        }
+
+        @Override
+        public void onSuccess(int enqueueKey, final DyttRoot<DyttLiveBody> response) {
+            if (response != null && response.getBody() != null && response.getBody().isSuccess()) {
+                mPlayerController.setClarity(response.getBody().getClaritys(), 0, clarityListener);
+            } else {
+                showToast(getString(R.string.error_play_conn));
+            }
+        }
+
+    };
+
+    /**
+     * RetrofitCallback
+     * 視頻解析網絡請求回掉
+     */
+    private RetrofitCallback<IPlayUrls> callback = new RefreshCallback.RefreshCallbackImpl<IPlayUrls>() {
+
+        @Override
+        public void onStart(int enqueueKey) {
+            setLoading(true);
+        }
+
+        @Override
+        public void onFailure(int enqueueKey, String throwable) {
+            setLoading(false);
             showToast(throwable);
         }
 
         @Override
         public void onSuccess(int enqueueKey, final IPlayUrls response) {
             if (response != null && response.isSuccess()) {
-                Map<String, String> urls = response.getUrls();
-                if (urls != null && !urls.isEmpty()) {
-                    String url = urls.entrySet().iterator().next().getValue();
-                    playerVideo(response, url);
-                } else {
-                    showToast(getString(R.string.error_play_conn));
-                }
+                openVideo(response, response.getMainUrl());
             } else {
                 showToast(getString(R.string.error_play_conn));
             }

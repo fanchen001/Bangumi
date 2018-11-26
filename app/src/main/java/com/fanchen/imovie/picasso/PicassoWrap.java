@@ -17,6 +17,7 @@ import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 
 /**
+ * PicassoWrap
  * Created by fanchen on 2017/9/18.
  */
 public class PicassoWrap {

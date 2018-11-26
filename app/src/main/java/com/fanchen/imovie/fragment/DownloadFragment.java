@@ -10,26 +10,33 @@ import android.view.View;
 import com.arialyy.aria.core.download.DownloadEntity;
 import com.arialyy.aria.core.download.DownloadTask;
 import com.arialyy.aria.core.inf.IEntity;
+import com.fanchen.imovie.IMovieAppliction;
+import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.DownloadTabActivity;
 import com.fanchen.imovie.activity.VideoPlayerActivity;
 import com.fanchen.imovie.adapter.DownloadAdapter;
 import com.fanchen.imovie.base.BaseAdapter;
+import com.fanchen.imovie.base.BaseDownloadAdapter;
 import com.fanchen.imovie.base.BaseRecyclerFragment;
+import com.fanchen.imovie.dialog.BaseAlertDialog;
+import com.fanchen.imovie.dialog.OnButtonClickListener;
 import com.fanchen.imovie.entity.DownloadEntityWrap;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.thread.AsyTaskQueue;
-import com.fanchen.imovie.util.LogUtil;
+import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.SystemUtil;
 import com.fanchen.m3u8.M3u8Config;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.List;
 
 /**
  * DownloadFragment
  * Created by fanchen on 2017/10/3.
  */
-public class DownloadFragment extends BaseRecyclerFragment implements DownloadTabActivity.OnDownloadListernr {
+public class DownloadFragment extends BaseRecyclerFragment implements DownloadTabActivity.OnDeleteListernr,
+        IMovieAppliction.OnTaskRuningListener, BaseDownloadAdapter.OnDownloadControlListener<DownloadEntityWrap> {
 
     public static final String SUFFIX = "";
 
@@ -67,8 +74,46 @@ public class DownloadFragment extends BaseRecyclerFragment implements DownloadTa
     }
 
     @Override
+    protected void setListener() {
+        super.setListener();
+        mDownloadAdapter.setOnDownloadControlListener(this);
+    }
+
+    @Override
     public void loadData(Bundle savedInstanceState, RetrofitManager retrofit, int page) {
         AsyTaskQueue.newInstance().execute(taskListener);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && appliction != null) {
+            appliction.addRuningListener(this);
+        } else if (appliction != null) {
+            appliction.removeRuningListener(this);
+        }
+    }
+
+    @Override
+    public void onItemClick(List<?> datas, View v, int position) {
+        if (!(datas.get(position) instanceof DownloadEntityWrap)) return;
+        DownloadEntityWrap entityWrap = (DownloadEntityWrap) datas.get(position);
+        if (entityWrap.data.getState() != IEntity.STATE_COMPLETE) return;
+        if (!new File(entityWrap.data.getDownloadPath()).exists()) {
+            showToast("文件已删除");
+        } else {
+            String fileName = entityWrap.data.getFileName();
+            if (!TextUtils.isEmpty(fileName) && fileName.contains(".apk")) {
+                SystemUtil.installApk(activity, entityWrap.data.getDownloadPath());
+            } else if (!TextUtils.isEmpty(fileName) && fileName.contains(".mp4")) {
+                VideoPlayerActivity.startActivity(activity, entityWrap.data);
+            }
+        }
+    }
+
+    @Override
+    public void setDeleteMode(boolean isDeleteMode) {
+        if (mDownloadAdapter != null) mDownloadAdapter.setDeleteMode(isDeleteMode);
     }
 
     @Override
@@ -77,22 +122,33 @@ public class DownloadFragment extends BaseRecyclerFragment implements DownloadTa
     }
 
     @Override
-    public void onItemClick(List<?> datas, View v, int position) {
-        if (!(datas.get(position) instanceof DownloadEntityWrap)) return;
-        DownloadEntityWrap entityWrap = (DownloadEntityWrap) datas.get(position);
-        DownloadEntity entity = entityWrap.getEntity();
-        if (entity.getState() != IEntity.STATE_COMPLETE) return;
-        String fileName = entity.getFileName();
-        if (!TextUtils.isEmpty(fileName) && fileName.contains(".apk")) {
-            SystemUtil.installApk(activity, entity.getDownloadPath());
-        } else if (!TextUtils.isEmpty(fileName) && fileName.contains(".mp4")) {
-            VideoPlayerActivity.startActivity(activity, entity);
-        }
+    public void onTaskCancel(DownloadTask task) {
+
     }
 
     @Override
-    public void setDeleteMode(boolean isDeleteMode) {
-        if (mDownloadAdapter != null) mDownloadAdapter.setDeleteMode(isDeleteMode);
+    public void onControl(BaseAdapter adapter, int control, DownloadEntityWrap data) {
+        if (control == START) {
+            getDownloadReceiver().load(data.data.getUrl()).start();
+            data.data.setState(IEntity.STATE_RUNNING);
+            adapter.notifyDataSetChanged();
+        } else if (control == STOP) {
+            getDownloadReceiver().load(data.data.getUrl()).stop();
+            data.data.setState(IEntity.STATE_STOP);
+            adapter.notifyDataSetChanged();
+        } else if (control == DELETE) {
+            DeleteClickListener listener = new DeleteClickListener(data.data);
+            DialogUtil.showMaterialDialog(activity, getStringFix(R.string.delete_file), listener);
+        } else if (control == PLAY) {
+            String fileName = data.data.getFileName();
+            if (!new File(data.data.getDownloadPath()).exists()) {
+                showToast("文件已删除");
+            } else if (!TextUtils.isEmpty(fileName) && fileName.contains(".apk")) {
+                SystemUtil.installApk(activity, data.data.getDownloadPath());
+            } else if (!TextUtils.isEmpty(fileName) && fileName.contains(".mp4")) {
+                VideoPlayerActivity.startActivity(activity, data.data);
+            }
+        }
     }
 
     private TaskRecyclerFragmentImpl<List<DownloadEntity>> taskListener = new TaskRecyclerFragmentImpl<List<DownloadEntity>>() {
@@ -117,4 +173,20 @@ public class DownloadFragment extends BaseRecyclerFragment implements DownloadTa
         }
     };
 
+    private class DeleteClickListener implements OnButtonClickListener {
+        private DownloadEntity entity;
+
+        public DeleteClickListener(DownloadEntity entity) {
+            this.entity = entity;
+        }
+
+        @Override
+        public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
+            if (btn == OnButtonClickListener.RIGHT && !TextUtils.isEmpty(entity.getUrl())) {
+                activity.getDownloadReceiver().load(entity.getUrl()).cancel(true);
+                mDownloadAdapter.remove(entity);
+            }
+            dialog.dismiss();
+        }
+    }
 }

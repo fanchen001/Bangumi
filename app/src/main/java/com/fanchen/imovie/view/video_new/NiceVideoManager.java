@@ -6,51 +6,57 @@ import android.widget.Toast;
  * Created by fanchen on 2017/5/5.
  * 视频播放器管理器.
  */
-public class NiceVideoPlayerManager {
+public class NiceVideoManager {
 
     private long preTime = System.currentTimeMillis();
 
+    private boolean isUserisPause = false;
     private NiceVideoPlayer mVideoPlayer;
 
-    private NiceVideoPlayerManager() {
+    private NiceVideoManager() {
     }
 
-    private static NiceVideoPlayerManager sInstance;
+    private static NiceVideoManager sInstance;
 
-    public static synchronized NiceVideoPlayerManager instance() {
+    public static synchronized NiceVideoManager instance() {
         if (sInstance == null) {
-            sInstance = new NiceVideoPlayerManager();
+            sInstance = new NiceVideoManager();
         }
         return sInstance;
     }
 
-    public NiceVideoPlayer getCurrentNiceVideoPlayer() {
+    public NiceVideoPlayer getCurrent() {
         return mVideoPlayer;
     }
 
-    public void setCurrentNiceVideoPlayer(NiceVideoPlayer videoPlayer) {
+    public void setCurrent(NiceVideoPlayer videoPlayer) {
         if (mVideoPlayer != videoPlayer) {
-            releaseNiceVideoPlayer();
+            release();
             mVideoPlayer = videoPlayer;
         }
     }
 
-    public void pauseNiceVideoPlayer() {
-        if (mVideoPlayer != null && (mVideoPlayer.isPlaying() || mVideoPlayer.isBufferingPlaying())) {
+    public void pause() {
+        if (mVideoPlayer == null) return;
+        isUserisPause = mVideoPlayer.isPaused() && !mVideoPlayer.isBufferingPaused();
+        if (mVideoPlayer.isPlaying() || mVideoPlayer.isBufferingPlaying()) {
             mVideoPlayer.pause();
         }
     }
 
-    public void resumeNiceVideoPlayer() {
-        if (mVideoPlayer != null && (mVideoPlayer.isPaused() || mVideoPlayer.isBufferingPaused())) {
-            if(mVideoPlayer.isActivityFullScreen()){
-                mVideoPlayer.enterFullScreen();
-            }
+    public void resume() {
+        if (mVideoPlayer == null) return;
+        if (mVideoPlayer.isActivityFullScreen()) {
+            mVideoPlayer.enterFullScreen();
+        }
+        if (isUserisPause) {
+            isUserisPause = false;
+        } else if (mVideoPlayer.isPaused() || mVideoPlayer.isBufferingPaused()) {
             mVideoPlayer.restart();
         }
     }
 
-    public void releaseNiceVideoPlayer() {
+    public void release() {
         if (mVideoPlayer != null) {
             mVideoPlayer.release();
             mVideoPlayer = null;

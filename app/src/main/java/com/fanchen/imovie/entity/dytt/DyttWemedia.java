@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
+ * DyttWemedia
  * Created by fanchen on 2017/9/22.
  */
 public class DyttWemedia implements Parcelable{

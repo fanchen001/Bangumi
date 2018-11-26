@@ -128,10 +128,13 @@ public class SearchVideoActivity extends BaseRecyclerActivity {
         //吉人動漫的搜索比較奇葩
         //需要特殊處理
         if (JrenService.class.getName().equals(className)) {
-            String formatUrl = String.format("https://jren100.moe/search/%s", URLEncoder.encode(word));
-            String format = String.format("{\"paged\":%d,\"kw\":\"%s\",\"tags\":[],\"cat\":[],\"cats\":[2]}", page, word);
-            String encode = SecurityUtil.encode(format.getBytes());
-            retrofit.enqueue(className, callback, "search", formatUrl, encode);
+            //vod-search-pg-2-wd-你.html
+//            String formatUrl = String.format("https://jren100.moe/search/%s", URLEncoder.encode(word));
+//            String format = String.format("{\"paged\":%d,\"kw\":\"%s\",\"tags\":[],\"cat\":[],\"cats\":[2]}", page, word);
+//            String encode = SecurityUtil.encode(format.getBytes());
+//            retrofit.enqueue(className, callback, "search", formatUrl, encode);
+            String format = String.format("vod-search-pg-%d-wd-%s.html",page,word);
+            retrofit.enqueue(className, callback, "search", format);
         } else if (S80Service.class.getName().equals(className)) {
             //s80也需要特殊处理
             retrofit.enqueue(className, callback, "search", word);

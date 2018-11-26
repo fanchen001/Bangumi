@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.kookong.kkcling.MainActivity">
+
+    <ListView
+        android:id="@id/android:list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:choiceMode="singleChoice" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/search"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:textSize="12sp"
+                android:text="搜索" />
+
+            <Button
+                android:id="@+id/play"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="12sp"
+                android:onClick="onClick"
+                android:text="播放" />
+
+            <Button
+                android:id="@+id/pause"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:textSize="12sp"
+                android:text="暂停" />
+
+            <Button
+                android:id="@+id/stop"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:textSize="12sp"
+                android:text="停止" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/get_connection"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="12sp"
+                android:onClick="onClick"
+                android:text="连接状态" />
+
+            <Button
+                android:id="@+id/get_media_info"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="12sp"
+                android:onClick="onClick"
+                android:text="媒体信息" />
+
+            <Button
+                android:id="@+id/get_cur_pos"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:textSize="12sp"
+                android:text="当前进度" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/get_transport_info"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:textSize="12sp"
+                android:text="transportInfo" />
+
+            <Button
+                android:id="@+id/get_transport_actions"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:textSize="12sp"
+                android:text="transport_actions" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/get_volume"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:textSize="12sp"
+                android:text="获取音量" />
+
+            <Button
+                android:id="@+id/set_volume"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:textSize="12sp"
+                android:text="设置音量" />
+
+            <Button
+                android:id="@+id/get_mute"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:text="获取静音"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/set_mute"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:text="设置静音"
+                android:textSize="12sp" />
+        </TableRow>
+
+
+    </TableLayout>
+
+</LinearLayout>

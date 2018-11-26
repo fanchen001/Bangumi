@@ -54,7 +54,7 @@ public class BilijjFragment extends BaseFragment implements View.OnClickListener
                     String aid = split[split.length - 1].replace("av", "");
                     WebActivity.startActivity(activity, String.format("http://www.jijidown.com/video/av%s",aid));
                 }else{
-                    showSnackbar(getString(R.string.url_error_hit));
+                    showSnackbar(getStringFix(R.string.url_error_hit));
                 }
                 break;
             case R.id.btn_new_video:

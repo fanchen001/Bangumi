@@ -199,7 +199,12 @@ public class LL520Impl implements IVideoMoreParser {
                     } else {
                         episode.setTitle(sub.text());
                     }
-                    if(!episode.getTitle().contains("迅雷") &&  !episode.getTitle().contains("网盘")){
+                    if(episode.getTitle().contains("迅雷")) {
+                        episode.setPlayType(IVideoEpisode.PLAY_TYPE_XUNLEI);
+                        String replace = episode.getUrl().replace(baseUrl, "");
+                        episode.setUrl(replace);
+                        episodes.add(episode);
+                    }else if(!episode.getTitle().contains("网盘")){
                         episodes.add(episode);
                     }
                 }

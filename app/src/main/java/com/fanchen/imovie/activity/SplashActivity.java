@@ -2,7 +2,6 @@ package com.fanchen.imovie.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -61,6 +60,7 @@ public class SplashActivity extends BaseActivity {
     protected ImageView mImageView;
 
     private Bitmap mBitmap;
+    private SharedPreferences preferences;
 
     @SuppressLint("HandlerLeak")
     public Handler mHandler = new Handler() {
@@ -95,9 +95,9 @@ public class SplashActivity extends BaseActivity {
     @Override
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String versionName = AppUtil.getVersionName(this);
-        if (!preferences.getString("app_version", "").equals(versionName)) {
+        if (preferences != null && !preferences.getString("app_version", "").equals(versionName)) {
             preferences.edit().putString("app_version", versionName).apply();
             AsyTaskQueue.newInstance().execute(databaseListener);
         }
@@ -107,11 +107,11 @@ public class SplashActivity extends BaseActivity {
             if (file.exists()) {
                 mBitmap = ImageUtil.readBitMap(file.getAbsolutePath());
             }
-            if (preferences.getBoolean("main_check", true)) {
+            if (preferences != null && preferences.getBoolean("main_check", true)) {
                 new BmobQuery<SplashScreen>().findObjects(this, new SplashScreenListener(file, preferences));
             }
         }
-        if (preferences.getBoolean("auto_download", true)) {
+        if (preferences != null && preferences.getBoolean("auto_download", true)) {
             //开启未完成任务自动下载
             getDownloadReceiver().resumeAllTask();
             AsyTaskQueue.newInstance().execute(taskListener);
@@ -146,9 +146,8 @@ public class SplashActivity extends BaseActivity {
      */
     private void loadMainUI() {
         String versionName = AppUtil.getVersionName(getApplication());
-        SharedPreferences pf = getPreferences(Context.MODE_PRIVATE);
-        if (!pf.getString(APP_VERSION, "").equals(versionName)) {
-            pf.edit().putString(APP_VERSION, versionName).apply();
+        if (preferences != null && !preferences.getString(APP_VERSION, "").equals(versionName)) {
+            preferences.edit().putString(APP_VERSION, versionName).apply();
             // 如果是第一次进入页面加载引导界面
             MainActivity.startActivity(this);
         } else {
@@ -167,8 +166,8 @@ public class SplashActivity extends BaseActivity {
             localArrayList.add(Manifest.permission.READ_PHONE_STATE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != 0)
             localArrayList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != 0)
-            localArrayList.add(Manifest.permission.CAMERA);
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != 0)
+//            localArrayList.add(Manifest.permission.CAMERA);
 //        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != 0)
 //            localArrayList.add(Manifest.permission.ACCESS_FINE_LOCATION);
         if (localArrayList.size() > 0) {
@@ -290,6 +289,7 @@ public class SplashActivity extends BaseActivity {
             int version = preferences.getInt(IMAGE_VERSION, 0);
             for (SplashScreen splashScreen : list) {
                 IMovieAppliction.KANKAN_COOKIE = splashScreen.getKankanCookie();
+                IMovieAppliction.ALIPAYS = splashScreen.getAlipays();
                 if (splashScreen.getStartTime() < timeMillis && splashScreen.getEndTime() > timeMillis && version < splashScreen.getVersion()) {
                     FileUtil.downloadBackgroud(splashScreen.getScreenImage(), file);
                     preferences.edit().putInt(IMAGE_VERSION, splashScreen.getVersion()).apply();

@@ -14,30 +14,10 @@
   "cover": "http://www.775v.com/style/img/qqlogo.png",
   "name": "腾讯视频",
   "url": "http://v.qq.com/"
-},{
-  "cover": "http://www.775v.com/style/img/hunantvlogo.png",
-  "name": "芒果TV视频",
-  "url": "http://www.mgtv.com/"
 }, {
   "cover": "http://www.775v.com/style/img/tudoulogo.png",
   "name": "土豆视频",
   "url": "http://www.tudou.com/"
-}, {
-  "cover": "http://yun.baiyug.cn/img/pptvlogo.png",
-  "name": "PPTV",
-  "url": "http://www.pptv.com/"
-}, {
-  "cover": "http://yun.baiyug.cn/img/bilibili.png",
-  "name": "Bilibili",
-  "url": "http://www.bilibili.com/"
-}, {
-  "cover": "http://yun.baiyug.cn/img/m1905.png",
-  "name": "1905电影",
-  "url": "http://vip.1905.com/"
-}, {
-  "cover": "http://yun.baiyug.cn/img/fun.png",
-  "name": "风行网",
-  "url": "http://www.fun.tv/"
 }, {
   "cover": "http://www.775v.com/style/img/sohulogo.png",
   "name": "搜狐视频",
@@ -58,6 +38,10 @@
   "cover": "http://www.775v.com/style/img/yinyuetailogo.png",
   "name": "音悦台MV",
   "url": "http://www.yinyuetai.com/"
+}, {
+  "cover": "http://www.775v.com/style/img/hunantvlogo.png",
+  "name": "芒果TV视频",
+  "url": "http://www.mgtv.com/"
 }, {
   "cover": "http://www.775v.com/style/img/sinalogo.png",
   "name": "新浪视频",

@@ -8,6 +8,7 @@ import com.fanchen.imovie.fragment.VideoListFragment;
 import com.fanchen.imovie.retrofit.service.XiaokanbaService;
 
 /**
+ * XiaokabaPagerAdapter
  * Created by fanchen on 2017/10/15.
  */
 public class XiaokabaPagerAdapter extends BaseFragmentAdapter {

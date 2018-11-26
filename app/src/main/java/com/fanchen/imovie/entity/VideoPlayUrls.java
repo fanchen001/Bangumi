@@ -1,5 +1,7 @@
 package com.fanchen.imovie.entity;
 
+import android.text.TextUtils;
+
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 
@@ -37,7 +39,7 @@ public class VideoPlayUrls implements IPlayUrls{
 
     @Override
     public String getReferer() {
-        return referer;
+        return referer == null ? "" : referer;
     }
 
     @Override
@@ -46,8 +48,25 @@ public class VideoPlayUrls implements IPlayUrls{
     }
 
     @Override
+    public String getMainUrl() {
+        Map<String, String> urls = getUrls();
+        if (urls != null && !urls.isEmpty()) {
+            return urls.entrySet().iterator().next().getValue();
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isDirectPlay() {
+        return playType == IVideoEpisode.PLAY_TYPE_ZZPLAYER ||
+                playType == IVideoEpisode.PLAY_TYPE_VIDEO ||
+                playType == IVideoEpisode.PLAY_TYPE_VIDEO_M3U8;
+    }
+
+    @Override
     public boolean isSuccess() {
-        return success;
+        String mainUrl = getMainUrl();
+        return success && !TextUtils.isEmpty(mainUrl);
     }
 
     @Override

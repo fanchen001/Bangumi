@@ -36,16 +36,16 @@ public class VideoDetails extends Video implements IVideoDetails {
         canDownload = in.readByte() != 0;
         message = in.readString();
         introduce = in.readString();
-        if(softEpisodes != null){
+        if (softEpisodes != null) {
             final List<?> videoEpisodes = softEpisodes.get();
-            if(videoEpisodes != null && videoEpisodes.size() > 0 && videoEpisodes.get(0) instanceof  VideoEpisode){
+            if (videoEpisodes != null && videoEpisodes.size() > 0 && videoEpisodes.get(0) instanceof VideoEpisode) {
                 episodes = (List<VideoEpisode>) videoEpisodes;
             }
             softEpisodes = null;
         }
-        if(softRecomm != null){
+        if (softRecomm != null) {
             final List<?> videoRecomm = softRecomm.get();
-            if(videoRecomm != null && videoRecomm.size() > 0 && videoRecomm.get(0) instanceof  Video){
+            if (videoRecomm != null && videoRecomm.size() > 0 && videoRecomm.get(0) instanceof Video) {
                 recomm = (List<Video>) videoRecomm;
             }
             softRecomm = null;
@@ -119,6 +119,20 @@ public class VideoDetails extends Video implements IVideoDetails {
     public boolean canDownload() {
         return true;
 //        return episodes == null || episodes.size() == 0 ? false : canDownload;
+    }
+
+    @Override
+    public String getServiceClass() {
+        String serviceClass = super.getServiceClass();
+        if (TextUtils.isEmpty(serviceClass)) {
+            List<? extends IVideo> recoms = getRecoms();
+            if (recoms != null && !recoms.isEmpty())
+                return recoms.get(0).getServiceClass();
+            List<? extends IVideoEpisode> episodes = getEpisodes();
+            if (episodes != null && !episodes.isEmpty())
+                return episodes.get(0).getServiceClassName();
+        }
+        return serviceClass;
     }
 
     @Override

@@ -193,6 +193,7 @@ public class TaihanImpl implements IVideoMoreParser {
             details.setIntroduce(node.text("span.vod-content-default.text-justify"));
             details.setEpisodes(episodes);
             details.setRecomm(videos);
+            details.setServiceClass(TaihanService.class.getName());
             details.setSuccess(true);
         }catch (Exception e){
             e.printStackTrace();

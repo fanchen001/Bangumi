@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.fanchen.imovie.R;
 
 /**
+ * NestedPreferenceCategory
  * Created by fanchen on 2017/7/26.
  */
 public class NestedPreferenceCategory extends PreferenceCategory {

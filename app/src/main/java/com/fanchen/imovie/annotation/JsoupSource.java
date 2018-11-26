@@ -199,5 +199,23 @@ public enum JsoupSource {
      * 快看直播
      * https://m.kuaikan.me
      */
-    KUAIKAN_TV
+    KUAIKAN_TV,
+
+    /**
+     * 好趣网
+     * http://m.haoqu.net/
+     */
+    HAOQU,
+
+    /**
+     * i看tv
+     * http://m.icantv.cn/
+     */
+    ICANTV,
+
+    /**
+     * zzyo
+     * http://m.zzyo.cn/
+     */
+    ZZYO
 }
