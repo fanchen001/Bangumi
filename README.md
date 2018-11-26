@@ -19,7 +19,8 @@
 7.最新热门短视频播放<br/>
 8.New 支持M3U8视频下载缓存 -> [M3u8Download](https://github.com/fanchen001/M3u8Download)<br/>
 9.New 支持下载缓存西瓜视频 -> [XiguaP2p](https://github.com/fanchen001/XiguaP2p)<br/>
-10.New 支持H264视频播放
+10.New 支持H264视频播放<br/>
+11.New 支持HTTP/HTTPS/FTP/ED2K/THUNDER/MAGNET下载
 
 关于新增视频播放源
 ========
@@ -60,3 +61,4 @@ SET.8   在 [category.json](https://github.com/fanchen001/Bangumi/blob/master/ap
  ![image](https://github.com/fanchen001/Bangumi/blob/master/app/screenshot/screenshot_010.png)
  ![image](https://github.com/fanchen001/Bangumi/blob/master/app/screenshot/screenshot_011.png)
  ![image](https://github.com/fanchen001/Bangumi/blob/master/app/screenshot/screenshot_012.png)
+ ![image](https://github.com/fanchen001/Bangumi/blob/master/app/screenshot/screenshot_013.png)
