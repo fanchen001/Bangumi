@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -73,13 +74,16 @@ public class SplashActivity extends BaseActivity {
                     loadMainUI();
                     break;
                 case LOAD_TOP_IMAGE:
-                    if (mBitmap != null) {
+                    if (mBitmap != null && mImageView != null) {
                         // 加载顶部图片
                         mImageView.setBackgroundDrawable(ImageUtil.bitmapToDrawable(mBitmap));
-                    } else {
+                    } else if (mImageView != null) {
                         // 加载顶部图片
                         mBitmap = ImageUtil.readBitMap(SplashActivity.this, R.drawable.bg_start_top);
-                        mImageView.setBackgroundDrawable(ImageUtil.bitmapToDrawable(mBitmap));
+                        if (mBitmap == null) return;
+                        Drawable drawable = ImageUtil.bitmapToDrawable(mBitmap);
+                        if (drawable == null) return;
+                        mImageView.setBackgroundDrawable(drawable);
                     }
                     break;
                 default:
@@ -290,6 +294,7 @@ public class SplashActivity extends BaseActivity {
             for (SplashScreen splashScreen : list) {
                 IMovieAppliction.KANKAN_COOKIE = splashScreen.getKankanCookie();
                 IMovieAppliction.ALIPAYS = splashScreen.getAlipays();
+                IMovieAppliction.ADVS = splashScreen.getAdvs();
                 if (splashScreen.getStartTime() < timeMillis && splashScreen.getEndTime() > timeMillis && version < splashScreen.getVersion()) {
                     FileUtil.downloadBackgroud(splashScreen.getScreenImage(), file);
                     preferences.edit().putInt(IMAGE_VERSION, splashScreen.getVersion()).apply();

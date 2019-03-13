@@ -71,7 +71,7 @@ public class JrenImpl implements IVideoParser {
                     if (k == (Integer.valueOf(splitUrl[2]) - 1)) {
                         String[] strings = ids[k].split("\\$");
                         Map<String, String> map = new HashMap<>();
-                        if (strings[1].startsWith("ftp://") || strings[1].startsWith("xg://")) {
+                        if (strings[1].startsWith("ftp:") || strings[1].startsWith("xg:")) {
                             map.put(strings[0], strings[1]);
                             playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_XIGUA);
                             playUrl.setUrlType(IPlayUrls.URL_XIGUA);

@@ -67,8 +67,34 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        isDestroy = false;
-        init(savedInstanceState);
+        appliction = IMovieAppliction.app != null ? IMovieAppliction.app : (IMovieAppliction) getApplication();
+        mLiteOrm = LiteOrmManager.getInstance(appliction).getLiteOrm("imovie.db");
+        if (appliction != null) {
+            appliction.addActivity(this);
+        }
+        if (isRegisterEventBus())
+            EventBus.getDefault().register(this);
+        SwipeBackHelper.onCreate(this);
+        mBackPage = SwipeBackHelper.getCurrentPage(this);// 获取当前页面
+        mBackPage.setSwipeBackEnable(isSwipeActivity());// 设置是否可滑动
+        mBackPage.setSwipeEdgePercent(getEdgePercent());// 可滑动的范围。百分比。0.2表示为左边20%的屏幕
+        mBackPage.setSwipeSensitivity(getSensitivity());// 对横向滑动手势的敏感程度。0为迟钝 1为敏感
+        mBackPage.setClosePercent(getClosePercent());// 触发关闭Activity百分比
+        mBackPage.setSwipeRelateEnable(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);// 是否与下一级activity联动(微信效果)仅限5.0以上机器
+        mBackPage.setDisallowInterceptTouchEvent(false);
+        if (!IMovieAppliction.isInitSdk && appliction != null) {
+            appliction.mHandler.postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    finish();
+                }
+
+            }, 2000);
+        } else {
+            isDestroy = false;
+            init(savedInstanceState);
+        }
     }
 
     @Override
@@ -218,21 +244,6 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param savedInstanceState
      */
     private void init(Bundle savedInstanceState) {
-        appliction = IMovieAppliction.app != null ? IMovieAppliction.app : (IMovieAppliction) getApplication();
-        mLiteOrm = LiteOrmManager.getInstance(appliction).getLiteOrm("imovie.db");
-        if (appliction != null) {
-            appliction.addActivity(this);
-        }
-        if (isRegisterEventBus())
-            EventBus.getDefault().register(this);
-        SwipeBackHelper.onCreate(this);
-        mBackPage = SwipeBackHelper.getCurrentPage(this);// 获取当前页面
-        mBackPage.setSwipeBackEnable(isSwipeActivity());// 设置是否可滑动
-        mBackPage.setSwipeEdgePercent(getEdgePercent());// 可滑动的范围。百分比。0.2表示为左边20%的屏幕
-        mBackPage.setSwipeSensitivity(getSensitivity());// 对横向滑动手势的敏感程度。0为迟钝 1为敏感
-        mBackPage.setClosePercent(getClosePercent());// 触发关闭Activity百分比
-        mBackPage.setSwipeRelateEnable(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);// 是否与下一级activity联动(微信效果)仅限5.0以上机器
-        mBackPage.setDisallowInterceptTouchEvent(false);
         LayoutInflater layoutInflater = getLayoutInflater();
         mMainView = getLayoutView(layoutInflater, getLayout());
         if (mMainView == null) return;

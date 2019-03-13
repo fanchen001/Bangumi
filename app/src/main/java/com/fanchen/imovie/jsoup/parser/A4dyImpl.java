@@ -295,7 +295,7 @@ public class A4dyImpl implements IVideoMoreParser {
                             url = String.format(ACFUN, strings[i].split("\\$")[1]);
                             break;
                         default:
-                            if (strings[i].split("\\$")[1].startsWith("ftp://") || strings[i].split("\\$")[1].startsWith("xg://")) {
+                            if (strings[i].split("\\$")[1].startsWith("ftp:") || strings[i].split("\\$")[1].startsWith("xg:")) {
                                 url = strings[i].split("\\$")[1];
                             } else {
                                 url = String.format(OTHER, fromSplit[xianlu], strings[i].split("\\$")[1]);

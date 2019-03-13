@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import com.fanchen.imovie.R;
@@ -22,6 +23,7 @@ import com.fanchen.imovie.dialog.OnButtonClickListener;
 import com.fanchen.imovie.entity.XiguaDownload;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.util.DialogUtil;
+import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.view.CustomEmptyView;
 import com.squareup.picasso.Picasso;
 import com.xigua.p2p.P2PManager;
@@ -90,7 +92,7 @@ public class XiguaFragment extends BaseRecyclerFragment implements DownloadTabAc
     public void onItemClick(List<?> datas, View v, int position) {
         if (!(datas.get(position) instanceof XiguaDownload)) return;
         XiguaDownload warp = (XiguaDownload) datas.get(position);
-        if (warp.data.getLocalSize() <= 0) return;
+        if (warp.data == null || warp.data.getLocalSize() <= 0) return;
         VideoPlayerActivity.startActivity(activity, warp.getXiguaUrl());
     }
 
@@ -137,15 +139,21 @@ public class XiguaFragment extends BaseRecyclerFragment implements DownloadTabAc
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (mAdapter == null || intent == null) return;
-            if (intent.getIntExtra(P2PMessageWhat.WHAT, 0) == P2PMessageWhat.MESSAGE_TASK_LIST) {
+            try {
+                if (mSwipeRefreshLayout == null || mAdapter == null) return;
+                if (intent == null || !P2PMessageWhat.P2P_CALLBACK.equals(intent.getAction()))
+                    return;
+                if (intent.getIntExtra(P2PMessageWhat.WHAT, 0) != P2PMessageWhat.MESSAGE_TASK_LIST)
+                    return;
                 mSwipeRefreshLayout.setRefreshing(false);
                 mSwipeRefreshLayout.setEnabled(false);
                 if (intent.hasExtra(P2PMessageWhat.DATA)) {
                     List<TaskVideoInfo> infos = intent.getParcelableArrayListExtra(P2PMessageWhat.DATA);
                     mAdapter.setTaskVideoInfos(infos);
+                    mCustomEmptyView.setEmptyType(mAdapter.getList().isEmpty() ? CustomEmptyView.TYPE_EMPTY : CustomEmptyView.TYPE_NON);
                 }
-                mCustomEmptyView.setEmptyType(mAdapter.getList().isEmpty() ? CustomEmptyView.TYPE_EMPTY : CustomEmptyView.TYPE_NON);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 

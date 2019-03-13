@@ -125,19 +125,52 @@ public class SwipeWebView extends RelativeLayout implements SwipeRefreshLayout.O
 
     @Override
     public void onRefresh() {
-        if (mProgressBar.getVisibility() == View.GONE) {
-            webView.loadUrl(webView.getUrl());
+        if ("main".equals(Thread.currentThread().getName())) {
+            if (mProgressBar.getVisibility() == View.GONE) {
+                webView.loadUrl(webView.getUrl());
+            }
+        } else {
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    if (mProgressBar.getVisibility() == View.GONE) {
+                        webView.loadUrl(webView.getUrl());
+                    }
+                }
+            });
+        }
+
+    }
+
+    public void loadUrl(final String url) {
+        if ("main".equals(Thread.currentThread().getName())) {
+            webView.loadUrl(url);
+            count++;
+        } else {
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    webView.loadUrl(url);
+                    count++;
+                }
+            });
         }
     }
 
-    public void loadUrl(String url) {
-        webView.loadUrl(url);
-        count++;
-    }
+    public void loadUrl(final String url, final Map<String, String> map) {
+        if ("main".equals(Thread.currentThread().getName())) {
+            webView.loadUrl(url, map);
+            count++;
+        } else {
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    webView.loadUrl(url, map);
+                    count++;
+                }
+            });
+        }
 
-    public void loadUrl(String url, Map<String, String> map) {
-        webView.loadUrl(url, map);
-        count++;
     }
 
     @Override
@@ -153,8 +186,18 @@ public class SwipeWebView extends RelativeLayout implements SwipeRefreshLayout.O
         if (count == 0) {
             return false;
         }
-        count--;
-        webView.goBack(); // goBack()表示返回WebView的上一页面
+        if ("main".equals(Thread.currentThread().getName())) {
+            count--;
+            webView.goBack(); // goBack()表示返回WebView的上一页面
+        } else {
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    count--;
+                    webView.goBack(); // goBack()表示返回WebView的上一页面
+                }
+            });
+        }
         return true;
     }
 

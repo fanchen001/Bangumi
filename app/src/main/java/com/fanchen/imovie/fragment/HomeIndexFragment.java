@@ -67,7 +67,9 @@ public class HomeIndexFragment extends BaseRecyclerFragment implements BaseAdapt
     @Override
     protected void setListener() {
         super.setListener();
-        mRecomAdapter.setOnItemLongClickListener(this);
+        if (mRecomAdapter != null) {
+            mRecomAdapter.setOnItemLongClickListener(this);
+        }
     }
 
     @Override

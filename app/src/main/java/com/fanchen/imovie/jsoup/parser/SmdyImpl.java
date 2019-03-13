@@ -66,7 +66,11 @@ public class SmdyImpl implements IVideoMoreParser {
                 video.setHasDetails(true);
                 video.setServiceClass(clazz);
                 video.setCover(cover);
-                video.setId(n.attr("a", "href", "/", 2));
+                if(clazz.equals(SmdyService.class.getName())){
+                    video.setId(url);
+                }else{
+                    video.setId(n.attr("a", "href", "/", 2).replace(".html",""));
+                }
                 video.setType(area);
                 video.setDanmaku(score);
                 video.setExtras(author);
@@ -119,6 +123,8 @@ public class SmdyImpl implements IVideoMoreParser {
                     videoTitle.setUrl(topUrl);
                     if ("Film".equals(topId) || "TV".equals(topId) || "dongman".equals(topId) || "show".equals(topId)) {
                         videoTitle.setMore(false);
+                    } else if ("Movie".equals(topId) || "Tv".equals(topId) || "Cartoon".equals(topId) || "Variety".equals(topId)) {
+                        videoTitle.setMore(false);
                     } else {
                         videoTitle.setMore(true);
                     }
@@ -139,7 +145,11 @@ public class SmdyImpl implements IVideoMoreParser {
                         video.setHasDetails(true);
                         video.setServiceClass(clazz);
                         video.setCover(cover);
-                        video.setId(sub.attr("a", "href", "/", 2));
+                        if(clazz.equals(SmdyService.class.getName())){
+                            video.setId(url);
+                        }else{
+                            video.setId(sub.attr("a", "href", "/", 2).replace(".html",""));
+                        }
                         video.setDanmaku("评分:" + score);
                         video.setExtras("演员:" + author);
                         video.setTitle(TextUtils.isEmpty(title) ? sub.text("h2") : title);
@@ -168,7 +178,11 @@ public class SmdyImpl implements IVideoMoreParser {
                     video.setHasDetails(true);
                     video.setServiceClass(clazz);
                     video.setCover(cover);
-                    video.setId(n.attr("a", "href", "/", 2));
+                    if(clazz.equals(SmdyService.class.getName())){
+                        video.setId(url);
+                    }else{
+                        video.setId(n.attr("a", "href", "/", 2).replace(".html",""));
+                    }
                     video.setType(area);
                     video.setDanmaku("评分:" + score);
                     video.setExtras("演员:" + author);
@@ -203,7 +217,11 @@ public class SmdyImpl implements IVideoMoreParser {
                 Video video = new Video();
                 video.setCover(cover);
                 video.setServiceClass(clazz);
-                video.setId(n.attr("a", "href","/",2));
+                if(clazz.equals(SmdyService.class.getName())){
+                    video.setId(url);
+                }else{
+                    video.setId(n.attr("a", "href","/",2).replace(".html",""));
+                }
                 video.setTitle(title);
                 video.setUrl(url);
                 video.setDanmaku(score);
@@ -214,6 +232,11 @@ public class SmdyImpl implements IVideoMoreParser {
             List<Node> list = node.list("div.play-title > span[id]");
             for (Node n : node.list("div.play-box > ul")) {
                 for (Node sub : n.list("li")) {
+                    if (list.size() > count) {
+                        if(clazz.equals(SmdyService.class.getName()) && !list.get(count).text().contains("西瓜")){
+                            continue;
+                        }
+                    }
                     VideoEpisode episode = new VideoEpisode();
                     episode.setServiceClass(clazz);
                     episode.setId(baseUrl + sub.attr("a", "href"));
@@ -249,7 +272,7 @@ public class SmdyImpl implements IVideoMoreParser {
         Map<String, String> url = new HashMap<>();
         urls.setUrls(url);
         try {
-            int start = html.indexOf("ftp://");
+            int start = html.indexOf("ftp:");
             String playerUrl = new Node(html).attr("iframe", "src");
             String tempHtml = "";
             if (start >= 0) {

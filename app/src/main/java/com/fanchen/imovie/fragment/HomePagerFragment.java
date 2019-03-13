@@ -1,17 +1,23 @@
 package com.fanchen.imovie.fragment;
 
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
+import com.fanchen.imovie.IMovieAppliction;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.ApkListActivity;
 import com.fanchen.imovie.activity.DownloadTabActivity;
@@ -21,15 +27,20 @@ import com.fanchen.imovie.activity.SearchBangumiActivity;
 import com.fanchen.imovie.activity.UserActivity;
 import com.fanchen.imovie.adapter.pager.HomePagerAdapter;
 import com.fanchen.imovie.base.BaseFragment;
+import com.fanchen.imovie.dialog.MaterialListDialog;
 import com.fanchen.imovie.dialog.fragment.SearchDialogFragment;
 import com.fanchen.imovie.entity.AppEvent;
 import com.fanchen.imovie.entity.bmob.User;
 import com.fanchen.imovie.entity.face.ISearchWord;
 import com.fanchen.imovie.picasso.PicassoWrap;
-import com.fanchen.imovie.util.LogUtil;
+import com.fanchen.imovie.util.DisplayUtil;
+import com.fanchen.imovie.util.PayUtil;
+import com.fanchen.imovie.util.StreamUtil;
 import com.fanchen.imovie.view.CircleImageView;
+import com.fanchen.imovie.view.MarqueeView;
 import com.fanchen.imovie.view.NoScrollViewPager;
-import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 import butterknife.InjectView;
 
@@ -39,7 +50,7 @@ import butterknife.InjectView;
  * Created by fanchen on 2017/2/24.
  */
 public class HomePagerFragment extends BaseFragment implements Toolbar.OnMenuItemClickListener,
-        SearchDialogFragment.OnSearchClickListener, View.OnClickListener {
+        SearchDialogFragment.OnSearchClickListener, View.OnClickListener, AdapterView.OnItemClickListener, MarqueeView.OnItemClickListener {
     public static final String CURRENT_ITEM = "item";
     @InjectView(R.id.toolbar_user_avatar)
     protected CircleImageView mCircleImageView;
@@ -51,6 +62,8 @@ public class HomePagerFragment extends BaseFragment implements Toolbar.OnMenuIte
     protected TabLayout mSlidingTab;
     @InjectView(R.id.view_pager)
     protected NoScrollViewPager mViewPager;
+    @InjectView(R.id.mv_adv)
+    protected MarqueeView mMarqueeView;
 
     private HomePagerAdapter mHomePagerAdapter;
     private SearchDialogFragment mSearchFragment = SearchDialogFragment.newInstance();
@@ -61,16 +74,25 @@ public class HomePagerFragment extends BaseFragment implements Toolbar.OnMenuIte
     }
 
     @Override
-    protected void findView(View v) {
-        mToolbar = findViewById(R.id.toolbar);
-        mNameTextView = findViewById(R.id.tv_home_name);
-        mViewPager = findViewById(R.id.view_pager);
-        mSlidingTab = findViewById(R.id.sliding_tabs);
-    }
-
-    @Override
     protected void initFragment(@Nullable Bundle savedInstanceState, Bundle args) {
         super.initFragment(savedInstanceState, args);
+        if (IMovieAppliction.ADVS != null && IMovieAppliction.ADVS.length > 0) {
+            ArrayList<View> views = new ArrayList<>();
+            Drawable drawable = getResources().getDrawable(R.drawable.ic_adv);
+            drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());  //此为必须写的
+            for (int i = 0; i < IMovieAppliction.ADVS.length; i++) {
+                TextView textView = new TextView(activity);
+                textView.setText(IMovieAppliction.ADVS[i]);
+                textView.setTextColor(Color.WHITE);
+                textView.setTextSize(12f);
+                textView.setCompoundDrawablePadding(DisplayUtil.dip2px(activity, 4));
+                textView.setCompoundDrawables(drawable, null, null, null);
+                textView.setGravity(Gravity.CENTER_VERTICAL);
+                views.add(textView);
+            }
+            mMarqueeView.setViews(views);
+            mMarqueeView.setVisibility(View.VISIBLE);
+        }
         setHasOptionsMenu(true);
         mToolbar.setTitle("");
         setLoginInfo(activity == null ? null : activity.getLoginUser());
@@ -79,9 +101,9 @@ public class HomePagerFragment extends BaseFragment implements Toolbar.OnMenuIte
         mViewPager.setOffscreenPageLimit(5);
         mViewPager.setAdapter(mHomePagerAdapter);
         mSlidingTab.setupWithViewPager(mViewPager);
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             mViewPager.setCurrentItem(savedInstanceState.getInt(CURRENT_ITEM));
-        }else{
+        } else {
             //默认选中影视页
             mViewPager.setCurrentItem(2);
         }
@@ -92,22 +114,22 @@ public class HomePagerFragment extends BaseFragment implements Toolbar.OnMenuIte
         super.setListener();
         mToolbar.setOnMenuItemClickListener(this);
         mToolbar.setOnClickListener(this);
+        mMarqueeView.setOnItemClickListener(this);
         mSearchFragment.setOnSearchClickListener(this);
     }
 
     /**
-     *
      * @param user
      */
-    private void setLoginInfo(User user){
-        if(user != null){
+    private void setLoginInfo(User user) {
+        if (user != null) {
             mNameTextView.setText(user.getNickName());
-            if(!TextUtils.isEmpty(user.getHeaderUrl()) && activity != null && activity.appliction != null){
-                new PicassoWrap(getPicasso()).loadVertical(user.getHeaderUrl(),mCircleImageView);
-            }else if(user.getHeader() != null && activity != null && activity.appliction != null){
-                new PicassoWrap(getPicasso()).loadVertical(user.getHeader().getFileUrl(activity.appliction),mCircleImageView);
+            if (!TextUtils.isEmpty(user.getHeaderUrl()) && activity != null && activity.appliction != null) {
+                new PicassoWrap(getPicasso()).loadVertical(user.getHeaderUrl(), mCircleImageView);
+            } else if (user.getHeader() != null && activity != null && activity.appliction != null) {
+                new PicassoWrap(getPicasso()).loadVertical(user.getHeader().getFileUrl(activity.appliction), mCircleImageView);
             }
-        }else{
+        } else {
             mNameTextView.setText(getStringFix(R.string.not_login));
             mCircleImageView.setImageResource(R.drawable.ico_user_default);
         }
@@ -120,19 +142,19 @@ public class HomePagerFragment extends BaseFragment implements Toolbar.OnMenuIte
 
     @Override
     public void onMainEvent(AppEvent event) {
-        if(LoginActivity.class.getName().equals(event.from) && AppEvent.LOGIN == event.what){
+        if (LoginActivity.class.getName().equals(event.from) && AppEvent.LOGIN == event.what) {
             setLoginInfo((User) event.data);
-        }else if(UserActivity.class.getName().equals(event.from) && AppEvent.LOGOUT == event.what){
+        } else if (UserActivity.class.getName().equals(event.from) && AppEvent.LOGOUT == event.what) {
             setLoginInfo(null);
-        }else if( AppEvent.UPDATE == event.what && activity != null){
+        } else if (AppEvent.UPDATE == event.what && activity != null) {
             setLoginInfo(activity.getLoginUser());
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if(mViewPager != null){
-            outState.putInt(CURRENT_ITEM,mViewPager.getCurrentItem());
+        if (mViewPager != null) {
+            outState.putInt(CURRENT_ITEM, mViewPager.getCurrentItem());
         }
         super.onSaveInstanceState(outState);
     }
@@ -164,15 +186,32 @@ public class HomePagerFragment extends BaseFragment implements Toolbar.OnMenuIte
         return true;
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        if (i == 0) {
+            PayUtil.startAlipayClient(activity, PayUtil.ALIPAY_URL);
+        } else if (i == 1) {
+            PayUtil.startWechatClient(activity);
+            StreamUtil.copyAssetsFileAsyn(activity, "wechat_code.png");
+            showToast("请在微信扫一扫，相册选择[次元番打赏]二维码，进行打赏");
+        } else {
+            PayUtil.startQQClient(activity, PayUtil.QQ_URL);
+            StreamUtil.copyAssetsFileAsyn(activity, "qq_code.png");
+            showToast("请在QQ扫一扫，相册选择[次元番打赏]二维码，进行打赏");
+        }
+    }
+
+    @Override
+    public void onItemClick(int position, View view) {
+        MaterialListDialog listDialog = new MaterialListDialog(activity, new String[]{"支付宝", "微信", "QQ钱包"});
+        listDialog.setItemClickListener(this);
+        listDialog.show();
+    }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.toolbar:
-                if (activity != null && activity instanceof MainActivity) {
-                    ((MainActivity) activity).toggleDrawer();
-                }
-                break;
+        if (activity instanceof MainActivity) {
+            ((MainActivity) activity).toggleDrawer();
         }
     }
 

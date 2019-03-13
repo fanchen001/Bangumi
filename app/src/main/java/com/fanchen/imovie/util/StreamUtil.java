@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2012 www.amsoft.cn
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,11 +16,20 @@
 package com.fanchen.imovie.util;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.TextUtils;
+
+import org.eclipse.jetty.io.ByteArrayBuffer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -60,57 +69,57 @@ import okhttp3.ResponseBody;
  */
 public class StreamUtil {
 
-	/**
-	 * 获取ByteArrayInputStream.
-	 *
-	 * @param buf the buf
-	 * @return the input stream
-	 */
-	public static InputStream bytes2Stream(byte[] buf) {
-		return new ByteArrayInputStream(buf);
-	}
+    /**
+     * 获取ByteArrayInputStream.
+     *
+     * @param buf the buf
+     * @return the input stream
+     */
+    public static InputStream bytes2Stream(byte[] buf) {
+        return new ByteArrayInputStream(buf);
+    }
 
-	/**
-	 * 从流中读取数据到byte[]..
-	 *
-	 * @param inStream the in stream
-	 * @return the byte[]
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 */
-	public static byte[] stream2bytes(InputStream inStream){
-		byte[] buff = new byte[1024];
-		byte[] data = null;
+    /**
+     * 从流中读取数据到byte[]..
+     *
+     * @param inStream the in stream
+     * @return the byte[]
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public static byte[] stream2bytes(InputStream inStream) {
+        byte[] buff = new byte[1024];
+        byte[] data = null;
         ByteArrayOutputStream swapStream = null;
         try {
-			swapStream = new ByteArrayOutputStream();
-			int read = 0;
-			while ((read = inStream.read(buff, 0, 100)) > 0) {
-				swapStream.write(buff, 0, read);
-			}
-			data = swapStream.toByteArray();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}finally {
-            if(swapStream != null){
+            swapStream = new ByteArrayOutputStream();
+            int read = 0;
+            while ((read = inStream.read(buff, 0, 100)) > 0) {
+                swapStream.write(buff, 0, read);
+            }
+            data = swapStream.toByteArray();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        } finally {
+            if (swapStream != null) {
                 try {
                     swapStream.close();
-                }catch (IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
         return data;
-	}
-	
-	/**
+    }
+
+    /**
      * 从流中读取指定的长度到byte[].
      *
-     * @param in the in
+     * @param in     the in
      * @param length the length
      * @return the byte[]
      * @throws IOException Signals that an I/O exception has occurred.
      */
-	public static byte[] stream2Bytes(InputStream in, int length){
+    public static byte[] stream2Bytes(InputStream in, int length) {
         byte[] bytes = new byte[length];
         try {
             int count;
@@ -121,10 +130,10 @@ public class StreamUtil {
             if (pos != length) {
                 return null;
             }
-        }catch (Throwable e){
+        } catch (Throwable e) {
             e.printStackTrace();
-        }finally {
-            if(in != null){
+        } finally {
+            if (in != null) {
                 try {
                     in.close();
                 } catch (IOException e) {
@@ -134,8 +143,9 @@ public class StreamUtil {
         }
         return bytes;
     }
-	
-	/**
+
+
+    /**
      * Simple wrapper around {@link InputStream#read()} that throws EOFException
      * instead of returning -1.
      *
@@ -143,7 +153,7 @@ public class StreamUtil {
      * @return the int
      * @throws IOException Signals that an I/O exception has occurred.
      */
-	public static int read(InputStream is){
+    public static int read(InputStream is) {
         int b = -1;
         try {
             b = is.read();
@@ -157,10 +167,10 @@ public class StreamUtil {
      * Write int.
      *
      * @param os the os
-     * @param n the n
+     * @param n  the n
      * @throws IOException Signals that an I/O exception has occurred.
      */
-	public static void writeInt(OutputStream os, int n) throws IOException {
+    public static void writeInt(OutputStream os, int n) throws IOException {
         os.write((n >> 0) & 0xff);
         os.write((n >> 8) & 0xff);
         os.write((n >> 16) & 0xff);
@@ -174,7 +184,7 @@ public class StreamUtil {
      * @return the int
      * @throws IOException Signals that an I/O exception has occurred.
      */
-	public static int readInt(InputStream is) throws IOException {
+    public static int readInt(InputStream is) throws IOException {
         int n = 0;
         n |= (read(is) << 0);
         n |= (read(is) << 8);
@@ -187,18 +197,18 @@ public class StreamUtil {
      * Write long.
      *
      * @param os the os
-     * @param n the n
+     * @param n  the n
      * @throws IOException Signals that an I/O exception has occurred.
      */
-	public static void writeLong(OutputStream os, long n) throws IOException {
-        os.write((byte)(n >>> 0));
-        os.write((byte)(n >>> 8));
-        os.write((byte)(n >>> 16));
-        os.write((byte)(n >>> 24));
-        os.write((byte)(n >>> 32));
-        os.write((byte)(n >>> 40));
-        os.write((byte)(n >>> 48));
-        os.write((byte)(n >>> 56));
+    public static void writeLong(OutputStream os, long n) throws IOException {
+        os.write((byte) (n >>> 0));
+        os.write((byte) (n >>> 8));
+        os.write((byte) (n >>> 16));
+        os.write((byte) (n >>> 24));
+        os.write((byte) (n >>> 32));
+        os.write((byte) (n >>> 40));
+        os.write((byte) (n >>> 48));
+        os.write((byte) (n >>> 56));
     }
 
     /**
@@ -208,7 +218,7 @@ public class StreamUtil {
      * @return the long
      * @throws IOException Signals that an I/O exception has occurred.
      */
-	public static long readLong(InputStream is) throws IOException {
+    public static long readLong(InputStream is) throws IOException {
         long n = 0;
         n |= ((read(is) & 0xFFL) << 0);
         n |= ((read(is) & 0xFFL) << 8);
@@ -225,10 +235,10 @@ public class StreamUtil {
      * Write string.
      *
      * @param os the os
-     * @param s the s
+     * @param s  the s
      * @throws IOException Signals that an I/O exception has occurred.
      */
-	public static void writeString(OutputStream os, String s) throws IOException {
+    public static void writeString(OutputStream os, String s) throws IOException {
         byte[] b = s.getBytes("UTF-8");
         writeLong(os, b.length);
         os.write(b, 0, b.length);
@@ -241,7 +251,7 @@ public class StreamUtil {
      * @return the string
      * @throws IOException Signals that an I/O exception has occurred.
      */
-	public static String readString(InputStream is) throws IOException {
+    public static String readString(InputStream is) throws IOException {
         int n = (int) readLong(is);
         byte[] b = StreamUtil.stream2Bytes(is, n);
         return new String(b, "UTF-8");
@@ -251,10 +261,10 @@ public class StreamUtil {
      * Write string string map.
      *
      * @param map the map
-     * @param os the os
+     * @param os  the os
      * @throws IOException Signals that an I/O exception has occurred.
      */
-	public static void writeStringStringMap(Map<String, String> map, OutputStream os) throws IOException {
+    public static void writeStringStringMap(Map<String, String> map, OutputStream os) throws IOException {
         if (map != null) {
             writeInt(os, map.size());
             for (Entry<String, String> entry : map.entrySet()) {
@@ -273,7 +283,7 @@ public class StreamUtil {
      * @return the map
      * @throws IOException Signals that an I/O exception has occurred.
      */
-	public static Map<String, String> readStringStringMap(InputStream is) throws IOException {
+    public static Map<String, String> readStringStringMap(InputStream is) throws IOException {
         int size = readInt(is);
         Map<String, String> result = (size == 0)
                 ? Collections.<String, String>emptyMap()
@@ -286,21 +296,21 @@ public class StreamUtil {
         return result;
     }
 
-    public static byte[] url2byte(String strUrl){
-        return url2byte(strUrl,null);
+    public static byte[] url2byte(String strUrl) {
+        return url2byte(strUrl, null);
     }
 
-    public static String url2String(String strUrl){
+    public static String url2String(String strUrl) {
         byte[] bytes = url2byte(strUrl, null);
-        if(bytes != null && bytes.length > 0){
+        if (bytes != null && bytes.length > 0) {
             return new String(bytes);
         }
         return "";
     }
 
-    public static String url2String(String strUrl,Map<String, String> head){
+    public static String url2String(String strUrl, Map<String, String> head) {
         byte[] bytes = url2byte(strUrl, head);
-        if(bytes != null && bytes.length > 0){
+        if (bytes != null && bytes.length > 0) {
             return new String(bytes);
         }
         return "";
@@ -308,16 +318,17 @@ public class StreamUtil {
 
     /**
      * 获取URL数据并转换成byte数组
+     *
      * @param strUrl 请求地址
-     * @param head 请求头
+     * @param head   请求头
      * @return
      */
-    public static byte[] url2byte(String strUrl,Map<String, String> head) {
+    public static byte[] url2byte(String strUrl, Map<String, String> head) {
         byte[] bytes = null;
         try {
             OkHttpClient mOkHttpClient = new OkHttpClient();
             Request.Builder builder = new Request.Builder();
-            if(head != null && !head.isEmpty()){
+            if (head != null && !head.isEmpty()) {
                 Set<Entry<String, String>> entrySet = head.entrySet();
                 Iterator<Entry<String, String>> iterator = entrySet.iterator();
                 while (iterator.hasNext()) {
@@ -337,26 +348,26 @@ public class StreamUtil {
         return bytes;
     }
 
-    public static byte[] doPoset(String url, String json, Map<String, String> heads){
+    public static byte[] doPoset(String url, String json, Map<String, String> heads) {
         byte[] bytes = null;
         try {
             OkHttpClient mOkHttpClient = new OkHttpClient();
             String content_type = "application/x-www-form-urlencoded; charset=UTF-8";
-            if(heads != null && heads.get("Content-type") != null){
+            if (heads != null && heads.get("Content-type") != null) {
                 content_type = heads.get("Content-type");
             }
-            RequestBody requestBody = RequestBody.create(MediaType.parse(content_type),json);
+            RequestBody requestBody = RequestBody.create(MediaType.parse(content_type), json);
             Request.Builder builder = new Request.Builder();
-            if(heads != null){
+            if (heads != null) {
                 Set<Entry<String, String>> entrySet = heads.entrySet();
                 Iterator<Entry<String, String>> iterator = entrySet.iterator();
-                while(iterator.hasNext()){
+                while (iterator.hasNext()) {
                     Entry<String, String> next = iterator.next();
                     builder.header(next.getKey(), next.getValue());
                 }
-            }else{
-                builder.header("Connection","keep-alive");
-                builder.header("Accept-Encoding","gzip, deflate, sdch");
+            } else {
+                builder.header("Connection", "keep-alive");
+                builder.header("Accept-Encoding", "gzip, deflate, sdch");
             }
             Request request = builder.url(url).post(requestBody).build();
             mOkHttpClient.newBuilder().connectTimeout(10 * 1000, TimeUnit.SECONDS)
@@ -364,7 +375,7 @@ public class StreamUtil {
             Call newCall = mOkHttpClient.newCall(request);
             Response execute = newCall.execute();
             bytes = doResponse(execute);
-        }catch (Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
         return bytes;
@@ -372,6 +383,7 @@ public class StreamUtil {
 
     /**
      * 处理响应
+     *
      * @param execute
      * @return
      * @throws IOException
@@ -407,7 +419,7 @@ public class StreamUtil {
         SSLSocketFactory sSLSocketFactory = null;
         try {
             SSLContext sc = SSLContext.getInstance("TLS");
-            sc.init(null, new TrustManager[]{new TrustAllManager()},new SecureRandom());
+            sc.init(null, new TrustManager[]{new TrustAllManager()}, new SecureRandom());
             sSLSocketFactory = sc.getSocketFactory();
         } catch (Exception e) {
             e.printStackTrace();
@@ -421,11 +433,11 @@ public class StreamUtil {
 
     private static class TrustAllManager implements X509TrustManager {
         @Override
-        public void checkClientTrusted(X509Certificate[] chain, String authType)throws CertificateException {
+        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
         }
 
         @Override
-        public void checkServerTrusted(X509Certificate[] chain, String authType)throws CertificateException {
+        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
         }
 
         @Override
@@ -438,6 +450,69 @@ public class StreamUtil {
         @Override
         public boolean verify(String hostname, SSLSession session) {
             return true;
+        }
+    }
+
+    public static void copyAssetsFileAsyn(final Context context, final String fileName) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+        copyAssetsFileAsyn(context, fileName, path + "/" + fileName);
+    }
+
+    public static void copyAssetsFileAsyn(final Context context, final String fileName, final String newFilePath) {
+        new Thread() {
+
+            @Override
+            public void run() {
+                StreamUtil.copyAssetsFile(context, fileName, newFilePath);
+            }
+
+        }.start();
+    }
+
+
+    public static void copyAssetsFile(Context context, String fileName, String newFilePath) {
+        InputStream open = null;
+        FileOutputStream fos = null;
+        try {
+            open = context.getAssets().open(fileName);
+            File file = new File(newFilePath);
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            fos = new FileOutputStream(file);
+            int length;
+            byte[] buff = new byte[4096];
+            while ((length = open.read(buff)) != -1) {
+                fos.write(buff, 0, length);
+            }
+            // 其次把文件插入到系统图库
+            String path = file.getAbsolutePath();
+            MediaStore.Images.Media.insertImage(context.getContentResolver(), path, fileName, null);
+            // 最后通知图库更新
+            Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            Uri uri = Uri.fromFile(file);
+            intent.setData(uri);
+            context.sendBroadcast(intent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (open != null) {
+                try {
+                    open.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

@@ -239,8 +239,8 @@ public class KupianImpl implements IVideoMoreParser {
             if (!TextUtils.isEmpty(attr)) {
                 mapUrl.put("标清", attr);
                 playUrl.setSuccess(true);
-            }else if (html.contains("ftp://")) {
-                int i = html.indexOf("ftp://");
+            }else if (html.contains("ftp:")) {
+                int i = html.indexOf("ftp:");
                 html = html.substring(i);
                 i = html.indexOf(",");
                 html = html.substring(0, i - 1);

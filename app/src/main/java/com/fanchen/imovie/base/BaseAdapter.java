@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,7 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
     protected LayoutInflater mLayoutInflater;
     protected Context context;
 
-    private boolean isLoad = true;
+    protected boolean isLoad = true;
     private boolean isLoading = false;
     private OnLoadListener onLoadListener;
     private int loadMinSize = 6;

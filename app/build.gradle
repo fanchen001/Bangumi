@@ -3,38 +3,47 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.3"
     //签名配置
     signingConfigs {
         debugConfig {
             keyAlias "1"
             keyPassword "happy1993_chen"
-            storeFile file("E:/workspace/androidStudio/happy1993_chen")
+            storeFile file("E:/Workspace/happy1993_chen")
             storePassword "happy1993_chen"
         }
         releaseConfig {
             keyAlias "1"
             keyPassword "happy1993_chen"
-            storeFile file("E:/workspace/androidStudio/happy1993_chen")
+            storeFile file("E:/Workspace/happy1993_chen")
             storePassword "happy1993_chen"
         }
+    }
+
+    lintOptions {
+        abortOnError false
     }
 
     dexOptions {
         dexInProcess true
         preDexLibraries true
         javaMaxHeapSize "4g"//越大越好
-        incremental true
     }
 
     defaultConfig {
         multiDexEnabled true
         applicationId "com.fanchen.imovie"
         minSdkVersion 19
-        targetSdkVersion 23
-        versionCode 20181125
-        versionName "2.11.25 alpha"
+        //noinspection ExpiredTargetSdkVersion
+        targetSdkVersion 25
+        versionCode 20190313
+        versionName "3.3.12 alpha"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath true
+            }
+        }
     }
     buildTypes {
         debug {
@@ -67,30 +76,29 @@ afterEvaluate {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.android.support:multidex:1.0.3'
     /** *******下面是eventbus sdk 事件总线             *********/
     compile 'org.greenrobot:eventbus:3.0.0'
     /** *******下面是butterknife sdk ioc             *********/
     compile 'com.jakewharton:butterknife:5.1.1'
     /** *******下面是support 支持库             *********/
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:design:23.4.0'
-    compile 'com.android.support:gridlayout-v7:23.4.0'
-    compile 'com.android.support:cardview-v7:23.4.0'
-    compile('com.android.support:support-v4:23.4.0') {
-        force = true;
-    }
-    compile('com.android.support:recyclerview-v7:23.4.0') {
+    compile 'com.android.support:appcompat-v7:25.4.0'
+    compile 'com.android.support:design:25.4.0'
+    compile 'com.android.support:gridlayout-v7:25.4.0'
+    compile 'com.android.support:cardview-v7:25.4.0'
+    compile('com.android.support:support-v4:25.4.0')
+    compile('com.android.support:recyclerview-v7:25.4.0') {
         exclude module: 'support-v4'
     }
-    compile 'com.android.support:support-v4:23.4.0'
     /** *******下面是swipebackhelper 滑动返回             *********/
     compile 'com.jude:swipebackhelper:3.1.2'
+    /** *******   今日头条屏幕适配方案         *********/
+    compile 'me.jessyan:autosize:1.1.2'
     /** *******下面是gson json             *********/
-    compile 'com.google.code.gson:gson:2.7'
+    compile 'com.google.code.gson:gson:2.8.2'
     /** *******下面是squareup 全家桶             *********/
     compile 'com.squareup.okio:okio:1.14.1'
-    compile 'com.squareup.okhttp3:okhttp:3.10.0'
+    compile 'com.squareup.okhttp3:okhttp:3.11.0'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     /** *******picasso 图片加载             *********/
     compile 'com.squareup.picasso:picasso:2.5.2'
@@ -98,7 +106,7 @@ dependencies {
     compile 'com.arialyy.aria:aria-core:3.5'
     annotationProcessor 'com.arialyy.aria:aria-compiler:3.5'
     /** ******* kotlin runtime        *********/
-    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.0.6'
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.2.71'
     // Cling library 用来实现投屏
     compile 'org.fourthline.cling:cling-core:2.1.1'
     compile 'org.fourthline.cling:cling-support:2.1.1'
@@ -120,7 +128,7 @@ dependencies {
     compile files('libs/x5browser.jar')
     compile files('libs/rhino-1.7.7.1.jar')
     /** ******* kotlin 写的 m3u8下载器      *********/
-    compile files('libs/m3u8downloader_1.0.jar')
+    compile files('libs/m3u8downloader_1.2.jar')
     compile files('libs/p2p_tv_sdk.jar')
     /** ******* 迅雷下载器 支持 http https ftp ed2k thunder magnet      *********/
     compile files('libs/xunlei.downloadlib.jar')

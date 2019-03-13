@@ -38,10 +38,8 @@ public class HomePagerAdapter extends BaseFragmentAdapter {
                 return HomeIndexFragment.newInstance(PATHS[position],false,true);
             case 3:
                 return HomeCategoryFragment.newInstance();
-            case 4:
-                return HomeMoreFragment.newInstance();
             default:
-                return null;
+                return HomeMoreFragment.newInstance();
         }
     }
 }

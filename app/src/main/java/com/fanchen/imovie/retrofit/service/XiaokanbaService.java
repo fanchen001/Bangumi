@@ -29,7 +29,7 @@ public interface XiaokanbaService {
      * @param page
      * @return
      */
-    @GET("videos_type_{type}_sort_time_gener_全部_area_全部_year_全部_p_{page}.html")
+    @GET("frim/index{type}-{page}.html")
     @JsoupType(JsoupSource.XIAOKANBA)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.HOME)
@@ -54,19 +54,19 @@ public interface XiaokanbaService {
      * @param word
      * @return
      */
-    @GET("search_key_{key}_sort_time_p_{p}.html")
+    @GET("search.php")
     @JsoupType(JsoupSource.XIAOKANBA)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.SEARCH)
     @Headers({"User-Agent: Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36"})
-    Call<IBangumiMoreRoot> search(@Path("p") Integer page, @Path("key") String word);
+    Call<IBangumiMoreRoot> search(@Query("page") Integer page, @Query("searchword") String word);
 
     /**
      *
      * @param path
      * @return
      */
-    @GET("{path}")
+    @GET("/movie/index{path}.html")
     @JsoupType(JsoupSource.XIAOKANBA)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.DETAILS)
@@ -78,7 +78,7 @@ public interface XiaokanbaService {
      * @param path
      * @return
      */
-    @GET("{path}")
+    @GET("play/{path}")
     @JsoupType(JsoupSource.XIAOKANBA)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.PLAYURL)
@@ -88,7 +88,7 @@ public interface XiaokanbaService {
     /**
      * @return
      */
-    @GET("videos_type_{pid}_sort_time_gener_全部_area_全部_year_全部_p_{page}.html")
+    @GET("frim/index{pid}-{page}.html")
     @JsoupType(JsoupSource.XIAOKANBA)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.MORE)

@@ -73,7 +73,7 @@ public interface LaosijiService {
      * @param path
      * @return
      */
-    @GET("shiping/{path}")
+    @GET("shiping/{path}.html")
     @JsoupType(JsoupSource.LAOSIJI)
     @MethodType(value = MethodSource.DETAILS)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)

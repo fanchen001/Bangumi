@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
@@ -11,6 +12,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ViewFlipper;
 
 import com.fanchen.imovie.R;
+import com.fanchen.imovie.util.DisplayUtil;
 
 import java.util.List;
 
@@ -96,7 +98,10 @@ public class MarqueeView extends ViewFlipper {
                     }
                 }
             });
-            addView(views.get(i));
+            MarginLayoutParams layoutParams = new MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            layoutParams.leftMargin = DisplayUtil.dip2px(getContext(),10);
+            layoutParams.rightMargin = DisplayUtil.dip2px(getContext(),10);
+            addView(views.get(i),layoutParams);
         }
         startFlipping();
     }

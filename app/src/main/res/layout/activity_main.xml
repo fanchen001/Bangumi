@@ -17,7 +17,6 @@
             android:layout_height="match_parent" />
 
     </com.fanchen.imovie.view.StatusBarLayout>
-
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation_view"
         android:layout_width="@dimen/navigation_max_width"
@@ -26,6 +25,8 @@
         android:background="@color/navigation_background_light"
         android:overScrollMode="never"
         android:scrollbars="none"
+        app:itemTextColor="@color/nav_menu_color"
+        app:itemIconTint="@color/nav_menu_color"
         app:headerLayout="@layout/layout_navigation_header"
         app:menu="@menu/menu_navigation" />
 </android.support.v4.widget.DrawerLayout>

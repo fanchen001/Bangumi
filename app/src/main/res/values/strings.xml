@@ -202,9 +202,9 @@
         <item>haoqu</item>
     </string-array>
     <string-array name="pref_sync_frequency_titles">
-        <item>1任务</item>
-        <item>2任务</item>
-        <item>3任务</item>
+        <item>1线程</item>
+        <item>2线程</item>
+        <item>3线程</item>
     </string-array>
     <string-array name="pref_sync_frequency_values">
         <item>1</item>

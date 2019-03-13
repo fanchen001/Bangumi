@@ -260,7 +260,9 @@ public class VideoTabActivity extends BaseTabActivity implements SearchDialogFra
 
     @Override
     public void onSearchClick(ISearchWord word) {
-        String classNmae = mPagerAdapter.getExtendInfo().toString();
+        Object info = mPagerAdapter.getExtendInfo();
+        if(info == null) return;
+        String classNmae = info.toString();
         int multiple = mPagerAdapter.getMultiple();
         int pageStart = mPagerAdapter.getPageStart();
         String wordString = word.getWord();

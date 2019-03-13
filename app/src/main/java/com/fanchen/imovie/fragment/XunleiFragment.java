@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
@@ -95,7 +96,7 @@ public class XunleiFragment extends BaseRecyclerFragment implements DownloadTabA
     public void onItemClick(List<?> datas, View v, int position) {
         if (!(datas.get(position) instanceof XLTaskWarp)) return;
         XLTaskWarp warp = (XLTaskWarp) datas.get(position);
-        if (warp.data.mTaskStatus != 2) return;
+        if (warp.data.mTaskStatus != 2 || TextUtils.isEmpty(warp.data.mFileName)) return;
         File file = new File(XLAppliction.XL_PATH, warp.data.mFileName);
         if (!file.exists()) {
             showToast("文件已删除");

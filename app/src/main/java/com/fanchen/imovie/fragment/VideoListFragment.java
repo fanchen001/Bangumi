@@ -280,7 +280,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
                 mVideoAdapter.setLoad(false);
                 showSnackbar(getStringFix(R.string.not_more));
             } else {
-                mVideoAdapter.setLoad(hasLoad);
+                mVideoAdapter.setLoad(true);
                 mVideoAdapter.addData(date);
             }
         }

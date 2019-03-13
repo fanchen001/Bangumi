@@ -1,17 +1,20 @@
 package com.fanchen.imovie.entity;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
+import com.fanchen.imovie.util.LogUtil;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
  * 重构后的 视频播放地址
  * Created by fanchen on 2017/9/28.
  */
-public class VideoPlayUrls implements IPlayUrls{
+public class VideoPlayUrls implements IPlayUrls {
 
     private boolean success;
     private String message;
@@ -51,7 +54,9 @@ public class VideoPlayUrls implements IPlayUrls{
     public String getMainUrl() {
         Map<String, String> urls = getUrls();
         if (urls != null && !urls.isEmpty()) {
-            return urls.entrySet().iterator().next().getValue();
+            String value = urls.entrySet().iterator().next().getValue();
+            String replace = value.replace("\\/", "/");
+            return decodeUnicode(replace);
         }
         return null;
     }
@@ -108,5 +113,38 @@ public class VideoPlayUrls implements IPlayUrls{
 
     public void setCid(String cid) {
         this.cid = cid;
+    }
+
+    static String decodeUnicode(String dataStr) {
+        final StringBuilder buffer = new StringBuilder();
+        try {
+            String[] split = dataStr.split("\\\\u");
+            for (int i = 0; i < split.length; i++) {
+                String s = split[i];
+                LogUtil.e("decodeUnicode","sp -> " + s);
+                LogUtil.e("decodeUnicode","contains(.) -> " + s.contains("."));
+                if (i == 0 && (s.startsWith("http") || s.startsWith("xg") || s.startsWith("ftp"))) {
+                    buffer.append(s);
+                } else if (s.contains(".")) {
+                    String[] contains = s.split("\\.");
+                    String contain = contains[0];
+                    if(contain.length() > 4){
+                        char letter = (char) Integer.parseInt(contain.substring(0,4), 16); // 16进制parse整形字符串。
+                        buffer.append(Character.valueOf(letter).toString());
+                        buffer.append(contain, 4, contain.length());
+                    }else{
+                        char letter = (char) Integer.parseInt(contain, 16); // 16进制parse整形字符串。
+                        buffer.append(Character.valueOf(letter).toString());
+                    }
+                    buffer.append(".").append(contains[1]);
+                } else {
+                    char letter = (char) Integer.parseInt(s, 16); // 16进制parse整形字符串。
+                    buffer.append(Character.valueOf(letter).toString());
+                }
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return buffer.toString();
     }
 }

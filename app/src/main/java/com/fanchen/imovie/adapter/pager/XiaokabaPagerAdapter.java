@@ -13,7 +13,8 @@ import com.fanchen.imovie.retrofit.service.XiaokanbaService;
  */
 public class XiaokabaPagerAdapter extends BaseFragmentAdapter {
     private final String[] TITLES = new String[]{"首页","电影", "电视剧", "综艺","动漫"};
-    private final String[] PATHS = new String[]{"index","1", "2", "3","4"};
+    //frim/index1.html
+    private final String[] PATHS = new String[]{"","1", "2", "3","4"};
 
     public XiaokabaPagerAdapter(FragmentManager fm) {
         super(fm);

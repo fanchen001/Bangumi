@@ -22,6 +22,7 @@ import com.fanchen.imovie.retrofit.service.HaliHaliService;
 import com.fanchen.imovie.util.JavaScriptUtil;
 import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.StreamUtil;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -93,9 +94,10 @@ public class HaliHaliParser implements IVideoMoreParser {
             if (banners.size() > 0) {
                 videoHome.setHomeBanner(banners);
             }
+            LogUtil.e("home","section -> " + node.list("section.mod.margin-t-15").size());
             for (Node n : node.list("section.mod.margin-t-15")) {
-                String topTitle = n.text("div.mod-head.clearfix > div > span");
-                if (TextUtils.isEmpty(topTitle)) break;
+                String topTitle = n.text("span.mod-head-name");
+                if (TextUtils.isEmpty(topTitle) || "热点推送" .equals(topTitle)|| "小哈推荐" .equals(topTitle)) continue;
                 String topUrl = baseUrl + n.attr("iv.mod-head.clearfix > a", "href");
                 String topId = n.attr("div.mod-head.clearfix > a", "href", "/", 1);
                 List<Video> videos = new ArrayList<>();
@@ -126,6 +128,7 @@ public class HaliHaliParser implements IVideoMoreParser {
                     titles.add(videoTitle);
                 }
             }
+            LogUtil.e("home","titles -> " + new Gson().toJson(titles));
             if (titles.size() == 0) {
                 List<Video> videos = new ArrayList<>();
                 for (Node sub : node.list("ul > li.video-item")) {

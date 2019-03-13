@@ -3,6 +3,7 @@ package com.fanchen.imovie.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -60,13 +61,20 @@ public class VideoIndexAdapter extends BaseAdapter {
     }
 
     @Override
+    public boolean hasFooterView() {
+        return true;
+    }
+
+    @Override
     public RecyclerView.ViewHolder createViewHolder(View v, int viewType) {
         RecyclerView.ViewHolder holder = null;
         if (viewType == IViewType.TYPE_HEADER) {
             holder = new HeaderViewHolder(v);
         } else if (viewType == IViewType.TYPE_TITLE) {
             holder = new TitleViewHolder(v);
-        } else {
+        } else if (viewType == IViewType.TYPE_FOOTER) {
+            holder = new RecyclerView.ViewHolder(v){};
+        }else {
             holder = new VideoViewHolder(v);
         }
         return holder;
@@ -119,6 +127,8 @@ public class VideoIndexAdapter extends BaseAdapter {
                 }
                 videoViewHolder.titleTextView.setText(video.getTitle());
                 picasso.loadVertical(video.getCover(), VideoTabActivity.class, videoViewHolder.imageView);
+            }else if (viewType == IViewType.TYPE_FOOTER){
+
             }
         }
     }
@@ -130,6 +140,8 @@ public class VideoIndexAdapter extends BaseAdapter {
             layout = R.layout.item_banner;
         } else if (viewType == IViewType.TYPE_TITLE) {
             layout = R.layout.item_home_title;
+        } else if (viewType == IViewType.TYPE_FOOTER) {
+            layout = R.layout.item_non_footer;
         } else {
             layout = R.layout.item_video_vertical;
         }

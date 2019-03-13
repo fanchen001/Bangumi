@@ -20,7 +20,10 @@ import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
 
+import java.io.InputStream;
 import java.lang.ref.SoftReference;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +51,7 @@ public class VideoUrlUtil {
     private Handler handler = new Handler(Looper.getMainLooper());
 
     private SoftReference<ViewGroup> mMainViewReference;//content view
-    private OnParseWebUrlListener mOnParseWebUrlListener;//解析回掉
+    private SoftReference<OnParseWebUrlListener> mListenerReference;//解析回掉
 
     public static VideoUrlUtil getInstance() {
         if (parseWebUrlHelper == null) {
@@ -90,7 +93,7 @@ public class VideoUrlUtil {
             this.webUrl = url;
             this.referer = referer;
             ViewGroup mainView = (ViewGroup) act.findViewById(android.R.id.content);
-            if (mMainViewReference != null) {
+            if (mMainViewReference == null) {
                 mMainViewReference = new SoftReference<>(mainView);
             }
             this.webView = new WebView(mContext);
@@ -173,7 +176,7 @@ public class VideoUrlUtil {
                 viewGroup.removeView(webView);
             }
         }
-        mOnParseWebUrlListener = null;
+        mListenerReference = null;
     }
 
     /**
@@ -183,7 +186,7 @@ public class VideoUrlUtil {
      * @return
      */
     public VideoUrlUtil setOnParseListener(OnParseWebUrlListener onParseListener) {
-        this.mOnParseWebUrlListener = onParseListener;
+        this.mListenerReference = new SoftReference<>(onParseListener);
         return this;
     }
 
@@ -329,8 +332,37 @@ public class VideoUrlUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        LogUtil.e("warpUrl","url -> " + url);
+        LogUtil.e("warpUrl", "url -> " + url);
         return url;
+    }
+
+    public void onFindUrl(String newUrl){
+        handler.removeCallbacks(timeoutRunnable);//找到了视频地址，移除超时runnable
+        if (mListenerReference != null){
+            OnParseWebUrlListener listener = mListenerReference.get();
+            if (listener != null){
+                listener.onFindUrl(newUrl);
+            }
+        }
+        LogUtil.e(VideoUrlUtil.class.getSimpleName(), "onFindUrl url => " + newUrl);
+        if (autoDestroy) destroy();
+    }
+
+    public void reParser(String newUrl){
+        webUrl = warpUrl(newUrl);
+        startParse();
+        LogUtil.e(VideoUrlUtil.class.getSimpleName(), "包裹了iframe 需要再次解析 url => " + webUrl);
+    }
+
+    public void onFindError(String error){
+        LogUtil.e(VideoUrlUtil.class.getSimpleName(), error);
+        if (mListenerReference != null){
+            OnParseWebUrlListener listener = mListenerReference.get();
+            if (listener != null){
+                listener.onError(error);
+            }
+        }
+        if (autoDestroy) destroy();
     }
 
     /**
@@ -347,19 +379,18 @@ public class VideoUrlUtil {
             String source = node.attr("source", "src");
             String iframe = node.attr("iframe", "src");
             if (!TextUtils.isEmpty(video) || !TextUtils.isEmpty(source)) {//找到了video url
-                handler.removeCallbacks(timeoutRunnable);//找到了视频地址，移除超时runnable
                 video = TextUtils.isEmpty(video) ? source : video;
                 String newUrl = warpUrl(video);
-                if (mOnParseWebUrlListener != null)
-                    mOnParseWebUrlListener.onFindUrl(newUrl);
-                LogUtil.e(VideoUrlUtil.class.getSimpleName(), "onFindUrl url => " + newUrl);
-                if(autoDestroy)destroy();
+                if (video.contains(".m3u8") || video.contains(".mp4") || video.contains(".wmv") || video.contains(".mkv")
+                        || video.contains(".3gp") || video.contains(".avi")) {
+                    onFindUrl(newUrl);
+                } else {
+                    new ConnectionThread(newUrl).start();
+                }
             } else if (!TextUtils.isEmpty(iframe)) {//还需要请求一次
                 List<Node> iframes = node.list("iframe");
                 if (iframes.size() <= 1) {
-                    webUrl = warpUrl(iframe);
-                    startParse();
-                    LogUtil.e(VideoUrlUtil.class.getSimpleName(), "包裹了iframe 需要再次解析 url => " + webUrl);
+                    reParser(iframe);
                 } else {
                     for (Node ifran : iframes) {
                         String aClass = ifran.attr("class");
@@ -376,25 +407,17 @@ public class VideoUrlUtil {
                         }
                     }
                     if (!TextUtils.isEmpty(iframe)) {
-                        webUrl = warpUrl(iframe);
-                        startParse();
-                        LogUtil.e(VideoUrlUtil.class.getSimpleName(), "包裹了iframe 需要再次解析 url => " + webUrl);
+                        reParser(iframe);
                     } else {
-                        LogUtil.e(VideoUrlUtil.class.getSimpleName(), "未获取到视频地址");
-                        if (mOnParseWebUrlListener != null)
-                            mOnParseWebUrlListener.onError("未获取到视频地址");
+                        onFindError("未获取到视频地址");
                     }
                 }
             } else {
-                LogUtil.e(VideoUrlUtil.class.getSimpleName(), "未获取到视频地址");
-                if (mOnParseWebUrlListener != null)
-                    mOnParseWebUrlListener.onError("未获取到视频地址");
+                onFindError("未获取到视频地址");
             }
         } else if (isTimeout) {
             isTimeout = false;//标记复位
-            if (mOnParseWebUrlListener != null)
-                mOnParseWebUrlListener.onError("获取视频地址  超時");
-            LogUtil.e(VideoUrlUtil.class.getSimpleName(), "获取视频地址  超時");
+            onFindError("获取视频地址  超時");
         }
     }
 
@@ -470,6 +493,33 @@ public class VideoUrlUtil {
         }
 
     };
+
+    private static class ConnectionThread extends Thread {
+        private String url;
+
+        public ConnectionThread(String url) {
+            this.url = url;
+        }
+
+        @Override
+        public void run() {
+            try {
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.connect();
+                String contentType = connection.getContentType();
+                if (contentType == null) {
+                    VideoUrlUtil.getInstance().onFindError("contentType == null");
+                } else if (contentType.contains("html")) {
+                    VideoUrlUtil.getInstance().reParser(url);
+                } else if (contentType.contains("video") || contentType.contains("mpegurl")) {
+                    VideoUrlUtil.getInstance().onFindUrl(url);
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
 
     /**
      * OnParseWebUrlListener

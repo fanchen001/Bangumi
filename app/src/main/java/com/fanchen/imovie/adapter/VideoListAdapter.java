@@ -3,6 +3,7 @@ package com.fanchen.imovie.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -49,7 +50,7 @@ public class VideoListAdapter extends BaseAdapter{
 
     @Override
     public boolean hasFooterView() {
-        return hasLoad;
+        return true;
     }
 
     @Override
@@ -104,8 +105,10 @@ public class VideoListAdapter extends BaseAdapter{
             return R.layout.item_video_vertical;
         }else if(viewType == IViewType.TYPE_TITLE){
             return R.layout.item_home_title;
-        }else{
+        }else if(hasLoad){
             return R.layout.item_load_footer;
+        }else{
+            return R.layout.item_non_footer;
         }
     }
 

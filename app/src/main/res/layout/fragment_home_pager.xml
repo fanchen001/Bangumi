@@ -19,7 +19,6 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-
             <LinearLayout
                 android:id="@+id/navigation_layout"
                 android:layout_width="wrap_content"
@@ -36,8 +35,8 @@
                     android:id="@+id/toolbar_user_avatar"
                     android:layout_width="@dimen/circle_user_small_size"
                     android:layout_height="@dimen/circle_user_small_size"
-                    android:layout_marginEnd="@dimen/default_tiny_margin"
                     android:layout_marginStart="@dimen/activity_vertical_margin"
+                    android:layout_marginEnd="@dimen/default_tiny_margin"
                     android:src="@drawable/ico_user_default"
                     app:border_color="@color/white"
                     app:border_width="@dimen/circle_default_width" />
@@ -65,13 +64,24 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <com.fanchen.imovie.view.NoScrollViewPager
-        android:id="@+id/view_pager"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:overScrollMode="never"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <com.fanchen.imovie.view.NoScrollViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="never" />
+
+        <com.fanchen.imovie.view.MarqueeView
+            android:id="@+id/mv_adv"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/adv_size"
+            android:background="?attr/colorPrimary" />
+    </FrameLayout>
 </com.fanchen.imovie.view.InterceptCoordinatorLayout>
 
 

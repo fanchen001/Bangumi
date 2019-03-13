@@ -13,6 +13,7 @@ public class SplashScreen extends BmobObject {
     private String screenImage = "";
     private String kankanCookie = "";
     private String alipays = "";
+    private String[] advs = null;
 
     public long getStartTime() {
         return startTime;
@@ -60,5 +61,13 @@ public class SplashScreen extends BmobObject {
 
     public void setKankanCookie(String kankanCookie) {
         this.kankanCookie = kankanCookie;
+    }
+
+    public String[] getAdvs() {
+        return advs;
+    }
+
+    public void setAdvs(String[] advs) {
+        this.advs = advs;
     }
 }

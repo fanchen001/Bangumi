@@ -371,129 +371,144 @@ public class XiaokanbaImpl implements IVideoMoreParser {
 
     @Override
     public IPlayUrls playUrl(Retrofit retrofit, String baseUrl, String html) {
-        Node node = new Node(html);
         VideoPlayUrls playUrl = new VideoPlayUrls();
         try {
-            Map<String, String> map = new HashMap<>();
-            map.put("Referer", RetrofitManager.REQUEST_URL);
-            map.put("User-Agent", "Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36");
-            String url = baseUrl + node.attr("iframe", "src").replace(".", "");
-            byte[] bytes = StreamUtil.url2byte(url, map);
-            String videoUrl = "";
-            if (bytes != null && bytes.length > 0) {
-                html = new String(bytes);
-                if (html.contains("ODflv")) {
-                    LogUtil.e("ODflv", "ODflv    解析");
-                    int startPosition = html.indexOf("$.post(\"api.php\", {");
-                    if (startPosition != -1) {
-                        html = html.substring(startPosition + 18);
-                        int endPosition = html.indexOf("\"},");
-                        if (endPosition != -1) {
-                            html = html.substring(0, endPosition + 2);
-                            JSONObject jsonObject = new JSONObject(html);
-                            String json = String.format("time=%s&key=%s&url=%s&type=%s", jsonObject.getString("time"), jsonObject.getString("key"), URLEncoder.encode(jsonObject.getString("url")), jsonObject.getString("type"));
-                            map.put("Referer", "https://p.Video.com/odflv/index.php?url=" + URLEncoder.encode(jsonObject.getString("url")));
-                            map.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-                            byte[] bs = StreamUtil.doPoset("https://p.Video.com/odflv/api.php", json, map);
-                            if (bs != null && bs.length > 0) {
-                                videoUrl = new JSONObject(new String(bs)).getString("url");
-                            }
-                        }
-                    }
-                } else if (html.contains("DPlayer")) {
-                    LogUtil.e("DPlayer", "DPlayer    解析");
-                    int startPosition = html.indexOf("url: '");
-                    if (startPosition != -1) {
-                        html = html.substring(startPosition + 6);
-                        int endPosition = html.indexOf("',");
-                        if (endPosition != -1) {
-                            videoUrl = html.substring(0, endPosition);
-                        }
-                    }
-                } else if (html.contains("play_url")) {
-                    LogUtil.e("play_url", "play_url    解析");
-                    int startPosition = html.indexOf("play_url='");
-                    if (startPosition != -1) {
-                        html = html.substring(startPosition + 10);
-                        int endPosition = html.indexOf("',");
-                        if (endPosition != -1) {
-                            videoUrl = html.substring(0, endPosition);
-                        }
-                    }
-                } else if (html.contains("$.ajax")) {
-                    LogUtil.e("ajax", "ajax    解析");
-                    int startPosition = html.indexOf("url: '");
-                    if (startPosition != -1) {
-                        html = html.substring(startPosition + 6);
-                        int endPosition = html.indexOf("',");
-                        if (endPosition != -1) {
-                            String mUrl = "http:" + html.substring(0, endPosition);
-                            byte[] bytess = StreamUtil.url2byte(mUrl);
-                            if (bytess != null && bytess.length > 0) {
-                                String json = new String(bytess).replace("var tvInfoJs=", "");
-                                videoUrl = new JSONObject(json).getJSONObject("data").getJSONArray("vidl").getJSONObject(0).getString("m3u");
-                            }
-                        }
-                    }
-                } else if (html.contains("vParse_Play")) {
-                    LogUtil.e("vParse_Play", "vParse_Play    解析");
-                    int startPosition = html.indexOf("urls: [{\"u\":\"");
-                    if (startPosition != -1) {
-                        html = html.substring(startPosition + 13);
-                        int endPosition = html.indexOf("\",");
-                        if (endPosition != -1) {
-                            videoUrl = html.substring(0, endPosition);
-                        }
-                    }
-                }
-                if (!TextUtils.isEmpty(videoUrl)) {
-                    long millis = System.currentTimeMillis();
-                    if (videoUrl.contains("video.qq.com")) {
-                        videoUrl = "https:" + videoUrl + "&filename=video.mp4&callback=getvideo&_=" + millis;
-                        String guid = JavaScriptUtil.match("guid=[\\w\\d]+&", videoUrl, 0, 5, 1);
-                        String sdtfrom = JavaScriptUtil.match("sdtfrom=[\\w\\d]+&", videoUrl, 0, 8, 1);
-                        videoUrl = StreamUtil.url2String(videoUrl);
-                        if (!TextUtils.isEmpty(videoUrl)) {
-                            JSONObject jsonObject = new JSONObject(videoUrl.substring(9, videoUrl.length() - 1));
-                            String vkey = jsonObject.getString("key");
-                            String filename = jsonObject.getString("filename");
-                            videoUrl = String.format("http://36.250.4.15/vlive.qqvideo.tc.qq.com/AIenJ3VT8eg39eYtdbkbKkgK-16e2gf8Q5enMzE50BsY/%s?sdtfrom=%s&guid=%s&vkey=%s", filename, sdtfrom, guid, vkey);
-                        }
-                    }
-                    if (videoUrl.contains("http://cache.m.iqiyi.com/jp/tmts/")) {
-                        videoUrl = new JSONObject(StreamUtil.url2String(videoUrl).replace("var tvInfoJs=", "")).getJSONObject("data").getJSONArray("vidl").getJSONObject(0).getString("m3u");
-                    }
-                    if (videoUrl.contains("https://ups.youku.com") || videoUrl.contains("http://ups.youku.com")) {
-                        String vid = JavaScriptUtil.match("vid=[\\w\\d]+==&", videoUrl, 0, 4, 3);
-                        String ccode = JavaScriptUtil.match("ccode=[\\w\\d]+&", videoUrl, 0, 6, 1);
-                        videoUrl = "https://ups.youku.com/ups/get.json?callback=json" + millis + "&vid=" + vid + "&ccode=" + ccode + "&client_ip=" + SystemUtil.getHostIP() + "&utid=U7a%2FEW4SsSsCAdzKmCvvEJEf&client_ts=" + millis;
-                        videoUrl = StreamUtil.url2String(videoUrl);
-                        if (!TextUtils.isEmpty(videoUrl)) {
-                            videoUrl = new JSONObject(videoUrl.substring(18, videoUrl.length() - 1)).getJSONObject("data").getJSONArray("stream").getJSONObject(0).getString("m3u8_url");
-                        }
-                    }
-                    if (!TextUtils.isEmpty(videoUrl)) {
-                        Map<String, String> playMap = new HashMap<>();
-                        playMap.put("标清", videoUrl);
-                        if (videoUrl.contains("response-content-type=video/mp4") || videoUrl.contains(".mp4")) {
-                            playUrl.setUrlType(IPlayUrls.URL_FILE);
-                        }
-                        if (videoUrl.startsWith("http://cn-")) {
-                            playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_ZZPLAYER);
-                        }
-                        playUrl.setSuccess(true);
-                        playUrl.setUrls(playMap);
-                    }
-                }
+            String regex = "var now=\"[\\w\\d`~!@#$%^&*_\\-+=<>?:|,.\\\\ \\/;']+\";";
+            String match = JavaScriptUtil.match(regex, html, 0,9,2);
+            LogUtil.e("playUrl","match -> " + match);
+            //var now="https://135zyv6.xw0371.com/share/kHHbXapSDLQVkYgA";
+            Map<String, String> playMap = new HashMap<>();
+            playUrl.setUrlType(VideoPlayUrls.URL_WEB);
+            playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+            playUrl.setReferer(RetrofitManager.REQUEST_URL);
+            if(!TextUtils.isEmpty(match)){
+                playMap.put("标清", match);
+            }else{
+                playMap.put("标清", RetrofitManager.REQUEST_URL);
             }
-            if (!playUrl.isSuccess() || playUrl.getUrls() == null || playUrl.getUrls().isEmpty()) {
-                Map<String, String> playMap = new HashMap<>();
-                playMap.put("标清", url);
-                playUrl.setUrlType(IPlayUrls.URL_WEB);
-                playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
-                playUrl.setSuccess(true);
-                playUrl.setUrls(playMap);
-            }
+            playUrl.setUrls(playMap);
+            playUrl.setSuccess(true);
+
+//            Map<String, String> map = new HashMap<>();
+//            map.put("Referer", RetrofitManager.REQUEST_URL);
+//            map.put("User-Agent", "Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36");
+//            String url = baseUrl + node.attr("iframe", "src").replace(".", "");
+//            byte[] bytes = StreamUtil.url2byte(url, map);
+//            String videoUrl = "";
+//            if (bytes != null && bytes.length > 0) {
+//                html = new String(bytes);
+//                if (html.contains("ODflv")) {
+//                    LogUtil.e("ODflv", "ODflv    解析");
+//                    int startPosition = html.indexOf("$.post(\"api.php\", {");
+//                    if (startPosition != -1) {
+//                        html = html.substring(startPosition + 18);
+//                        int endPosition = html.indexOf("\"},");
+//                        if (endPosition != -1) {
+//                            html = html.substring(0, endPosition + 2);
+//                            JSONObject jsonObject = new JSONObject(html);
+//                            String json = String.format("time=%s&key=%s&url=%s&type=%s", jsonObject.getString("time"), jsonObject.getString("key"), URLEncoder.encode(jsonObject.getString("url")), jsonObject.getString("type"));
+//                            map.put("Referer", "https://p.Video.com/odflv/index.php?url=" + URLEncoder.encode(jsonObject.getString("url")));
+//                            map.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+//                            byte[] bs = StreamUtil.doPoset("https://p.Video.com/odflv/api.php", json, map);
+//                            if (bs != null && bs.length > 0) {
+//                                videoUrl = new JSONObject(new String(bs)).getString("url");
+//                            }
+//                        }
+//                    }
+//                } else if (html.contains("DPlayer")) {
+//                    LogUtil.e("DPlayer", "DPlayer    解析");
+//                    int startPosition = html.indexOf("url: '");
+//                    if (startPosition != -1) {
+//                        html = html.substring(startPosition + 6);
+//                        int endPosition = html.indexOf("',");
+//                        if (endPosition != -1) {
+//                            videoUrl = html.substring(0, endPosition);
+//                        }
+//                    }
+//                } else if (html.contains("play_url")) {
+//                    LogUtil.e("play_url", "play_url    解析");
+//                    int startPosition = html.indexOf("play_url='");
+//                    if (startPosition != -1) {
+//                        html = html.substring(startPosition + 10);
+//                        int endPosition = html.indexOf("',");
+//                        if (endPosition != -1) {
+//                            videoUrl = html.substring(0, endPosition);
+//                        }
+//                    }
+//                } else if (html.contains("$.ajax")) {
+//                    LogUtil.e("ajax", "ajax    解析");
+//                    int startPosition = html.indexOf("url: '");
+//                    if (startPosition != -1) {
+//                        html = html.substring(startPosition + 6);
+//                        int endPosition = html.indexOf("',");
+//                        if (endPosition != -1) {
+//                            String mUrl = "http:" + html.substring(0, endPosition);
+//                            byte[] bytess = StreamUtil.url2byte(mUrl);
+//                            if (bytess != null && bytess.length > 0) {
+//                                String json = new String(bytess).replace("var tvInfoJs=", "");
+//                                videoUrl = new JSONObject(json).getJSONObject("data").getJSONArray("vidl").getJSONObject(0).getString("m3u");
+//                            }
+//                        }
+//                    }
+//                } else if (html.contains("vParse_Play")) {
+//                    LogUtil.e("vParse_Play", "vParse_Play    解析");
+//                    int startPosition = html.indexOf("urls: [{\"u\":\"");
+//                    if (startPosition != -1) {
+//                        html = html.substring(startPosition + 13);
+//                        int endPosition = html.indexOf("\",");
+//                        if (endPosition != -1) {
+//                            videoUrl = html.substring(0, endPosition);
+//                        }
+//                    }
+//                }
+//                if (!TextUtils.isEmpty(videoUrl)) {
+//                    long millis = System.currentTimeMillis();
+//                    if (videoUrl.contains("video.qq.com")) {
+//                        videoUrl = "https:" + videoUrl + "&filename=video.mp4&callback=getvideo&_=" + millis;
+//                        String guid = JavaScriptUtil.match("guid=[\\w\\d]+&", videoUrl, 0, 5, 1);
+//                        String sdtfrom = JavaScriptUtil.match("sdtfrom=[\\w\\d]+&", videoUrl, 0, 8, 1);
+//                        videoUrl = StreamUtil.url2String(videoUrl);
+//                        if (!TextUtils.isEmpty(videoUrl)) {
+//                            JSONObject jsonObject = new JSONObject(videoUrl.substring(9, videoUrl.length() - 1));
+//                            String vkey = jsonObject.getString("key");
+//                            String filename = jsonObject.getString("filename");
+//                            videoUrl = String.format("http://36.250.4.15/vlive.qqvideo.tc.qq.com/AIenJ3VT8eg39eYtdbkbKkgK-16e2gf8Q5enMzE50BsY/%s?sdtfrom=%s&guid=%s&vkey=%s", filename, sdtfrom, guid, vkey);
+//                        }
+//                    }
+//                    if (videoUrl.contains("http://cache.m.iqiyi.com/jp/tmts/")) {
+//                        videoUrl = new JSONObject(StreamUtil.url2String(videoUrl).replace("var tvInfoJs=", "")).getJSONObject("data").getJSONArray("vidl").getJSONObject(0).getString("m3u");
+//                    }
+//                    if (videoUrl.contains("https://ups.youku.com") || videoUrl.contains("http://ups.youku.com")) {
+//                        String vid = JavaScriptUtil.match("vid=[\\w\\d]+==&", videoUrl, 0, 4, 3);
+//                        String ccode = JavaScriptUtil.match("ccode=[\\w\\d]+&", videoUrl, 0, 6, 1);
+//                        videoUrl = "https://ups.youku.com/ups/get.json?callback=json" + millis + "&vid=" + vid + "&ccode=" + ccode + "&client_ip=" + SystemUtil.getHostIP() + "&utid=U7a%2FEW4SsSsCAdzKmCvvEJEf&client_ts=" + millis;
+//                        videoUrl = StreamUtil.url2String(videoUrl);
+//                        if (!TextUtils.isEmpty(videoUrl)) {
+//                            videoUrl = new JSONObject(videoUrl.substring(18, videoUrl.length() - 1)).getJSONObject("data").getJSONArray("stream").getJSONObject(0).getString("m3u8_url");
+//                        }
+//                    }
+//                    if (!TextUtils.isEmpty(videoUrl)) {
+//                        Map<String, String> playMap = new HashMap<>();
+//                        playMap.put("标清", videoUrl);
+//                        if (videoUrl.contains("response-content-type=video/mp4") || videoUrl.contains(".mp4")) {
+//                            playUrl.setUrlType(IPlayUrls.URL_FILE);
+//                        }
+//                        if (videoUrl.startsWith("http://cn-")) {
+//                            playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_ZZPLAYER);
+//                        }
+//                        playUrl.setSuccess(true);
+//                        playUrl.setUrls(playMap);
+//                    }
+//                }
+//            }
+//            if (!playUrl.isSuccess() || playUrl.getUrls() == null || playUrl.getUrls().isEmpty()) {
+//                Map<String, String> playMap = new HashMap<>();
+//                playMap.put("标清", url);
+//                playUrl.setUrlType(IPlayUrls.URL_WEB);
+//                playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+//                playUrl.setSuccess(true);
+//                playUrl.setUrls(playMap);
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -36,6 +36,7 @@ import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
 import com.fanchen.imovie.util.DateUtil;
 import com.fanchen.imovie.util.DialogUtil;
+import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.VideoUrlUtil;
 import com.fanchen.imovie.view.video_new.Clarity;
 import com.fanchen.imovie.view.video_new.INiceVideoPlayer;
@@ -59,6 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import butterknife.InjectView;
+import me.jessyan.autosize.internal.CustomAdapt;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 
 
@@ -66,7 +68,7 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
  * 视频播放页面
  * Created by fanchen on 2017/8/14.
  */
-public class VideoPlayerActivity extends BaseActivity {
+public class VideoPlayerActivity extends BaseActivity implements CustomAdapt {
     public static final String VIDEO_URL = "url";
     public static final String VIDEO_TITLE = "title";
     public static final String ISLIVE = "islive";
@@ -229,7 +231,8 @@ public class VideoPlayerActivity extends BaseActivity {
             OnPlayerErrorListener listener = new OnPlayerErrorListener(videoState.url, videoState.referer);
             mPlayerController.setVideoState(videoState);
             mVideoPlayer.setOnErrorListener(listener);
-            if (!TextUtils.isEmpty(videoUrl))mVideoPlayer.setPlayerType(NiceVideoPlayer.TYPE_IJK);//西瓜视频用自带播放器放不了，只能用ijk
+            if (!TextUtils.isEmpty(videoUrl))
+                mVideoPlayer.setPlayerType(NiceVideoPlayer.TYPE_IJK);//西瓜视频用自带播放器放不了，只能用ijk
         } else {//加载网络数据
             getVideoData(intent);
             loadVideo(intent);
@@ -327,6 +330,7 @@ public class VideoPlayerActivity extends BaseActivity {
             retrofit.enqueue(aClass, callback, "playUrl", mVideo.getUrl());
         } else if (data.hasExtra(VIDEO_EPISODE) || data.hasExtra(VIDEO_HISTORY)) {
             String id = mVideoEpisode.getId();
+            videoUrl = mVideoEpisode.getUrl();
             RetrofitManager.REQUEST_URL = mVideoEpisode.getUrl();
             String serviceClass = mVideoEpisode.getServiceClassName();
             if (mVideoEpisode.getPlayerType() == IVideoEpisode.PLAY_TYPE_URL && Dm5Service.class.getName().equals(serviceClass)) {
@@ -337,7 +341,6 @@ public class VideoPlayerActivity extends BaseActivity {
                 mPlayerController.setTitle(mVideoEpisode.getTitle());
                 retrofit.enqueue(serviceClass, callback, "playUrl", id);//联网获取播放地址
             } else if (mVideoEpisode.getPlayerType() == IVideoEpisode.PLAY_TYPE_XUNLEI) {
-                videoUrl = mVideoEpisode.getUrl();
                 openVideo(mVideoEpisode.toPlayUrls(IVideoEpisode.PLAY_TYPE_XUNLEI, IPlayUrls.URL_FILE), videoUrl);
             } else if (mVideoEpisode.getPlayerType() == IVideoEpisode.PLAY_TYPE_VIDEO_M3U8) {
                 openVideo(mVideoEpisode.getUrl(), mVideoEpisode.getTitle());//直接M3U8播放地址
@@ -452,6 +455,16 @@ public class VideoPlayerActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public boolean isBaseOnWidth() {
+        return false;
+    }
+
+    @Override
+    public float getSizeInDp() {
+        return 320;
+    }
+
     /**
      * 保存播放记录
      * savePlayHistory
@@ -504,13 +517,19 @@ public class VideoPlayerActivity extends BaseActivity {
         public void onReceive(Context context, Intent intent) {
             if (mPlayerController == null) return;
             String action = intent.getAction();
-            if (XLService.GET_PLAY_URL.equals(action)) {
-                openVideo(intent.getStringExtra(XLService.DATA), "");
-            } else if (P2PMessageWhat.P2P_CALLBACK.equals(action) && intent.hasExtra(P2PMessageWhat.PLAY_URL)) {//西瓜視頻播放
-                String xigua = intent.getStringExtra(P2PMessageWhat.PLAY_URL);
-                boolean localFile = intent.getBooleanExtra(P2PMessageWhat.LOCAL_FILE, false);
-                String segment = Uri.parse(Uri.decode(videoUrl)).getLastPathSegment();
-                openVideo(xigua, segment, localFile ? "本地文件" : "0.0KB");
+            LogUtil.e("=====","action -> " + action);
+            try {
+                if (XLService.GET_PLAY_URL.equals(action) && intent.hasExtra(XLService.GET_PLAY_URL)) {
+                    String extra = intent.getStringExtra(XLService.DATA);
+                    openVideo(extra, "");
+                } else if (P2PMessageWhat.P2P_CALLBACK.equals(action) && intent.hasExtra(P2PMessageWhat.PLAY_URL)) {//西瓜視頻播放
+                    String xigua = intent.getStringExtra(P2PMessageWhat.PLAY_URL);
+                    boolean localFile = intent.getBooleanExtra(P2PMessageWhat.LOCAL_FILE, false);
+                    String segment = Uri.parse(Uri.decode(videoUrl)).getLastPathSegment();
+                    openVideo(xigua, segment, localFile ? "本地文件" : "0.0KB");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 

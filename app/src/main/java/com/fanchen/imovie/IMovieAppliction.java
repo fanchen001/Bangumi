@@ -32,6 +32,7 @@ import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
 import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.NetworkUtil;
+import com.fanchen.imovie.util.SoCheckUtil;
 import com.fanchen.m3u8.M3u8Config;
 import com.fanchen.m3u8.M3u8Manager;
 import com.squareup.picasso.Picasso;
@@ -60,6 +61,7 @@ import okhttp3.Protocol;
  */
 public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallback {
     public static String KANKAN_COOKIE = "";
+    public static String[] ADVS = null;
     public static String ALIPAYS = "alipays://platformapi/startapp?appId=20000067&__open_alipay__=YES&url=https://qr.alipay.com/c1x094332eotzkcdjjmx7bf";
     private static final String NET_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
     private final static int TASK_UPDATE = 1;
@@ -79,7 +81,7 @@ public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallb
     private SharedPreferences mSharedPreferences;
     private List<OnTaskRuningListener> runingListener = new ArrayList<>();
 
-    private Handler mHandler = new Handler(Looper.getMainLooper()) {
+    public Handler mHandler = new Handler(Looper.getMainLooper()) {
 
         @Override
         public void handleMessage(Message msg) {
@@ -104,12 +106,21 @@ public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallb
     @Override
     public void onCreate() {
         super.onCreate();
-        startService(new Intent(this, EmptyService.class));
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(app = this);
         multithreading = getMultithreading(mSharedPreferences);
         boolean swith_mode = mSharedPreferences.getBoolean("swith_mode", true);
         AppCompatDelegate.setDefaultNightMode(swith_mode ? AppCompatDelegate.MODE_NIGHT_NO : AppCompatDelegate.MODE_NIGHT_YES);
-        initSdk(getApplicationContext(), AppUtil.isMainProcess(this));
+        if (SoCheckUtil.check(new String[]{"bmob", "Bugly", "ijkffmpeg", "ijkplayer", "ijksdl",
+                "p2p", "vbyte-v7a", "xl_stat", "xl_thunder_sdk", "xluagc"})) {
+            startService(new Intent(this, EmptyService.class));
+            initSdk(getApplicationContext(), AppUtil.isMainProcess(this));
+        } else {
+            if (AppUtil.isMainProcess(this)) {
+                Toast.makeText(this, "应用不支持该机型", Toast.LENGTH_LONG).show();
+            } else {
+                finishActivity();
+            }
+        }
     }
 
     /**
@@ -285,18 +296,16 @@ public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallb
     }
 
     /**
-     *
      * @param listener
      */
     public void addRuningListener(OnTaskRuningListener listener) {
-        if(!runingListener.contains(listener))runingListener.add(listener);
+        if (!runingListener.contains(listener)) runingListener.add(listener);
     }
 
     /**
-     *
      * @param listener
      */
-    public void removeRuningListener(OnTaskRuningListener listener){
+    public void removeRuningListener(OnTaskRuningListener listener) {
         runingListener.remove(listener);
     }
 
@@ -380,6 +389,7 @@ public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallb
         LogUtil.e(getClass().getSimpleName(), "onViewInitFinished");
     }
 
+
     // bugly回调
     private class AppCrashHandleCallback extends CrashReport.CrashHandleCallback {
 
@@ -396,7 +406,7 @@ public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallb
 
     @Download.onTaskStop
     public void onTaskStop(DownloadTask task) {
-        if (mHandler != null && runingListener != null&& !runingListener.isEmpty())
+        if (mHandler != null && runingListener != null && !runingListener.isEmpty())
             mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
     }
 
@@ -408,19 +418,19 @@ public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallb
 
     @Download.onTaskFail
     public void onTaskFail(DownloadTask task) {
-        if (mHandler != null && runingListener != null&& !runingListener.isEmpty())
+        if (mHandler != null && runingListener != null && !runingListener.isEmpty())
             mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
     }
 
     @Download.onTaskComplete
     public void onTaskComplete(DownloadTask task) {
-        if (mHandler != null && runingListener != null&& !runingListener.isEmpty())
+        if (mHandler != null && runingListener != null && !runingListener.isEmpty())
             mHandler.obtainMessage(TASK_UPDATE, task).sendToTarget();
     }
 
     @Download.onTaskCancel
     public void onTaskCancel(DownloadTask task) {
-        if (mHandler != null && runingListener != null&& !runingListener.isEmpty())
+        if (mHandler != null && runingListener != null && !runingListener.isEmpty())
             mHandler.obtainMessage(TASK_DELETE, task).sendToTarget();
     }
 

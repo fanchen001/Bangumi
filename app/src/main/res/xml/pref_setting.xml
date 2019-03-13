@@ -65,7 +65,7 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:textColor="@color/black"
-            android:title="多任务下载" />
+            android:title="多线程下载" />
 
         <EditTextPreference
             android:capitalize="words"

@@ -40,7 +40,7 @@ public interface AismService {
      * @param page
      * @return
      */
-    @GET("{path}/index{page}.html")
+    @GET("list/{path}______{page}.html.html")
     @JsoupType(JsoupSource.AISM)
     @MethodType(value = MethodSource.HOME)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)

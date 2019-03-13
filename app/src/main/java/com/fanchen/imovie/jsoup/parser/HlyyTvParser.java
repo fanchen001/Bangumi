@@ -70,8 +70,8 @@ public class HlyyTvParser implements ITvParser {
                 playUrl.setUrlType(IPlayUrls.URL_WEB);
                 playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
                 playUrl.setSuccess(true);
-            } else if (html.contains("ftp://")) {
-                int i = html.indexOf("ftp://");
+            } else if (html.contains("ftp:")) {
+                int i = html.indexOf("ftp:");
                 html = html.substring(i);
                 i = html.indexOf(",");
                 html = html.substring(0, i - 1);

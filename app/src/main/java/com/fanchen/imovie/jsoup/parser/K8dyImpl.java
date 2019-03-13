@@ -240,7 +240,7 @@ public class K8dyImpl implements IVideoMoreParser {
                         if (k == Integer.valueOf(splitUrl[2].replace(".html", ""))) {
                             String[] strings = ids[k].split("\\$");
                             Map<String,String> map = new HashMap<>();
-                            if(strings[1].startsWith("ftp://") || strings[1].startsWith("xg://")){
+                            if(strings[1].startsWith("ftp:") || strings[1].startsWith("xg:")){
                                 map.put(strings[0],strings[1]);
                             }else{
                                 map.put(strings[0],String.format(URL_MAT,strings[1]));

@@ -42,7 +42,10 @@ import com.fanchen.imovie.util.DateUtil;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.SystemUtil;
 import com.fanchen.imovie.view.CircleImageView;
+import com.fanchen.imovie.view.MarqueeView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import butterknife.InjectView;
@@ -114,6 +117,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             BmobUpdateAgent.setUpdateOnlyWifi(false);
             BmobUpdateAgent.update(this);
         }
+
         FragmentManager sfm = getSupportFragmentManager();
         if (sfm.findFragmentByTag(MainActivity.class.getName()) == null) {
             Handler handler = new Handler(Looper.getMainLooper());

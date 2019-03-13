@@ -45,8 +45,8 @@ public abstract class BaseFragmentAdapter extends FragmentStatePagerAdapter {
     public abstract Fragment createFragment(int position);
 
     public Object getExtendInfo(){
-        return null;
-    };
+        return "";
+    }
 
     public int getMultiple(){
         return 1;

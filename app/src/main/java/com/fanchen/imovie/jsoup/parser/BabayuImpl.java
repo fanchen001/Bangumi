@@ -224,7 +224,7 @@ public class BabayuImpl implements IVideoMoreParser {
     public IPlayUrls playUrl(Retrofit retrofit, String baseUrl, String html) {
         VideoPlayUrls playUrl = new VideoPlayUrls();
         try {
-            int start = html.indexOf("ftp://");
+            int start = html.indexOf("ftp:");
             String tempHtml = "";
             if (start >= 0) {
                 tempHtml = html.substring(start);

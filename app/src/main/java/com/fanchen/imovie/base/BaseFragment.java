@@ -350,16 +350,6 @@ public abstract class BaseFragment extends Fragment {
     }
 
     /**
-     * @return
-     */
-    public LayoutInflater getLayoutInflater() {
-        if (isAdded() && !isDetached() && activity != null) {
-            return activity.getLayoutInflater();
-        }
-        return null;
-    }
-
-    /**
      * 获取EditText 的字符串
      *
      * @param editText
