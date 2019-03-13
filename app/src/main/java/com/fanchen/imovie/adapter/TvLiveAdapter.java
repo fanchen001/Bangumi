@@ -18,7 +18,6 @@ import java.util.List;
 
 /**
  * TvLiveAdapter
- * Created by fanchen on 2018/8/6.
  */
 public class TvLiveAdapter extends BaseAdapter{
 

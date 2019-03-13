@@ -12,7 +12,6 @@ import java.util.List;
 
 /**
  * M3u8Adapter
- * Created by fanchen on 2018/9/17.
  */
 public class M3u8Adapter extends BaseDownloadAdapter<M3u8Warp> {
 

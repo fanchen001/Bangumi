@@ -33,7 +33,6 @@ import java.util.List;
 
 /**
  * 首页Adapter
- * Created by fanchen on 2017/7/12.
  */
 public class HomeIndexAdapter extends BaseAdapter {
 
@@ -204,9 +203,9 @@ public class HomeIndexAdapter extends BaseAdapter {
             if(banner == null || banner.size() <= index)return;
             IVideoBanner<?> iBanner = (IVideoBanner<?>)banner.get(index);
             if(iBanner.getBannerType() == IBanner.TYPE_WEB){
-                WebActivity.startActivity(context,iBanner.getUrl());
+                WebActivity.Companion.startActivity(context,iBanner.getUrl());
             }else{
-                VideoDetailsActivity.startActivity(context,iBanner.getId(), iBanner.getServiceClass());
+                VideoDetailsActivity.Companion.startActivity(context,iBanner.getId(), iBanner.getServiceClass());
             }
         }
 

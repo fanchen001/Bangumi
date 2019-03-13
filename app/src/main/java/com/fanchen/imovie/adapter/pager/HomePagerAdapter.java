@@ -39,7 +39,7 @@ public class HomePagerAdapter extends BaseFragmentAdapter {
             case 3:
                 return HomeCategoryFragment.newInstance();
             case 4:
-                return HomeMoreFragment.newInstance();
+                return HomeMoreFragment.Companion.newInstance();
             default:
                 return null;
         }

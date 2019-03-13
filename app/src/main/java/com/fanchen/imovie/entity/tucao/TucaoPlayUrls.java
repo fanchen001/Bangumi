@@ -5,10 +5,6 @@ import com.fanchen.imovie.entity.face.IVideoEpisode;
 
 import java.util.Map;
 
-/**
- * TucaoPlayUrls
- * Created by fanchen on 2017/9/28.
- */
 public class TucaoPlayUrls implements IPlayUrls {
 
     private boolean success;

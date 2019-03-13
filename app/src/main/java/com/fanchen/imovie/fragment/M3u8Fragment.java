@@ -86,8 +86,8 @@ public class M3u8Fragment extends BaseRecyclerFragment implements OnM3u8Download
     @Override
     protected void initFragment(@Nullable Bundle savedInstanceState, Bundle args) {
         super.initFragment(savedInstanceState, args);
-        mTextView.setVisibility(View.VISIBLE);
-        mTextView.setText(String.format("下载路径：%s", M3u8Config.INSTANCE.getM3u8Path()));
+        getMTextView().setVisibility(View.VISIBLE);
+        getMTextView().setText(String.format("下载路径：%s", M3u8Config.INSTANCE.getM3u8Path()));
     }
 
     @Override
@@ -172,18 +172,22 @@ public class M3u8Fragment extends BaseRecyclerFragment implements OnM3u8Download
     @Override
     public void onQueryFile(LinkedList<M3u8File> linkedList) {
         if (mAdapter == null || mAdapter.getList() == null) return;
-        mSwipeRefreshLayout.setEnabled(false);
+        if (getMSwipeRefreshLayout() != null) {
+            getMSwipeRefreshLayout().setEnabled(false);
+        }
         mAdapter.setM3u8Files(linkedList);
         if (mAdapter.getList().size() == 0) {
-            mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_EMPTY);
+            getMCustomEmptyView().setEmptyType(CustomEmptyView.TYPE_EMPTY);
         }
     }
 
     @Override
     public void onQueryError(Throwable throwable) {
-        mSwipeRefreshLayout.setEnabled(false);
-        mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_ERROR);
-        mCustomEmptyView.setEmptyText(throwable.toString());
+        if (getMSwipeRefreshLayout() != null) {
+            getMSwipeRefreshLayout().setEnabled(false);
+        }
+        getMCustomEmptyView().setEmptyType(CustomEmptyView.TYPE_ERROR);
+        getMCustomEmptyView().setEmptyText(throwable.toString());
     }
 
     @Override
@@ -191,7 +195,7 @@ public class M3u8Fragment extends BaseRecyclerFragment implements OnM3u8Download
         if (mAdapter == null || mAdapter.getList() == null) return;
         mAdapter.remove(m3u8File);
         if (mAdapter.getList().size() == 0) {
-            mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_EMPTY);
+            getMCustomEmptyView().setEmptyType(CustomEmptyView.TYPE_EMPTY);
         }
     }
 
@@ -199,7 +203,7 @@ public class M3u8Fragment extends BaseRecyclerFragment implements OnM3u8Download
     public void onDelete(LinkedList<M3u8File> linkedList) {
         if (mAdapter == null || mAdapter.getList() == null) return;
         mAdapter.clear();
-        mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_EMPTY);
+        getMCustomEmptyView().setEmptyType(CustomEmptyView.TYPE_EMPTY);
     }
 
     @Override
@@ -222,7 +226,7 @@ public class M3u8Fragment extends BaseRecyclerFragment implements OnM3u8Download
         if (!file.exists() || !file.isFile()) {
             showToast("视频文件已被删除，不能播放");
         } else {
-            VideoPlayerActivity.startActivity(activity, file);
+            VideoPlayerActivity.Companion.startActivity(activity, file);
         }
     }
 

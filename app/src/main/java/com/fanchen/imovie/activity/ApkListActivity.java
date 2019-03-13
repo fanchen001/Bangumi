@@ -50,10 +50,6 @@ public class ApkListActivity extends BaseRecyclerActivity implements SearchDialo
     private ApkListAdapter mApkListAdapter;
     private SearchDialogFragment mDialogFragment = SearchDialogFragment.newInstance();
 
-    /**
-     * @param context
-     * @param type
-     */
     public static void startActivity(Context context, int type) {
         try {
             Intent intent = new Intent(context, ApkListActivity.class);
@@ -65,10 +61,6 @@ public class ApkListActivity extends BaseRecyclerActivity implements SearchDialo
         }
     }
 
-    /**
-     * @param context
-     * @param word
-     */
     public static void startActivity(Context context, String word) {
         try {
             Intent intent = new Intent(context, ApkListActivity.class);
@@ -151,7 +143,7 @@ public class ApkListActivity extends BaseRecyclerActivity implements SearchDialo
     public void onItemClick(List<?> datas, View v, int position) {
         if (!(datas.get(position) instanceof ApkItem)) return;
         ApkItem item = (ApkItem) datas.get(position);
-        ApkDetailsActivity.startActivity(this, item);
+        ApkDetailsActivity.Companion.startActivity(this, item);
     }
 
     @Override

@@ -9,12 +9,11 @@ import android.widget.TextView;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.AcgTabActivity;
 import com.fanchen.imovie.base.BaseAdapter;
-import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.entity.acg.AcgPosts;
 import com.fanchen.imovie.entity.acg.AcgThumbnail;
+import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.picasso.PicassoWrap;
 import com.fanchen.imovie.picasso.download.RefererDownloader;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -27,12 +26,12 @@ public class AcgCuteAdapter extends BaseAdapter {
 
     public AcgCuteAdapter(Context context) {
         super(context);
-        this.picasso = new PicassoWrap(context,new RefererDownloader(context,REFERER));
+        this.picasso = new PicassoWrap(context, new RefererDownloader(context, REFERER));
     }
 
     public AcgCuteAdapter(Context context, List<IViewType> mList) {
         super(context, mList);
-        this.picasso = new PicassoWrap(context,new RefererDownloader(context,REFERER));
+        this.picasso = new PicassoWrap(context, new RefererDownloader(context, REFERER));
     }
 
     @Override
@@ -68,15 +67,15 @@ public class AcgCuteAdapter extends BaseAdapter {
 
         public ImageView imageView;
         public TextView titleTextView;
-        public TextView timeTextView;
-        public TextView typeTextView;
+        private TextView timeTextView;
+        private TextView typeTextView;
 
-        public CuteItemViewHolder(View itemView) {
+        CuteItemViewHolder(View itemView) {
             super(itemView);
-            imageView = (ImageView) itemView.findViewById(R.id.iv_acg_cover);
-            titleTextView = (TextView) itemView.findViewById(R.id.tv_acg_title);
-            timeTextView = (TextView) itemView.findViewById(R.id.tv_acg_time);
-            typeTextView = (TextView) itemView.findViewById(R.id.tv_acg_author);
+            imageView = itemView.findViewById(R.id.iv_acg_cover);
+            titleTextView = itemView.findViewById(R.id.tv_acg_title);
+            timeTextView = itemView.findViewById(R.id.tv_acg_time);
+            typeTextView = itemView.findViewById(R.id.tv_acg_author);
         }
     }
 }

@@ -1,12 +1,9 @@
 package com.fanchen.imovie.entity.bmob;
 
-import android.content.Context;
-import android.os.Environment;
 import android.text.TextUtils;
 
 import com.fanchen.imovie.IMovieAppliction;
 import com.fanchen.imovie.util.DateUtil;
-import com.fanchen.imovie.util.LogUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,10 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.listener.FindListener;
-import cn.bmob.v3.listener.UpdateListener;
 
 /**
  * Created by fanchen on 2017/10/8.
@@ -260,11 +255,10 @@ public class User extends BmobObj {
     }
 
     /**
-     *
      * @param listener
      */
     public void update(final OnUpdateListener listener) {
-        if(listener == null)return;
+        if (listener == null) return;
         super.update(new OnUpdateListener() {
 
             @Override
@@ -291,12 +285,11 @@ public class User extends BmobObj {
     }
 
     /**
-     *
      * @param objectId
      * @param listener
      */
-    public void update(String objectId,final OnUpdateListener listener) {
-        if(listener == null)return;
+    public void update(String objectId, final OnUpdateListener listener) {
+        if (listener == null) return;
         super.update(objectId, new OnUpdateListener() {
             @Override
             public void onStart() {
@@ -316,14 +309,13 @@ public class User extends BmobObj {
 
             @Override
             public void onFailure(int i, String s) {
-                listener.onFailure(i,s);
+                listener.onFailure(i, s);
             }
         });
     }
 
 
-
-    public static final void logout(){
+    public static final void logout() {
         loginUser = null;
         try {
             File filesDir = IMovieAppliction.app.getFilesDir();
@@ -354,10 +346,10 @@ public class User extends BmobObj {
     }
 
     public static final User getLoginUser() {
-        if(loginUser != null)return loginUser;
+        if (loginUser != null) return loginUser;
         File filesDir = IMovieAppliction.app.getFilesDir();
         File file = new File(filesDir, "user.obj");
-        if(!file .exists())return loginUser;
+        if (!file.exists()) return loginUser;
         ObjectInputStream ois = null;
         try {
             ois = new ObjectInputStream(new FileInputStream(file));

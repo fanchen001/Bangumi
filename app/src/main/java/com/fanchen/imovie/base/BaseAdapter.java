@@ -22,7 +22,6 @@ import java.util.List;
 
 /**
  * BaseAdapter
- * Created by fanchen on 2017/7/12.
  */
 public abstract class BaseAdapter extends RecyclerView.Adapter {
     protected LayoutInflater mLayoutInflater;

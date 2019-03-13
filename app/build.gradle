@@ -3,21 +3,21 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 27
+    buildToolsVersion "28.0.3"
     //签名配置
     signingConfigs {
         debugConfig {
-            keyAlias "1"
-            keyPassword "happy1993_chen"
-            storeFile file("E:/workspace/androidStudio/happy1993_chen")
-            storePassword "happy1993_chen"
+            keyAlias "~"
+            keyPassword "1qaz2wsx3edc"
+            storeFile file("C:/Users/ps/Documents/GitHub/WebGallery/app/pskey.jks")
+            storePassword "1qaz2wsx3edc"
         }
         releaseConfig {
-            keyAlias "1"
-            keyPassword "happy1993_chen"
-            storeFile file("E:/workspace/androidStudio/happy1993_chen")
-            storePassword "happy1993_chen"
+            keyAlias "~"
+            keyPassword "1qaz2wsx3edc"
+            storeFile file("C:/Users/ps/Documents/GitHub/WebGallery/app/pskey.jks")
+            storePassword "1qaz2wsx3edc"
         }
     }
 
@@ -32,7 +32,7 @@ android {
         multiDexEnabled true
         applicationId "com.fanchen.imovie"
         minSdkVersion 19
-        targetSdkVersion 23
+        targetSdkVersion 27
         versionCode 20181125
         versionName "2.11.25 alpha"
     }
@@ -65,73 +65,71 @@ afterEvaluate {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:multidex:1.0.1'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:multidex:1.0.3'
     /** *******下面是eventbus sdk 事件总线             *********/
-    compile 'org.greenrobot:eventbus:3.0.0'
-    /** *******下面是butterknife sdk ioc             *********/
-    compile 'com.jakewharton:butterknife:5.1.1'
+    implementation 'org.greenrobot:eventbus:3.1.1'
     /** *******下面是support 支持库             *********/
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:design:23.4.0'
-    compile 'com.android.support:gridlayout-v7:23.4.0'
-    compile 'com.android.support:cardview-v7:23.4.0'
-    compile('com.android.support:support-v4:23.4.0') {
-        force = true;
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:gridlayout-v7:27.1.1'
+    implementation 'com.android.support:cardview-v7:27.1.1'
+    implementation('com.android.support:support-v4:27.1.1') {
+        force = true
     }
-    compile('com.android.support:recyclerview-v7:23.4.0') {
+    implementation('com.android.support:recyclerview-v7:27.1.1') {
         exclude module: 'support-v4'
     }
-    compile 'com.android.support:support-v4:23.4.0'
+    implementation 'com.android.support:support-v4:27.1.1'
     /** *******下面是swipebackhelper 滑动返回             *********/
-    compile 'com.jude:swipebackhelper:3.1.2'
+    implementation 'com.jude:swipebackhelper:3.1.2'
     /** *******下面是gson json             *********/
-    compile 'com.google.code.gson:gson:2.7'
+    implementation 'com.google.code.gson:gson:2.8.4'
     /** *******下面是squareup 全家桶             *********/
-    compile 'com.squareup.okio:okio:1.14.1'
-    compile 'com.squareup.okhttp3:okhttp:3.10.0'
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    implementation 'com.squareup.okio:okio:1.15.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     /** *******picasso 图片加载             *********/
-    compile 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
     /** *******aria 下载管理框架             *********/
-    compile 'com.arialyy.aria:aria-core:3.5'
+    implementation 'com.arialyy.aria:aria-core:3.5'
     annotationProcessor 'com.arialyy.aria:aria-compiler:3.5'
     /** ******* kotlin runtime        *********/
-    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.0.6'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.21'
     // Cling library 用来实现投屏
-    compile 'org.fourthline.cling:cling-core:2.1.1'
-    compile 'org.fourthline.cling:cling-support:2.1.1'
+    implementation 'org.fourthline.cling:cling-core:2.1.1'
+    implementation 'org.fourthline.cling:cling-support:2.1.1'
     // Jetty library 用来实现投屏
-    compile 'org.eclipse.jetty:jetty-server:8.1.12.v20130726'
-    compile 'org.eclipse.jetty:jetty-servlet:8.1.12.v20130726'
-    compile 'org.eclipse.jetty:jetty-client:8.1.12.v20130726'
+    implementation 'org.eclipse.jetty:jetty-server:8.1.12.v20130726'
+    implementation 'org.eclipse.jetty:jetty-servlet:8.1.12.v20130726'
+    implementation 'org.eclipse.jetty:jetty-client:8.1.12.v20130726'
     /** *******下面是zxing sdk 二维码             *********/
-    compile files('libs/zxing.jar')
+    implementation files('libs/zxing.jar')
     /** *******下面是ijkplayer sdk 视频播放             *********/
-    compile files('libs/lib_ijkplayer.jar')
+    implementation files('libs/lib_ijkplayer.jar')
     /** *******下面是SMSSDK 验证码             *********/
-    compile files('libs/Mob_SMS_Sdk.jar')
+    implementation files('libs/Mob_SMS_Sdk.jar')
     /** *******下面是BmobSDK 后台数据库             *********/
-    compile files('libs/BmobSDK_V3.4.7_0527.jar')
+    implementation files('libs/BmobSDK_V3.4.7_0527.jar')
     /** ******* 西瓜视频 sdk             *********/
-    compile files('libs/xigua.p2p.jar')
+    implementation files('libs/xigua.p2p.jar')
     /** ******* 企鹅的x5浏览器，主要是解决一些机型上webview PackageManager$NameNotFoundException 异常 sdk             *********/
-    compile files('libs/x5browser.jar')
-    compile files('libs/rhino-1.7.7.1.jar')
+    implementation files('libs/x5browser.jar')
+    implementation files('libs/rhino-1.7.7.1.jar')
     /** ******* kotlin 写的 m3u8下载器      *********/
-    compile files('libs/m3u8downloader_1.0.jar')
-    compile files('libs/p2p_tv_sdk.jar')
+    implementation files('libs/m3u8downloader_1.0.jar')
+    implementation files('libs/p2p_tv_sdk.jar')
     /** ******* 迅雷下载器 支持 http https ftp ed2k thunder magnet      *********/
-    compile files('libs/xunlei.downloadlib.jar')
+    implementation files('libs/xunlei.downloadlib.jar')
     /** *******bugly 崩溃监测             *********/
-    compile files('libs/bugly_crash_release.jar')
+    implementation files('libs/bugly_crash_release.jar')
     /** *******jsoup html解析             *********/
-    compile files('libs/jsoup-1.8.1.jar')
+    implementation files('libs/jsoup-1.8.1.jar')
     /** ******* lite-orm orm框架             *********/
-    compile files('libs/lite-orm-1.9.2.jar')
+    implementation files('libs/lite-orm-1.9.2.jar')
     /** ******* nineoldandroids 动画框架             *********/
-    compile files('libs/nineoldandroids-2.4.0.jar')
+    implementation files('libs/nineoldandroids-2.4.0.jar')
     /** *******下面是友盟sdk             *********/
-    compile files('libs/umeng_share.jar')
+    implementation files('libs/umeng_share.jar')
 }

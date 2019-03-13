@@ -87,16 +87,6 @@ public class AcgMationFragment extends BaseRecyclerFragment {
         return true;
     }
 
-    @Override
-    public Type getSerializeClass() {
-        return new TypeToken<AcgRoot<AcgData>>(){}.getType();
-    }
-
-    @Override
-    public String getSerializeKey() {
-        return getClass().getSimpleName();
-    }
-
     /**
      *
      * @param retrofit
@@ -114,7 +104,7 @@ public class AcgMationFragment extends BaseRecyclerFragment {
     public void onItemClick(List<?> datas, View v, int position) {
         if(!(datas.get(position) instanceof AcgPosts))return;
         AcgPosts posts = (AcgPosts) datas.get(position);
-        WebActivity.startActivity(activity, posts.getTitle(), posts.getUrl());
+        WebActivity.Companion.startActivity(activity, posts.getTitle(), posts.getUrl());
     }
 
     private RefreshRecyclerFragmentImpl<AcgRoot<AcgData>> callback = new RefreshRecyclerFragmentImpl<AcgRoot<AcgData>>() {
@@ -141,8 +131,6 @@ public class AcgMationFragment extends BaseRecyclerFragment {
 
         @Override
         public void onStart(int enqueueKey) {
-            if(mSwipeRefreshLayout == null)return;
-            mSwipeRefreshLayout.setRefreshing(true);
         }
 
         @Override
@@ -152,9 +140,7 @@ public class AcgMationFragment extends BaseRecyclerFragment {
 
         @Override
         public void onFailure(int enqueueKey, String throwable) {
-            if(mSwipeRefreshLayout == null)return;
             showToast(getStringFix(R.string.error_token));
-            mSwipeRefreshLayout.setRefreshing(false);
         }
 
         @Override

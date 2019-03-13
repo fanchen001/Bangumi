@@ -44,7 +44,9 @@ public class HomeCategoryFragment extends BaseRecyclerFragment{
 
     @Override
     public void loadData(Bundle savedInstanceState, RetrofitManager retrofit, int page) {
-        mSwipeRefreshLayout.setEnabled(false);
+        if (getMSwipeRefreshLayout() != null) {
+            getMSwipeRefreshLayout().setEnabled(false);
+        }
         try {
             String json = new String(StreamUtil.stream2bytes(activity.getAssets().open("category.json")));
             List<VideoCategory> list = new Gson().fromJson(json, new TypeToken<List<VideoCategory>>() {}.getType());

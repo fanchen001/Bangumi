@@ -14,7 +14,6 @@ import java.util.List;
 
 /**
  * DownloadAdapter
- * Created by fanchen on 2017/10/3.
  */
 public class DownloadAdapter extends BaseDownloadAdapter<DownloadEntityWrap> implements View.OnClickListener {
 

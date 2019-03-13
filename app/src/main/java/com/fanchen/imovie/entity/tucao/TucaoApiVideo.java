@@ -9,9 +9,6 @@ import com.fanchen.imovie.retrofit.service.TucaoService;
 
 import java.util.List;
 
-/**
- * Created by fanchen on 2017/9/20.
- */
 public class TucaoApiVideo implements Parcelable ,IVideo {
     private String hid;
     private String typeid;

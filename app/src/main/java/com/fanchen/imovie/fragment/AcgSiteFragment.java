@@ -76,20 +76,10 @@ public class AcgSiteFragment extends BaseRecyclerFragment {
     }
 
     @Override
-    public Type getSerializeClass() {
-        return new TypeToken<AcgRoot<AcgData>>(){}.getType();
-    }
-
-    @Override
-    public String getSerializeKey() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
     public void onItemClick(List<?> datas, View v, int position) {
         if(!(datas.get(position) instanceof AcgPosts))return;
         AcgPosts posts = (AcgPosts) datas.get(position);
-        WebActivity.startActivity(activity,posts.getTitle(),posts.getUrl());
+        WebActivity.Companion.startActivity(activity,posts.getTitle(),posts.getUrl());
     }
 
 

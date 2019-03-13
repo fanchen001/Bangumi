@@ -17,7 +17,6 @@ import java.util.List;
 
 /**
  * APK详情页图片展示adapter
- * Created by fanchen on 2017/7/6.
  */
 public class ApkScreenAdapter extends BaseAdapter {
 

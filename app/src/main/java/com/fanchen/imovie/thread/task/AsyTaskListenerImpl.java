@@ -2,7 +2,6 @@ package com.fanchen.imovie.thread.task;
 
 /**
  * 默认实现
- * Created by fanchen on 2017/7/24.
  */
 public class AsyTaskListenerImpl<T> implements AsyTaskListener<T>{
 
@@ -27,7 +26,7 @@ public class AsyTaskListenerImpl<T> implements AsyTaskListener<T>{
     }
 
     @Override
-    public void onTaskSart() {
+    public void onTaskStart() {
 
     }
 

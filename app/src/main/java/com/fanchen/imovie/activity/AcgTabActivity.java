@@ -14,14 +14,9 @@ import com.fanchen.imovie.base.BaseTabActivity;
 
 /**
  * ACG小队
- * Created by fanchen on 2017/8/22.
  */
 public class AcgTabActivity extends BaseTabActivity {
 
-    /**
-     *
-     * @param context
-     */
     public static void startActivity(Context context){
         try {
             Intent intent = new Intent(context,AcgTabActivity.class);

@@ -215,9 +215,9 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
             LivePlayerActivity.startActivity(activity, video);
         } else {
             if (video.hasVideoDetails()) {//有视频详情页
-                VideoDetailsActivity.startActivity(activity, video);
+                VideoDetailsActivity.Companion.startActivity(activity, video);
             } else {//没有视频详情页，直接跳转播放
-                VideoPlayerActivity.startActivity(activity, video);
+                VideoPlayerActivity.Companion.startActivity(activity, video);
             }
         }
     }

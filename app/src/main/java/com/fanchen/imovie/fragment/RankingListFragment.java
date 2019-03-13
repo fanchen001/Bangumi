@@ -69,7 +69,7 @@ public class RankingListFragment extends BaseRecyclerFragment {
     public void onItemClick(List<?> datas, View v, int position) {
         if (!(datas.get(position) instanceof IVideo)) return;
         IVideo video = (IVideo) datas.get(position);
-        VideoDetailsActivity.startActivity(activity, video);
+        VideoDetailsActivity.Companion.startActivity(activity, video);
     }
 
     private RefreshRecyclerFragmentImpl<IBangumiMoreRoot> callback = new RefreshRecyclerFragmentImpl<IBangumiMoreRoot>() {

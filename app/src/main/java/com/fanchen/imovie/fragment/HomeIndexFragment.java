@@ -45,7 +45,7 @@ public class HomeIndexFragment extends BaseRecyclerFragment implements BaseAdapt
      * @param isCategory
      * @return
      */
-    public static Fragment newInstance(String path, boolean isCategory,boolean isLoad) {
+    public static Fragment newInstance(String path, boolean isCategory, boolean isLoad) {
         Fragment fragment = new HomeIndexFragment();
         Bundle args = new Bundle();
         args.putString(PATH, path);
@@ -56,7 +56,7 @@ public class HomeIndexFragment extends BaseRecyclerFragment implements BaseAdapt
     }
 
     public static Fragment newInstance(String path) {
-        return newInstance(path, false,false);
+        return newInstance(path, false, false);
     }
 
     @Override
@@ -101,14 +101,14 @@ public class HomeIndexFragment extends BaseRecyclerFragment implements BaseAdapt
 
     @Override
     public BaseAdapter getAdapter(Picasso picasso) {
-        return mRecomAdapter = new HomeIndexAdapter(activity, picasso, isCategory,isLoad);
+        return mRecomAdapter = new HomeIndexAdapter(activity, picasso, isCategory, isLoad);
     }
 
     @Override
-    public void loadData(Bundle savedInstanceState,RetrofitManager retrofit, int page) {
-        if(savedInstanceState != null && ( mIBangumiRoot = savedInstanceState.getParcelable(INSTANCESTATE)) != null){
+    public void loadData(Bundle savedInstanceState, RetrofitManager retrofit, int page) {
+        if (savedInstanceState != null && (mIBangumiRoot = savedInstanceState.getParcelable(INSTANCESTATE)) != null) {
             mRecomAdapter.setAdapterData(mIBangumiRoot);
-        }else{
+        } else {
             retrofit.enqueue(TucaoService.class, callback, "home", path);
         }
     }
@@ -130,8 +130,8 @@ public class HomeIndexFragment extends BaseRecyclerFragment implements BaseAdapt
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if(mIBangumiRoot != null){
-            outState.putParcelable(INSTANCESTATE,mIBangumiRoot);
+        if (mIBangumiRoot != null) {
+            outState.putParcelable(INSTANCESTATE, mIBangumiRoot);
         }
         super.onSaveInstanceState(outState);
     }
@@ -140,14 +140,14 @@ public class HomeIndexFragment extends BaseRecyclerFragment implements BaseAdapt
     public void onItemClick(List<?> datas, View v, int position) {
         if (!(datas.get(position) instanceof IVideo)) return;
         IVideo video = (IVideo) datas.get(position);
-        VideoDetailsActivity.startActivity(activity,video);
+        VideoDetailsActivity.Companion.startActivity(activity, video);
     }
 
     @Override
     public boolean onItemLongClick(List<?> datas, View v, int position) {
         if (!(datas.get(position) instanceof IVideo)) return false;
         IVideo item = (IVideo) datas.get(position);
-        DialogUtil.showOperationDialog(this,item,(List<IVideo>)datas,position);
+        DialogUtil.showOperationDialog(this, item, (List<IVideo>) datas, position);
         return true;
     }
 

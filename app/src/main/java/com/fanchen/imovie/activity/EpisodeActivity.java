@@ -78,7 +78,6 @@ public class EpisodeActivity extends BaseRecyclerActivity {
     public void onItemClick(List<?> datas, View v, int position) {
         if (!(datas.get(position) instanceof IVideoEpisode)) return;
         IVideoEpisode episode = (IVideoEpisode) datas.get(position);
-        VideoPlayerActivity.startActivity(this, mVideoDetails, episode);
+        VideoPlayerActivity.Companion.startActivity(this, mVideoDetails, episode);
     }
-
 }

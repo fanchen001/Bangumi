@@ -195,7 +195,7 @@ public class SuperPlayerView extends RelativeLayout {
                 mPopupWindow.setModal(true);//设置是否是模式
                 mPopupWindow.show();
             } else if (v.getId() == R.id.view_jky_player_tv_web) {
-                WebPlayerActivity.startActivity(activity, TextUtils.isEmpty(errorUrl) ? url : errorUrl);
+                WebPlayerActivity.Companion.startActivity(activity, TextUtils.isEmpty(errorUrl) ? url : errorUrl);
             } else if (v.getId() == R.id.app_video_play) {
                 doPauseResume();
                 show(defaultTimeout);

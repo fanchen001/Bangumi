@@ -44,14 +44,8 @@ public class LivePlayerActivity extends BaseActivity {
     protected SuperPlayerView mSuperPlayerView;
 
     private IBaseVideo mVideo;
-    private String mDefPlayer = "";
     private long preTime = System.currentTimeMillis();
 
-
-    /**
-     * @param context
-     * @param video
-     */
     public static void startActivity(Context context, IVideo video) {
         Intent intent = new Intent(context, LivePlayerActivity.class);
         intent.putExtra(VIDEO, video);
@@ -60,10 +54,6 @@ public class LivePlayerActivity extends BaseActivity {
         context.startActivity(intent);
     }
 
-    /**
-     * @param context
-     * @param video
-     */
     public static void startActivity(Context context, IBaseVideo video) {
         Intent intent = new Intent(context, LivePlayerActivity.class);
         intent.putExtra(VIDEO, video);
@@ -163,9 +153,8 @@ public class LivePlayerActivity extends BaseActivity {
     public void savePlayHistory() {
         if (mSuperPlayerView == null) return;
         int position = mSuperPlayerView.getVideoView().getCurrentPosition();
-        VideoHistory history = null;
         if (mVideo != null) {
-            history = new VideoHistory(mVideo, position);
+            VideoHistory history = new VideoHistory(mVideo, position);
             AsyTaskQueue.newInstance().execute(new SaveTaskListener(history));
         }
     }
@@ -199,7 +188,7 @@ public class LivePlayerActivity extends BaseActivity {
     private class ParseWebUrl implements VideoUrlUtil.OnParseWebUrlListener {
         private IPlayUrls playUrls;
 
-        public ParseWebUrl(IPlayUrls playUrls) {
+        ParseWebUrl(IPlayUrls playUrls) {
             this.playUrls = playUrls;
         }
 
@@ -207,17 +196,14 @@ public class LivePlayerActivity extends BaseActivity {
         public void onFindUrl(String videourl) {
             if (mSuperPlayerView == null || playUrls == null) return;
             mSuperPlayerView.setProgerssVisible(false);
-            if (getIntent().getBooleanExtra(ISLIVE, false) && getIntent().getBooleanExtra(ORIENTATION, true)
-                    && VideoPlayerActivity.TBS.equals(mDefPlayer)) {
-                TbsVideo.openVideo(LivePlayerActivity.this, videourl);
-                LivePlayerActivity.this.finish();
+            if (getIntent().getBooleanExtra(ISLIVE, false)) {
+                getIntent().getBooleanExtra(ORIENTATION, true);
+            }
+            String referer = playUrls.getReferer();
+            if (playUrls.m3u8Referer()) {
+                mSuperPlayerView.play(videourl, referer);
             } else {
-                String referer = playUrls.getReferer();
-                if (playUrls.m3u8Referer()) {
-                    mSuperPlayerView.play(videourl, referer);
-                } else {
-                    mSuperPlayerView.play(videourl);
-                }
+                mSuperPlayerView.play(videourl);
             }
         }
 
@@ -289,7 +275,7 @@ public class LivePlayerActivity extends BaseActivity {
 
         private VideoHistory mVideoHistory;
 
-        public SaveTaskListener(VideoHistory mVideoHistory) {
+        SaveTaskListener(VideoHistory mVideoHistory) {
             this.mVideoHistory = mVideoHistory;
         }
 

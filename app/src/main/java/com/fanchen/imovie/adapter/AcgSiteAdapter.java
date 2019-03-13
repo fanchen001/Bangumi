@@ -20,9 +20,6 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 
-/**
- * Created by fanchen on 2017/7/23.
- */
 public class AcgSiteAdapter extends BaseAdapter {
 
     private static final String REFERER = "https://acg12.com/category/pixiv/pixiv-daily/";

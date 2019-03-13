@@ -21,7 +21,6 @@ import java.util.List;
 
 /**
  * 视频收藏Adapter
- * Created by fanchen on 2017/7/24.
  */
 public class HistoryAdapter extends BaseAdapter {
 

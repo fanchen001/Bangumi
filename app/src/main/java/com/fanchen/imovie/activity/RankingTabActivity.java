@@ -22,9 +22,6 @@ public class RankingTabActivity extends BaseTabActivity{
 
     private int rankType = RANK_TYPE_WEEK;
 
-    /**
-     * @param context
-     */
     public static void startActivity(Context context) {
         try {
             Intent intent = new Intent(context, RankingTabActivity.class);
@@ -56,17 +53,17 @@ public class RankingTabActivity extends BaseTabActivity{
             case R.id.action_day:
                 if (rankType == RANK_TYPE_WEEK) {
                     rankType = RANK_TYPE_DAY;
-                    int currentItem = mViewPager.getCurrentItem();
-                    mViewPager.setAdapter(getAdapter(getSupportFragmentManager()));
-                    mViewPager.setCurrentItem(currentItem);
+                    int currentItem = getMViewPager().getCurrentItem();
+                    getMViewPager().setAdapter(getAdapter(getSupportFragmentManager()));
+                    getMViewPager().setCurrentItem(currentItem);
                 }
                 break;
             case R.id.action_week:
                 if (rankType == RANK_TYPE_DAY) {
                     rankType = RANK_TYPE_WEEK;
-                    int currentItem = mViewPager.getCurrentItem();
-                    mViewPager.setAdapter(getAdapter(getSupportFragmentManager()));
-                    mViewPager.setCurrentItem(currentItem);
+                    int currentItem = getMViewPager().getCurrentItem();
+                    getMViewPager().setAdapter(getAdapter(getSupportFragmentManager()));
+                    getMViewPager().setCurrentItem(currentItem);
                 }
                 break;
         }

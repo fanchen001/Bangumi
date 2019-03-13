@@ -26,9 +26,6 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.lang.ref.SoftReference;
 
-import butterknife.ButterKnife;
-
-
 /**
  * 应用中所有的fragment基础该类
  * <p/>
@@ -57,9 +54,9 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof BaseActivity){
+        if (context instanceof BaseActivity) {
             activity = (BaseActivity) context;
-        }else{
+        } else {
             activity = (BaseActivity) getActivity();
         }
         appliction = activity.appliction;
@@ -112,9 +109,9 @@ public abstract class BaseFragment extends Fragment {
 
     @Override
     public void dump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {
-        try{//FastPrintWriter.println  NullPointerException
+        try {//FastPrintWriter.println  NullPointerException
             super.dump(prefix, fd, writer, args);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -125,29 +122,28 @@ public abstract class BaseFragment extends Fragment {
     public Picasso getPicasso() {
         if (activity != null)
             return activity.getPicasso();
-        if(IMovieAppliction.app != null)
+        if (IMovieAppliction.app != null)
             return IMovieAppliction.app.getPicasso();
         return null;
     }
 
     /**
-     *
      * @return
      */
-    public DownloadReceiver getDownloadReceiver(){
-        if (activity != null){
+    public DownloadReceiver getDownloadReceiver() {
+        if (activity != null) {
             return activity.getDownloadReceiver();
-        }else if(IMovieAppliction.app != null){
+        } else if (IMovieAppliction.app != null) {
             IMovieAppliction.app.getDownloadReceiver();
         }
         return null;
     }
 
-    public LiteOrm getLiteOrm(){
+    public LiteOrm getLiteOrm() {
         return activity == null ? null : activity.getLiteOrm();
     }
 
-    public RetrofitManager getRetrofitManager(){
+    public RetrofitManager getRetrofitManager() {
         return activity == null ? null : activity.getRetrofitManager();
     }
 
@@ -157,16 +153,9 @@ public abstract class BaseFragment extends Fragment {
         int layout = getLayout();
         if (layout > 0) {
             mMainView = inflater.inflate(layout, container, false);
-            ButterKnife.inject(this, mMainView);
             return mMainView;
         }
         return super.onCreateView(inflater, container, savedInstanceState);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ButterKnife.reset(this);
     }
 
     @Override
@@ -174,8 +163,8 @@ public abstract class BaseFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         //用户可见，并且没有初始化
         if (!isPrepared && getUserVisibleHint() && view != null && isAdded()) {
-            mMainView.post(new InitRunnable(this, view,mSaveState));
-        }else{
+            mMainView.post(new InitRunnable(this, view, mSaveState));
+        } else {
             LogUtil.e("onViewCreated", "not post");
         }
     }
@@ -191,10 +180,11 @@ public abstract class BaseFragment extends Fragment {
 
     /**
      * fix bug getString()
+     *
      * @param id
      * @return
      */
-    public String getStringFix(int id){
+    public String getStringFix(int id) {
         return activity != null ? activity.getString(id) : "";
     }
 
@@ -206,8 +196,8 @@ public abstract class BaseFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         if (getUserVisibleHint() && mMainView != null && !isPrepared && isAdded()) {
             mMainView.post(new InitRunnable(this, mMainView, mSaveState));
-        }else{
-            LogUtil.e("setUserVisibleHint","not post");
+        } else {
+            LogUtil.e("setUserVisibleHint", "not post");
         }
     }
 
@@ -347,16 +337,6 @@ public abstract class BaseFragment extends Fragment {
             intent.putExtras(bundle);
             startActivityForResult(intent, code);
         }
-    }
-
-    /**
-     * @return
-     */
-    public LayoutInflater getLayoutInflater() {
-        if (isAdded() && !isDetached() && activity != null) {
-            return activity.getLayoutInflater();
-        }
-        return null;
     }
 
     /**

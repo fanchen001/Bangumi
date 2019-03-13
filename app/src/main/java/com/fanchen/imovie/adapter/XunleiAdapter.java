@@ -11,7 +11,6 @@ import java.util.List;
 
 /**
  * XunleiAdapter
- * Created by fanchen on 2018/10/17.
  */
 public class XunleiAdapter extends BaseDownloadAdapter<XLTaskWarp> {
 

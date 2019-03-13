@@ -102,11 +102,6 @@ public class VideoTabActivity extends BaseTabActivity implements SearchDialogFra
     private int type;
     private String title;
 
-    /**
-     * @param context
-     * @param title
-     * @param type
-     */
     public static void startActivity(Context context, String title, int type) {
         try {
             Intent intent = new Intent(context, VideoTabActivity.class);
@@ -129,11 +124,6 @@ public class VideoTabActivity extends BaseTabActivity implements SearchDialogFra
         }
     }
 
-
-    /**
-     * @param context
-     * @param title
-     */
     public static void startActivity(Context context, String title) {
         startActivity(context, title, S80);
     }

@@ -12,7 +12,6 @@ import java.util.List;
 
 /**
  * XiguaAdapter
- * Created by fanchen on 2018/9/21.
  */
 public class XiguaAdapter extends BaseDownloadAdapter<XiguaDownload> {
 

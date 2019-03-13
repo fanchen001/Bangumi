@@ -12,17 +12,17 @@ public interface AsyTaskListener<T> {
 	 * 
 	 * @return 返回的结果对象
 	 */
-	public T onTaskBackground() ;
+	T onTaskBackground() ;
 
 	/**
 	 * 执行开始后调用.
 	 * */
-	public void onTaskSuccess(T data);
+	void onTaskSuccess(T data);
 
 	/**
 	 * 执行结束
 	 */
-	public void onTaskFinish();
+	void onTaskFinish();
 
 	/**
 	 * 监听进度变化.
@@ -30,11 +30,11 @@ public interface AsyTaskListener<T> {
 	 * @param values
 	 *            the values
 	 */
-	public void onTaskProgress(Integer... values);
+	void onTaskProgress(Integer... values);
 	
 	/**
 	 * 执行开始前调用
 	 * */
-	public void onTaskSart() ;
+	void onTaskStart() ;
 
 }

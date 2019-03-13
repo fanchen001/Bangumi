@@ -16,15 +16,11 @@ import com.fanchen.imovie.util.DialogUtil;
 
 /**
  * 我的收藏
- * Created by fanchen on 2017/8/15.
  */
 public class CollectTabActivity extends BaseTabActivity {
 
     private CollectPagerAdapter mPagerAdapter;
 
-    /**
-     * @param context
-     */
     public static void startActivity(Context context) {
         try {
             Intent intent = new Intent(context, CollectTabActivity.class);
@@ -59,14 +55,14 @@ public class CollectTabActivity extends BaseTabActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    /**
-     *
-     */
     private OnButtonClickListener buttonClickListener = new OnButtonClickListener() {
 
         @Override
         public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
-            OnClearListener itemAtPosition = mPagerAdapter.getItemAtPosition(getViewPager().getCurrentItem());
+            if (getMViewPager() == null) {
+                return;
+            }
+            OnClearListener itemAtPosition = mPagerAdapter.getItemAtPosition(getMViewPager().getCurrentItem());
             if (btn == OnButtonClickListener.RIGHT && itemAtPosition != null) {
                 itemAtPosition.onClear();
             }
@@ -75,14 +71,8 @@ public class CollectTabActivity extends BaseTabActivity {
 
     };
 
-    /**
-     *
-     */
     public interface OnClearListener {
 
-        /**
-         *
-         */
         void onClear();
 
     }

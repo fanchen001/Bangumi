@@ -24,14 +24,14 @@ import java.util.List;
 /**
  * Created by fanchen on 2017/9/22.
  */
-public class ShortVideoFragment extends BaseRecyclerFragment{
+public class ShortVideoFragment extends BaseRecyclerFragment {
 
     public static final String TID = "tid";
 
     private BaseAdapter.LinearLayoutManagerWrapper mLayoutManager;
     private ShortVideoAdapter mVideoAdapter;
     private String serializeKey;
-    private String tid ;
+    private String tid;
 
     public static Fragment newInstance(String key) {
         Fragment fragment = new ShortVideoFragment();
@@ -49,7 +49,9 @@ public class ShortVideoFragment extends BaseRecyclerFragment{
     @Override
     protected void setListener() {
         super.setListener();
-        getRecyclerView().addOnChildAttachStateChangeListener((RecyclerView.OnChildAttachStateChangeListener) activity);
+        if (getRecyclerView() != null) {
+            getRecyclerView().addOnChildAttachStateChangeListener((RecyclerView.OnChildAttachStateChangeListener) activity);
+        }
         mVideoAdapter.setOnItemPlayClick((ShortVideoAdapter.OnItemPlayClick) activity);
     }
 
@@ -68,12 +70,12 @@ public class ShortVideoFragment extends BaseRecyclerFragment{
 
     @Override
     public BaseAdapter getAdapter(Picasso picasso) {
-        return mVideoAdapter = new ShortVideoAdapter(activity,picasso);
+        return mVideoAdapter = new ShortVideoAdapter(activity, picasso);
     }
 
     @Override
-    public void loadData(Bundle savedInstanceState,RetrofitManager retrofit, int page) {
-        retrofit.enqueue(DyttService.class,callback,"shortVideo",tid,Integer.valueOf(page));
+    public void loadData(Bundle savedInstanceState, RetrofitManager retrofit, int page) {
+        retrofit.enqueue(DyttService.class, callback, "shortVideo", tid, Integer.valueOf(page));
     }
 
     @Override
@@ -93,7 +95,8 @@ public class ShortVideoFragment extends BaseRecyclerFragment{
 
     @Override
     public Type getSerializeClass() {
-        return new TypeToken<DyttRoot<List<DyttShortVideo>>>(){}.getType();
+        return new TypeToken<DyttRoot<List<DyttShortVideo>>>() {
+        }.getType();
     }
 
     @Override
@@ -105,12 +108,12 @@ public class ShortVideoFragment extends BaseRecyclerFragment{
 
         @Override
         public void onSuccess(DyttRoot<List<DyttShortVideo>> response) {
-            if(mVideoAdapter == null)return;
+            if (mVideoAdapter == null) return;
             List<DyttShortVideo> body = response.getBody();
-            if(body != null && body.size() > 0){
+            if (body != null && body.size() > 0) {
                 mVideoAdapter.addAll(body);
                 mVideoAdapter.setLoad(true);
-            }else{
+            } else {
                 showSnackbar(getStringFix(R.string.not_more));
                 mVideoAdapter.setLoad(false);
             }
@@ -122,12 +125,12 @@ public class ShortVideoFragment extends BaseRecyclerFragment{
 
         @Override
         public void onSuccess(DyttRoot<List<DyttShortVideo>> date) {
-            if(mVideoAdapter == null )return ;
+            if (mVideoAdapter == null) return;
             List<DyttShortVideo> body = date.getBody();
-            if(body != null && body.size() > 0){
+            if (body != null && body.size() > 0) {
                 mVideoAdapter.addAll(body);
                 mVideoAdapter.setLoad(true);
-            }else{
+            } else {
                 showSnackbar(getStringFix(R.string.not_more));
                 mVideoAdapter.setLoad(false);
             }

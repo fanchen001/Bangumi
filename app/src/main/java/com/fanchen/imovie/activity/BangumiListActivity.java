@@ -42,27 +42,11 @@ public class BangumiListActivity extends BaseRecyclerActivity {
     private String className;
     private boolean isLoad;
 
-    /**
-     *
-     * @param activity
-     * @param title
-     * @param url
-     * @param className
-     */
-    public static void startActivity(Activity activity, String title, String url,String className) {
+    public static void startActivity(Activity activity, String title, String url, String className) {
         startActivity(activity, title, 1, url, className, true);
     }
 
-    /**
-     *
-     * @param activity
-     * @param title
-     * @param pageStart
-     * @param url
-     * @param className
-     * @param isLoad
-     */
-    public static void startActivity(Activity activity, String title,int pageStart, String url,String className ,boolean isLoad) {
+    public static void startActivity(Activity activity, String title, int pageStart, String url, String className, boolean isLoad) {
         try {
             Intent intent = new Intent(activity, BangumiListActivity.class);
             intent.putExtra(URL, url);
@@ -71,31 +55,17 @@ public class BangumiListActivity extends BaseRecyclerActivity {
             intent.putExtra(ISLOAD, isLoad);
             intent.putExtra(CLASS_NAME, className);
             activity.startActivity(intent);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     *
-     * @param activity
-     * @param title
-     * @param url
-     * @param className
-     * @param isLoad
-     */
-    public static void startActivity(Activity activity, String title,String url,String className ,boolean isLoad) {
+    public static void startActivity(Activity activity, String title, String url, String className, boolean isLoad) {
         startActivity(activity, title, 1, url, className, isLoad);
     }
 
-    /**
-     *
-     * @param activity
-     * @param bangumiTitle
-     * @param isLoad
-     */
-    public static void startActivity(Activity activity,IBangumiTitle bangumiTitle,boolean isLoad) {
-        startActivity(activity,bangumiTitle.getTitle(),bangumiTitle.getStartPage(),bangumiTitle.getId(),bangumiTitle.getServiceClassName(),isLoad);
+    public static void startActivity(Activity activity, IBangumiTitle bangumiTitle, boolean isLoad) {
+        startActivity(activity, bangumiTitle.getTitle(), bangumiTitle.getStartPage(), bangumiTitle.getId(), bangumiTitle.getServiceClassName(), isLoad);
     }
 
     @Override
@@ -125,20 +95,20 @@ public class BangumiListActivity extends BaseRecyclerActivity {
 
     @Override
     protected void loadData(RetrofitManager retrofit, int page) {
-        retrofit.enqueue(className, callback, "more", url, Integer.valueOf(page));
+        retrofit.enqueue(className, callback, "more", url, page);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_skip,menu);
+        getMenuInflater().inflate(R.menu.menu_skip, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_skip:
-                DialogUtil.showInputDialog(this,inputListener);
+                DialogUtil.showInputDialog(this, inputListener);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -151,9 +121,9 @@ public class BangumiListActivity extends BaseRecyclerActivity {
 
     @Override
     public void onItemClick(List<?> datas, View v, int position) {
-        if(!(datas.get(position) instanceof IVideo))return;
+        if (!(datas.get(position) instanceof IVideo)) return;
         IVideo video = (IVideo) datas.get(position);
-        VideoDetailsActivity.startActivity(this,video);
+        VideoDetailsActivity.Companion.startActivity(this, video);
     }
 
     private RefreshRecyclerActivityImpl<IBangumiMoreRoot> callback = new RefreshRecyclerActivityImpl<IBangumiMoreRoot>() {
@@ -176,10 +146,10 @@ public class BangumiListActivity extends BaseRecyclerActivity {
         @Override
         public void onInput(EditText editText, BaseDialog<?> dialog) {
             String string = getEditTextString(editText);
-            if(RegularUtil.isAllNumric(string)){
+            if (RegularUtil.isAllNumric(string)) {
                 mVideoListAdapter.clear();
                 setPage(Integer.valueOf(string));
-                loadData(getRetrofitManager(),getPage());
+                loadData(getRetrofitManager(), getPage());
             }
             dialog.dismiss();
         }

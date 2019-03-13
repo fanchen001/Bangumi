@@ -62,19 +62,19 @@ public class TimeLineActivity extends BaseRecyclerActivity {
     public void onItemClick(List<?> datas, View v, int position) {
         if (!(datas.get(position) instanceof IBaseVideo)) return;
         IBaseVideo video = (IBaseVideo) datas.get(position);
-        SearchBangumiActivity.startActivity(this, video.getTitle());
+        SearchBangumiActivity.Companion.startActivity(this, video.getTitle());
     }
 
     private RefreshRecyclerActivityImpl<IBangumiTimeRoot> callback = new RefreshRecyclerActivityImpl<IBangumiTimeRoot>() {
 
         @Override
         public void onSuccess(int enqueueKey, IBangumiTimeRoot response) {
-            if (response == null || !response.isSuccess() ||mTimeLineAdapter == null || mRecyclerView == null) return;
+            if (response == null || !response.isSuccess() ||mTimeLineAdapter == null || getMRecyclerView() == null) return;
             if (isRefresh())
                 mTimeLineAdapter.clear();
             List<? extends IViewType> adapterList = response.getAdapterList();
             mTimeLineAdapter.addAll(adapterList);
-            mRecyclerView.scrollToPosition(response.getPosition());
+            getMRecyclerView().scrollToPosition(response.getPosition());
             mTimeLineAdapter.setLoad(false);
             mTimeLineAdapter.setLoading(false);
         }

@@ -14,7 +14,6 @@ import java.util.ArrayList;
  * SearchDialogFragment
  * <p/>
  * 搜索历史记录database
- * Created by fanchen on 2017/9/17.
  */
 public class SearchHistoryHelper extends SQLiteOpenHelper {
 

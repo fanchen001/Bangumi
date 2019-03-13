@@ -105,9 +105,9 @@ public class CaptureActivity extends BaseToolbarActivity {
             resultIntent.putExtras(bundle);
             CaptureActivity.this.setResult(RESULT_OK, resultIntent);
             if(result.startsWith("http")){
-                WebActivity.startActivity(CaptureActivity.this,result);
+                WebActivity.Companion.startActivity(CaptureActivity.this,result);
             }else{
-                WebActivity.startActivity(CaptureActivity.this,String.format("https://www.baidu.com/s?wd=%s",result));
+                WebActivity.Companion.startActivity(CaptureActivity.this,String.format("https://www.baidu.com/s?wd=%s",result));
             }
             CaptureActivity.this.finish();
         }
@@ -123,5 +123,4 @@ public class CaptureActivity extends BaseToolbarActivity {
             CaptureActivity.this.finish();
         }
     };
-
 }

@@ -53,7 +53,7 @@ public class MainBannerDialog extends MaterialDialog implements OnButtonClickLis
 
     @Override
     public void onButtonClick(BaseAlertDialog<?> dialog, int btn) {
-        if (btn == RIGHT) VideoDetailsActivity.startActivity(context, banner);
+        if (btn == RIGHT) VideoDetailsActivity.Companion.startActivity(context, banner);
         PreferenceManager.getDefaultSharedPreferences(context).edit().putInt("banner_int", banner.getBannerInt()).apply();
         dismiss();
     }

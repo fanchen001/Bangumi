@@ -59,8 +59,8 @@ public class DownloadFragment extends BaseRecyclerFragment implements DownloadTa
     protected void initFragment(@Nullable Bundle savedInstanceState, Bundle args) {
         super.initFragment(savedInstanceState, args);
         suffix = getArguments().getString(SUFFIX);
-        mTextView.setVisibility(View.VISIBLE);
-        mTextView.setText(String.format("下载路径：%s", M3u8Config.INSTANCE.getM3u8Path()));
+        getMTextView().setVisibility(View.VISIBLE);
+        getMTextView().setText(String.format("下载路径：%s", M3u8Config.INSTANCE.getM3u8Path()));
     }
 
     @Override
@@ -106,7 +106,7 @@ public class DownloadFragment extends BaseRecyclerFragment implements DownloadTa
             if (!TextUtils.isEmpty(fileName) && fileName.contains(".apk")) {
                 SystemUtil.installApk(activity, entityWrap.data.getDownloadPath());
             } else if (!TextUtils.isEmpty(fileName) && fileName.contains(".mp4")) {
-                VideoPlayerActivity.startActivity(activity, entityWrap.data);
+                VideoPlayerActivity.Companion.startActivity(activity, entityWrap.data);
             }
         }
     }
@@ -146,7 +146,7 @@ public class DownloadFragment extends BaseRecyclerFragment implements DownloadTa
             } else if (!TextUtils.isEmpty(fileName) && fileName.contains(".apk")) {
                 SystemUtil.installApk(activity, data.data.getDownloadPath());
             } else if (!TextUtils.isEmpty(fileName) && fileName.contains(".mp4")) {
-                VideoPlayerActivity.startActivity(activity, data.data);
+                VideoPlayerActivity.Companion.startActivity(activity, data.data);
             }
         }
     }
@@ -167,9 +167,14 @@ public class DownloadFragment extends BaseRecyclerFragment implements DownloadTa
 
         @Override
         public void onTaskFinish() {
-            if (getSwipeRefreshLayout() == null) return;
+            if (getMSwipeRefreshLayout() == null) return;
             super.onTaskFinish();
-            getSwipeRefreshLayout().setEnabled(false);
+            getMSwipeRefreshLayout().setEnabled(false);
+        }
+
+        @Override
+        public void onTaskProgress(Integer... values) {
+
         }
     };
 

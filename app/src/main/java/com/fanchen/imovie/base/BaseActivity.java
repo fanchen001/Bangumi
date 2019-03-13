@@ -40,11 +40,8 @@ import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.ButterKnife;
-
 /**
  * 应用中所有activity应该继承该类
- * Created by fanchen on 2017/9/15.
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -120,8 +117,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * 是否使用eventbus
-     *
-     * @return
      */
     protected boolean isRegisterEventBus() {
         return false;
@@ -129,8 +124,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * 默认是否可滑动返回
-     *
-     * @return
      */
     protected boolean isSwipeActivity() {
         return true;
@@ -147,8 +140,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * 可滑动的范围。百分比。0.2表示为左边20%的屏幕
-     *
-     * @return
      */
     protected float getEdgePercent() {
         return 0.15f;
@@ -156,8 +147,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * 对横向滑动手势的敏感程度。0为迟钝 1为敏感
-     *
-     * @return
      */
     protected float getSensitivity() {
         return 0.45f;
@@ -165,16 +154,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * 触发关闭Activity百分比
-     *
-     * @return
      */
     protected float getClosePercent() {
         return 0.4f;
     }
 
-    /**
-     * @return
-     */
     public DownloadReceiver getDownloadReceiver() {
         if (appliction != null) {
             return appliction.getDownloadReceiver();
@@ -193,30 +177,18 @@ public abstract class BaseActivity extends AppCompatActivity {
         return null;
     }
 
-    /**
-     * @param event
-     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMainEvent(AppEvent event) {
     }
 
-    /**
-     * @param event
-     */
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onBackgroudEvent(AppEvent event) {
     }
 
-    /**
-     * @param event
-     */
     public void postAppEvent(AppEvent event) {
         EventBus.getDefault().post(event);
     }
 
-    /**
-     * @param savedInstanceState
-     */
     private void init(Bundle savedInstanceState) {
         appliction = IMovieAppliction.app != null ? IMovieAppliction.app : (IMovieAppliction) getApplication();
         mLiteOrm = LiteOrmManager.getInstance(appliction).getLiteOrm("imovie.db");
@@ -237,15 +209,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         mMainView = getLayoutView(layoutInflater, getLayout());
         if (mMainView == null) return;
         setContentView(mMainView);
-        ButterKnife.inject(this);
         //等所有的view初始化完成之后，
         //再来进行界面数据的初始化
         mMainView.post(new InflaterRunnable(this, mMainView, savedInstanceState, layoutInflater));
     }
 
-    /**
-     * @return
-     */
     public LiteOrm getLiteOrm() {
         if (mLiteOrm == null)
             if (appliction != null) {
@@ -256,9 +224,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         return mLiteOrm;
     }
 
-    /**
-     * @return
-     */
     public RetrofitManager getRetrofitManager() {
         if (mRetrofitManager == null)
             mRetrofitManager = RetrofitManager.with(this);
@@ -275,9 +240,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         return User.getLoginUser();
     }
 
-    /**
-     * @return
-     */
     public boolean checkLogin() {
         if (getLoginUser() == null) {
             showToast(getString(R.string.please_login));
@@ -287,10 +249,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         return true;
     }
 
-    /**
-     * @param attr
-     * @return
-     */
     public int getAttributeValue(int attr) {
         TypedValue typedValue = new TypedValue();
         getTheme().resolveAttribute(attr, typedValue, true);
@@ -300,16 +258,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * 当前activity布局
-     *
-     * @return
      */
     protected abstract int getLayout();
 
-    /**
-     * @param inflater
-     * @param layout
-     * @return
-     */
     protected View getLayoutView(LayoutInflater inflater, int layout) {
         if (layout <= 0) return null;
         return inflater.inflate(layout, null, false);
@@ -351,8 +302,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * 开启一个Activity
-     *
-     * @param clazz
      */
     public void startActivity(Class<?> clazz) {
         startActivity(new Intent(this, clazz));
@@ -375,9 +324,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * 开启一个Activity
-     *
-     * @param clazz
-     * @param bundle
      */
     public void startActivity(Class<?> clazz, Bundle bundle) {
         Intent intent = new Intent(this, clazz);
@@ -385,50 +331,26 @@ public abstract class BaseActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    /**
-     * 开启一个Service
-     *
-     * @param clazz
-     */
     public void startService(Class<?> clazz) {
         startService(new Intent(this, clazz));
     }
 
-    /**
-     * 开启一个Service
-     *
-     * @param clazz
-     * @param bundle
-     */
     public void startService(Class<?> clazz, Bundle bundle) {
         Intent intent = new Intent(this, clazz);
         intent.putExtras(bundle);
         startService(intent);
     }
 
-    /**
-     * @param clazz
-     * @param code
-     */
     public void startActivityForResult(Class<?> clazz, int code) {
         startActivityForResult(new Intent(this, clazz), code);
     }
 
-    /**
-     * @param clazz
-     * @param bundle
-     * @param code
-     */
     public void startActivityForResult(Class<?> clazz, Bundle bundle, int code) {
         Intent intent = new Intent(this, clazz);
         intent.putExtras(bundle);
         startActivityForResult(intent, code);
     }
 
-    /**
-     * @param editText
-     * @return
-     */
     public String getEditTextString(EditText editText) {
         if (editText == null) return "";
         return editText.getText().toString().trim();
@@ -464,11 +386,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         return null;
     }
 
-    /**
-     * @param id
-     * @param name
-     * @param f
-     */
     public void changeFragment(int id, String name, Fragment f) {
         if (isFinishing()) return;
         FragmentManager fm = getSupportFragmentManager();
@@ -483,42 +400,24 @@ public abstract class BaseActivity extends AppCompatActivity {
         ft.commitAllowingStateLoss();
     }
 
-    /**
-     * @param id
-     * @param f
-     */
     public void changeFragment(int id, Fragment f) {
         changeFragment(id, null, f);
     }
 
-    /**
-     * @param id
-     */
     public void showToast(int id) {
         String string = getResources().getString(id);
         showToast(string);
     }
 
-    /**
-     * @param c
-     */
     public void showToast(CharSequence c) {
         showToast(c, Toast.LENGTH_SHORT);
     }
 
-    /**
-     * @param id
-     * @param len
-     */
     public void showToast(int id, int len) {
         String string = getResources().getString(id);
         showToast(string, len);
     }
 
-    /**
-     * @param c
-     * @param len
-     */
     public void showToast(final CharSequence c, final int len) {
         if ("main".equals(Thread.currentThread().getName())) {
             makeToast(c, len);
@@ -532,56 +431,27 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * @param c
-     * @param len
-     */
     private void makeToast(CharSequence c, int len) {
         Toast.makeText(this, c, len).show();
     }
 
-    /**
-     * @param view
-     * @param c
-     * @param len
-     */
     public void showSnackbar(View view, CharSequence c, int len) {
         showSnackbar(view, c, len, null, null);
     }
 
-    /**
-     * @param view
-     * @param c
-     */
     public void showSnackbar(View view, CharSequence c) {
         showSnackbar(view, c, Snackbar.LENGTH_SHORT, null, null);
     }
 
-    /**
-     * @param c
-     */
     public void showSnackbar(CharSequence c) {
         if (mMainView != null)
             showSnackbar(mMainView, c, Snackbar.LENGTH_SHORT, null, null);
     }
 
-    /**
-     * @param view
-     * @param c
-     * @param title
-     * @param l
-     */
     public void showSnackbar(View view, CharSequence c, CharSequence title, View.OnClickListener l) {
         showSnackbar(view, c, Snackbar.LENGTH_SHORT, title, l);
     }
 
-    /**
-     * @param view
-     * @param c
-     * @param len
-     * @param title
-     * @param l
-     */
     public void showSnackbar(final View view, final CharSequence c, final int len, final CharSequence title, final View.OnClickListener l) {
         if ("main".equals(Thread.currentThread().getName())) {
             makeSnackbar(view, c, len, title, l);
@@ -595,13 +465,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * @param view
-     * @param c
-     * @param len
-     * @param title
-     * @param l
-     */
     private void makeSnackbar(View view, CharSequence c, int len, CharSequence title, View.OnClickListener l) {
         Snackbar.make(view, c, len).setAction(title, l).show();
     }

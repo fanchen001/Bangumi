@@ -34,9 +34,6 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
 
     private HistoryAdapter mHistoryAdapter;
 
-    /**
-     * @param context
-     */
     public static void startActivity(Context context) {
         try {
             Intent intent = new Intent(context, HistoryActivity.class);
@@ -90,7 +87,7 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
     public void onItemClick(List<?> datas, View v, int position) {
         if(!(datas.get(position) instanceof VideoHistory))return ;
         VideoHistory history = (VideoHistory) datas.get(position);
-        VideoPlayerActivity.startActivity(this,history);
+        VideoPlayerActivity.Companion.startActivity(this,history);
     }
 
     @Override
@@ -101,9 +98,6 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
         return true;
     }
 
-    /**
-     *
-     */
     private TaskRecyclerActivityImpl<List<VideoHistory>> queryCallback = new TaskRecyclerActivityImpl<List<VideoHistory>>() {
 
         @Override
@@ -119,11 +113,13 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
             mHistoryAdapter.addAll(data);
         }
 
+        @Override
+        public void onTaskProgress(Integer... values) {
+
+        }
+
     };
 
-    /**
-     *
-     */
     private OnButtonClickListener buttonClickListener = new OnButtonClickListener() {
 
         @Override
@@ -136,22 +132,19 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
 
     };
 
-    /**
-     *
-     */
     private class DeleteListenerImpl extends AsyTaskListenerImpl<Integer> {
-        public int DELETEALL = -1;
-        public int DELETEERROR = -2;
+        int DELETEALL = -1;
+        int DELETEERROR = -2;
 
         private int pisotion = -1;
         private String id;
 
-        public DeleteListenerImpl(String id, int pisotion) {
+        DeleteListenerImpl(String id, int pisotion) {
             this.id = id;
             this.pisotion = pisotion;
         }
 
-        public DeleteListenerImpl() {
+        DeleteListenerImpl() {
         }
 
         @Override
@@ -180,7 +173,7 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
                     mHistoryAdapter.remove(data);
                 }
                 if(mHistoryAdapter.getList().size() == 0){
-                    mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_EMPTY);
+                    getMCustomEmptyView().setEmptyType(CustomEmptyView.TYPE_EMPTY);
                 }
             }
         }

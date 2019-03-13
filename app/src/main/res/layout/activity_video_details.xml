@@ -17,9 +17,9 @@
             app:contentScrim="?colorPrimary"
             app:layout_scrollFlags="exitUntilCollapsed|scroll">
 
-            <include layout="@layout/layout_video_info"></include>
+            <include layout="@layout/layout_video_info" />
 
-            <include layout="@layout/layout_toolbar_video"></include>
+            <include layout="@layout/layout_toolbar_video" />
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 

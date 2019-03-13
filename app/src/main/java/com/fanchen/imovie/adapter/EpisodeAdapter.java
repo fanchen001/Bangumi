@@ -26,9 +26,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by fanchen on 2017/7/18.
- */
 public class EpisodeAdapter extends BaseAdapter {
 
     private boolean parent = false;

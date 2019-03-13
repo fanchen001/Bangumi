@@ -18,9 +18,6 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 
-/**
- * Created by fanchen on 2017/9/22.
- */
 public class ShortVideoAdapter extends BaseAdapter {
 
     private PicassoWrap picassoWrap;

@@ -20,7 +20,6 @@ import java.util.List;
 
 /**
  * 专题收藏Adapter
- * Created by fanchen on 2017/7/24.
  */
 public class CollectAdapter extends BaseAdapter {
 

@@ -8,7 +8,6 @@ import com.fanchen.imovie.retrofit.service.TucaoService;
 
 /**
  * Tucaoc 轮播图数据实体
- * Created by fanchen on 2017/9/16.
  */
 public class TucaoBanner extends TucaoBaseVideo implements Parcelable, IVideoBanner<TucaoBanner> {
 

@@ -13,18 +13,11 @@ import cn.bmob.v3.listener.UpdateListener;
  */
 public class BmobObj extends BmobObject{
 
-    /**
-     *
-     */
     public void save() {
         if(IMovieAppliction.app == null)return;
         super.save(IMovieAppliction.app);
     }
 
-    /**
-     *
-     * @param listener
-     */
     public void save(OnRefreshListener listener) {
         if(listener == null || IMovieAppliction.app == null)return;
         listener.onStart();

@@ -103,7 +103,7 @@ public class TvLiveListFragment extends BaseRecyclerFragment implements BaseAdap
     public void onItemClick(List<?> datas, View v, int position) {
         if (!(datas.get(position) instanceof DyttLive)) return;
         DyttLive body = (DyttLive) datas.get(position);
-        VideoPlayerActivity.startActivity(activity, body);
+        VideoPlayerActivity.Companion.startActivity(activity, body);
     }
 
     @Override

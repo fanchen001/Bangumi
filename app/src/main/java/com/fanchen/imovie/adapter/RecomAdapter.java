@@ -17,10 +17,6 @@ import com.fanchen.imovie.view.TriangleLabelView;
 
 import java.util.List;
 
-
-/**
- * Created by fanchen on 2017/7/18.
- */
 public class RecomAdapter extends BaseAdapter {
     private PicassoWrap picasso;
 

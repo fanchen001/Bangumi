@@ -82,13 +82,13 @@ public class XunleiFragment extends BaseRecyclerFragment implements DownloadTabA
     @Override
     protected void initFragment(@Nullable Bundle savedInstanceState, Bundle args) {
         super.initFragment(savedInstanceState, args);
-        mTextView.setVisibility(View.VISIBLE);
-        mTextView.setText(String.format("下载路径：%s", XLAppliction.XL_PATH));
+        getMTextView().setVisibility(View.VISIBLE);
+        getMTextView().setText(String.format("下载路径：%s", XLAppliction.XL_PATH));
     }
 
     @Override
     public void loadData(Bundle savedInstanceState, RetrofitManager retrofit, int page) {
-        mSwipeRefreshLayout.setRefreshing(true);
+        getSwipeRefreshLayout().setRefreshing(true);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class XunleiFragment extends BaseRecyclerFragment implements DownloadTabA
             showToast("添加BT任务成功");
         }else {
             String absolutePath = file.getAbsolutePath();
-            VideoPlayerActivity.startActivity(activity, absolutePath);
+            VideoPlayerActivity.Companion.startActivity(activity, absolutePath);
         }
     }
 
@@ -115,9 +115,9 @@ public class XunleiFragment extends BaseRecyclerFragment implements DownloadTabA
     }
 
     private void setXLTasks(List<XLTaskInfo> infos) {
-        if (mXunleiAdapter == null || mCustomEmptyView == null) return;
+        if (mXunleiAdapter == null || getMCustomEmptyView() == null) return;
         mXunleiAdapter.setXLTasks(infos);
-        mCustomEmptyView.setEmptyType(mXunleiAdapter.getList().size() == 0 ? CustomEmptyView.TYPE_EMPTY : CustomEmptyView.TYPE_NON);
+        getMCustomEmptyView().setEmptyType(mXunleiAdapter.getList().size() == 0 ? CustomEmptyView.TYPE_EMPTY : CustomEmptyView.TYPE_NON);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class XunleiFragment extends BaseRecyclerFragment implements DownloadTabA
                 showToast("文件已删除");
             } else {
                 String absolutePath = file.getAbsolutePath();
-                VideoPlayerActivity.startActivity(activity, absolutePath);
+                VideoPlayerActivity.Companion.startActivity(activity, absolutePath);
             }
         } else if (control == DELETE) {
             DeleteListener listener = new DeleteListener(data.data);
@@ -147,8 +147,10 @@ public class XunleiFragment extends BaseRecyclerFragment implements DownloadTabA
             if (mXunleiAdapter == null || intent == null) return;
             String action = intent.getAction();
             if (XLService.REFRESH_LIST.equals(action)) {
-                mSwipeRefreshLayout.setEnabled(false);
-                mSwipeRefreshLayout.setRefreshing(false);
+                if (getSwipeRefreshLayout() != null) {
+                    getSwipeRefreshLayout().setEnabled(false);
+                    getSwipeRefreshLayout().setRefreshing(false);
+                }
                 List<XLTaskInfo> infos = intent.getParcelableArrayListExtra(XLService.DATA);
                 setXLTasks(infos);
                 Log.e("onReceive", "info -> " + new Gson().toJson(infos));

@@ -26,9 +26,6 @@ public class TvLiveActivity extends BaseRecyclerActivity {
     private String classService = HlyyTvService.class.getName();
     private TvLiveAdapter mLiveAdapter;
 
-    /**
-     * @param context
-     */
     public static void startActivity(Context context) {
         try {
             Intent intent = new Intent(context, TvLiveActivity.class);

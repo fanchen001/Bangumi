@@ -52,7 +52,7 @@ public class AsyTaskQueue extends Thread {
                 switch (msg.what) {
                     case 0:
                         if(ActiveUtil.checkActive(asyTaskListener)){
-                            asyTaskListener.onTaskSart();
+                            asyTaskListener.onTaskStart();
                         }
                         break;
                     case 1:

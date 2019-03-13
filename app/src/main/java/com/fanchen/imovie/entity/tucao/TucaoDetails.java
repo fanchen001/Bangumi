@@ -14,7 +14,6 @@ import java.util.List;
 
 /**
  * TucaoDetails
- * Created by fanchen on 2017/9/28.
  */
 public class TucaoDetails extends TucaoVideo implements IVideoDetails{
 

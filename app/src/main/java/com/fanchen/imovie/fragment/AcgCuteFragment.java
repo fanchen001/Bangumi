@@ -64,22 +64,12 @@ public class AcgCuteFragment extends BaseRecyclerFragment {
     public void onItemClick(List<?> datas, View v, int position) {
         if(!(datas.get(position) instanceof AcgPosts))return;
         AcgPosts posts = (AcgPosts) datas.get(position);
-        WebActivity.startActivity(activity, posts.getTitle(), posts.getUrl());
+        WebActivity.Companion.startActivity(activity, posts.getTitle(), posts.getUrl());
     }
 
     @Override
     protected boolean useLocalStorage() {
         return true;
-    }
-
-    @Override
-    public String getSerializeKey() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
-    public Type getSerializeClass() {
-        return new TypeToken<AcgRoot<AcgData>>(){}.getType();
     }
 
     private RefreshRecyclerFragmentImpl<AcgRoot<AcgData>> callback = new RefreshRecyclerFragmentImpl<AcgRoot<AcgData>>() {

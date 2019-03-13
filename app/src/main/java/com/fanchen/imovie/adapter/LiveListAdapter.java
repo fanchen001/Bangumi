@@ -19,7 +19,6 @@ import java.util.List;
 
 /**
  * LiveListAdapter
- * Created by fanchen on 2017/8/2.
  */
 public class LiveListAdapter extends BaseAdapter {
 

@@ -34,10 +34,6 @@ public class ApkEvaluatActivity extends BaseRecyclerActivity {
     private Gson gson = new Gson();
     private ApkEvaluatAdapter mEvaluatingAdapter;
 
-    /**
-     *
-     * @param context
-     */
     public static void startActivity(Context context){
         try {
             Intent intent = new Intent(context,ApkEvaluatActivity.class);
@@ -75,7 +71,7 @@ public class ApkEvaluatActivity extends BaseRecyclerActivity {
     public void onItemClick(List<?> datas, View v, int position) {
         if(!(datas.get(position) instanceof ApkEvaluat))return;
         ApkEvaluat apkEvaluat = (ApkEvaluat) datas.get(position);
-        WebActivity.startActivity(this,apkEvaluat.getTitle(),apkEvaluat.getUrl());
+        WebActivity.Companion.startActivity(this,apkEvaluat.getTitle(),apkEvaluat.getUrl());
     }
 
     private RefreshRecyclerActivityImpl<ApkRoot<ApkData<ApkEvaluat>>> callback = new RefreshRecyclerActivityImpl<ApkRoot<ApkData<ApkEvaluat>>>() {

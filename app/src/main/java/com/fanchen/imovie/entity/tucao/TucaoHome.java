@@ -14,9 +14,6 @@ import com.fanchen.imovie.view.pager.IBanner;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by fanchen on 2017/9/18.
- */
 public class TucaoHome implements IBangumiRoot,IBangumiMoreRoot,Parcelable {
 
     private List<TucaoBanner> banner;

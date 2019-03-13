@@ -74,8 +74,8 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
         String url = videoEpisode.getUrl();
         if (TextUtils.isEmpty(url) || !XLManager.isXLUrl(url)) {
             activity.showToast("不支持的下载类型");
-        } else if (mEpisodeAdapter.getSelect().size() >= 3 && videoEpisode.getDownloadState() == IVideoEpisode.DOWNLOAD_NON) {
-            activity.showToast("一次最多支持选中下载3个");
+        } else if (videoEpisode.getDownloadState() == IVideoEpisode.DOWNLOAD_NON) {
+            activity.showToast("下载状态错误");
         } else {
             if (videoEpisode.getDownloadState() == IVideoEpisode.DOWNLOAD_SELECT) {
                 videoEpisode.setDownloadState(IVideoEpisode.DOWNLOAD_NON);

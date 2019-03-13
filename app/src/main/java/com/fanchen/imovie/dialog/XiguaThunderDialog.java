@@ -91,13 +91,13 @@ public class XiguaThunderDialog extends MaterialDialog implements
             String decode = Uri.decode(uri.toString());
             if (P2PManager.isXiguaUrl(uri)) {
                 if (btn == OnButtonClickListener.RIGHT) {
-                    VideoPlayerActivity.startActivity(context, decode);
+                    VideoPlayerActivity.Companion.startActivity(context, decode);
                 } else if (btn == OnButtonClickListener.CENTRE) {
                     p2PManager.play(decode);
                 }
             } else if (XLManager.isXLUrl(uri)) {
                 if (btn == OnButtonClickListener.RIGHT) {
-                    VideoPlayerActivity.startActivity(context, decode);
+                    VideoPlayerActivity.Companion.startActivity(context, decode);
                 } else if (btn == OnButtonClickListener.CENTRE) {
                     xlManager.addTask(decode);
                 }

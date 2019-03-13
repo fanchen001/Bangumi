@@ -21,10 +21,6 @@ public class GirlTabActivity extends BaseTabActivity implements SearchDialogFrag
 
     private SearchDialogFragment mSearchFragment = SearchDialogFragment.newInstance();
 
-    /**
-     *
-     * @param context
-     */
     public static void startActivity(Context context) {
         try {
             Intent intent = new Intent(context, GirlTabActivity.class);
@@ -74,9 +70,9 @@ public class GirlTabActivity extends BaseTabActivity implements SearchDialogFrag
     @Override
     public void onSearchClick(ISearchWord word) {
         String wordString = word.getWord();
-        String clazz = ((BaseFragmentAdapter) mViewPager.getAdapter()).getExtendInfo().toString();
-        int multiple = ((BaseFragmentAdapter) mViewPager.getAdapter()).getMultiple();
-        int pageStart = ((BaseFragmentAdapter) mViewPager.getAdapter()).getPageStart();
+        String clazz = ((BaseFragmentAdapter) getMViewPager().getAdapter()).getExtendInfo().toString();
+        int multiple = ((BaseFragmentAdapter) getMViewPager().getAdapter()).getMultiple();
+        int pageStart = ((BaseFragmentAdapter) getMViewPager().getAdapter()).getPageStart();
         SearchVideoActivity.startActivity(this,wordString, clazz,pageStart,multiple);
     }
 }

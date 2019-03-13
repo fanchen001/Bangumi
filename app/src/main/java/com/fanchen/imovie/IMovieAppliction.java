@@ -56,7 +56,6 @@ import okhttp3.Protocol;
 
 /**
  * 整个应用上下文
- * Created by fanchen on 2017/9/15.
  */
 public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallback {
     public static String KANKAN_COOKIE = "";

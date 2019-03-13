@@ -53,8 +53,8 @@ public class XiguaFragment extends BaseRecyclerFragment implements DownloadTabAc
     @Override
     protected void initFragment(@Nullable Bundle savedInstanceState, Bundle args) {
         super.initFragment(savedInstanceState, args);
-        mTextView.setVisibility(View.VISIBLE);
-        mTextView.setText(String.format("下载路径：%s", StorageUtils.getCachePath()));
+        getMTextView().setVisibility(View.VISIBLE);
+        getMTextView().setText(String.format("下载路径：%s", StorageUtils.getCachePath()));
     }
 
     @Override
@@ -70,7 +70,9 @@ public class XiguaFragment extends BaseRecyclerFragment implements DownloadTabAc
 
     @Override
     public void loadData(Bundle savedInstanceState, RetrofitManager retrofit, int page) {
-        mSwipeRefreshLayout.setRefreshing(true);
+        if (getSwipeRefreshLayout() != null) {
+            getSwipeRefreshLayout().setRefreshing(true);
+        }
     }
 
     @Override
@@ -91,7 +93,7 @@ public class XiguaFragment extends BaseRecyclerFragment implements DownloadTabAc
         if (!(datas.get(position) instanceof XiguaDownload)) return;
         XiguaDownload warp = (XiguaDownload) datas.get(position);
         if (warp.data.getLocalSize() <= 0) return;
-        VideoPlayerActivity.startActivity(activity, warp.getXiguaUrl());
+        VideoPlayerActivity.Companion.startActivity(activity, warp.getXiguaUrl());
     }
 
     @Override
@@ -104,7 +106,7 @@ public class XiguaFragment extends BaseRecyclerFragment implements DownloadTabAc
             DeleteListener listener = new DeleteListener(info.data);
             DialogUtil.showMaterialDialog(activity, getStringFix(R.string.delete_file), listener);
         } else if (control == PLAY) {
-            VideoPlayerActivity.startActivity(activity, info.data.getXiguaUrl());
+            VideoPlayerActivity.Companion.startActivity(activity, info.data.getXiguaUrl());
         }
     }
 
@@ -139,13 +141,13 @@ public class XiguaFragment extends BaseRecyclerFragment implements DownloadTabAc
         public void onReceive(Context context, Intent intent) {
             if (mAdapter == null || intent == null) return;
             if (intent.getIntExtra(P2PMessageWhat.WHAT, 0) == P2PMessageWhat.MESSAGE_TASK_LIST) {
-                mSwipeRefreshLayout.setRefreshing(false);
-                mSwipeRefreshLayout.setEnabled(false);
+                getSwipeRefreshLayout().setRefreshing(false);
+                getSwipeRefreshLayout().setEnabled(false);
                 if (intent.hasExtra(P2PMessageWhat.DATA)) {
                     List<TaskVideoInfo> infos = intent.getParcelableArrayListExtra(P2PMessageWhat.DATA);
                     mAdapter.setTaskVideoInfos(infos);
                 }
-                mCustomEmptyView.setEmptyType(mAdapter.getList().isEmpty() ? CustomEmptyView.TYPE_EMPTY : CustomEmptyView.TYPE_NON);
+                getMCustomEmptyView().setEmptyType(mAdapter.getList().isEmpty() ? CustomEmptyView.TYPE_EMPTY : CustomEmptyView.TYPE_NON);
             }
         }
 

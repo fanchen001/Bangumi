@@ -3,9 +3,6 @@ package com.fanchen.imovie.entity.tucao;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by fanchen on 2017/9/20.
- */
 public class TucaoApiVideoVid implements Parcelable{
     private String type;
     private String vid;

@@ -27,10 +27,10 @@ public class HackerPagerAdapter extends BaseFragmentAdapter{
     public Fragment createFragment(int position) {
         switch (position){
             case 0:
-                return FreeVideoFragment.newInstance();
+                return FreeVideoFragment.Companion.newInstance();
             case 1:
-                return BiliplusFragment.newInstance();
+                return BiliplusFragment.Companion.newInstance();
         }
-        return BilijjFragment.newInstance();
+        return BilijjFragment.Companion.newInstance();
     }
 }

@@ -92,7 +92,7 @@ public class CollectFragment extends BaseRecyclerFragment implements
         if (!(datas.get(position) instanceof VideoCollect)) return;
         VideoCollect collect = (VideoCollect) datas.get(position);
         if (collect.getType() == VideoCollect.TYPE_VIDEO) { //视频
-            VideoDetailsActivity.startActivity(activity, collect);
+            VideoDetailsActivity.Companion.startActivity(activity, collect);
         }
     }
 
@@ -108,9 +108,6 @@ public class CollectFragment extends BaseRecyclerFragment implements
         AsyTaskQueue.newInstance().execute(new DeleteListenerImpl());
     }
 
-    /**
-     *
-     */
     private TaskRecyclerFragmentImpl<List<VideoCollect>> callback = new TaskRecyclerFragmentImpl<List<VideoCollect>>() {
 
         @Override
@@ -124,6 +121,11 @@ public class CollectFragment extends BaseRecyclerFragment implements
             if (data == null) return;
             mVideoAdapter.clear();
             mVideoAdapter.addAll(data);
+        }
+
+        @Override
+        public void onTaskProgress(Integer... values) {
+
         }
 
     };
@@ -184,7 +186,7 @@ public class CollectFragment extends BaseRecyclerFragment implements
                     mVideoAdapter.remove(data);
                 }
                 if (mVideoAdapter.getList().size() == 0) {
-                    mCustomEmptyView.setEmptyType(CustomEmptyView.TYPE_EMPTY);
+                    getMCustomEmptyView().setEmptyType(CustomEmptyView.TYPE_EMPTY);
                 }
             }
         }
