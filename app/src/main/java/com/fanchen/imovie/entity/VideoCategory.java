@@ -9,9 +9,11 @@ import com.fanchen.imovie.entity.face.IViewType;
  */
 public class VideoCategory implements IViewType {
     private String title;
+    private String url;
     private int position;
     private boolean hot;
     private int type;
+    private boolean success = true;
 
     private static final int DRAWABLE[] = {R.drawable.ic_category_01, R.drawable.ic_category_02,
             R.drawable.ic_category_03, R.drawable.ic_category_04, R.drawable.ic_category_05,
@@ -63,5 +65,21 @@ public class VideoCategory implements IViewType {
     @Override
     public int getViewType() {
         return TYPE_NORMAL;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 }

@@ -18,7 +18,6 @@ public class TucaoBanner extends TucaoBaseVideo implements Parcelable, IVideoBan
     public String extInfo;
     private int bannerType;
 
-
     public TucaoBanner() {
     }
 
@@ -65,6 +64,11 @@ public class TucaoBanner extends TucaoBaseVideo implements Parcelable, IVideoBan
     }
 
     @Override
+    public String getReferer() {
+        return null;
+    }
+
+    @Override
     public int getSource() {
         return 0;
     }
@@ -73,6 +77,7 @@ public class TucaoBanner extends TucaoBaseVideo implements Parcelable, IVideoBan
     public String getServiceClass() {
         return TucaoService.class.getName();
     }
+
 
     public void setExtInfo(String extInfo) {
         this.extInfo = extInfo;

@@ -16,7 +16,6 @@ public class Video extends VideoBase implements IVideo {
     private String last;//up主
     private String danmaku;//弹幕数量
     private String update;//时间
-    private String urlReferer;//
     private boolean hasDetails;
 
     public String thisClass = Video.class.getName();
@@ -30,7 +29,6 @@ public class Video extends VideoBase implements IVideo {
         last = in.readString();
         danmaku = in.readString();
         update = in.readString();
-        urlReferer = in.readString();
         hasDetails = in.readByte() != 0;
         thisClass = in.readString();
     }
@@ -42,7 +40,6 @@ public class Video extends VideoBase implements IVideo {
         dest.writeString(last);
         dest.writeString(danmaku);
         dest.writeString(update);
-        dest.writeString(urlReferer);
         dest.writeByte((byte) (hasDetails ? 1 : 0));
         dest.writeString(thisClass);
     }
@@ -101,10 +98,6 @@ public class Video extends VideoBase implements IVideo {
         return hasDetails;
     }
 
-    @Override
-    public String getCoverReferer() {
-        return urlReferer;
-    }
 
     @Override
     public String getDanmaku() {
@@ -125,11 +118,6 @@ public class Video extends VideoBase implements IVideo {
 
     public void setUpdate(String update) {
         this.update = update;
-    }
-
-    public void setUrlReferer(String urlReferer) {
-        this.urlReferer = urlReferer;
-        setHost(urlReferer);
     }
 
     public void setHasDetails(boolean hasDetails) {

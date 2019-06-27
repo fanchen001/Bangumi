@@ -1,5 +1,8 @@
 package com.fanchen.imovie.jsoup.parser;
 
+import android.text.TextUtils;
+
+import com.fanchen.imovie.entity.VideoPlayUrls;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
@@ -8,10 +11,18 @@ import com.fanchen.imovie.entity.VideoDetails;
 import com.fanchen.imovie.entity.VideoEpisode;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
+import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.IKanFanService;
+import com.fanchen.imovie.util.JavaScriptUtil;
+import com.fanchen.imovie.util.LogUtil;
+import com.fanchen.imovie.util.StreamUtil;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Retrofit;
 
@@ -21,7 +32,7 @@ import retrofit2.Retrofit;
  */
 public class IKanFanParser implements IVideoMoreParser {
 
-    private KankanwuImpl kankanwu = new KankanwuImpl(IKanFanService.class.getName(), false);
+    private KankanwuImpl kankanwu = new KankanwuImpl(IKanFanService.class.getName(), false, true);
 
     @Override
     public IBangumiMoreRoot more(Retrofit retrofit, String baseUrl, String html) {
@@ -45,12 +56,12 @@ public class IKanFanParser implements IVideoMoreParser {
         if (episodes == null) return details;
         List<VideoEpisode> newEpisodes = new ArrayList<>();
         for (VideoEpisode episode : episodes) {
-            if(episode.getTitle().contains("迅雷")) {
+            if (episode.getTitle().contains("迅雷")) {
                 episode.setPlayType(IVideoEpisode.PLAY_TYPE_XUNLEI);
                 String replace = episode.getUrl().replace(baseUrl, "");
                 episode.setUrl(replace);
                 episodes.add(episode);
-            }else if (!episode.getTitle().contains("网盘")) {
+            } else if (!episode.getTitle().contains("网盘")) {
                 newEpisodes.add(episode);
             }
         }
@@ -60,7 +71,49 @@ public class IKanFanParser implements IVideoMoreParser {
 
     @Override
     public IPlayUrls playUrl(Retrofit retrofit, String baseUrl, String html) {
-        return kankanwu.playUrl(retrofit, baseUrl, html);
+        VideoPlayUrls playUrl = new VideoPlayUrls();
+        try {
+            Map<String, String> stringMap = new HashMap<>();
+            if (html.contains("var zanpiancms_player")) {
+                String match = JavaScriptUtil.match("zanpiancms_player = \\{[\\{\\}\\[\\]\\\"\\w\\d第集`~!@#$%^&*_\\-+=<>?:|,.\\\\ \\/;']+\\}", html, 0, 20, 0);
+                LogUtil.e("IKanFanParser", "match -> " + match);
+                if (JavaScriptUtil.isJson(match)) {
+                    JSONObject object = new JSONObject(match);
+                    if (object.has("url") &&  object.has("apiurl")) {
+                        String url = object.getString("url");
+                        String apiurl = object.getString("apiurl");
+                        playUrl.setSuccess(true);
+                        if (url.startsWith("http") && url.contains(".m3u")) {
+                            stringMap.put("标清", url);
+                            playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO_M3U8);
+                            playUrl.setUrlType(IPlayUrls.URL_M3U8);
+                        } else if (url.startsWith("http") && (url.contains(".mp4") || url.contains(".avi") || url.contains(".rm") || url.contains("wmv"))) {
+                            stringMap.put("标清", url);
+                            playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
+                            playUrl.setUrlType(IPlayUrls.URL_FILE);
+                        } else if (!TextUtils.isEmpty(apiurl) && apiurl.startsWith("http")) {
+                            stringMap.put("标清", apiurl + url);
+                            playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                            playUrl.setUrlType(IPlayUrls.URL_WEB);
+                        } else {
+                            playUrl.setSuccess(false);
+                        }
+                        playUrl.setUrls(stringMap);
+                        playUrl.setReferer(RetrofitManager.REQUEST_URL);
+                    }
+                }
+            }
+            if (stringMap.isEmpty()) {
+                stringMap.put("标清", RetrofitManager.REQUEST_URL);
+                playUrl.setUrls(stringMap);
+                playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                playUrl.setUrlType(IPlayUrls.URL_WEB);
+                playUrl.setSuccess(true);
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return playUrl;
     }
 
 //    @Override

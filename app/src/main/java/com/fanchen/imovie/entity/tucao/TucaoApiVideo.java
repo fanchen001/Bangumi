@@ -133,6 +133,11 @@ public class TucaoApiVideo implements Parcelable ,IVideo {
         return TucaoService.class.getName();
     }
 
+    @Override
+    public boolean isAgent() {
+        return false;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }

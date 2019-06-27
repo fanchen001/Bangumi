@@ -26,5 +26,10 @@ public interface IVideoBanner<T> extends IBanner<T>{
      */
     String getId();
 
+    /**
+     * ServiceClass
+     * @return
+     */
     String getServiceClass();
+
 }

@@ -16,7 +16,6 @@ import java.util.List;
  * Created by fanchen on 2017/9/28.
  */
 public class VideoDetails extends Video implements IVideoDetails {
-
     private static SoftReference<List<VideoEpisode>> softEpisodes;
     private static SoftReference<List<Video>> softRecomm;
 

@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import com.tencent.smtt.export.external.interfaces.JsPromptResult;
+import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 
 import org.json.JSONArray;
@@ -58,6 +59,24 @@ public class SafeWebView extends WebView {
     private void init(Context context) {
         // 删除掉Android默认注册的JS接口
         removeSearchBoxImpl();
+        WebSettings webSetting = getSettings();
+        webSetting.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSetting.setJavaScriptEnabled(true);
+        webSetting.setSupportMultipleWindows(false);
+        webSetting.setDatabaseEnabled(true);
+        webSetting.setGeolocationEnabled(true);
+        webSetting.setDomStorageEnabled(true);// 开启DOM
+        webSetting.setAllowFileAccess(true);// 设置支持文件流
+        webSetting.setUseWideViewPort(true);// 调整到适合webview大小
+        webSetting.setLoadWithOverviewMode(true);// 调整到适合webview大小
+        webSetting.setAppCacheEnabled(true);// 开启缓存机制
+        webSetting.setAppCacheMaxSize(64 * 1024 * 1024);
+        webSetting.setCacheMode(android.webkit.WebSettings.LOAD_DEFAULT);
+        webSetting.setAppCachePath(context.getDir("cache", Context.MODE_PRIVATE).getPath());
+        webSetting.setGeolocationDatabasePath(context.getDir("database", Context.MODE_PRIVATE).getPath());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webSetting.setMixedContentMode(0);
+        }
     }
 
     private void removeSearchBoxImpl() {

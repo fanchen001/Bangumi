@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.Video;
 import com.fanchen.imovie.entity.VideoDetails;
@@ -82,7 +83,7 @@ public class Dm5Impl implements IVideoMoreParser {
                 }
                 root.setHomeResult(titles);
             } else {
-                List<Video> videos = new ArrayList<>();
+                List<IVideo> videos = new ArrayList<>();
                 for (Node sub : node.list("div[id^=post-]")) {
                     Video video = new Video();
                     video.setHasDetails(true);
@@ -143,7 +144,7 @@ public class Dm5Impl implements IVideoMoreParser {
         Node node = new Node(html);
         VideoHome root = new VideoHome();
         try {
-            List<Video> videos = new ArrayList<>();
+            List<IVideo> videos = new ArrayList<>();
             for (Node sub : node.list("div[id^=post-]")) {
                 Video video = new Video();
                 video.setHasDetails(true);

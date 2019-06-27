@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.text.TextUtils;
 import android.view.ContextMenu;
@@ -16,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.TextView;
 
 import com.fanchen.imovie.IMovieAppliction;
 import com.fanchen.imovie.R;
@@ -24,22 +23,24 @@ import com.fanchen.imovie.dialog.BaseAlertDialog;
 import com.fanchen.imovie.dialog.OnButtonClickListener;
 import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.util.DialogUtil;
-import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.ShareUtil;
 import com.fanchen.imovie.util.SystemUtil;
-import com.fanchen.imovie.util.VideoUrlUtil;
 import com.fanchen.imovie.view.ContextMenuTitleView;
 import com.fanchen.imovie.view.webview.SwipeWebView;
+import com.fanchen.sniffing.SniffingUICallback;
+import com.fanchen.sniffing.SniffingVideo;
+import com.fanchen.sniffing.x5.SniffingUtil;
 import com.tencent.smtt.export.external.interfaces.JsResult;
 import com.tencent.smtt.export.external.interfaces.SslError;
 import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
 import com.tencent.smtt.sdk.TbsVideo;
 import com.tencent.smtt.sdk.WebChromeClient;
-import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
 import com.xigua.p2p.P2PManager;
 import com.xunlei.XLManager;
+
+import java.util.List;
 
 import butterknife.InjectView;
 
@@ -48,8 +49,8 @@ import butterknife.InjectView;
  * webView自定义浏览器页面
  * Created by fanchen on 2017/8/6.
  */
-public class WebActivity extends BaseToolbarActivity implements View.OnClickListener,
-        VideoUrlUtil.OnParseWebUrlListener {
+public class WebActivity extends BaseToolbarActivity implements View.OnClickListener, SniffingUICallback {
+    public static final String HTMLFLAG = "<SniffingVideo>SniffingVideo</SniffingVideo>";
 
     public static final String URL = "url";
     public static final String TITLE = "title";
@@ -59,6 +60,7 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
     protected FloatingActionButton mButton;
 
     private String url;
+    private Runnable mRunnable = null;
 
     /**
      * @param context
@@ -108,35 +110,12 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
     @Override
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
+        String extra = getIntent().getStringExtra(URL);
         WebView webView = mWebview.getWebView();
-        VideoUrlUtil.getInstance().init(this).setParserTime(2 * 1000).setOnParseListener(this).setAutoDestroy(false);
-        WebSettings webSetting = webView.getSettings();
-        webSetting.setJavaScriptCanOpenWindowsAutomatically(true);
-        webSetting.setJavaScriptEnabled(true);
-        webSetting.setSupportMultipleWindows(false);
-        webSetting.setDatabaseEnabled(true);
-        webSetting.setGeolocationEnabled(true);
-        webSetting.setDomStorageEnabled(true);// 开启DOM
-        webSetting.setAllowFileAccess(true);// 设置支持文件流
-        webSetting.setUseWideViewPort(true);// 调整到适合webview大小
-        webSetting.setLoadWithOverviewMode(true);// 调整到适合webview大小
-        webSetting.setBlockNetworkImage(true);// 提高网页加载速度，暂时阻塞图片加载，然后网页加载好了，在进行加载图片
-        webSetting.setAppCacheEnabled(true);// 开启缓存机制
-        webSetting.setAppCacheMaxSize(64 * 1024 * 1024);
-        webSetting.setCacheMode(android.webkit.WebSettings.LOAD_DEFAULT);
-        webSetting.setAppCachePath(getDir("cache", Context.MODE_PRIVATE).getPath());
-        webSetting.setGeolocationDatabasePath(getDir("database", Context.MODE_PRIVATE).getPath());
-        webSetting.setUserAgentString(" Mozilla/5.0 (iPhone; U; CPU iPhone OS 5_0 like Mac OS X; en-us) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            webSetting.setMixedContentMode(0);
-        }
-        webView.setWebViewClient(webViewClient);
+        webView.setWebViewClient(new DefaultWebViewClient());
         webView.setWebChromeClient(webChromeClient);
         registerForContextMenu(webView);
-        new Thread(sniffingRunnable).start();
-        if (getIntent().hasExtra(URL)) {
-            mWebview.loadUrl(getIntent().getStringExtra(URL));
-        }
+        webView.loadUrl(extra);
     }
 
     @Override
@@ -200,11 +179,8 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
 
     @Override
     protected void onDestroy() {
-        if (mWebview != null && mWebview.getWebView() != null) {
-            mWebview.getWebView().destroy();
-        }
-        VideoUrlUtil.getInstance().destroy();
         super.onDestroy();
+        SniffingUtil.get().releaseAll();
     }
 
     @Override
@@ -226,33 +202,24 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
         super.onBackPressed();
     }
 
-    @Override
-    public void onFindUrl(String url) {
-        TbsVideo.openVideo(WebActivity.this, url);
-        DialogUtil.closeProgressDialog();
-    }
-
-    @Override
-    public void onError(String errorMsg) {
-        showToast("视频解析错误");
-        DialogUtil.closeProgressDialog();
-    }
-
     private WebChromeClient webChromeClient = new WebChromeClient() {
 
         @Override
         public boolean onJsConfirm(WebView webView, String s, String s1, JsResult jsResult) {
-            Node node = new Node(s1);
-            String video = node.attr("video", "src");
-            String source = node.attr("source", "src");
-            String iframe = node.attr("iframe", "src");
-            if (!TextUtils.isEmpty(video) || !TextUtils.isEmpty(iframe) || !TextUtils.isEmpty(source)) {
+            if (s1.contains(HTMLFLAG)) {
                 if (mButton != null && mButton.getVisibility() != View.VISIBLE) {
-                    mButton.setVisibility(View.VISIBLE);
+                    Node node = new Node(s1);
+                    String video = node.attr("video", "src");
+                    String source = node.attr("source", "src");
+                    String iframe = node.attr("iframe", "src");
+                    if (!video.isEmpty() || !iframe.isEmpty() || !source.isEmpty()) {
+                        mButton.setVisibility(View.VISIBLE);
+                    }
                 }
+                jsResult.cancel();
+                return true;
             }
-            jsResult.cancel();
-            return true;
+            return super.onJsConfirm(webView, s, s1, jsResult);
         }
 
         @Override
@@ -269,20 +236,43 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
 
     };
 
+    @Override
+    public void onSniffingSuccess(View webView, String webUrl, List<SniffingVideo> videos) {
+        if (videos.isEmpty()) return;
+        String url = videos.get(0).getUrl();
+        TbsVideo.openVideo(WebActivity.this, url);
+    }
+
+    @Override
+    public void onSniffingError(View webView, String url, int errorCode) {
+        showSnackbar("解析视频失败");
+    }
+
+    @Override
+    public void onSniffingStart(View webView, String url) {
+        DialogUtil.showProgressDialog(WebActivity.this, "正在解析视频...");
+    }
+
+    @Override
+    public void onSniffingFinish(View webView, String url) {
+        DialogUtil.closeProgressDialog();
+    }
+
 
     /**
      * // 设置web页面 // 如果页面中链接，如果希望点击链接继续在当前browser中响应， //
      * 而不是新开Android的系统browser中响应该链接，必须覆盖 webview的WebViewClient对象。
      *
      * @author fanchen
+     * //
      */
-    private WebViewClient webViewClient = new WebViewClient() {
+    private class DefaultWebViewClient extends WebViewClient {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             Uri localUri = Uri.parse(url);
             String scheme = localUri.getScheme();
-            if (scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https")) {
+            if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme)) {
                 view.loadUrl(url);
             } else if (!TextUtils.isEmpty(url) && IMovieAppliction.app != null && (P2PManager.isXiguaUrl(url) || XLManager.isXLUrlNoHttp(url))) {
                 VideoPlayerActivity.startActivity(WebActivity.this, url);
@@ -295,16 +285,18 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            if (isFinishing()) return;
+            super.onPageStarted(view, url, favicon);
+            TextView titleView = getTitleView();
+            if (isFinishing() || titleView == null || mWebview == null) return;
             String stringExtra = getIntent().getStringExtra(TITLE);
             if (!TextUtils.isEmpty(stringExtra)) {
-                getTitleView().setText(stringExtra);
+                titleView.setText(stringExtra);
             } else {
                 String title = mWebview.getWebView().getTitle();
                 if (TextUtils.isEmpty(title)) {
                     title = getString(R.string.app_name);
                 }
-                getTitleView().setText(title);
+                titleView.setText(title);
             }
             mButton.setVisibility(View.GONE);
             try {
@@ -317,19 +309,23 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
         // 设置程序的标题为网页的标题
         @Override
         public void onPageFinished(WebView view, String url) {
-            if (isFinishing()) return;
+            super.onPageFinished(view, url);
+            TextView titleView = getTitleView();
+            if (isFinishing() || titleView == null || mWebview == null) return;
             view.setLayerType(View.LAYER_TYPE_NONE, null);
             String stringExtra = getIntent().getStringExtra(TITLE);
             if (!TextUtils.isEmpty(stringExtra)) {
-                getTitleView().setText(stringExtra);
+                titleView.setText(stringExtra);
             } else {
                 String title = mWebview.getWebView().getTitle();
                 if (TextUtils.isEmpty(title)) {
                     title = getString(R.string.app_name);
                 }
-                getTitleView().setText(title);
+                titleView.setText(title);
             }
             mWebview.getWebView().getSettings().setBlockNetworkImage(false);
+            mWebview.removeCallbacks(mRunnable);
+            mWebview.postDelayed(mRunnable = new DelayedRunnable(), 4000);
         }
 
         // 当load有ssl层的https页面时，如果这个网站的安全证书在Android无法得到认证，
@@ -347,21 +343,10 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
             view.requestFocusFromTouch();
         }
 
-    };
-
-    private Runnable sniffingRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            while (!isFinishing() && mWebview != null && mWebview.getWebView() != null) {
-                SystemClock.sleep(3000);
-                mWebview.loadUrl("javascript:confirm(document.getElementsByTagName('html')[0].innerHTML);");
-            }
-        }
-
-    };
+    }
 
     private MenuItem.OnMenuItemClickListener menuItemHandler = new MenuItem.OnMenuItemClickListener() {
+
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
                 case 0:
@@ -379,7 +364,18 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
             }
             return true;
         }
+
     };
+
+    private class DelayedRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            if (mWebview == null) return;
+            mWebview.loadUrl("javascript:confirm(document.getElementsByTagName('html')[0].innerHTML + '" + HTMLFLAG + "');");
+        }
+
+    }
 
     private class AppButtonClickListener implements OnButtonClickListener {
         private String inteniUrl;
@@ -404,9 +400,8 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
             if (position >= WebPlayerActivity.LUXIANS.length || mWebview == null) return;
             String url = mWebview.getWebView().getUrl();
             String parserUrl = String.format(WebPlayerActivity.LUXIANS[position], url);
-            DialogUtil.showProgressDialog(WebActivity.this, "正在解析视频...");
             String referer = "http://movie.vr-seesee.com/vip";
-            VideoUrlUtil.getInstance().setLoadUrl(parserUrl, referer).startParse();
+            SniffingUtil.get().activity(WebActivity.this).referer(referer).url(parserUrl).callback(WebActivity.this).start();
         }
 
     };

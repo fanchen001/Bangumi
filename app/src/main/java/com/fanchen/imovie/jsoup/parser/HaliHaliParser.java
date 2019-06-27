@@ -7,6 +7,7 @@ import com.fanchen.imovie.entity.VideoTitle;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.entity.Video;
@@ -15,7 +16,6 @@ import com.fanchen.imovie.entity.VideoEpisode;
 import com.fanchen.imovie.entity.VideoHome;
 import com.fanchen.imovie.entity.VideoPlayUrls;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
-import com.fanchen.imovie.jsoup.IVideoParser;
 import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.HaliHaliService;
@@ -45,14 +45,15 @@ public class HaliHaliParser implements IVideoMoreParser {
         Node node = new Node(html);
         VideoHome home = new VideoHome();
         try {
-            List<Video> videos = new ArrayList<>();
+            List<IVideo> videos = new ArrayList<>();
             home.setList(videos);
-            for (Node n : node.list("ul#resize_list > li")) {
+            LogUtil.e("HaliHaliParser","size ===> " + node.list("div.detail.detail-search > div.detail-wrap").size());
+            for (Node n : node.list("div.detail.detail-search > div.detail-wrap")) {
                 String title = n.attr("a", "title");
-                String cover = n.attr("a > div > img", "data-original");
-                String clazz = n.textAt("div.list_info > p", 0);
-                String type = n.textAt("div.list_info > p", 1);
-                String author = n.textAt("div.list_info > p", 2);
+                String cover = n.attr("div.detail-img._item-lazy._item-pic", "data-echo");
+                String clazz = n.textAt("ul.desc > li", 0);
+                String type = n.textAt("ul.desc > li", 1);
+                String author = n.textAt("ul.desc > li", 2);
                 String url = baseUrl + n.attr("a", "href");
                 String id = n.attr("a", "href", "/", 2);
                 Video video = new Video();
@@ -66,8 +67,10 @@ public class HaliHaliParser implements IVideoMoreParser {
                 video.setClazz(clazz);
                 video.setType(type);
                 videos.add(video);
+                LogUtil.e("HaliHaliParser","videos ===>" + videos.size());
             }
             home.setSuccess(true);
+            LogUtil.e("HaliHaliParser","===>" + new Gson().toJson(home));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -97,15 +100,16 @@ public class HaliHaliParser implements IVideoMoreParser {
             LogUtil.e("home","section -> " + node.list("section.mod.margin-t-15").size());
             for (Node n : node.list("section.mod.margin-t-15")) {
                 String topTitle = n.text("span.mod-head-name");
-                if (TextUtils.isEmpty(topTitle) || "热点推送" .equals(topTitle)|| "小哈推荐" .equals(topTitle)) continue;
+                if (TextUtils.isEmpty(topTitle) || "热点推送" .equals(topTitle)|| "小哈推荐" .equals(topTitle)
+                || "新番时间表".equals(topTitle)) continue;
                 String topUrl = baseUrl + n.attr("iv.mod-head.clearfix > a", "href");
-                String topId = n.attr("div.mod-head.clearfix > a", "href", "/", 1);
+                String topId = n.attr("a.change", "href", "/", 1);
                 List<Video> videos = new ArrayList<>();
                 VideoTitle videoTitle = new VideoTitle();
                 videoTitle.setTitle(topTitle);
                 videoTitle.setDrawable(SEASON[count++ % SEASON.length]);
                 videoTitle.setId(topId);
-                if(!topTitle.contains("最新")){
+                if(!topTitle.contains("最新") && !topTitle.contains("筛选列表")){
                     videoTitle.setMore(true);
                 }
                 videoTitle.setPageStart(2);
@@ -130,7 +134,7 @@ public class HaliHaliParser implements IVideoMoreParser {
             }
             LogUtil.e("home","titles -> " + new Gson().toJson(titles));
             if (titles.size() == 0) {
-                List<Video> videos = new ArrayList<>();
+                List<IVideo> videos = new ArrayList<>();
                 for (Node sub : node.list("ul > li.video-item")) {
                     Video video = new Video();
                     video.setHasDetails(true);
@@ -208,39 +212,69 @@ public class HaliHaliParser implements IVideoMoreParser {
         try {
             Map<String, String> stringMap = new HashMap<>();
             if (html.contains("var zanpiancms_player")) {
-                html = html.substring(html.indexOf("var zanpiancms_player"));
-                if (html.contains("http")) {
-                    html = html.substring(html.indexOf("http"));
-                    html = html.substring(0, html.indexOf("\""));
-                    if (!html.contains("halihali") && !(html.contains(".mp4") || html.contains(".m3u"))) {
-                        html = "https://halihali.duapp.com/mdparse/index.php?id=" + html;
+                String match = JavaScriptUtil.match("zanpiancms_player = \\{[\\{\\}\\[\\]\\\"\\w\\d第集`~!@#$%^&*_\\-+=<>?:|,.\\\\ \\/;']+\\}", html, 0, 20, 0);
+                LogUtil.e("HaliHaliParser","match -> " + match);
+                if(JavaScriptUtil.isJson(match)){
+                    JSONObject object = new JSONObject(match);
+                    if( object.has("url")  &&  object.has("apiurl")){
+                        String url = object.getString("url");
+                        String apiurl = object.getString("apiurl");
+                        if(!StreamUtil.check(apiurl)){
+                            apiurl = "https://m.halihali.me/api/dplayer.php?v=";
+                        }
+                        playUrl.setSuccess(true);
+                        if (url.startsWith("http") && url.contains(".m3u")) {
+                            stringMap.put("标清", url);
+                            playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO_M3U8);
+                            playUrl.setUrlType(IPlayUrls.URL_M3U8);
+                        } else if (url.startsWith("http") && (url.contains(".mp4") || url.contains(".avi") || url.contains(".rm") || url.contains("wmv"))) {
+                            stringMap.put("标清", url);
+                            playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
+                            playUrl.setUrlType(IPlayUrls.URL_FILE);
+                        } else if (!TextUtils.isEmpty(apiurl) && apiurl.startsWith("http")) {
+                            stringMap.put("标清", apiurl + url);
+                            playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                            playUrl.setUrlType(IPlayUrls.URL_WEB);
+                        } else {
+                            playUrl.setSuccess(false);
+                        }
+                        playUrl.setUrls(stringMap);
+                        playUrl.setReferer(RetrofitManager.REQUEST_URL);
                     }
-                    if (html.startsWith("/")) {
-                        html = baseUrl + html;
-                    } else if (html.startsWith("//")) {
-                        html = "https" + html;
+                }else{
+                    if (match.contains("http")) {
+                        match = match.substring(match.indexOf("http"));
+                        match = match.substring(0, match.indexOf("\""));
+                        if (!match.contains("halihali") && !(match.contains(".mp4") || match.contains(".m3u"))) {
+                            match = "https://halihali.duapp.com/mdparse/index.php?id=" + match;
+                        }
+                        if (match.startsWith("/")) {
+                            match = baseUrl + match;
+                        } else if (match.startsWith("//")) {
+                            match = "https" + match;
+                        }
+                        if(match.contains("=")){
+                            stringMap.put("标清", match.split("=")[1]);
+                        }else{
+                            stringMap.put("标清", match);
+                        }
+                        playUrl.setUrls(stringMap);
+                        playUrl.setReferer(RetrofitManager.REQUEST_URL);
+                        if(match.contains(".mp4") || match.contains(".m3u")){
+                            playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
+                            playUrl.setUrlType(IPlayUrls.URL_M3U8);
+                        }else{
+                            playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                            playUrl.setUrlType(IPlayUrls.URL_WEB);
+                        }
+                        playUrl.setSuccess(true);
                     }
-                    if(html.contains("=")){
-                        stringMap.put("标清", html.split("=")[1]);
-                    }else{
-                        stringMap.put("标清", html);
-                    }
-                    playUrl.setUrls(stringMap);
-                    playUrl.setReferer(RetrofitManager.REQUEST_URL);
-                    if(html.contains(".mp4") || html.contains(".m3u")){
-                        playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
-                        playUrl.setUrlType(IPlayUrls.URL_M3U8);
-                    }else{
-                        playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
-                        playUrl.setUrlType(IPlayUrls.URL_WEB);
-                    }
-                    playUrl.setSuccess(true);
                 }
             }
             if (stringMap.isEmpty()) {
                 stringMap.put("标清", RetrofitManager.REQUEST_URL);
                 playUrl.setUrls(stringMap);
-                playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB_V);
+                playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
                 playUrl.setUrlType(IPlayUrls.URL_WEB);
                 playUrl.setSuccess(true);
 //            }

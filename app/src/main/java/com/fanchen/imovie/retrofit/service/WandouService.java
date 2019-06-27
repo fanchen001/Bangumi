@@ -51,7 +51,7 @@ public interface WandouService {
      * @param page
      * @return
      */
-    @GET("vod-type-id-{path}-type--area--year--star--state--order-addtime-p-{page}.html")
+    @GET("video/type/{path}------addtime-{page}.html")
     @JsoupType(JsoupSource.WANDOU)
     @MethodType(value = MethodSource.MORE)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)

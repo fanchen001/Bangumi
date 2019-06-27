@@ -12,12 +12,18 @@ import com.fanchen.imovie.entity.VideoTitle;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
 import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.KupianService;
+import com.fanchen.imovie.util.JavaScriptUtil;
+import com.fanchen.imovie.util.LogUtil;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,12 +37,13 @@ import retrofit2.Retrofit;
  * Created by fanchen on 2018/4/19.
  */
 public class KupianImpl implements IVideoMoreParser {
+
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
         VideoHome home = new VideoHome();
         try {
-            List<Video> videos = new ArrayList<>();
+            List<IVideo> videos = new ArrayList<>();
             home.setList(videos);
             for (Node n : node.list("ul#resize_list > li")) {
                 String title = n.text("a > div > label.name");
@@ -126,10 +133,10 @@ public class KupianImpl implements IVideoMoreParser {
                     }
                     if (videos.size() > 0)
                         titles.add(videoTitle);
-                    videoTitle.setMore(videoTitle.getList().size() == 6 || videoTitle.getList().size() == 3);
+                    videoTitle.setMore(videoTitle.getList().size() == 6 || videoTitle.getList().size() == 3 || !TextUtils.isEmpty(topId));
                 }
             } else {
-                List<Video> videos = new ArrayList<>();
+                List<IVideo> videos = new ArrayList<>();
                 for (Node n : node.list("div > div > ul.list_tab_img > li")) {
                     String title = n.text("h2");
                     if (TextUtils.isEmpty(title))
@@ -191,7 +198,7 @@ public class KupianImpl implements IVideoMoreParser {
             List<Node> list = node.list("div.play-title > span[id]");
             for (Node n : node.list("div.play-box > ul")) {
                 for (Node sub : n.list("li")) {
-                    if(list.size() > count && list.get(count).text().contains("非凡")){
+                    if (list.size() > count && list.get(count).text().contains("非凡")) {
                         continue;
                     }
                     VideoEpisode episode = new VideoEpisode();
@@ -204,10 +211,10 @@ public class KupianImpl implements IVideoMoreParser {
                         episode.setTitle(sub.text());
                     }
                     boolean b = true;
-                    if(list.size() > count && TextUtils.isEmpty(list.get(count).text())){
+                    if (list.size() > count && TextUtils.isEmpty(list.get(count).text())) {
                         b = false;
                     }
-                    if(b) episodes.add(episode);
+                    if (b) episodes.add(episode);
                 }
                 count++;
             }
@@ -229,17 +236,19 @@ public class KupianImpl implements IVideoMoreParser {
     @Override
     public IPlayUrls playUrl(Retrofit retrofit, String baseUrl, String html) {
         VideoPlayUrls playUrl = new VideoPlayUrls();
+        Map<String, String> mapUrl = new HashMap<>();
         try {
+            String[] split1 = RetrofitManager.REQUEST_URL.split("/");
+            String[] split2 = split1[split1.length - 1].split("-");
             String attr = new Node(html).attr("iframe", "src");
-            Map<String, String> mapUrl = new HashMap<>();
             playUrl.setUrls(mapUrl);
             playUrl.setReferer(baseUrl);
-            playUrl.setUrlType(IPlayUrls.URL_WEB);
-            playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
             if (!TextUtils.isEmpty(attr)) {
                 mapUrl.put("标清", attr);
+                playUrl.setUrlType(IPlayUrls.URL_WEB);
+                playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
                 playUrl.setSuccess(true);
-            }else if (html.contains("ftp:")) {
+            } else if (html.contains("ftp:")) {
                 int i = html.indexOf("ftp:");
                 html = html.substring(i);
                 i = html.indexOf(",");
@@ -247,6 +256,43 @@ public class KupianImpl implements IVideoMoreParser {
                 mapUrl.put("标清", html);
                 playUrl.setUrlType(IPlayUrls.URL_XIGUA);
                 playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_XIGUA);
+                playUrl.setSuccess(true);
+            } else {
+                String match = JavaScriptUtil.match("'\\{[\\{\\}\\[\\]\\\"\\w\\d第集`~!@#$%^&*_\\-+=<>?:|,.\\\\ \\/;']+\\}'", html, 0, 1, 1);
+                LogUtil.e("KupianImpl", "match = -> " + match);
+                if (JavaScriptUtil.isJson(match)) {
+                    JSONObject object = new JSONObject(match);
+                    if (object.has("Data")) {
+                        JSONArray Data = object.getJSONArray("Data");
+                        JSONObject jsonObject = Data.getJSONObject(Integer.valueOf(split2[0].replace(".html", "")));
+                        if (jsonObject.has("playurls")) {
+                            JSONArray jsonArray = jsonObject.getJSONArray("playurls");
+                            JSONArray urlArray = jsonArray.getJSONArray(Integer.valueOf(split2[1].replace(".html", "")) - 1);
+                            String url = urlArray.getString(1);
+                            if (url.startsWith("http") && url.contains(".m3u")) {
+                                mapUrl.put("标清", url);
+                                playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO_M3U8);
+                                playUrl.setUrlType(IPlayUrls.URL_M3U8);
+                                playUrl.setSuccess(true);
+                            } else if (url.startsWith("http") && (url.contains(".mp4") || url.contains(".avi") || url.contains(".rm") || url.contains("wmv"))) {
+                                mapUrl.put("标清", url);
+                                playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
+                                playUrl.setUrlType(IPlayUrls.URL_FILE);
+                                playUrl.setSuccess(true);
+                            } else {
+                                mapUrl.put("标清", "http://api.sstq32.cn/dplay/super.php?id=" + url);
+                                playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                                playUrl.setUrlType(IPlayUrls.URL_WEB);
+                                playUrl.setSuccess(true);
+                            }
+                        }
+                    }
+                }
+            }
+            if (mapUrl.isEmpty()) {
+                mapUrl.put("标清", RetrofitManager.REQUEST_URL);
+                playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                playUrl.setUrlType(IPlayUrls.URL_WEB);
                 playUrl.setSuccess(true);
             }
         } catch (Exception e) {

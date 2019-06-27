@@ -3,6 +3,7 @@ package com.fanchen.imovie.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,9 @@ import com.fanchen.imovie.entity.face.IVideoBanner;
 import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.fragment.HomeIndexFragment;
 import com.fanchen.imovie.picasso.PicassoWrap;
+import com.fanchen.imovie.picasso.download.AgentDownloader;
+import com.fanchen.imovie.picasso.download.RefererDownloader;
+import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.view.TriangleLabelView;
 import com.fanchen.imovie.view.pager.IBanner;
 import com.fanchen.imovie.view.pager.LoopViewPager;
@@ -73,8 +77,9 @@ public class VideoIndexAdapter extends BaseAdapter {
         } else if (viewType == IViewType.TYPE_TITLE) {
             holder = new TitleViewHolder(v);
         } else if (viewType == IViewType.TYPE_FOOTER) {
-            holder = new RecyclerView.ViewHolder(v){};
-        }else {
+            holder = new RecyclerView.ViewHolder(v) {
+            };
+        } else {
             holder = new VideoViewHolder(v);
         }
         return holder;
@@ -113,21 +118,28 @@ public class VideoIndexAdapter extends BaseAdapter {
                 IVideo video = (IVideo) datas.get(position);
                 String extras = video.getExtras();
                 String danmaku = video.getDanmaku();
-                if(extras != null && extras.trim().length() > 0){
+                if (extras != null && extras.trim().length() > 0) {
                     videoViewHolder.tipTextView.setVisibility(View.VISIBLE);
                     videoViewHolder.tipTextView.setText(extras);
-                }else{
+                } else {
                     videoViewHolder.tipTextView.setVisibility(View.GONE);
                 }
-                if(danmaku != null && danmaku.trim().length() > 0){
+                if (danmaku != null && danmaku.trim().length() > 0) {
                     videoViewHolder.triangTextView.setVisibility(View.VISIBLE);
                     videoViewHolder.triangTextView.setSecondaryText(danmaku);
-                }else{
+                } else {
                     videoViewHolder.triangTextView.setVisibility(View.GONE);
                 }
                 videoViewHolder.titleTextView.setText(video.getTitle());
-                picasso.loadVertical(video.getCover(), VideoTabActivity.class, videoViewHolder.imageView);
-            }else if (viewType == IViewType.TYPE_FOOTER){
+                String referer = video.getCoverReferer();
+                if (video.isAgent()) {
+                    PicassoWrap picassoWrap = new PicassoWrap(context, new AgentDownloader(context, referer));
+                    picassoWrap.loadVertical(video.getCover(), HomeIndexFragment.class, videoViewHolder.imageView);
+                } else if (picasso != null) {
+                    picasso.loadVertical(video.getCover(), HomeIndexFragment.class, videoViewHolder.imageView);
+                }
+                LogUtil.e("VideoIndexAdapter","Cover -> " + video.getCover());
+            } else if (viewType == IViewType.TYPE_FOOTER) {
 
             }
         }
@@ -153,7 +165,7 @@ public class VideoIndexAdapter extends BaseAdapter {
      */
     @Override
     public void addData(Object index) {
-        if(index instanceof IBangumiRoot){
+        if (index instanceof IBangumiRoot) {
             this.index = (IBangumiRoot) index;
             clear();
             addAll(this.index.getAdapterResult(), false);
@@ -242,7 +254,14 @@ public class VideoIndexAdapter extends BaseAdapter {
             ImageView imageView = (ImageView) view.findViewById(R.id.iv_banner_image);
             TextView textView = (TextView) view.findViewById(R.id.tv_banner_title);
             textView.setText(parameter.getTitle());
-            picasso.loadHorizontal(parameter.getCover(), HomeIndexFragment.class, imageView);
+            String referer = parameter.getReferer();
+            if (parameter.isAgent()) {
+                PicassoWrap picassoWrap = new PicassoWrap(context, new AgentDownloader(context, referer));
+                picassoWrap.loadHorizontal(parameter.getCover(), HomeIndexFragment.class, imageView);
+            } else if (picasso != null) {
+                picasso.loadHorizontal(parameter.getCover(), HomeIndexFragment.class, imageView);
+            }
+            LogUtil.e("OnLoadImageViewListener","Cover -> " + parameter.getCover());
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         }
 

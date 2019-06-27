@@ -17,6 +17,7 @@ import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.retrofit.service.Dm5Service;
 import com.fanchen.imovie.util.DialogUtil;
+import com.fanchen.imovie.util.LogUtil;
 import com.xigua.p2p.P2PManager;
 import com.xunlei.XLManager;
 
@@ -113,6 +114,7 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
         } else if (IVideoEpisode.PLAY_TYPE_URL == select.getPlayerType()) {//需要去解析
             String className = select.getServiceClassName();
             RetrofitManager with = RetrofitManager.with(activity.getApplicationContext());
+            RetrofitManager.REQUEST_URL = select.getId();
             if (Dm5Service.class.getName().equals(className)) {
                 String[] split = select.getId().split("\\?");
                 with.enqueue(className, callback, "playUrl", split[0], split[1].replace("link=", ""));
@@ -151,7 +153,15 @@ public class DownloadDialog extends BottomBaseDialog<DownloadDialog> implements
                 activity.showToast(mDownload.getTitle() + "下载失败");
             } else if (mDownload != null) {
                 String mainUrl = response.getMainUrl();
-                if (mainUrl.contains("=") && mainUrl.contains(".m3u")) mainUrl = mainUrl.split("=")[1];
+                if (mainUrl.contains("=") && mainUrl.contains(".m3u")) {
+                    String[] split = mainUrl.split("=");
+                    if(split.length == 2){
+                        mainUrl = split[1];
+                    }else{
+                        String uReplace = split[0] + "=";
+                        mainUrl = mainUrl.replace(uReplace,"");
+                    }
+                }
                 if(response.getUrlType() == IPlayUrls.URL_XIGUA && P2PManager.isXiguaUrl(mainUrl)){//西瓜
                     mDownloadTemps.add(new DownloadTemp(mDownload,mainUrl,response.getReferer(),DownloadTemp.TYPE_XIGUA));
                 }else if (response.getUrlType() == IPlayUrls.URL_FILE) {//直接下载的文件

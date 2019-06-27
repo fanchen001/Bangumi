@@ -29,7 +29,7 @@ public interface ZzyoService {
      * @param page
      * @return
      */
-    @GET("vod-type-id-{type}-pg-{page}.html")
+    @GET("{type}/index{page}.html")
     @JsoupType(JsoupSource.ZZYO)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.HOME)
@@ -41,7 +41,7 @@ public interface ZzyoService {
      * @param path
      * @return
      */
-    @GET("{path}")
+    @GET("{path}/")
     @JsoupType(JsoupSource.ZZYO)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.HOME)
@@ -54,7 +54,7 @@ public interface ZzyoService {
      * @param word
      * @return
      */
-    @GET("vod-search-pg-{p}-wd-{key}.html")
+    @GET("vod-search-wd-{key}-p-{p}.html")
     @JsoupType(JsoupSource.ZZYO)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.SEARCH)
@@ -63,15 +63,28 @@ public interface ZzyoService {
 
     /**
      *
+     * @param pid
+     * @param page
+     * @return
+     */
+    @GET("{pid}/index{page}.html")
+    @JsoupType(JsoupSource.ZZYO)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    @MethodType(value = MethodSource.MORE)
+    @Headers({"User-Agent: Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36"})
+    Call<IBangumiMoreRoot> more(@Path("pid") String pid, @Path("page") Integer page);
+
+    /**
+     *
      * @param path
      * @return
      */
-    @GET("/movie/{path}.html")
+    @GET
     @JsoupType(JsoupSource.ZZYO)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.DETAILS)
     @Headers({"User-Agent: Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36"})
-    Call<IVideoDetails> details(@Path("path") String path);
+    Call<IVideoDetails> details(@Url String path);
 
     /**
      *

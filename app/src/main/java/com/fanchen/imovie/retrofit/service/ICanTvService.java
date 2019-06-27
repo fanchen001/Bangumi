@@ -27,7 +27,7 @@ public interface ICanTvService {
      * @param path
      * @return
      */
-    @GET("{path}/")
+    @GET("tvlist/{path}")
     @JsoupType(JsoupSource.ICANTV)
     @MethodType(value = MethodSource.HOME)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_LIVE)

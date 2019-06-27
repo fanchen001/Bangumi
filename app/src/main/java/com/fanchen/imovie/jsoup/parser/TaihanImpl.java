@@ -12,12 +12,15 @@ import com.fanchen.imovie.entity.VideoTitle;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
 import com.fanchen.imovie.jsoup.node.Node;
+import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.TaihanService;
 import com.fanchen.imovie.util.JavaScriptUtil;
+import com.fanchen.imovie.util.LogUtil;
 
 import org.json.JSONObject;
 
@@ -39,7 +42,7 @@ public class TaihanImpl implements IVideoMoreParser {
         Node node = new Node(html);
         VideoHome home = new VideoHome();
         try{
-            List<Video> videos = new ArrayList<>();
+            List<IVideo> videos = new ArrayList<>();
             for (Node sub : node.list("ul > li.col-md-2.col-sm-3.col-xs-4")){
                 String title = sub.text("h2");
                 String cover = baseUrl + sub.attr("p > a > img", "data-original");
@@ -74,6 +77,7 @@ public class TaihanImpl implements IVideoMoreParser {
 
     @Override
     public IHomeRoot home(Retrofit retrofit, String baseUrl, String html) {
+
         Node node = new Node(html);
         VideoHome home = new VideoHome();
         try {
@@ -88,9 +92,12 @@ public class TaihanImpl implements IVideoMoreParser {
                 if(href.startsWith("http")){
                     banner.setUrl(href);
                     banner.setId(n.attr("href","/",4));
-                }else{
+                }else if(href.startsWith("/")){
                     banner.setId(n.attr("href","/",2));
-                    banner.setUrl(baseUrl + href);
+                    banner.setUrl(baseUrl  + href);
+                }else{
+                    banner.setId(n.attr("href","/",1));
+                    banner.setUrl(baseUrl  + "/" +  href);
                 }
                 banners.add(banner);
             }
@@ -103,7 +110,7 @@ public class TaihanImpl implements IVideoMoreParser {
                 if(TextUtils.isEmpty(topTitle))
                     topTitle = n.text("h2").replace("更多","");
                 String topUrl = baseUrl + n.attr("h2 > a", "href");
-                String topId = n.attr("h2 > a", "href", "-", 3);
+                String topId = n.attr("h2 > a", "href", "/", 3).split("-")[0];
                 List<Video> videos = new ArrayList<>();
                 VideoTitle videoTitle = new VideoTitle();
                 videoTitle.setTitle(topTitle);
@@ -169,8 +176,8 @@ public class TaihanImpl implements IVideoMoreParser {
                 videos.add(video);
             }
             int count = 0;
-            List<Node> list = node.list("div.page-header.ff-playurl-line");
-            for (Node n : node.list("ul.list-unstyled.row.text-center.ff-playurl-line.ff-playurl")) {
+            List<Node> list = node.list("ul.nav.nav-tabs.ff-playurl-tab > li");
+            for (Node n : node.list("div.container.ff-bg > div.tab-content.ff-playurl-tab > ul")) {
                 for (Node sub : n.list("li")) {
                     VideoEpisode episode = new VideoEpisode();
                     episode.setServiceClass(TaihanService.class.getName());
@@ -189,8 +196,9 @@ public class TaihanImpl implements IVideoMoreParser {
             details.setLast(node.textAt("dl.dl-horizontal > dd", 0));
             details.setExtras(node.textAt("dl.dl-horizontal > dd", 1));
             details.setDanmaku(node.textAt("dl.dl-horizontal > dd", 2));
+            details.setUpdate(node.textAt("dl.dl-horizontal > dd", 3));
             details.setTitle(node.text("div.media-body > h2"));
-            details.setIntroduce(node.text("span.vod-content-default.text-justify"));
+            details.setIntroduce(node.text("div.media-body > div.hidden-xs.hidden-sm"));
             details.setEpisodes(episodes);
             details.setRecomm(videos);
             details.setServiceClass(TaihanService.class.getName());
@@ -203,18 +211,41 @@ public class TaihanImpl implements IVideoMoreParser {
     @Override
     public IPlayUrls playUrl(Retrofit retrofit, String baseUrl, String html) {
         VideoPlayUrls urls = new VideoPlayUrls();
+        Map<String, String> stringMap = new HashMap<>();
         try{
-            String match = JavaScriptUtil.match("\\{\"[=?/.,:\\w\\d\"\\\\]+\\}", html, 0);
-            if(!TextUtils.isEmpty(match)){
-                String urlString = new JSONObject(match).getString("url");
-                Map<String,String> url = new HashMap<>();
-                urls.setUrls(url);
-                urls.setUrlType(VideoPlayUrls.URL_M3U8);
-                urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
-                url.put("标清",urlString);
+            String match = JavaScriptUtil.match("\\{[\\{\\}\\[\\]\\\"\\w\\d第集`~!@#$%^&*_\\-+=<>?:|,.\\\\ \\/;']+\\};", html, 0,0,1);
+            LogUtil.e("TaihanImpl","match = -> " + match);
+            if(JavaScriptUtil.isJson(match)){
+                JSONObject object = new JSONObject(match);
+                if( object.has("url")  &&  object.has("jiexi")){
+                    String url = object.getString("url");
+                    String jiexi = object.getString("jiexi");
+                    urls.setSuccess(true);
+                    if (url.startsWith("http") && url.contains(".m3u")) {
+                        stringMap.put("标清", url);
+                        urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO_M3U8);
+                        urls.setUrlType(IPlayUrls.URL_M3U8);
+                    } else if (url.startsWith("http") && (url.contains(".mp4") || url.contains(".avi") || url.contains(".rm") || url.contains("wmv"))) {
+                        stringMap.put("标清", url);
+                        urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
+                        urls.setUrlType(IPlayUrls.URL_FILE);
+                    } else if (!TextUtils.isEmpty(jiexi) && jiexi.startsWith("http")) {
+                        stringMap.put("标清", jiexi + url);
+                        urls.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                        urls.setUrlType(IPlayUrls.URL_WEB);
+                    } else {
+                        urls.setSuccess(false);
+                    }
+                    urls.setUrls(stringMap);
+                    urls.setReferer(RetrofitManager.REQUEST_URL);
+                }
+            }
+            if (stringMap.isEmpty()) {
+                stringMap.put("标清", RetrofitManager.REQUEST_URL);
+                urls.setUrls(stringMap);
+                urls.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                urls.setUrlType(IPlayUrls.URL_WEB);
                 urls.setSuccess(true);
-            }else{
-
             }
         }catch (Exception e){
             e.printStackTrace();

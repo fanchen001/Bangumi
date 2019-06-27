@@ -14,9 +14,9 @@ import com.fanchen.imovie.retrofit.service.DianxiumeiService;
 public class GirlPagerAdapter extends BaseFragmentAdapter{
 
     private final String[] TITLES = new String[]{"女神播", "颜值播","舞蹈播", "热舞播"};
-    private final String[] VALUES = new String[]{"http://dianxiumei.com/zb/huajiao.php?id=2",
-            "http://dianxiumei.com/zb/huajiao.php?id=800","http://dianxiumei.com/zb/yy.php",
-            "http://dianxiumei.com/zb/huajiao.php?id=801"};
+    private final String[] VALUES = new String[]{"http://honglez.cn/zb/huajiao.php?id=2&p=0",
+            "http://honglez.cn/zb/huajiao.php?id=800","http://honglez.cn/zb/huajiao.php?id=1000",
+            "http://honglez.cn/zb/huajiao.php?id=801"};
     private final int[] MULTIPLE = new int[]{20,20,10,20};
 
     public GirlPagerAdapter(FragmentManager fm) {

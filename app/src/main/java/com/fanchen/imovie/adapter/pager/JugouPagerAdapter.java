@@ -13,10 +13,9 @@ import com.fanchen.imovie.retrofit.service.JugouService;
  */
 public class JugouPagerAdapter extends BaseFragmentAdapter{
 
-    private final String[] TITLES = new String[]{"首页","电视剧", "电影", "动漫","综艺"};
-    private final String[] PATHS = new String[]{"http://video.jfenxiang.com/","http://video.jfenxiang.com/movie.php?m=/dianying/list.php?cat=all",
-            "http://video.jfenxiang.com/tv.php?u=/dianshi/list.php?cat=all", "http://video.jfenxiang.com/dongman.php?m=/dongman/list.php?cat=all",
-            "http://video.jfenxiang.com/zongyi.php?m=/zongyi/list.php?cat=all"};
+    private final String[] TITLES = new String[]{"首页","电视剧", "电影", "动漫"};
+    private final String[] PATHS = new String[]{"","2","1","4",""};
+    private final Boolean[] BANNERS = new Boolean[]{true,false,false,false,false};
     private final Boolean[] LOADS = new Boolean[]{false,true,true,true,true};
 
     public JugouPagerAdapter(FragmentManager fm) {
@@ -30,7 +29,7 @@ public class JugouPagerAdapter extends BaseFragmentAdapter{
 
     @Override
     public Fragment createFragment(int position) {
-        return VideoListFragment.newInstance(PATHS[position], getExtendInfo().toString(), 1, LOADS[position], false, false);
+        return VideoListFragment.newInstance(PATHS[position], getExtendInfo().toString(), 1, LOADS[position], false, false,"",BANNERS[position]);
     }
 
     @Override

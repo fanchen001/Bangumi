@@ -35,12 +35,12 @@ public interface IKanFanService {
     Call<IHomeRoot> home(@Path("path") String path);
 
     /**
-     *
+     * https://m.ysba.cc/search/%E4%BD%A0-2.html
      * @param page
      * @param keyword
      * @return
      */
-    @GET("vod-search-wd-{keyword}-p-{page}.html")
+    @GET("search/{keyword}-{page}.html")
     @JsoupType(JsoupSource.IKANFAN)
     @MethodType(value = MethodSource.SEARCH)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)

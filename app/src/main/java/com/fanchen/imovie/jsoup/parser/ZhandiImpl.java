@@ -1,33 +1,20 @@
 package com.fanchen.imovie.jsoup.parser;
 
-import android.text.TextUtils;
-
-import com.fanchen.imovie.entity.Video;
-import com.fanchen.imovie.entity.VideoDetails;
-import com.fanchen.imovie.entity.VideoEpisode;
-import com.fanchen.imovie.entity.VideoHome;
 import com.fanchen.imovie.entity.VideoPlayUrls;
-import com.fanchen.imovie.entity.VideoTitle;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
-import com.fanchen.imovie.jsoup.node.Node;
-import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.ZhandiService;
 import com.fanchen.imovie.util.JavaScriptUtil;
-import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.StreamUtil;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import retrofit2.Retrofit;
@@ -38,7 +25,7 @@ import retrofit2.Retrofit;
  */
 public class ZhandiImpl implements IVideoMoreParser {
 
-    private SmdyImpl smdy = new SmdyImpl(ZhandiService.class.getName());
+    private SmdyImpl smdy = new SmdyImpl(ZhandiService.class.getName(),true,false);
 
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {

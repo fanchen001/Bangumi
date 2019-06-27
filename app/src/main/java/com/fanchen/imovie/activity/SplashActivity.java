@@ -124,9 +124,9 @@ public class SplashActivity extends BaseActivity {
             String[] checkPermission = checkPermission();
             if (checkPermission == null || checkPermission.length == 0) {
                 // 延时1s加载top图片
-                mHandler.sendEmptyMessageDelayed(LOAD_TOP_IMAGE, 1000);
+                mHandler.sendEmptyMessageDelayed(LOAD_TOP_IMAGE, 1500);
                 // 延时3s加载主界面
-                mHandler.sendEmptyMessageDelayed(LOAD_SUCCESS, 3500);
+                mHandler.sendEmptyMessageDelayed(LOAD_SUCCESS, 4000);
             } else {
                 if (!isFinishing()) {
                     new PermissionDialog(this).setOnClickListener(clickListener).show();

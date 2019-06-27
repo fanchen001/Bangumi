@@ -12,6 +12,7 @@ import com.fanchen.imovie.entity.VideoTitle;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
@@ -38,7 +39,7 @@ public class BabayuImpl implements IVideoMoreParser {
         Node node = new Node(html);
         VideoHome home = new VideoHome();
         try {
-            List<Video> videos = new ArrayList<>();
+            List<IVideo> videos = new ArrayList<>();
             home.setList(videos);
             for (Node n : node.list("ul#resize_list > li")) {
                 String title = n.text("a > div > label.name");
@@ -131,7 +132,7 @@ public class BabayuImpl implements IVideoMoreParser {
                     videoTitle.setMore(videoTitle.getList().size() == 6 || videoTitle.getList().size() == 3);
                 }
             } else {
-                List<Video> videos = new ArrayList<>();
+                List<IVideo> videos = new ArrayList<>();
                 for (Node n : node.list("div > div > ul > li")) {
                     String title = n.text("h2");
                     if (TextUtils.isEmpty(title))

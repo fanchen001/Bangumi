@@ -2,12 +2,14 @@ package com.fanchen.imovie.picasso;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.picasso.download.HttpsDownLoader;
 import com.fanchen.imovie.util.AppUtil;
+import com.fanchen.imovie.util.LogUtil;
 import com.squareup.picasso.Downloader;
 import com.squareup.picasso.Picasso;
 
@@ -37,7 +39,7 @@ public class PicassoWrap {
         if (!cacheDir.exists())  cacheDir.mkdirs();
         //64Mb的缓存
         OkHttpClient client = new OkHttpClient.Builder().cache(new Cache(cacheDir, 64 * 1024 * 1024)).build();
-        picasso = new Picasso.Builder(context).downloader(new HttpsDownLoader(client)).build();
+        picasso = new Picasso.Builder(context).listener(new PicassoListener()).downloader(new HttpsDownLoader(client)).build();
     }
 
     /**
@@ -46,7 +48,7 @@ public class PicassoWrap {
      * @param downloader
      */
     public PicassoWrap(Context context,Downloader downloader){
-        picasso = new Picasso.Builder(context).downloader(downloader).build();
+        picasso = new Picasso.Builder(context).listener(new PicassoListener()).downloader(downloader).build();
     }
 
     public PicassoWrap(Picasso picasso){

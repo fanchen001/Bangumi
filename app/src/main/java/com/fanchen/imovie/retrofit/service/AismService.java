@@ -47,12 +47,12 @@ public interface AismService {
     Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
 
     /**
-     *
+     *search/你-2.html
      * @param page
      * @param keyword
      * @return
      */
-    @GET("sousuo-{wd}-p-{page}.html")
+    @GET("search/{wd}-{page}.html")
     @JsoupType(JsoupSource.AISM)
     @MethodType(value = MethodSource.SEARCH)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)

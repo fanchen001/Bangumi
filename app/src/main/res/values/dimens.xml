@@ -113,5 +113,5 @@
     <dimen name="dp_100">100dp</dimen>
     <dimen name="dp_4">4dp</dimen>
     <dimen name="dp_90">90dp</dimen>
-    <dimen name="adv_size">30dp</dimen>
+    <dimen name="adv_size">24dp</dimen>
 </resources>

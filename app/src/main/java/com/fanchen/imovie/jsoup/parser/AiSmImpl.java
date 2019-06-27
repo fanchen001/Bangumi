@@ -12,16 +12,14 @@ import com.fanchen.imovie.entity.VideoTitle;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
 import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.retrofit.service.AismService;
-import com.fanchen.imovie.util.JavaScriptUtil;
 import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.StreamUtil;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +44,7 @@ public class AiSmImpl implements IVideoMoreParser {
         Node node = new Node(html);
         VideoHome home = new VideoHome();
         try {
-            List<Video> videos = new ArrayList<>();
+            List<IVideo> videos = new ArrayList<>();
             for (Node n : node.list("ul#data_list > li")) {
                 String title = n.text("div > span.sTit");
                 String cover = n.attr("img", "data-src");
@@ -68,6 +66,7 @@ public class AiSmImpl implements IVideoMoreParser {
                 video.setTitle(TextUtils.isEmpty(title) ? n.text("h2") : title);
                 video.setUrl(url);
                 video.setType(hd);
+                video.setUrlReferer(baseUrl);
                 videos.add(video);
             }
             home.setList(videos);
@@ -92,6 +91,7 @@ public class AiSmImpl implements IVideoMoreParser {
                     banner.setCover(n.attr("a > img", "src"));
                     banner.setId(baseUrl + n.attr("a", "href"));
                     banner.setTitle(n.text("a > span"));
+                    banner.setAgent(true);
                     banner.setUrl(baseUrl + n.attr("a", "href"));
                     banners.add(banner);
                 }
@@ -128,6 +128,7 @@ public class AiSmImpl implements IVideoMoreParser {
                         video.setServiceClass(AismService.class.getName());
                         video.setCover(cover);
                         video.setId(url);
+                        video.setUrlReferer(baseUrl);
                         video.setDanmaku(author);
                         video.setTitle(title);
                         video.setUrl(url);
@@ -136,10 +137,10 @@ public class AiSmImpl implements IVideoMoreParser {
                     }
                     if (videos.size() > 0)
                         titles.add(videoTitle);
-                    videoTitle.setMore(videoTitle.getList().size() == 12);
+                    videoTitle.setMore(false);
                 }
             } else {
-                List<Video> videos = new ArrayList<>();
+                List<IVideo> videos = new ArrayList<>();
                 for (Node n : node.list("ul#data_list > li")) {
                     String title = n.text("div > a > span.sTit");
                     String cover = n.attr("div > a > img", "data-src");
@@ -233,6 +234,7 @@ public class AiSmImpl implements IVideoMoreParser {
 
     @Override
     public IPlayUrls playUrl(Retrofit retrofit, String baseUrl, String html) {
+        LogUtil.e("playUrl"," baseUrl -> " + baseUrl);
         VideoPlayUrls urls = new VideoPlayUrls();
         Node node = new Node(html);
         try {
@@ -262,7 +264,7 @@ public class AiSmImpl implements IVideoMoreParser {
                     } else if(src.startsWith("/")){
                         src = baseUrl + src;
                     }
-                    byte[] bytes = StreamUtil.url2byte(src);
+                    byte[] bytes = StreamUtil.url2byte(src,StreamUtil.getHeader(baseUrl));
                     if (bytes != null && bytes.length > 1) {
                         String s = new String(bytes);
                         String videoUrl = new Node(s).attr("iframe", "src");
@@ -288,6 +290,8 @@ public class AiSmImpl implements IVideoMoreParser {
                 urls.setUrlType(VideoPlayUrls.URL_WEB);
                 urls.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
             }
+            urls.setM3u8Referer(true);
+            urls.setReferer(baseUrl);
             urls.setSuccess(true);
         } catch (Exception e) {
             e.printStackTrace();

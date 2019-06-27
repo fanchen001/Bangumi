@@ -24,25 +24,18 @@ import com.fanchen.imovie.entity.bmob.VideoCollect;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
 import com.fanchen.imovie.util.DialogUtil;
-import com.fanchen.imovie.util.DisplayUtil;
 import com.fanchen.imovie.util.KeyBoardUtils;
 import com.fanchen.imovie.util.LogUtil;
-import com.google.gson.Gson;
 import com.umeng.socialize.UMAuthListener;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
-
-import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Map;
 
 import butterknife.InjectView;
 import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.listener.FindListener;
-import cn.bmob.v3.listener.OtherLoginListener;
-import cn.bmob.v3.listener.SaveListener;
 
 /**
  * 用户登录

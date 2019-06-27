@@ -12,6 +12,7 @@ import com.fanchen.imovie.entity.VideoTitle;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
@@ -20,7 +21,6 @@ import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.WandouService;
 import com.fanchen.imovie.util.JavaScriptUtil;
 import com.fanchen.imovie.util.LogUtil;
-import com.fanchen.imovie.util.StreamUtil;
 
 import org.json.JSONObject;
 
@@ -42,10 +42,11 @@ public class WandouImpl implements IVideoMoreParser {
         Node node = new Node(html);
         VideoHome home = new VideoHome();
         try {
-            List<Video> videos = new ArrayList<>();
+            List<IVideo> videos = new ArrayList<>();
             for (Node sub : node.list("ul > li.col-md-2.col-sm-3.col-xs-4")) {
                 String title = sub.text("h2");
                 String cover = warpUrl(sub.attr("p > a > img", "data-original"),baseUrl);
+                LogUtil.e("WandouImpl","cover -> " + cover);
                 if (TextUtils.isEmpty(cover))
                     continue;
                 String hd = sub.text("h4");
@@ -58,6 +59,7 @@ public class WandouImpl implements IVideoMoreParser {
                 video.setId(sub.attr("a", "href", "/", 2));
                 video.setTitle(title);
                 video.setUrl(url);
+                video.setUrlReferer(baseUrl);
                 video.setDanmaku(continu);
                 video.setType(hd);
                 videos.add(video);
@@ -109,8 +111,8 @@ public class WandouImpl implements IVideoMoreParser {
                 String topTitle = n.text("h2 > a");
                 if (TextUtils.isEmpty(topTitle))
                     topTitle = n.text("h2").replace("更多", "");
-                String topUrl = warpUrl(n.attr("h2 > a", "href"), baseUrl);
-                String topId = n.attr("h2 > a", "href", "-", 3);
+                String topUrl = warpUrl(n.attr("h2 > small > a.btn.btn-success.btn-xs", "href"), baseUrl);
+                String topId = n.attr("h2 > small > a.btn.btn-success.btn-xs", "href", "/", 3).split("-")[0];
                 List<Video> videos = new ArrayList<>();
                 VideoTitle videoTitle = new VideoTitle();
                 videoTitle.setTitle(topTitle);
@@ -143,7 +145,7 @@ public class WandouImpl implements IVideoMoreParser {
                 }
                 if (videos.size() > 0)
                     titles.add(videoTitle);
-                videoTitle.setMore(videoTitle.getList().size() != 10);
+                videoTitle.setMore(videoTitle.getList().size() != 10 && !TextUtils.isEmpty(topId));
             }
             home.setSuccess(true);
         } catch (Exception e) {
@@ -173,18 +175,20 @@ public class WandouImpl implements IVideoMoreParser {
                 String url =  warpUrl(sub.attr("a", "href"),baseUrl);
                 Video video = new Video();
                 video.setHasDetails(true);
+                LogUtil.e("WandouImpl"," Cover -> " + warpUrl(src,baseUrl));
                 video.setServiceClass(WandouService.class.getName());
                 video.setCover( warpUrl(src,baseUrl));
                 video.setId(sub.attr("a", "href", "/", 2));
                 video.setTitle(title);
                 video.setUrl(url);
+                video.setUrlReferer(baseUrl);
                 video.setDanmaku(continu);
                 video.setType(hd);
                 videos.add(video);
             }
             int count = 0;
-            List<Node> list = node.list("div.page-header.ff-playurl-line");
-            for (Node n : node.list("ul.list-unstyled.row.text-center.ff-playurl-line.ff-playurl")) {
+            List<Node> list = node.list("ul.nav.nav-tabs.ff-playurl-tab > li");
+            for (Node n : node.list("div.tab-content.ff-playurl-tab > ul")) {
                 for (Node sub : n.list("li")) {
                     VideoEpisode episode = new VideoEpisode();
                     episode.setServiceClass(WandouService.class.getName());
@@ -204,7 +208,7 @@ public class WandouImpl implements IVideoMoreParser {
             details.setExtras(node.textAt("dl.dl-horizontal > dd", 1));
             details.setDanmaku(node.textAt("dl.dl-horizontal > dd", 2));
             details.setTitle(node.text("div.media-body > h2"));
-            details.setIntroduce(node.text("span.vod-content-default.text-justify"));
+            details.setUrlReferer(baseUrl);
             details.setEpisodes(episodes);
             details.setRecomm(videos);
             details.setSuccess(true);
@@ -218,9 +222,10 @@ public class WandouImpl implements IVideoMoreParser {
     public IPlayUrls playUrl(Retrofit retrofit, String baseUrl, String html) {
         VideoPlayUrls urls = new VideoPlayUrls();
         try {
-            String match = JavaScriptUtil.match("\\{\"[=?/.,:\\w\\d\"\\\\]+\\}", html, 0);
+            String match = JavaScriptUtil.match("\\{\"[_&\\-=\\?/.,:\\w\\d\"\\\\]+\\}", html, 0);
             if (!TextUtils.isEmpty(match)) {
-                String urlString = new JSONObject(match).getString("url");
+                JSONObject jsonObject = new JSONObject(match);
+                String urlString = jsonObject.getString("url");
                 Map<String, String> url = new HashMap<>();
                 urls.setUrls(url);
                 urls.setM3u8Referer(true);
@@ -229,6 +234,12 @@ public class WandouImpl implements IVideoMoreParser {
                     url.put("标清", urlString);
                     urls.setUrlType(VideoPlayUrls.URL_M3U8);
                     urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
+                }else if(jsonObject.has("jiexi")){
+                    String jiexi = jsonObject.getString("jiexi");
+                    urls.setUrlType(VideoPlayUrls.URL_WEB);
+                    urls.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                    urls.setReferer(baseUrl);
+                    url.put("标清", jiexi + urlString);
                 } else {
                     urls.setUrlType(VideoPlayUrls.URL_WEB);
                     urls.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);

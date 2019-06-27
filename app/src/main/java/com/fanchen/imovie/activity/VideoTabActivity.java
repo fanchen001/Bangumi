@@ -52,6 +52,7 @@ import com.fanchen.imovie.dialog.OnButtonClickListener;
 import com.fanchen.imovie.dialog.fragment.SearchDialogFragment;
 import com.fanchen.imovie.entity.face.ISearchWord;
 import com.fanchen.imovie.util.DialogUtil;
+import com.fanchen.imovie.util.LogUtil;
 
 /**
  * [五弹幕][布米米]等其他视频站
@@ -120,9 +121,9 @@ public class VideoTabActivity extends BaseTabActivity implements SearchDialogFra
 
     public static void startLiveActivity(Context context, String type) {
         String string = context.getString(R.string.tv_live);
-        if ("dytt".equalsIgnoreCase(type)) {
+        if ("dytt".equals(type)) {
             VideoTabActivity.startActivity(context, string, VideoTabActivity.DYTT_LIVE);
-        } else if ("ican".equalsIgnoreCase(string)) {
+        } else if ("ican".equals(type)) {
             VideoTabActivity.startActivity(context, string, VideoTabActivity.ICAN_LIVE);
         } else {
             VideoTabActivity.startActivity(context, string, VideoTabActivity.HQ_LIVE);
@@ -144,9 +145,15 @@ public class VideoTabActivity extends BaseTabActivity implements SearchDialogFra
         mSearchFragment.setOnSearchClickListener(this);
     }
 
+//    @Override
+//    protected int getTabMode(PagerAdapter adapter) {
+//        return type == DYTT_LIVE || type == DM5 || type == JREN || type == HALIHALI || type == IKANFAN || type == TEPIAN || type == KUPIAN
+//                || type == K8DY || type == JUGOU ? TabLayout.MODE_FIXED : TabLayout.MODE_SCROLLABLE;
+//    }
+
     @Override
     protected int getTabMode(PagerAdapter adapter) {
-        return type == DYTT_LIVE || type == DM5 || type == JREN || type == HALIHALI || type == IKANFAN || type == TEPIAN || type == KUPIAN ? TabLayout.MODE_FIXED : TabLayout.MODE_SCROLLABLE;
+        return adapter.getCount() < 5 ? TabLayout.MODE_FIXED : TabLayout.MODE_SCROLLABLE;
     }
 
     @Override
@@ -226,7 +233,7 @@ public class VideoTabActivity extends BaseTabActivity implements SearchDialogFra
             mPagerAdapter = new HaoQuPagerAdapter(fm);
         } else if (type == ICAN_LIVE) {
             mPagerAdapter = new ICanTvPagerAdapter(fm);
-        }else if(type == ZZYO){
+        } else if (type == ZZYO) {
             mPagerAdapter = new ZzyoPagerAdapter(fm);
         }
         return mPagerAdapter;
@@ -261,7 +268,7 @@ public class VideoTabActivity extends BaseTabActivity implements SearchDialogFra
     @Override
     public void onSearchClick(ISearchWord word) {
         Object info = mPagerAdapter.getExtendInfo();
-        if(info == null) return;
+        if (info == null) return;
         String classNmae = info.toString();
         int multiple = mPagerAdapter.getMultiple();
         int pageStart = mPagerAdapter.getPageStart();

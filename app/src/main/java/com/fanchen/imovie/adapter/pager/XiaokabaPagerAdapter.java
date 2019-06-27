@@ -15,6 +15,8 @@ public class XiaokabaPagerAdapter extends BaseFragmentAdapter {
     private final String[] TITLES = new String[]{"首页","电影", "电视剧", "综艺","动漫"};
     //frim/index1.html
     private final String[] PATHS = new String[]{"","1", "2", "3","4"};
+    private final Boolean[] BANNERS = new Boolean[]{true,false,false,false,false};
+    private final Boolean[] LOADS = new Boolean[]{false,true,true,true,true};
 
     public XiaokabaPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -27,11 +29,7 @@ public class XiaokabaPagerAdapter extends BaseFragmentAdapter {
 
     @Override
     public Fragment createFragment(int position) {
-        switch (position){
-            case 0:
-                return VideoListFragment.newInstance(PATHS[position],getExtendInfo().toString());
-        }
-        return VideoListFragment.newInstance(PATHS[position],getExtendInfo().toString(),1,true,false,false);
+        return VideoListFragment.newInstance(PATHS[position],getExtendInfo().toString(),1,LOADS[position],false,false,"",BANNERS[position]);
     }
 
     @Override

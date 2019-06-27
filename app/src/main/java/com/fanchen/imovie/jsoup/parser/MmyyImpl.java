@@ -8,7 +8,9 @@ import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
+import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.MmyyService;
+import com.fanchen.imovie.util.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +42,16 @@ public class MmyyImpl implements IVideoMoreParser {
 
     @Override
     public IVideoDetails details(Retrofit retrofit, String baseUrl, String html) {
+        String idName = "";
+        try{
+            String[] split = RetrofitManager.PATH_ID.split("/");
+            idName = split[split.length - 1];
+        }catch (Throwable e){
+            e.printStackTrace();
+        }
+
+        LogUtil.e("MmyyImpl","idName -> " + idName);
+
         VideoDetails details = (VideoDetails) kankanwu.details(retrofit, baseUrl, html);
         List<VideoEpisode> episodes = (List<VideoEpisode>) details.getEpisodes();
         if (episodes == null) return details;
@@ -53,6 +65,14 @@ public class MmyyImpl implements IVideoMoreParser {
             }else if (!episode.getTitle().contains("网盘") &&
                     !episode.getTitle().contains("奇艺") && !episode.getTitle().contains("腾讯") &&
                     !episode.getTitle().contains("优酷") && !episode.getTitle().contains("芒果")) {
+                String id = episode.getId();
+                String url = episode.getUrl();
+                if(!id.contains(idName)){
+                    episode.setId(id.replace("//","/" + idName + "/"));
+                }
+                if(!url.contains(idName)){
+                    episode.setUrl(url.replace("//","/" + idName + "/"));
+                }
                 newEpisodes.add(episode);
             }
         }

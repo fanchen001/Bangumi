@@ -25,6 +25,8 @@ import com.arialyy.aria.core.download.DownloadEntity;
 import com.arialyy.aria.core.download.DownloadReceiver;
 import com.arialyy.aria.core.download.DownloadTask;
 import com.arialyy.aria.core.inf.IEntity;
+import com.fanchen.imovie.entity.VideoCategory;
+import com.fanchen.imovie.picasso.PicassoListener;
 import com.fanchen.imovie.picasso.download.HttpRedirectDownLoader;
 import com.fanchen.imovie.service.EmptyService;
 import com.fanchen.imovie.thread.AsyTaskQueue;
@@ -33,8 +35,11 @@ import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.NetworkUtil;
 import com.fanchen.imovie.util.SoCheckUtil;
+import com.fanchen.imovie.util.StreamUtil;
 import com.fanchen.m3u8.M3u8Config;
 import com.fanchen.m3u8.M3u8Manager;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.tencent.smtt.sdk.QbSdk;
@@ -48,6 +53,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.SSLSocketFactory;
 
 import cn.bmob.v3.Bmob;
 import cn.smssdk.SMSSDK;
@@ -62,6 +70,8 @@ import okhttp3.Protocol;
 public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallback {
     public static String KANKAN_COOKIE = "";
     public static String[] ADVS = null;
+    public static boolean[] FLAGS = new boolean[]{false,false};
+    public static List<VideoCategory> mCategorys = new ArrayList<>();
     public static String ALIPAYS = "alipays://platformapi/startapp?appId=20000067&__open_alipay__=YES&url=https://qr.alipay.com/c1x094332eotzkcdjjmx7bf";
     private static final String NET_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
     private final static int TASK_UPDATE = 1;
@@ -78,6 +88,7 @@ public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallb
     public static IMovieAppliction app = null;
     public String mAcg12Token = "";
     public int multithreading = 3;
+
     private SharedPreferences mSharedPreferences;
     private List<OnTaskRuningListener> runingListener = new ArrayList<>();
 
@@ -106,6 +117,7 @@ public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallb
     @Override
     public void onCreate() {
         super.onCreate();
+        com.fanchen.sniffing.LogUtil.E = false;
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(app = this);
         multithreading = getMultithreading(mSharedPreferences);
         boolean swith_mode = mSharedPreferences.getBoolean("swith_mode", true);
@@ -121,6 +133,8 @@ public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallb
                 finishActivity();
             }
         }
+
+
     }
 
     /**
@@ -139,6 +153,7 @@ public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallb
                 registerReceiver(mNetworkReceiver, new IntentFilter(NET_ACTION)); //网络改变
                 initM3u8Config(context);
                 initMainSdk();
+                checkURLConnection();
             } else {
                 initX5Sdk();
             }
@@ -146,6 +161,20 @@ public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallb
             String format = String.format("应用初始化错误 <%s>", e.toString());
             Toast.makeText(this, format, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void checkURLConnection() throws Throwable {
+        String json = new String(StreamUtil.stream2bytes(getAssets().open("category.json")));
+        List<VideoCategory> list = new Gson().fromJson(json, new TypeToken<List<VideoCategory>>() {}.getType());
+
+        int limit = list.size() / 2;
+        List<VideoCategory> subList1 = list.subList(0, limit);
+        List<VideoCategory> subList2 = list.subList(limit, list.size());
+
+        mCategorys.addAll(list);
+
+        new CheckURLThread(0,subList1).start();
+        new CheckURLThread(1,subList2).start();
     }
 
     /**
@@ -281,7 +310,7 @@ public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallb
         if (picasso == null) {
             synchronized (IMovieAppliction.class) {
                 if (picasso == null) {
-                    picasso = new Picasso.Builder(this).downloader(new HttpRedirectDownLoader(getImageCacheClient())).build();
+                    picasso = new Picasso.Builder(this).listener(new PicassoListener()).downloader(new HttpRedirectDownLoader(getImageCacheClient())).build();
                     Picasso.setSingletonInstance(picasso);
                 }
             }
@@ -292,7 +321,10 @@ public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallb
     public OkHttpClient getImageCacheClient() {
         File cacheDir = AppUtil.getExternalCacheDir(this);
         if (!cacheDir.exists()) cacheDir.mkdirs();
-        return new OkHttpClient.Builder().cache(new Cache(cacheDir, 64 * 1024 * 1024)).protocols(Collections.singletonList(Protocol.HTTP_1_1)).build();
+        Cache cache = new Cache(cacheDir, 128 * 1024 * 1024);
+        List<Protocol> protocols = Collections.singletonList(Protocol.HTTP_1_1);
+        SSLSocketFactory sslSocketFactory = StreamUtil.getSSLSocketFactory();
+        return new OkHttpClient.Builder().cache(cache).readTimeout(30, TimeUnit.SECONDS).connectTimeout(30, TimeUnit.SECONDS).protocols(protocols).sslSocketFactory(sslSocketFactory).build();
     }
 
     /**
@@ -474,11 +506,12 @@ public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallb
                 getDownloadReceiver().resumeAllTask();
                 List<DownloadEntity> list = new ArrayList<>();
                 List<DownloadEntity> taskList = getDownloadReceiver().getTaskList();
-                for (DownloadEntity entity : taskList) {
-                    if (entity.getState() == IEntity.STATE_RUNNING || entity.getState() == IEntity.STATE_WAIT) {
-                        list.add(entity);
+                if (taskList != null)
+                    for (DownloadEntity entity : taskList) {
+                        if (entity.getState() == IEntity.STATE_RUNNING || entity.getState() == IEntity.STATE_WAIT) {
+                            list.add(entity);
+                        }
                     }
-                }
                 return list;
             } else {
                 getDownloadReceiver().stopAllTask();
@@ -513,6 +546,32 @@ public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallb
          * @param task
          */
         void onTaskCancel(DownloadTask task);
+    }
+
+    private static class CheckURLThread extends Thread {
+        private List<VideoCategory> mCategory;
+        private int position;
+
+        public CheckURLThread(int position,List<VideoCategory> mCategory) {
+            this.mCategory = mCategory;
+            this.position = position;
+        }
+
+        @Override
+        public void run() {
+            for (VideoCategory videoCategory : mCategory) {
+                String url = videoCategory.getUrl();
+                if (StreamUtil.check(url)) {
+                    videoCategory.setSuccess(true);
+                    LogUtil.e("IMovieAppliction", "url -> " + url + "  连接成功 ");
+                } else {
+                    videoCategory.setSuccess(false);
+                    LogUtil.e("IMovieAppliction", "url -> " + url + "  连接失败 ");
+                }
+            }
+            IMovieAppliction.FLAGS[position] = true;
+        }
+
     }
 
 }

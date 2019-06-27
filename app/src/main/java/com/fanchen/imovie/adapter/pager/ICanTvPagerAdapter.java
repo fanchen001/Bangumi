@@ -13,8 +13,8 @@ import com.fanchen.imovie.retrofit.service.ICanTvService;
  */
 public class ICanTvPagerAdapter extends BaseFragmentAdapter{
 
-    private final String[] TITLES = new String[]{"央视", "卫视", "综合", "影视", "国外"};
-    private final String[] PATHS = new String[]{"tvlist/cctv.html", "tvlist/tv.html", "zt/zh.html", "zt/ys.html", "tvlist/hw.html"};
+    private final String[] TITLES = new String[]{"央视", "卫视",  "国外"};
+    private final String[] PATHS = new String[]{"cctv.html", "tv.html", "hw.html"};
 
     public ICanTvPagerAdapter(FragmentManager fm) {
         super(fm);

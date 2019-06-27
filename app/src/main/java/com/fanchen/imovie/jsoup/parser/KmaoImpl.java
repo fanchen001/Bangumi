@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.entity.Video;
@@ -42,7 +43,7 @@ public class KmaoImpl implements IVideoMoreParser {
         Node node = new Node(html);
         VideoHome home = new VideoHome();
         try {
-            List<Video> videos = new ArrayList<>();
+            List<IVideo> videos = new ArrayList<>();
             home.setList(videos);
             for (Node n : node.list("ul#resize_list > li")) {
                 String title = n.text("a > div > label.name");
@@ -73,6 +74,7 @@ public class KmaoImpl implements IVideoMoreParser {
     @Override
     public IHomeRoot home(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
+        List<String> moreKeys = getMoreKeys();
         VideoHome home = new VideoHome();
         try {
             List<Node> list = node.list("div.modo_title.top");
@@ -105,6 +107,7 @@ public class KmaoImpl implements IVideoMoreParser {
                     videoTitle.setId(topId);
                     videoTitle.setUrl(topUrl);
                     videoTitle.setList(videos);
+                    videoTitle.setMore(videoTitle.getList().size() != 10 && !moreKeys.contains(topId));
                     videoTitle.setServiceClass(KmaoService.class.getName());
                     for (Node sub : new Node(n.getElement().nextElementSibling()).list("div > ul > li")) {
                         String title = sub.text("a > div > label.name");
@@ -125,10 +128,10 @@ public class KmaoImpl implements IVideoMoreParser {
                     }
                     if (videos.size() > 0)
                         titles.add(videoTitle);
-                    videoTitle.setMore(videoTitle.getList().size() != 10);
+
                 }
             } else {
-                List<Video> videos = new ArrayList<>();
+                List<IVideo> videos = new ArrayList<>();
                 for (Node n : node.list("div > div > ul > li")) {
                     String title = n.text("h2");
                     String cover = n.attr("a > div > img", "src");
@@ -253,6 +256,16 @@ public class KmaoImpl implements IVideoMoreParser {
     @Override
     public IBangumiMoreRoot more(Retrofit retrofit, String baseUrl, String html) {
         return (IBangumiMoreRoot) home(retrofit, baseUrl, html);
+    }
+
+    private List<String> getMoreKeys(){
+        List<String> list = new ArrayList<>();
+        list.add("movie");
+        list.add("tv");
+        list.add("Animation");
+        list.add("Arts");
+        list.add("microfilm");
+        return list;
     }
 
 }

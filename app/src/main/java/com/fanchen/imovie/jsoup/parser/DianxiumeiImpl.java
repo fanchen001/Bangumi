@@ -8,6 +8,7 @@ import com.fanchen.imovie.entity.VideoPlayUrls;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.jsoup.IVideoParser;
@@ -37,7 +38,7 @@ public class DianxiumeiImpl implements IVideoParser {
         Node node = new Node(html);
         VideoHome root = new VideoHome();
         try {
-            List<Video> videos = new ArrayList<>();
+            List<IVideo> videos = new ArrayList<>();
             for (Node n : node.list("ul.list-pic > li.f-fl > dl")) {
                 Video video = new Video();
                 video.setServiceClass(DianxiumeiService.class.getName());
@@ -86,7 +87,16 @@ public class DianxiumeiImpl implements IVideoParser {
                     map.put("mp4", split[1]);
                     url.setUrlType(IPlayUrls.URL_FILE);
                     url.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
-                } else {
+                } else if(iframesrc.contains("=")){
+                    String[] split1 = iframesrc.split("=");
+                    if(!StreamUtil.check(iframesrc)){
+                        map.put("weburl", "http://jx.a0296.cn/?url=" + split1[1]);
+                        url.setUrlType(IPlayUrls.URL_WEB);
+                        url.setM3u8Referer(true);
+                        url.setReferer("http://jx.daheiyun.com/?url=" + split1[1]);
+                        url.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                    }
+                }else {
                     String s = StreamUtil.url2String(iframesrc);
                     String match = JavaScriptUtil.match("video:\\{[\\w\\d\\s\\S]+\\}\\}", s, 0, 6, 1);
                     String replace = match.replace("quality:", "\"quality\":").replace("name:", "\"name\":").replace("url:", "\"url\":").replace("defaultQuality:", "\"defaultQuality\":").replace("pic:", "\"pic\":").replace("type:", "\"type\":").replace("'", "\"").replace(",}", "}");
@@ -95,7 +105,6 @@ public class DianxiumeiImpl implements IVideoParser {
                         JSONObject object = quality.optJSONObject(i);
                         map.put(object.optString("name"), object.optString("url"));
                     }
-
                     url.setUrlType(IPlayUrls.URL_FILE);
                     url.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
                 }

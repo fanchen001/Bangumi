@@ -3,6 +3,7 @@ package com.fanchen.imovie.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,6 +19,9 @@ import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.fragment.HomeIndexFragment;
 import com.fanchen.imovie.picasso.PicassoWrap;
+import com.fanchen.imovie.picasso.download.AgentDownloader;
+import com.fanchen.imovie.picasso.download.RefererDownloader;
+import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.view.TriangleLabelView;
 import com.squareup.picasso.Picasso;
 
@@ -84,7 +88,14 @@ public class VideoListAdapter extends BaseAdapter{
                 videoViewHolder.triangTextView.setVisibility(View.GONE);
             }
             videoViewHolder.titleTextView.setText(video.getTitle());
-            picasso.loadVertical(video.getCover(), VideoTabActivity.class,videoViewHolder.imageView);
+            LogUtil.e("VideoListAdapter","Cover -> " + video.getCover());
+            String referer = video.getCoverReferer();
+            if (video.isAgent()) {
+                PicassoWrap picassoWrap = new PicassoWrap(context, new AgentDownloader(context, referer));
+                picassoWrap.loadVertical(video.getCover(), HomeIndexFragment.class, videoViewHolder.imageView);
+            } else if (picasso != null) {
+                picasso.loadVertical(video.getCover(), HomeIndexFragment.class, videoViewHolder.imageView);
+            }
         }else if(viewType == IViewType.TYPE_TITLE){
             TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
             IBangumiTitle bangumiTitle = (IBangumiTitle) datas.get(position);

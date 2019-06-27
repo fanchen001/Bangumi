@@ -2,6 +2,7 @@ package com.fanchen.imovie.picasso.download;
 
 import android.content.Context;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import com.squareup.picasso.UrlConnectionDownloader;
 
@@ -24,7 +25,9 @@ public class RefererDownloader extends UrlConnectionDownloader{
     @Override
     protected HttpURLConnection openConnection(Uri path) throws IOException {
         HttpURLConnection httpURLConnection = super.openConnection(path);
-        httpURLConnection.setRequestProperty("Referer",referer);
+        if(!TextUtils.isEmpty(referer))
+            httpURLConnection.setRequestProperty("Referer",referer);
         return httpURLConnection;
     }
+
 }

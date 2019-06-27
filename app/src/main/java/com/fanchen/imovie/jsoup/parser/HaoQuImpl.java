@@ -1,5 +1,7 @@
 package com.fanchen.imovie.jsoup.parser;
 
+import android.text.TextUtils;
+
 import com.fanchen.imovie.entity.VideoBase;
 import com.fanchen.imovie.entity.VideoPlayUrls;
 import com.fanchen.imovie.entity.face.IBaseVideo;
@@ -57,6 +59,9 @@ public class HaoQuImpl implements ITvParser{
             String format = String.format("http://m.haoqu.net/e/extend/tv.php?id=%s", match);
             String s = StreamUtil.url2String(format);
             String url = JavaScriptUtil.match("\\$http[\\w\\d\\S]+\\$iframe", s, 0, 1, 7);
+            if(TextUtils.isEmpty(url)){
+                url = JavaScriptUtil.match("\\$http[\\w\\d\\S]+\\$m3u8", s, 0, 1, 5);
+            }
             Map<String, String> mapUrl = new HashMap<>();
             playUrl.setReferer(baseUrl);
             playUrl.setUrls(mapUrl);

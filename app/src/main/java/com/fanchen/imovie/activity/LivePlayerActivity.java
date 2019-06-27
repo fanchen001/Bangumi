@@ -2,10 +2,7 @@ package com.fanchen.imovie.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,12 +19,13 @@ import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
 import com.fanchen.imovie.util.DateUtil;
-import com.fanchen.imovie.util.VideoUrlUtil;
 import com.fanchen.imovie.view.video.SuperPlayerView;
+import com.fanchen.sniffing.SniffingCallback;
+import com.fanchen.sniffing.SniffingVideo;
+import com.fanchen.sniffing.x5.SniffingUtil;
 import com.litesuits.orm.db.assit.QueryBuilder;
 import com.tencent.smtt.sdk.TbsVideo;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -96,8 +94,8 @@ public class LivePlayerActivity extends BaseActivity {
     @Override
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
-        VideoUrlUtil.getInstance().setTimeOut(8 * 1000);
-        VideoUrlUtil.getInstance().setParserTime(2 * 1000);
+//        VideoUrlUtil.getInstance().setTimeOut(8 * 1000);
+//        VideoUrlUtil.getInstance().setParserTime(2 * 1000);
         mVideo = getIntent().getParcelableExtra(VIDEO);
         mSuperPlayerView.setNetChangeListener(true);
         mSuperPlayerView.setScaleType(SuperPlayerView.SCALETYPE_FITPARENT);
@@ -143,9 +141,10 @@ public class LivePlayerActivity extends BaseActivity {
         if (mSuperPlayerView != null) {
             mSuperPlayerView.onDestroy();
         }
-        VideoUrlUtil.getInstance().setParserTime(VideoUrlUtil.PARSER_TIME);
-        VideoUrlUtil.getInstance().setTimeOut(VideoUrlUtil.DEFAULT_TIME);
-        VideoUrlUtil.getInstance().destroy();
+        SniffingUtil.get().releaseAll();
+//        VideoUrlUtil.getInstance().setParserTime(VideoUrlUtil.PARSER_TIME);
+//        VideoUrlUtil.getInstance().setTimeOut(VideoUrlUtil.DEFAULT_TIME);
+//        VideoUrlUtil.getInstance().destroy();
         savePlayHistory();
     }
 
@@ -196,38 +195,38 @@ public class LivePlayerActivity extends BaseActivity {
 
     };
 
-    private class ParseWebUrl implements VideoUrlUtil.OnParseWebUrlListener {
-        private IPlayUrls playUrls;
-
-        public ParseWebUrl(IPlayUrls playUrls) {
-            this.playUrls = playUrls;
-        }
-
-        @Override
-        public void onFindUrl(String videourl) {
-            if (mSuperPlayerView == null || playUrls == null) return;
-            mSuperPlayerView.setProgerssVisible(false);
-            if (getIntent().getBooleanExtra(ISLIVE, false) && getIntent().getBooleanExtra(ORIENTATION, true)
-                    && VideoPlayerActivity.TBS.equals(mDefPlayer)) {
-                TbsVideo.openVideo(LivePlayerActivity.this, videourl);
-                LivePlayerActivity.this.finish();
-            } else {
-                String referer = playUrls.getReferer();
-                if (playUrls.m3u8Referer()) {
-                    mSuperPlayerView.play(videourl, referer);
-                } else {
-                    mSuperPlayerView.play(videourl);
-                }
-            }
-        }
-
-        @Override
-        public void onError(String errorMsg) {
-            showToast(errorMsg);
-            finish();
-        }
-
-    }
+//    private class ParseWebUrl implements VideoUrlUtil.OnParseWebUrlListener {
+//        private IPlayUrls playUrls;
+//
+//        public ParseWebUrl(IPlayUrls playUrls) {
+//            this.playUrls = playUrls;
+//        }
+//
+//        @Override
+//        public void onFindUrl(String videourl) {
+//            if (mSuperPlayerView == null || playUrls == null) return;
+//            mSuperPlayerView.setProgerssVisible(false);
+//            if (getIntent().getBooleanExtra(ISLIVE, false) && getIntent().getBooleanExtra(ORIENTATION, true)
+//                    && VideoPlayerActivity.TBS.equals(mDefPlayer)) {
+//                TbsVideo.openVideo(LivePlayerActivity.this, videourl);
+//                LivePlayerActivity.this.finish();
+//            } else {
+//                String referer = playUrls.getReferer();
+//                if (playUrls.m3u8Referer()) {
+//                    mSuperPlayerView.play(videourl, referer);
+//                } else {
+//                    mSuperPlayerView.play(videourl);
+//                }
+//            }
+//        }
+//
+//        @Override
+//        public void onError(String errorMsg) {
+//            showToast(errorMsg);
+//            finish();
+//        }
+//
+//    }
 
 
     private RefreshCallback<IPlayUrls> callback = new RefreshCallback<IPlayUrls>() {
@@ -262,7 +261,7 @@ public class LivePlayerActivity extends BaseActivity {
                 if (urls != null && !urls.isEmpty()) {
                     int playType = mIPlayUrls.getPlayType();
                     final String value = mIPlayUrls.getUrls().entrySet().iterator().next().getValue();
-                    if (!TextUtils.isEmpty(value) && playType == IVideoEpisode.PLAY_TYPE_VIDEO) {
+                    if (!TextUtils.isEmpty(value) && playType == IVideoEpisode.PLAY_TYPE_VIDEO || playType == IVideoEpisode.PLAY_TYPE_VIDEO_M3U8) {
                         if (!TextUtils.isEmpty(mIPlayUrls.getReferer())) {
                             mSuperPlayerView.play(value, mIPlayUrls.getReferer());
                         } else {
@@ -270,8 +269,37 @@ public class LivePlayerActivity extends BaseActivity {
                         }
                     } else if (playType == IVideoEpisode.PLAY_TYPE_WEB) {
                         String referer = mIPlayUrls.getReferer();
-                        ParseWebUrl parseWebUrl = new ParseWebUrl(mIPlayUrls);
-                        VideoUrlUtil.getInstance().init(LivePlayerActivity.this, value, referer).setOnParseListener(parseWebUrl).startParse();
+                        SniffingUtil.get().activity(LivePlayerActivity.this).url(value).referer(referer).callback(new SniffingCallback() {
+
+                            @Override
+                            public void onSniffingSuccess(View webView, String url, List<SniffingVideo> videos) {
+                                if (mSuperPlayerView == null || mIPlayUrls == null || videos.isEmpty())
+                                    return;
+                                String videourl = videos.get(0).getUrl();
+                                mSuperPlayerView.setProgerssVisible(false);
+                                if (getIntent().getBooleanExtra(ISLIVE, false) && getIntent().getBooleanExtra(ORIENTATION, true)
+                                        && VideoPlayerActivity.TBS.equals(mDefPlayer)) {
+                                    TbsVideo.openVideo(LivePlayerActivity.this, videourl);
+                                    LivePlayerActivity.this.finish();
+                                } else {
+                                    String referer = mIPlayUrls.getReferer();
+                                    if (mIPlayUrls.m3u8Referer()) {
+                                        mSuperPlayerView.play(videourl, referer);
+                                    } else {
+                                        mSuperPlayerView.play(videourl);
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onSniffingError(View webView, String url, int errorCode) {
+                                showToast("解析视频失败");
+                                finish();
+                            }
+
+                        }).start();
+//                        ParseWebUrl parseWebUrl = new ParseWebUrl(mIPlayUrls);
+//                        VideoUrlUtil.getInstance().init(LivePlayerActivity.this, value, referer).setOnParseListener(parseWebUrl).startParse();
                     } else {
                         showToast(getString(R.string.error_play_conn));
                     }

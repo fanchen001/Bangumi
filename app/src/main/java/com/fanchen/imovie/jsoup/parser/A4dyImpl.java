@@ -11,6 +11,7 @@ import com.fanchen.imovie.entity.VideoTitle;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
@@ -34,20 +35,21 @@ import retrofit2.Retrofit;
 public class A4dyImpl implements IVideoMoreParser {
     //
 
+    //http://jymshop.com/
 
-    private static final String BILIBILI = "http://h1.aayyc.com/h5/%s.m3u8?cid=%s&height=449";
+    private static final String BILIBILI = "http://h1.jymshop.com/h5/%s.m3u8?cid=%s&height=449";
     private static final String WEIYUN = "http://404erbh.com/%s/index.mp4?name=%s&height=449";
-    private static final String OTHER = "http://h1.aayyc.com/ckplayer/%s/indexh5.m3u8?tvid=%s&height=449";
-    private static final String ACFUN = "http://h1.aayyc.com/ckplayer/acfun/index-acfun.m3u8?vid=%s&height=449";
-    private static final String LESHI = "http://h1.aayyc.com/ckplayer/letv/index.m3u8?vid=%s&height=449";
-    private static final String PPTV = "http//h1.aayyc.com/ckplayer/pptv/index.m3u8?url=%s&height=449";
-    private static final String MGTV = "http://h1.aayyc.com/ckplayer/mgtv/index.hchc?id=%s&height=449";
-    private static final String YOUKU = "http://h1.aayyc.com/ckplayer/youku/index.m3u8?vid=%s&height=449";
-    private static final String IQYI = "http://h1.aayyc.com/ckplayer/iqiyi/indexh5.m3u8?tvid=%s&height=449";
+    private static final String OTHER = "http://h1.jymshop.com/ckplayer/%s/indexh5.m3u8?tvid=%s&height=449";
+    private static final String ACFUN = "http://h1.jymshop.com/ckplayer/acfun/index-acfun.m3u8?vid=%s&height=449";
+    private static final String LESHI = "http://h1.jymshop.com/ckplayer/letv/index.m3u8?vid=%s&height=449";
+    private static final String PPTV = "http//h1.jymshop.com/ckplayer/pptv/index.m3u8?url=%s&height=449";
+    private static final String MGTV = "http://h1.jymshop.com/ckplayer/mgtv/index.hchc?id=%s&height=449";
+    private static final String YOUKU = "http://h1.jymshop.com/ckplayer/youku/index.m3u8?vid=%s&height=449";
+    private static final String IQYI = "http://h1.jymshop.com/ckplayer/iqiyi/indexh5.m3u8?tvid=%s&height=449";
     private static final String YUN = "http://yingqian8.cn/weiyun/index.mp4?name=%s&height=449";
-    private static final String YUNDUAN = "http://h1.aayyc.com/ckplayer/video1/index.m3u8?url=%s&height=449";
-    //http://h1.aayyc.com/ckplayer/qqtencent/index.2fz?vid=2d798AQFnTJ8JjY7Oo3yg2SUXDRNIxoQsOqXIzIVrCqrhHgUmT+tQw&height=449
-    private static final String TENCENT = "http://h1.aayyc.com/ckplayer/qqtencent/index.2fz?vid=%s&height=449";
+    private static final String YUNDUAN = "http://h1.jymshop.com/ckplayer/video1/index.m3u8?url=%s&height=449";
+    //http://h1.jymshop.com/ckplayer/qqtencent/index.2fz?vid=2d798AQFnTJ8JjY7Oo3yg2SUXDRNIxoQsOqXIzIVrCqrhHgUmT+tQw&height=449
+    private static final String TENCENT = "http://h1.jymshop.com/ckplayer/qqtencent/index.2fz?vid=%s&height=449";
 
 //yunduan$$$iqiyi
 
@@ -56,11 +58,11 @@ public class A4dyImpl implements IVideoMoreParser {
         Node node = new Node(html);
         VideoHome home = new VideoHome();
         try {
-            List<Video> videos = new ArrayList<>();
+            List<IVideo> videos = new ArrayList<>();
             home.setList(videos);
             for (Node n : node.list("ul#resize_list > li")) {
                 String title = n.text("a > div > label.name");
-                String cover = n.attr("a > div > img", "data-original");
+                String cover = n.attr("a > div > img", "data-original","=",1);
                 String update = n.textAt("div.list_info > p", 4);
                 String type = n.textAt("div.list_info > p", 1);
                 String author = n.textAt("div.list_info > p", 2);
@@ -71,6 +73,7 @@ public class A4dyImpl implements IVideoMoreParser {
                 video.setId(id);
                 video.setTitle(title);
                 video.setUrl(url);
+                video.setAgent(true);
                 video.setHasDetails(true);
                 video.setServiceClass(A4dyService.class.getName());
                 video.setDanmaku(author);
@@ -117,13 +120,14 @@ public class A4dyImpl implements IVideoMoreParser {
                     titles.add(a4DyTitle);
                     for (Node sub : new Node(n.getElement().nextElementSibling()).list("div > ul > li")) {
                         String title = sub.text("a > div > label.name");
-                        String cover = sub.attr("a > div > img", "data-original");
+                        String cover = sub.attr("a > div > img", "data-original","=",1);
                         if (TextUtils.isEmpty(cover))
                             continue;
                         String hd = sub.text("a > div > label.title");
                         String url = baseUrl + sub.attr("a", "href");
                         String id = sub.attr("a", "href", "-", 3);
                         Video video = new Video();
+                        video.setAgent(true);
                         video.setHasDetails(true);
                         video.setServiceClass(A4dyService.class.getName());
                         video.setCover(cover);
@@ -135,10 +139,10 @@ public class A4dyImpl implements IVideoMoreParser {
                     }
                 }
             } else {
-                List<Video> videos = new ArrayList<>();
+                List<IVideo> videos = new ArrayList<>();
                 for (Node n : node.list("div > div > ul > li")) {
                     String title = n.text("h2");
-                    String cover = n.attr("a > div > img", "data-original");
+                    String cover = n.attr("a > div > img", "data-original","=",1);
                     if (TextUtils.isEmpty(cover))
                         continue;
                     String hd = n.text("a > div > label.title");
@@ -150,6 +154,7 @@ public class A4dyImpl implements IVideoMoreParser {
                     video.setHasDetails(true);
                     video.setCover(cover);
                     video.setId(id);
+                    video.setAgent(true);
                     video.setServiceClass(A4dyService.class.getName());
                     video.setLast(score);
                     video.setDanmaku(area);
@@ -191,20 +196,21 @@ public class A4dyImpl implements IVideoMoreParser {
                 }
                 count++;
             }
-            details.setCover(node.attr("div.vod-n-img > img.loading", "data-original"));
+            details.setCover(node.attr("div.vod-n-img > img.loading", "data-original","=",1));
             details.setUpdate(node.textAt("div.vod-n-l > p", 5));
             details.setLast(node.textAt("div.vod-n-l > p", 1));
             details.setDanmaku(node.textAt("div.vod-n-l > p", 2));
             details.setTitle(node.text("div.vod-n-l > h1"));
             details.setIntroduce(node.text("div.vod_content"));
             details.setEpisodes(episodes);
+            details.setAgent(true);
             if (!TextUtils.isEmpty(episodeurl)) {
                 String s = StreamUtil.url2String(episodeurl);
                 if (!TextUtils.isEmpty(s)) {
                     List<Video> videos = new ArrayList<>();
                     for (Node n : new Node(s).list("ul.list_tab_img > li")) {
                         String title = n.text("h2");
-                        String cover = n.attr("a > div > img", "data-original");
+                        String cover = n.attr("a > div > img", "data-original","=",1);
                         if (TextUtils.isEmpty(cover))
                             continue;
                         String hd = n.text("a > div > label.title");
@@ -233,6 +239,8 @@ public class A4dyImpl implements IVideoMoreParser {
     @Override
     public IPlayUrls playUrl(Retrofit retrofit, String baseUrl, String html) {
         VideoPlayUrls playUrl = new VideoPlayUrls();
+        playUrl.setReferer(RetrofitManager.REQUEST_URL);
+        playUrl.setM3u8Referer(true);
         String url = RetrofitManager.REQUEST_URL;
         try {
             String[] split = RetrofitManager.REQUEST_URL.replace(".html", "").split("-");

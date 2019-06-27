@@ -12,12 +12,12 @@ import com.fanchen.imovie.retrofit.service.DianxiumeiService;
  * Created by fanchen on 2017/10/14.
  */
 public class Xiu169PagerAdapter extends BaseFragmentAdapter{
-
+    
     private final String[] TITLES = new String[]{"电影", "宅舞", "音乐","舞蹈","游戏","小品"};
-    private final String[] VALUES = new String[]{"http://dianxiumei.com/dy/rm.php",
-            "http://dianxiumei.com/huya/so.php?id=zhaiwu", "http://dianxiumei.com/yinyue/s.php",
-            "http://dianxiumei.com/huya/so.php?id=fuli","http://dianxiumei.com/baidu/s.php?id=youxi",
-            "http://dianxiumei.com/baidu/s.php?id=xiaopin"};
+    private final String[] VALUES = new String[]{"http://honglez.cn/dy/rm.php",
+            "http://honglez.cn/huya/so.php?id=zhaiwu", "http://honglez.cn/yinyue/s.php",
+            "http://honglez.cn/huya/so.php?id=fuli","http://honglez.cn/baidu/s.php?id=youxi",
+            "http://honglez.cn/baidu/s.php?id=xiaopin"};
 
     public Xiu169PagerAdapter(FragmentManager fm) {
         super(fm);

@@ -84,7 +84,7 @@ public class HomePagerFragment extends BaseFragment implements Toolbar.OnMenuIte
                 TextView textView = new TextView(activity);
                 textView.setText(IMovieAppliction.ADVS[i]);
                 textView.setTextColor(Color.WHITE);
-                textView.setTextSize(12f);
+                textView.setTextSize(11f);
                 textView.setCompoundDrawablePadding(DisplayUtil.dip2px(activity, 4));
                 textView.setCompoundDrawables(drawable, null, null, null);
                 textView.setGravity(Gravity.CENTER_VERTICAL);

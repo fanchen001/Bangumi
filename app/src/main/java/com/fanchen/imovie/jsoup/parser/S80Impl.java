@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.Video;
 import com.fanchen.imovie.entity.VideoDetails;
@@ -31,7 +32,7 @@ public class S80Impl implements IVideoParser {
         Node node = new Node(html);
         VideoHome root = new VideoHome();
         try {
-            List<Video> videos = new ArrayList<>();
+            List<IVideo> videos = new ArrayList<>();
             for (Node n : node.list("div.col-xs-4.col-md-2.list_mov")){
                 String attr = n.attr("a > img", "data-original");
                 if(TextUtils.isEmpty(attr)){
@@ -130,7 +131,7 @@ public class S80Impl implements IVideoParser {
         VideoHome root = new VideoHome();
         Node node = new Node(html);
         try{
-            List<Video> videos = new ArrayList<>();
+            List<IVideo> videos = new ArrayList<>();
             for (Node n : node.list("a.list-group-item")){
                 String title = n.text("h4");
                 String tip = n.text("em");

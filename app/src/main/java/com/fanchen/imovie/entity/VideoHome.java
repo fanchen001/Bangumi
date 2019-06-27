@@ -12,6 +12,7 @@ import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.view.pager.IBanner;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class VideoHome implements IBangumiRoot,IBangumiMoreRoot,Parcelable {
     private List<VideoTitle> result;
     private boolean success;
     private String message;
-    private List<Video> list;
+    private List<IVideo> list;
 
     public VideoHome(){
     }
@@ -112,10 +113,20 @@ public class VideoHome implements IBangumiRoot,IBangumiMoreRoot,Parcelable {
 
     @Override
     public List<? extends IVideo> getList() {
+        if((list == null || list.size() == 0) && (result != null && result.size() > 0)){
+            list = new ArrayList<>();
+            for (VideoTitle title : result){
+                try{
+                    list.addAll(title.getList());
+                }catch (Throwable e){
+                    e.printStackTrace();
+                }
+            }
+        }
         return list;
     }
 
-    public void setList(List<Video> list) {
+    public void setList(List<IVideo> list) {
         this.list = list;
     }
 

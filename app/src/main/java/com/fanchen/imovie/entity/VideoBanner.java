@@ -64,4 +64,9 @@ public class VideoBanner extends VideoBase implements Parcelable, IVideoBanner<V
         this.extInfo = extInfo;
     }
 
+    @Override
+    public String getReferer() {
+        return getHost();
+    }
+
 }

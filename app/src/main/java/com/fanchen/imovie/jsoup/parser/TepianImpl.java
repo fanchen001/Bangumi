@@ -10,6 +10,7 @@ import com.fanchen.imovie.entity.VideoPlayUrls;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
@@ -48,7 +49,7 @@ public class TepianImpl implements IVideoMoreParser {
         Node node = new Node(html);
         VideoHome home = new VideoHome();
         try {
-            List<Video> videos = new ArrayList<>();
+            List<IVideo> videos = new ArrayList<>();
             for (Node n : node.list("ul.globalPicList.threeList.clearfix > li")) {
                 String title = n.attr("div > a > img", "alt");
                 String cover = n.attr("div > a > img", "src");

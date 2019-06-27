@@ -13,6 +13,10 @@ import java.util.regex.Pattern;
  */
 public class JavaScriptUtil {
 
+    public static boolean isJson(String match){
+        return (match.indexOf("{") == 0 && match.lastIndexOf("}") == match.length() - 1) || match.indexOf("[") == 0 && match.lastIndexOf("]") == match.length() - 1;
+    }
+
     /*
     * 对应javascript的escape()函数, 加码后的串可直接使用javascript的unescape()进行解码
     */

@@ -33,7 +33,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -49,6 +51,7 @@ import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
@@ -68,6 +71,15 @@ import okhttp3.ResponseBody;
  * 描述：流工具类
  */
 public class StreamUtil {
+
+    public static Map<String,String> getHeader(String referer){
+        HashMap<String,String> mHeader = new HashMap<>();
+        mHeader.put("Referer", referer);
+        mHeader.put("User-Agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36");
+        mHeader.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+        mHeader.put("Accept-Encoding", "gzip, deflate");
+        return mHeader;
+    }
 
     /**
      * 获取ByteArrayInputStream.
@@ -316,6 +328,25 @@ public class StreamUtil {
         return "";
     }
 
+    public static boolean check(String url) {
+        HttpURLConnection conn = null;
+        try {
+            HttpsURLConnection.setDefaultSSLSocketFactory(StreamUtil.getSSLSocketFactory());
+            conn = (HttpURLConnection) new URL(url).openConnection();
+            conn.setRequestMethod("HEAD");
+            conn.setReadTimeout(2000);
+            conn.setConnectTimeout(2000);
+            return conn.getResponseCode() == 200;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+        return false;
+    }
+
     /**
      * 获取URL数据并转换成byte数组
      *
@@ -326,7 +357,7 @@ public class StreamUtil {
     public static byte[] url2byte(String strUrl, Map<String, String> head) {
         byte[] bytes = null;
         try {
-            OkHttpClient mOkHttpClient = new OkHttpClient();
+            OkHttpClient mOkHttpClient = new OkHttpClient().newBuilder().sslSocketFactory(StreamUtil.getSSLSocketFactory()).build();
             Request.Builder builder = new Request.Builder();
             if (head != null && !head.isEmpty()) {
                 Set<Entry<String, String>> entrySet = head.entrySet();
@@ -431,7 +462,8 @@ public class StreamUtil {
         return new TrustAllHostnameVerifier();
     }
 
-    private static class TrustAllManager implements X509TrustManager {
+    public static class TrustAllManager implements X509TrustManager {
+
         @Override
         public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
         }
@@ -444,9 +476,10 @@ public class StreamUtil {
         public X509Certificate[] getAcceptedIssuers() {
             return new X509Certificate[0];
         }
+
     }
 
-    private static class TrustAllHostnameVerifier implements HostnameVerifier {
+    public static class TrustAllHostnameVerifier implements HostnameVerifier {
         @Override
         public boolean verify(String hostname, SSLSession session) {
             return true;

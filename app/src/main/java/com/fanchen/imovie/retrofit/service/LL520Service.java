@@ -40,7 +40,7 @@ public interface LL520Service {
      * @param page
      * @return
      */
-    @GET("list/{path}_{page}.html")
+    @GET("dytt/{path}-p-{page}.html")
     @JsoupType(JsoupSource.LL520)
     @MethodType(value = MethodSource.HOME)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
@@ -52,11 +52,11 @@ public interface LL520Service {
      * @param keyword
      * @return
      */
-    @GET("search.php")
+    @GET("sousuo-{searchword}-p-{page}.html")
     @JsoupType(JsoupSource.LL520)
     @MethodType(value = MethodSource.SEARCH)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IBangumiMoreRoot> search(@Query("page") Integer page, @Query("searchword") String keyword);
+    Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("searchword") String keyword);
 
     /**
      *
@@ -64,21 +64,21 @@ public interface LL520Service {
      * @param page
      * @return
      */
-    @GET("list/{path}_{page}.html")
+    @GET("dytt/{path}-p-{page}.html")
     @JsoupType(JsoupSource.LL520)
     @MethodType(value = MethodSource.MORE)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> more(@Path("path") String pid, @Path("page") Integer page);
 
     /**
-     * @param url
+     * @param id
      * @return
      */
-    @GET
+    @GET("sm_vod/{id}.html")
     @JsoupType(JsoupSource.LL520)
     @MethodType(value = MethodSource.DETAILS)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IVideoDetails> details(@Url String url);
+    Call<IVideoDetails> details(@Path("id") String id);
 
     /**
      * @param url

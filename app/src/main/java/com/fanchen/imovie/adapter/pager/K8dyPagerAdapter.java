@@ -12,10 +12,10 @@ import com.fanchen.imovie.retrofit.service.K8dyService;
  */
 public class K8dyPagerAdapter extends BaseFragmentAdapter{
 
-    private final String[] TITLES = new String[]{"首页","电视剧", "电影", "动漫","综艺"};
-    private final String[] PATHS = new String[]{"","list/2.html", "list/1.html", "3","4"};
-    private final Boolean[] LOADS = new Boolean[]{false,false,false,true,true,false};
-    private final Boolean[] BANGUMI = new Boolean[]{true,false,false,false,false,false};
+    private final String[] TITLES = new String[]{"首页","电视剧", "电影", "动漫"};
+    private final String[] PATHS = new String[]{"","list/2.html", "list/1.html", "3"};
+    private final Boolean[] LOADS = new Boolean[]{false,false,false,true};
+    private final Boolean[] BANGUMI = new Boolean[]{true,false,false,false};
 
     public K8dyPagerAdapter(FragmentManager fm) {
         super(fm);

@@ -12,8 +12,11 @@ import com.fanchen.imovie.activity.BangumiListActivity;
 import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IViewType;
+import com.fanchen.imovie.fragment.HomeIndexFragment;
 import com.fanchen.imovie.picasso.PicassoWrap;
+import com.fanchen.imovie.picasso.download.AgentDownloader;
 import com.fanchen.imovie.picasso.download.RefererDownloader;
+import com.fanchen.imovie.util.LogUtil;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -73,7 +76,15 @@ public class BangumiListAdapter extends BaseAdapter {
         }
         videoViewHolder.danmakuTextView.setVisibility(View.VISIBLE);
         videoViewHolder.danmakuTextView.setText(videoItem.getDanmaku());
-        picassoWrap.loadHorizontal(videoItem.getCover(), BangumiListActivity.class, videoViewHolder.imageView);
+        LogUtil.e("BangumiListAdapter","getCover -> " + videoItem.getCover());
+
+        String referer = videoItem.getCoverReferer();
+        if (videoItem.isAgent()) {
+            PicassoWrap picassoWrap = new PicassoWrap(context, new AgentDownloader(context, referer));
+            picassoWrap.loadHorizontal(videoItem.getCover(), HomeIndexFragment.class, videoViewHolder.imageView);
+        } else if (picassoWrap != null) {
+            picassoWrap.loadHorizontal(videoItem.getCover(), HomeIndexFragment.class, videoViewHolder.imageView);
+        }
     }
 
     @Override

@@ -13,9 +13,10 @@ import com.fanchen.imovie.retrofit.service.WeilaiService;
  */
 public class WeilaiPagerAdapter extends BaseFragmentAdapter {
 
-    private final String[] TITLES = new String[]{"首页","电视剧", "电影", "动漫","综艺","微电影"};
-    private final String[] PATHS = new String[]{"","dianshiju", "dianying", "dongman","zongyi","lunlipian"};
-    private final Boolean[] BANGUMI = new Boolean[]{true,false,false,true,true,true};
+    private final String[] TITLES = new String[]{"首页","电视剧", "电影", "动漫","综艺"};
+    private final String[] PATHS = new String[]{"","dianshiju", "dianying", "dongman","zongyi"};
+    private final Boolean[] BANGUMI = new Boolean[]{true,false,false,false,false};
+    private final Boolean[] LOADS = new Boolean[]{false,false,false,true,true};
 
     public WeilaiPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -28,7 +29,7 @@ public class WeilaiPagerAdapter extends BaseFragmentAdapter {
 
     @Override
     public Fragment createFragment(int position) {
-        return VideoListFragment.newInstance(PATHS[position], getExtendInfo().toString(), 1, 1, false, false, false, null, BANGUMI[position]);
+        return VideoListFragment.newInstance(PATHS[position], getExtendInfo().toString(), 1, 1, false, LOADS[position], false, null, BANGUMI[position]);
     }
 
     @Override

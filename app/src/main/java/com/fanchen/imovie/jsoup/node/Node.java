@@ -9,6 +9,8 @@ import org.jsoup.select.Elements;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.umeng.qq.tencent.h.e;
+
 /**
  * @author fanchen
  */
@@ -42,6 +44,21 @@ public class Node {
             return list;
         for (Element e : elements) {
             list.add(new Node(e));
+        }
+        return list;
+    }
+
+    public List<Node> listTagClass(String tag,String clazz) {
+        List<Node> list = new LinkedList<>();
+        if (element == null)
+            return list;
+        Elements li = element.getElementsByTag(tag);
+        for (int i = 0 ; i < li.size() ; i ++){
+            Element e = li.get(i);
+            String aClass = e.attr("class").trim();
+            if(clazz.equals(aClass)){
+                list.add(new Node(e));
+            }
         }
         return list;
     }

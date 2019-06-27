@@ -35,17 +35,16 @@ import com.fanchen.imovie.entity.bmob.VideoCollect;
 import com.fanchen.imovie.picasso.download.RefererDownloader;
 import com.fanchen.imovie.picasso.trans.BlurTransform;
 import com.fanchen.imovie.picasso.PicassoWrap;
+import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.thread.task.AsyTaskListenerImpl;
 import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.DisplayUtil;
-import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.ShareUtil;
-import com.fanchen.imovie.util.SystemUtil;
 import com.fanchen.imovie.util.VideoJsonUtil;
-import com.fanchen.imovie.util.VideoUrlUtil;
+//import com.fanchen.imovie.util.VideoUrlUtil;
 import com.fanchen.imovie.view.CustomEmptyView;
 import com.fanchen.imovie.view.MaterialProgressBar;
 import com.fanchen.imovie.view.RoundCornerImageView;
@@ -54,6 +53,10 @@ import com.fanchen.m3u8.M3u8Manager;
 import com.fanchen.m3u8.bean.M3u8;
 import com.fanchen.m3u8.bean.M3u8File;
 import com.fanchen.m3u8.listener.OnM3u8InfoListener;
+import com.fanchen.sniffing.LogUtil;
+import com.fanchen.sniffing.SniffingCallback;
+import com.fanchen.sniffing.SniffingVideo;
+import com.fanchen.sniffing.x5.SniffingUtil;
 import com.google.gson.Gson;
 import com.litesuits.orm.db.assit.QueryBuilder;
 import com.xigua.p2p.P2PManager;
@@ -71,7 +74,7 @@ import butterknife.InjectView;
  */
 public class VideoDetailsActivity extends BaseActivity implements View.OnClickListener,
         BaseAdapter.OnItemClickListener, DialogInterface.OnDismissListener,
-        DownloadDialog.OnDownloadSelectListener, OnM3u8InfoListener, VideoUrlUtil.OnParseWebUrlListener {
+        DownloadDialog.OnDownloadSelectListener, OnM3u8InfoListener , SniffingCallback /*, VideoUrlUtil.OnParseWebUrlListener*/ {
 
     public static final String VIDEO = "video";
     public static final String COLLECT = "collect";
@@ -134,7 +137,7 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
     private PicassoWrap picasso;
     private EpisodeAdapter mEpisodeAdapter;
     private RecomAdapter mRecomAdapter;
-    private VideoUrlUtil mVideoUrlUtil;
+//    private VideoUrlUtil mVideoUrlUtil;
     private DownloadDialog.DownloadTemp mDownload;
     private List<DownloadDialog.DownloadTemp> mDownloads;
 
@@ -229,7 +232,7 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
         setSupportActionBar(mToolbar);
         getIntentData(getIntent());
         mBackTitleTextView.setText(R.string.bangumi_details);
-        mVideoUrlUtil = VideoUrlUtil.getInstance().init(this);
+//        mVideoUrlUtil = VideoUrlUtil.getInstance().init(this);
         mEpisodeRecyclerView.setLayoutManager(new BaseAdapter.LinearLayoutManagerWrapper(this, BaseAdapter.LinearLayoutManagerWrapper.HORIZONTAL, false));
         mRecomRecyclerView.setLayoutManager(new BaseAdapter.GridLayoutManagerWrapper(this, 3));
         mEpisodeAdapter = new EpisodeAdapter(this);
@@ -240,6 +243,7 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
         mEpisodeRecyclerView.setNestedScrollingEnabled(false);
         mRecomRecyclerView.setNestedScrollingEnabled(false);
         String path = mVideo == null ? mVideoCollect == null ? vid : mVideoCollect.getId() : mVideo.getId();
+        RetrofitManager.PATH_ID = path;
         getRetrofitManager().enqueue(className, callback, "details", path);
     }
 
@@ -247,6 +251,7 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
     protected void onDestroy() {
         super.onDestroy();
         M3u8Manager.INSTANCE.unregisterInfoListeners(this);
+        SniffingUtil.get().releaseAll();
     }
 
     @Override
@@ -281,8 +286,19 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
             downloadNext();
         } else if (this.mDownload.type == DownloadDialog.DownloadTemp.TYPE_M3U8) {
             M3u8File m3u8File = new M3u8File();
-            if(temp.m3u8Url != null && temp.m3u8Url.contains("=") && temp.m3u8Url.split("=")[1].contains(".m3u")){
-                m3u8File.setUrl(temp.m3u8Url.split("=")[1]);
+            if(temp.m3u8Url != null && temp.m3u8Url.contains("=")){
+                String[] split = temp.m3u8Url.split("=");
+                if(split.length == 2 && split[1].contains(".m3u")){
+                    m3u8File.setUrl(split[1]);
+                }else{
+                    String uReplace = split[0] + "=";
+                    String replace = temp.m3u8Url.replace(uReplace, "");
+                    if(replace.contains(".m3u")){
+                        m3u8File.setUrl(replace);
+                    }else{
+                        m3u8File.setUrl(temp.m3u8Url);
+                    }
+                }
             }else if(temp.m3u8Url != null){
                 m3u8File.setUrl(temp.m3u8Url);
             }
@@ -290,9 +306,10 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
             m3u8File.setM3u8VideoName(String.format("%s_%s.mp4", details.getTitle(), temp.episode.getTitle()));
             M3u8Manager.INSTANCE.download(m3u8File);
         } else if (this.mDownload.type == DownloadDialog.DownloadTemp.TYPE_URL) {
-            mVideoUrlUtil.setLoadUrl(temp.url, temp.referer);
-            mVideoUrlUtil.setOnParseListener(this);
-            mVideoUrlUtil.startParse();
+            SniffingUtil.get().activity(this).url(temp.url).referer(temp.referer).callback(this).start();
+//            mVideoUrlUtil.setLoadUrl(temp.url, temp.referer);
+//            mVideoUrlUtil.setOnParseListener(this);
+//            mVideoUrlUtil.startParse();
         } else {
             showToast(String.format("<%s>不支持下载", temp.episode.getTitle()));
             downloadNext();
@@ -332,8 +349,9 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
     }
 
     @Override
-    public void onFindUrl(String url) {
-        if (mDownload == null || details == null) return;
+    public void onSniffingSuccess(View webView, String webUrl, List<SniffingVideo> videos) {
+        if (mDownload == null || details == null || videos.isEmpty()) return;
+        String url = videos.get(0).getUrl();
         String title = mDownload.episode.getTitle();
         String format = String.format("%s_%s.mp4", details.getTitle(), title);
         if (url.contains(".m3u")) {
@@ -343,6 +361,7 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
             }else{
                 m3u8File.setUrl(url);
             }
+            LogUtil.e("m3u8Url 3","====>" + url);
             m3u8File.setOnlyId(mDownload.getOnlyId());
             m3u8File.setM3u8VideoName(format);
             M3u8Manager.INSTANCE.download(m3u8File);
@@ -361,12 +380,49 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
     }
 
     @Override
-    public void onError(String errorMsg) {
+    public void onSniffingError(View webView, String url, int errorCode) {
         if (mDownload == null || mDownload.episode == null || details == null) return;
         String format = String.format("%s_%s.mp4", details.getTitle(), mDownload.episode.getTitle());
         showToast(String.format("<%s>解析M3u8任务失败", format));
         downloadNext();
     }
+
+//    @Override
+//    public void onFindUrl(String url) {
+//        if (mDownload == null || details == null) return;
+//        String title = mDownload.episode.getTitle();
+//        String format = String.format("%s_%s.mp4", details.getTitle(), title);
+//        if (url.contains(".m3u")) {
+//            M3u8File m3u8File = new M3u8File();
+//            if(url.contains("=") && url.split("=")[1].contains(".m3u")){
+//                m3u8File.setUrl(url.split("=")[1]);
+//            }else{
+//                m3u8File.setUrl(url);
+//            }
+//            m3u8File.setOnlyId(mDownload.getOnlyId());
+//            m3u8File.setM3u8VideoName(format);
+//            M3u8Manager.INSTANCE.download(m3u8File);
+//        } else if (url.contains(".rm") || url.contains(".mp4") || url.contains(".avi") || url.contains(".wmv")) {
+//            mDownload.episode.setDownloadState(IVideoEpisode.DOWNLOAD_RUN);
+//            String eurl = mDownload.episode.getUrl();
+//            String path = new File(M3u8Config.INSTANCE.getM3u8Path(), format).getAbsolutePath();
+//            Map<String, String> header = AppUtil.getDownloadHeader();
+//            getDownloadReceiver().load(url).setExtendField(eurl).setFilePath(path).addHeaders(header).start();
+//            showToast(String.format("<%s>添加下载任务成功", format));
+//            downloadNext();
+//        } else {
+//            showToast(String.format("<%s>不支持下载", format));
+//            downloadNext();
+//        }
+//    }
+//
+//    @Override
+//    public void onError(String errorMsg) {
+//        if (mDownload == null || mDownload.episode == null || details == null) return;
+//        String format = String.format("%s_%s.mp4", details.getTitle(), mDownload.episode.getTitle());
+//        showToast(String.format("<%s>解析M3u8任务失败", format));
+//        downloadNext();
+//    }
 
     @Override
     public void onSuccess(M3u8File m3u8File, List<M3u8> list) {
@@ -387,6 +443,7 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
     public void onClick(View v) {
         if (v.getId() == R.id.cev_empty) {
             String path = mVideo == null ? mVideoCollect == null ? vid : mVideoCollect.getId() : mVideo.getId();
+            RetrofitManager.PATH_ID = path;
             getRetrofitManager().enqueue(className, callback, "details", path);
             return;
         } else if (v.getId() == R.id.iv_top_back) {

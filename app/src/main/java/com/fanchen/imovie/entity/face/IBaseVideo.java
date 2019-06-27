@@ -42,4 +42,16 @@ public interface IBaseVideo extends IViewType,Parcelable{
      * @return
      */
     String getServiceClass();
+
+    /**
+     *
+     * @return
+     */
+    boolean isAgent();
+
+    /**
+     *
+     * @return
+     */
+    String getCoverReferer();
 }

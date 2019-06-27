@@ -6,6 +6,7 @@ import com.fanchen.imovie.entity.VideoBanner;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.Video;
 import com.fanchen.imovie.entity.VideoDetails;
@@ -51,7 +52,7 @@ public class BumimiImpl implements IVideoMoreParser {
         Node node = new Node(html);
         VideoHome home = new VideoHome();
         try {
-            List<Video> videos = new ArrayList<>();
+            List<IVideo> videos = new ArrayList<>();
             home.setList(videos);
             for (Node n : node.list("ul#resize_list > li")) {
                 String title = n.text("a > div > label.name");
@@ -143,7 +144,7 @@ public class BumimiImpl implements IVideoMoreParser {
                     videoTitle.setMore(true);
                 }
             } else {
-                List<Video> videos = new ArrayList<>();
+                List<IVideo> videos = new ArrayList<>();
                 for (Node n : node.list("div > div > ul > li")) {
                     String title = n.text("h2");
                     String cover = n.attr("a > div > img", "src");
@@ -274,16 +275,20 @@ public class BumimiImpl implements IVideoMoreParser {
                                     playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_XIGUA);
                                     playUrl.setUrlType(IPlayUrls.URL_XIGUA);
                                     playUrl.setSuccess(true);
-                                }else if($sss[1].startsWith(".mp4") || $sss[1].startsWith(".3gp")|| $sss[1].startsWith(".flv")){
+                                }else if($sss[1].contains(".mp4") || $sss[1].contains(".3gp")|| $sss[1].contains(".flv")){
                                     map.put($sss[0], $sss[1]);
                                     playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
                                     playUrl.setUrlType(IPlayUrls.URL_FILE);
                                     playUrl.setSuccess(true);
-                                }if ($s[1].startsWith(".m3u") ) {
-                                    map.put($s[0], $s[1]);
-                                    playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
-                                    playUrl.setUrlType(IPlayUrls.URL_M3U8);
-                                    playUrl.setSuccess(true);
+                                }if ($s[1].contains(".m3u")) {
+                                    for (String ss : $s[1].split("&")){
+                                        if(ss.contains(".m3u")){
+                                            map.put($s[0], ss);
+                                            playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
+                                            playUrl.setUrlType(IPlayUrls.URL_M3U8);
+                                            playUrl.setSuccess(true);
+                                        }
+                                    }
                                 } else {
                                     if($sss[1].startsWith("http")){
                                         if($sss[1].contains("qiyi")){
@@ -312,16 +317,20 @@ public class BumimiImpl implements IVideoMoreParser {
                                 playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_XIGUA);
                                 playUrl.setUrlType(IPlayUrls.URL_XIGUA);
                                 playUrl.setSuccess(true);
-                            } else if($s[1].startsWith(".mp4") || $s[1].startsWith(".3gp")|| $s[1].startsWith(".flv")){
+                            } else if($s[1].contains(".mp4") || $s[1].contains(".3gp")|| $s[1].contains(".flv")){
                                 map.put($s[0], $s[1]);
                                 playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
                                 playUrl.setUrlType(IPlayUrls.URL_FILE);
                                 playUrl.setSuccess(true);
-                            } if ($s[1].startsWith(".m3u") ) {
-                                map.put($s[0], $s[1]);
-                                playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
-                                playUrl.setUrlType(IPlayUrls.URL_M3U8);
-                                playUrl.setSuccess(true);
+                            } if ($s[1].contains(".m3u") ) {
+                                for (String ss : $s[1].split("&")){
+                                    if(ss.contains(".m3u")){
+                                        map.put($s[0], ss);
+                                        playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
+                                        playUrl.setUrlType(IPlayUrls.URL_M3U8);
+                                        playUrl.setSuccess(true);
+                                    }
+                                }
                             } else {
                                 if($s[1].startsWith("http")){
                                     if($s[1].contains("qiyi")){

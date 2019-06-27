@@ -136,6 +136,11 @@ public class VideoApi implements Parcelable ,IVideo {
         return serviceClass;
     }
 
+    @Override
+    public boolean isAgent() {
+        return false;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }

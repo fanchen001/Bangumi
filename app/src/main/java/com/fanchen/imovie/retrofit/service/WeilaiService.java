@@ -14,6 +14,7 @@ import com.fanchen.imovie.entity.face.IVideoDetails;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 /**
@@ -36,18 +37,29 @@ public interface WeilaiService {
 
     /**
      *
+     * @param path
+     * @param page
+     * @return
+     */
+    @GET("{path}/index{page}.html")
+    @JsoupType(JsoupSource.WEILAI)
+    @MethodType(value = MethodSource.HOME)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
+
+    /**
+     *
      * @param page
      * @param keyword
      * @return
      */
-    @GET("vod-search-wd-{searchword}-p-{page}.html")
+    @GET("search.php")
     @JsoupType(JsoupSource.WEILAI)
     @MethodType(value = MethodSource.SEARCH)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("searchword") String keyword);
+    Call<IBangumiMoreRoot> search(@Query("page") Integer page, @Query("searchword") String keyword);
 
     /**
-     *
      * @param pid
      * @param page
      * @return

@@ -2,156 +2,185 @@
   {
     "position": 0,
     "title": "五弹幕",
-    "type": 1
+    "type": 1,
+    "url":"https://www.5dm.tv/"
   },
   {
     "position": 1,
     "title": "豌豆视频",
     "type": 2,
-    "hot": true
+    "hot": true,
+    "url":"https://www.wandouys.com/"
   },
   {
     "position": 2,
     "title": "神马电影",
-    "type": 3
+    "type": 3,
+    "url":"http://m.xigua15.net/"
   },
   {
     "position": 3,
     "title": "爱神马",
-    "type": 4
+    "type": 4,
+    "url":"https://m.aism.cc/"
   },
   {
     "position": 4,
     "title": "战地视频",
-    "type": 5
+    "type": 5,
+    "url":"https://m.ywt.cc/"
   },
   {
     "position": 5,
     "title": "169秀",
     "type": 6,
-    "hot": true
+    "hot": true,
+    "url":"http://honglez.cn/"
   },
   {
     "position": 6,
     "title": "布米米",
-    "type": 7
+    "type": 7,
+    "url":"http://m.4ktv8.com/"
   },
   {
     "position": 7,
     "title": "巴巴鱼",
     "type": 8,
-    "hot": true
+    "hot": true,
+    "url":"https://m.jukantv.com/"
   },
   {
     "position": 8,
     "title": "A4电影",
-    "type": 9
+    "type": 9,
+    "url":"http://m.jymshop.com/"
   },
   {
     "position": 9,
     "title": "K8影视",
     "type": 10,
-    "hot": true
+    "hot": true,
+    "url":"http://m.567ktv.com/"
   },
   {
     "position": 10,
     "title": "吾爱视频",
     "type": 11,
-    "hot": true
+    "hot": true,
+    "url":"http://m.ism89.com/"
   },
   {
     "position": 11,
     "title": "80S电影",
-    "type": 12
+    "type": 12,
+    "url":"https://m.80ying.com/"
   },
   {
     "position": 12,
     "title": "哈尼哈尼",
-    "type": 13
+    "type": 13,
+    "url":"https://m.halihali.me/"
   },
   {
     "position": 13,
     "title": "爱看番",
-    "type": 14
+    "type": 14,
+    "url":"https://m.ysba.cc/"
   },
   {
     "position": 14,
     "title": "秘密影院",
     "type": 15,
-    "hot": true
+    "hot": true,
+    "url":"http://m.tongbuyy.com/"
   },
   {
     "position": 15,
     "title": "看看屋",
     "type": 16,
-    "hot": true
+    "hot": true,
+    "url":"https://m.kankanwu.com/"
   },
   {
     "position": 16,
     "title": "NV视频",
     "type": 17,
-    "hot": true
+    "hot": true,
+    "url":"https://www.kankan001.com/"
   },
   {
     "position": 17,
     "title": "4K电影",
     "type": 18,
-    "hot": true
+    "hot": true,
+    "url":"http://m.kkkkmao.com/"
   },
   {
     "position": 18,
     "title": "吉人动漫",
-    "type": 19
+    "type": 19,
+    "url":"http://www.mtotoo.com/"
   },
   {
     "position": 19,
     "title": "山猫影视",
-    "type": 20
+    "type": 20,
+    "url":"http://www.kdyy.cc/"
   },
   {
     "position": 20,
     "title": "泰韩剧啦",
     "hot": true,
-    "type": 21
+    "type": 21,
+    "url":"https://www.taiju.la/"
   },
   {
     "position": 21,
     "title": "库片网",
-    "type": 22
+    "type": 22,
+    "url":"https://m.kupian.cc/"
   },
   {
     "position": 22,
     "title": "特片啦",
-    "type": 23
+    "type": 23,
+    "url":"https://m.itepian.net/"
   },
   {
     "position": 23,
     "title": "聚狗影院",
-    "type": 24
+    "type": 24,
+    "url":"http://www.nanjiyy.com/"
   },
   {
     "position": 24,
     "title": "小石影院",
-    "type": 25
+    "type": 25,
+    "url":"https://m.27sm.com/"
   },
   {
     "position": 25,
     "title": "zzzvz影视",
-    "type": 26
+    "type": 26,
+    "url":"https://m.kuaikan66.com/"
   },
   {
     "position": 26,
     "title": "VIP影视",
-    "type": 27
+    "type": 27,
+    "url":"http://m.vipys.net/"
   },
   {
     "position": 27,
     "title": "未来影视",
-    "type": 28
+    "type": 28,
+    "url":"https://www.55evd.com/"
   },
   {
     "position": 28,
     "title": "自在电影",
-    "type": 29
+    "type": 29,
+    "url":"http://m.tufutv8.com/"
   }
 ]

@@ -1,12 +1,12 @@
 package com.fanchen.imovie.jsoup.parser;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.fanchen.imovie.entity.VideoBanner;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.entity.Video;
@@ -18,15 +18,13 @@ import com.fanchen.imovie.entity.VideoTitle;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
 import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.retrofit.RetrofitManager;
+import com.fanchen.imovie.retrofit.service.WeilaiService;
 import com.fanchen.imovie.retrofit.service.XiaokanbaService;
 import com.fanchen.imovie.util.JavaScriptUtil;
 import com.fanchen.imovie.util.LogUtil;
-import com.fanchen.imovie.util.StreamUtil;
-import com.fanchen.imovie.util.SystemUtil;
 
-import org.json.JSONObject;
+import org.jsoup.nodes.Element;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +52,7 @@ public class XiaokanbaImpl implements IVideoMoreParser {
         Node node = new Node(html);
         VideoHome root = new VideoHome();
         try {
-            List<Video> videos = new ArrayList<>();
+            List<IVideo> videos = new ArrayList<>();
             List<Node> list = node.list("div.hy-video-details.active.clearfix");
             if(list == null || list.isEmpty()) {
                 for (Node n : node.list("div.item > ul.clearfix > li")) {
@@ -76,7 +74,9 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                     video.setLast(text1);
                     String href = n.attr("a", "href");
                     String[] split = href.split("/");
-                    if (split.length == 2) {
+                    if(WeilaiService.class.getName().equals(serviceName)){
+                        video.setId(RetrofitManager.warpUrl(baseUrl,href));
+                    }else if (split.length == 2) {
                         video.setId(split[1]);
                     } else if (split.length == 3) {
                         video.setId(split[2].replace("index", "").replace(".html", ""));
@@ -104,7 +104,9 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                     video.setLast(n.textAt("li.col-md-6.hidden-md.hidden-sm.hidden-xs.padding-0",1));
                     String href = n.attr("a.videopic","href");
                     String[] split = href.split("/");
-                    if (split.length == 2) {
+                    if(WeilaiService.class.getName().equals(serviceName)){
+                        video.setId(RetrofitManager.warpUrl(baseUrl,href));
+                    }else if (split.length == 2) {
                         video.setId(split[1]);
                     } else if (split.length == 3) {
                         video.setId(split[2].replace("index", "").replace(".html", ""));
@@ -128,6 +130,7 @@ public class XiaokanbaImpl implements IVideoMoreParser {
     @Override
     public IHomeRoot home(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
+        List<String> moreKeys = getMoreKeys();
         VideoHome root = new VideoHome();
         try {
             List<Node> slides = node.list("div.hy-video-slide");
@@ -164,13 +167,18 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                     title.setUrl(baseUrl + n.attr("li > a", "href").replace(".", ""));
                     title.setTitle(n.text("h3"));
                     String href1 = n.attr("li > a", "href");
-                    if (TextUtils.isEmpty(href1)) href1 = n.attr("a", "href");
+                    if (TextUtils.isEmpty(href1))
+                        href1 = n.attr("a", "href");
                     String[] split1 = href1.split("/");
-                    if (href1.startsWith(".") && split1.length == 2) {
-                        title.setMore(true);
+                    if(WeilaiService.class.getName().equals(serviceName) && split1.length == 3){
+                        title.setMore(!moreKeys.contains(split1[1]));
+                        title.setId(split1[1]);
+                        title.setPageStart(2);
+                    }else if (href1.startsWith(".") && split1.length == 2) {
+                        title.setMore(!moreKeys.contains(split1[1]));
                         title.setId(split1[1]);
                     } else if (split1.length == 3) {
-                        title.setMore(true);
+                        title.setMore(!moreKeys.contains(split1[2]));
                         title.setId(split1[2].replace("index", "").replace(".html", ""));
                     } else {
                         title.setMore(false);
@@ -182,6 +190,8 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                     List<Node> nextList = nextNode.list("div.col-md-2.col-sm-3.col-xs-4");
                     if (nextList == null || nextList.isEmpty())
                         nextList = nextNode.list("div.col-md-3.col-sm-3.col-xs-4");
+                    if (nextList == null || nextList.isEmpty())
+                        nextList = nextNode.listTagClass("li", "col-md-2 col-sm-3 col-xs-4");
                     for (Node sub : nextList) {
                         Video video = new Video();
                         video.setHasDetails(true);
@@ -194,7 +204,9 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                         }
                         String href = sub.attr("a", "href");
                         String[] split = href.split("/");
-                        if (split.length == 2) {
+                        if(WeilaiService.class.getName().equals(serviceName)){
+                            video.setId(RetrofitManager.warpUrl(baseUrl,href));
+                        }else if (split.length == 2) {
                             video.setId(split[1]);
                         } else if (split.length == 3) {
                             video.setId(split[2].replace("index", "").replace(".html", ""));
@@ -213,12 +225,13 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                         }
                         videos.add(video);
                     }
-                    if (!videos.isEmpty()) titles.add(title);
+                    if (!videos.isEmpty())
+                        titles.add(title);
                 }
                 root.setSuccess(true);
                 root.setHomeResult(titles);
             } else {
-                List<Video> videos = new ArrayList<>();
+                List<IVideo> videos = new ArrayList<>();
                 for (Node n : node.list("div.hy-video-list > div.item > ul.clearfix > li")) {
                     Video video = new Video();
                     video.setHasDetails(true);
@@ -238,7 +251,9 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                     String href = n.attr("a", "href");
                     video.setUrl(href);
                     String[] split = href.split("/");
-                    if (split.length == 2) {
+                    if(WeilaiService.class.getName().equals(serviceName)){
+                        video.setId(RetrofitManager.warpUrl(baseUrl,href));
+                    }else if (split.length == 2) {
                         video.setId(split[1]);
                     } else if (split.length == 3) {
                         video.setId(split[2].replace("index", "").replace(".html", ""));
@@ -277,9 +292,9 @@ public class XiaokanbaImpl implements IVideoMoreParser {
             List<VideoEpisode> episodes = new ArrayList<>();
             details.setTitle(node.text("div.head > h3"));
             details.setIntroduce(node.text("div.plot"));
-            String s1 = node.textAt("ul > li.col-md-6.col-sm-6.hidden-xs.padding-0", 0);
-            String s2 = node.textAt("ul > li.col-md-6.col-sm-6.hidden-xs.padding-0", 1);
-            String s3 = node.textAt("ul > li.col-md-6.hidden-sm.hidden-xs.padding-0", 0);
+            String s1 = node.textAt("ul > li", 0);
+            String s2 = node.textAt("ul > li", 1);
+            String s3 = node.textAt("ul > li", 0);
             if (TextUtils.isEmpty(s1)) {
                 details.setLast(node.textAt("span.text-muted", 3));
             } else {
@@ -301,7 +316,7 @@ public class XiaokanbaImpl implements IVideoMoreParser {
             }else{
                 details.setCover(baseUrl + style);
             }
-            List<Node> list = node.list("div.item > div.col-md-2.col-sm-3.col-xs-4 ");
+            List<Node> list = node.list("div.item > div.col-md-2.col-sm-3.col-xs-4");
             if (list == null || list.isEmpty())
                 list = node.list("div.swiper-wrapper > div > div.item");
             for (Node n : list) {
@@ -323,7 +338,9 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                 }
                 String href = n.attr("a", "href");
                 String[] split = href.split("/");
-                if (split.length == 2) {
+                if(WeilaiService.class.getName().equals(serviceName)){
+                    video.setId(RetrofitManager.warpUrl(baseUrl,href));
+                }else if (split.length == 2) {
                     video.setId(split[1]);
                 } else if (split.length == 3) {
                     video.setId(split[2].replace("index", "").replace(".html", ""));
@@ -337,10 +354,21 @@ public class XiaokanbaImpl implements IVideoMoreParser {
             }
             int source = 1;
             for (Node n : node.list("div[id^=playlist]")) {
+                if(n.getElement().childNodeSize() > 0){
+                    Element child = n.getElement().child(0);
+                    if("div".equals(child.tagName())){
+                        continue;
+                    }
+                }
                 for (Node sub : n.list("ul > li > a")) {
                     VideoEpisode episode = new VideoEpisode();
                     episode.setServiceClass(serviceName);
-                    episode.setTitle("播放源" + source + ":" + sub.text());
+                    String title = n.text("a.option");
+                    if(!TextUtils.isEmpty(title)){
+                        episode.setTitle(title  + ":" + sub.text());
+                    }else{
+                        episode.setTitle("播放源" + source + ":" + sub.text());
+                    }
                     String href = sub.attr("href");
                     if(href.startsWith(".")){
                         episode.setUrl(baseUrl + href.substring(1));
@@ -348,12 +376,15 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                     }else if(href.startsWith("/play")){
                         episode.setUrl(baseUrl + href);
                         episode.setId(href.split("/")[2]);
+                    }else if(href.contains("/play") && href.split("/").length == 4){
+                        episode.setUrl(baseUrl + href);
+                        episode.setId(baseUrl + href);
                     }else if(href.startsWith("/")){
                         episode.setUrl(baseUrl + href);
                         episode.setId(href.split("/")[1]);
                     }else{
                         episode.setUrl(href);
-                        episode.setUrl(href);
+                        episode.setId(href);
                     }
                     episodes.add(episode);
                 }
@@ -518,6 +549,16 @@ public class XiaokanbaImpl implements IVideoMoreParser {
     @Override
     public IBangumiMoreRoot more(Retrofit retrofit, String baseUrl, String html) {
         return search(retrofit, baseUrl, html);
+    }
+
+
+    private List<String> getMoreKeys() {
+        List<String> list = new ArrayList<>();
+        list.add("dianshiju");
+        list.add("dongman");
+        list.add("zongyi");
+        list.add("dianying");
+        return list;
     }
 
 }

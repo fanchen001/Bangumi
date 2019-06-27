@@ -96,6 +96,16 @@ public class TucaoBaseVideo implements IBaseVideo, Parcelable,IViewType {
         return TucaoService.class.getName();
     }
 
+    @Override
+    public boolean isAgent() {
+        return false;
+    }
+
+    @Override
+    public String getCoverReferer() {
+        return null;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }

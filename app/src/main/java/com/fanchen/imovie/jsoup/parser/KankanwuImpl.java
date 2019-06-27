@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.entity.Video;
@@ -34,17 +35,23 @@ import retrofit2.Retrofit;
 public class KankanwuImpl implements IVideoMoreParser {
     private String clazz = KankanService.class.getName();
     private boolean defM3u8 = true;
+    private boolean isAgent = true;
 
     public KankanwuImpl() {
     }
 
     public KankanwuImpl(String clazz) {
-        this.clazz = clazz;
+        this(clazz,false);
     }
 
     public KankanwuImpl(String clazz, boolean defM3u8) {
+        this(clazz,defM3u8,false);
+    }
+
+    public KankanwuImpl(String clazz, boolean defM3u8,boolean isAgent) {
         this.clazz = clazz;
         this.defM3u8 = defM3u8;
+        this.isAgent = isAgent;
     }
 
     @Override
@@ -52,7 +59,7 @@ public class KankanwuImpl implements IVideoMoreParser {
         Node node = new Node(html);
         VideoHome home = new VideoHome();
         try {
-            List<Video> videos = new ArrayList<>();
+            List<IVideo> videos = new ArrayList<>();
             home.setList(videos);
             for (Node n : node.list("ul#resize_list > li")) {
                 String title = n.text("a > div > label.name");
@@ -71,6 +78,7 @@ public class KankanwuImpl implements IVideoMoreParser {
                 String url = baseUrl + n.attr("a", "href");
                 Video video = new Video();
                 video.setCover(cover);
+                video.setAgent(isAgent);
                 video.setHost(baseUrl);
                 video.setHasDetails(true);
                 video.setServiceClass(this.clazz);
@@ -108,6 +116,7 @@ public class KankanwuImpl implements IVideoMoreParser {
                             src = n.attr("a > img", "data-src");
                         banner.setCover(src);
                         banner.setHost(baseUrl);
+                        banner.setAgent(isAgent);
                         banner.setId(baseUrl + n.attr("a", "href"));
                         banner.setTitle(n.text("a > span"));
                         banner.setServiceClass(this.clazz);
@@ -144,6 +153,7 @@ public class KankanwuImpl implements IVideoMoreParser {
                         String hd = sub.text("a > div > label.title");
                         String url = baseUrl + sub.attr("a", "href");
                         Video video = new Video();
+                        video.setAgent(isAgent);
                         video.setHost(baseUrl);
                         video.setHasDetails(true);
                         video.setServiceClass(this.clazz);
@@ -159,7 +169,7 @@ public class KankanwuImpl implements IVideoMoreParser {
                     videoTitle.setMore(videoTitle.getList().size() == 6 || videoTitle.getList().size() == 3);
                 }
             } else {
-                List<Video> videos = new ArrayList<>();
+                List<IVideo> videos = new ArrayList<>();
                 for (Node n : node.list("div > div > ul > li")) {
                     String title = n.text("h2");
                     if(TextUtils.isEmpty(title))
@@ -174,6 +184,7 @@ public class KankanwuImpl implements IVideoMoreParser {
                     String url = baseUrl + n.attr("a", "href");
                     Video video = new Video();
                     video.setHost(baseUrl);
+                    video.setAgent(isAgent);
                     video.setHasDetails(true);
                     video.setServiceClass(this.clazz);
                     video.setCover(cover);
@@ -213,6 +224,7 @@ public class KankanwuImpl implements IVideoMoreParser {
                 Video video = new Video();
                 video.setHasDetails(true);
                 video.setHost(baseUrl);
+                video.setAgent(isAgent);
                 video.setServiceClass(this.clazz);
                 video.setCover(cover);
                 video.setId(url);

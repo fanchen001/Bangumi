@@ -1,13 +1,10 @@
 package com.fanchen.imovie.entity;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
-import com.fanchen.imovie.util.LogUtil;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
@@ -121,8 +118,6 @@ public class VideoPlayUrls implements IPlayUrls {
             String[] split = dataStr.split("\\\\u");
             for (int i = 0; i < split.length; i++) {
                 String s = split[i];
-                LogUtil.e("decodeUnicode","sp -> " + s);
-                LogUtil.e("decodeUnicode","contains(.) -> " + s.contains("."));
                 if (i == 0 && (s.startsWith("http") || s.startsWith("xg") || s.startsWith("ftp"))) {
                     buffer.append(s);
                 } else if (s.contains(".")) {
