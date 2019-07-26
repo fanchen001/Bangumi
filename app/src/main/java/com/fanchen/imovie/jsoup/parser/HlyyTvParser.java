@@ -11,7 +11,10 @@ import com.fanchen.imovie.jsoup.ITvParser;
 import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.HlyyTvService;
-import com.fanchen.imovie.util.LogUtil;
+import com.fanchen.imovie.util.JavaScriptUtil;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,10 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import retrofit2.Retrofit;
-
-
-//import com.fanchen.imovie.util.LogUtil;
-//http://www.hlyy.cc/zxtv/m/hn1.html
 
 /**
  * KuaikanTvParser
@@ -35,10 +34,13 @@ public class HlyyTvParser implements ITvParser {
         List<IBaseVideo> videos = new ArrayList<>();
         List<String> videoTitles = new ArrayList<>();
         try {
-            for (Node node : new Node(html).list("table > tbody > tr > td > a")) {
+            for (Node node : new Node(html).list("ul.nav-type > li > div > a")) {
+                if (!node.attr("href").contains("/tv/")) {
+                    continue;
+                }
                 VideoBase videoBase = new VideoBase();
-                videoBase.setId(baseUrl + "/zxtv/m/" + node.attr("href"));
-                videoBase.setUrl(baseUrl + "/zxtv/m/" + node.attr("href"));
+                videoBase.setId(node.attr("href", "/", 2));
+                videoBase.setUrl(RetrofitManager.warpUrl(baseUrl, node.attr("href")));
                 videoBase.setTitle(node.text());
                 videoBase.setServiceClass(HlyyTvService.class.getName());
                 if (!videoTitles.contains(videoBase.getTitle())) {
@@ -56,28 +58,30 @@ public class HlyyTvParser implements ITvParser {
     public IPlayUrls liveUrl(Retrofit retrofit, String baseUrl, String html) {
         VideoPlayUrls playUrl = new VideoPlayUrls();
         try {
-            String attr = new Node(html).attr("iframe", "src");
             Map<String, String> mapUrl = new HashMap<>();
             playUrl.setReferer(baseUrl);
             playUrl.setUrls(mapUrl);
-            if (!TextUtils.isEmpty(attr)) {
-                if(attr.startsWith("//")){
-                    attr = "http:" + attr;
-                }else if(attr.startsWith("/")){
-                    attr = baseUrl + attr;
+            String match = JavaScriptUtil.match("var playCode =[\\u4e00-\\u9fa5\\(\\)\\{\\}\\[\\]\\\"\\w\\d`~！!@#$%^&*_\\-+=<>?:|,.\\\\ \\/;']+;", html, 0, 14, 1);
+            if (!TextUtils.isEmpty(match)) {
+                JSONArray array = new JSONArray(match);
+                for (int i = 0; i < array.length(); i++) {
+                    JSONObject object = array.getJSONObject(i);
+                    Node pCode = new Node(object.optString("pCode"));
+                    String video = pCode.attr("video", "src");
+                    if (TextUtils.isEmpty(video))
+                        video = pCode.attr("iframe", "src");
+                    if (!TextUtils.isEmpty(video)) {
+                        mapUrl.put(object.optString("name"), video);
+                        playUrl.setUrlType(IPlayUrls.URL_M3U8);
+                        playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO_M3U8);
+                        playUrl.setSuccess(true);
+                    }
                 }
-                mapUrl.put("标清", attr);
-                playUrl.setUrlType(IPlayUrls.URL_WEB);
+            }
+            if (mapUrl.isEmpty()) {
+                mapUrl.put("标清", RetrofitManager.REQUEST_URL);
                 playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
-                playUrl.setSuccess(true);
-            } else if (html.contains("ftp:")) {
-                int i = html.indexOf("ftp:");
-                html = html.substring(i);
-                i = html.indexOf(",");
-                html = html.substring(0, i - 1);
-                mapUrl.put("标清", html);
-                playUrl.setUrlType(IPlayUrls.URL_XIGUA);
-                playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_XIGUA);
+                playUrl.setUrlType(IPlayUrls.URL_WEB);
                 playUrl.setSuccess(true);
             }
         } catch (Exception e) {

@@ -26,12 +26,17 @@ public interface HaliHaliService {
      * @param path
      * @return
      */
-    @GET("{path}/index{page}.html")
+    @GET("movie/{path}-{page}.html")
     @JsoupType(JsoupSource.HALIHALI)
     @MethodType(value = MethodSource.HOME)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path,@Path("page")Integer page);
 
+    /**
+     *
+     * @param path
+     * @return
+     */
     @GET("{path}")
     @JsoupType(JsoupSource.HALIHALI)
     @MethodType(value = MethodSource.HOME)
@@ -44,7 +49,7 @@ public interface HaliHaliService {
      * @param keyword
      * @return
      */
-    @GET("search/{keyword}-{page}.html")
+    @GET("movie-search-pg-{page}-wd-{keyword}.html")
     @JsoupType(JsoupSource.HALIHALI)
     @MethodType(value = MethodSource.SEARCH)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
@@ -56,7 +61,7 @@ public interface HaliHaliService {
      * @param page
      * @return
      */
-    @GET("{path}/index{page}.html")
+    @GET("movie/{path}-{page}.html")
     @JsoupType(JsoupSource.HALIHALI)
     @MethodType(value = MethodSource.MORE)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
@@ -66,7 +71,7 @@ public interface HaliHaliService {
      * @param path
      * @return
      */
-    @GET("v/{path}/")
+    @GET("mplay/{path}.html")
     @JsoupType(JsoupSource.HALIHALI)
     @MethodType(value = MethodSource.DETAILS)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)

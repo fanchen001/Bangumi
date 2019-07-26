@@ -120,9 +120,9 @@ public class AcgMationFragment extends BaseRecyclerFragment {
     private RefreshRecyclerFragmentImpl<AcgRoot<AcgData>> callback = new RefreshRecyclerFragmentImpl<AcgRoot<AcgData>>() {
 
         @Override
-        public void onSuccess(AcgRoot<AcgData> response) {
+        public void onSuccess(AcgRoot<AcgData> response,boolean refresh) {
             if(response.getData() == null || mMationAdapter == null)return;
-            mMationAdapter.addAll(response.getData().getPosts());
+            mMationAdapter.setList(response.getData().getPosts(),refresh);
         }
 
     };

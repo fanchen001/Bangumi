@@ -27,7 +27,7 @@ public class XiguaDownload extends BaseDownloadAdapter.DownloadWarp<TaskVideoInf
 
     public String getXiguaUrl() {
         if (data == null) return "";
-        return data.getXiguaUrl();
+        return data.getUrl() == null ? "" : data.getUrl().replace("ftp://", "xg://");
     }
 
     @Override

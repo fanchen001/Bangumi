@@ -67,11 +67,11 @@ public class KankanwuImpl implements IVideoMoreParser {
                     title = n.attr("a > div > img","alt");
                 if(TextUtils.isEmpty(title))
                     title = n.text("h2");
-                String cover = n.attr("a > div > img", "src");
+                String cover = n.attr("a > div > img", "data-original");
                 if(TextUtils.isEmpty(cover) || cover.contains("mstyle"))
                     cover = n.attr("a > div > img", "data-src");
                 if(TextUtils.isEmpty(cover))
-                    cover = n.attr("a > div > img", "data-original");
+                    cover = n.attr("a > div > img", "src");
                 String clazz = n.textAt("div.list_info > p", 0);
                 String type = n.textAt("div.list_info > p", 1);
                 String author = n.textAt("div.list_info > p", 2);
@@ -109,11 +109,11 @@ public class KankanwuImpl implements IVideoMoreParser {
                     List<VideoBanner> banners = new ArrayList<>();
                     for (Node n : ullist) {
                         VideoBanner banner = new VideoBanner();
-                        String src = n.attr("a > img", "src");
+                        String src = n.attr("a > img", "data-original");
                         if(TextUtils.isEmpty(src) || src.contains("mstyle"))
-                            src = n.attr("a > img", "data-original");
-                        if(TextUtils.isEmpty(src))
                             src = n.attr("a > img", "data-src");
+                        if(TextUtils.isEmpty(src))
+                            src = n.attr("a > img", "src");
                         banner.setCover(src);
                         banner.setHost(baseUrl);
                         banner.setAgent(isAgent);
@@ -144,9 +144,12 @@ public class KankanwuImpl implements IVideoMoreParser {
                         String title = sub.text("a > div > label.name");
                         if(TextUtils.isEmpty(title))
                             title = sub.text("h2");
-                        String cover = sub.attr("a > div > img", "src");
+                        String cover = sub.attr("a > div > img", "data-original");
                         if(TextUtils.isEmpty(cover) || cover.contains("mstyle")){
                             cover = sub.attr("a > div > img", "data-original");
+                        }
+                        if(TextUtils.isEmpty(cover)){
+                            cover = sub.attr("a > div > img", "src");
                         }
                         if (TextUtils.isEmpty(cover))
                             continue;
@@ -175,8 +178,12 @@ public class KankanwuImpl implements IVideoMoreParser {
                     if(TextUtils.isEmpty(title))
                         title = n.text("a > div > label.name");
                     String cover = n.attr("a > div > img", "src");
-                    if(TextUtils.isEmpty(cover) || cover.contains("mstyle"))
+                    if(TextUtils.isEmpty(cover) || cover.contains("mstyle")){
                         cover = n.attr("a > div > img", "data-original");
+                    }
+                    if(TextUtils.isEmpty(cover)){
+                        cover = n.attr("a > div > img", "src");
+                    }
                     if (TextUtils.isEmpty(cover))
                         continue;
                     String hd = n.text("a > div > label.title");

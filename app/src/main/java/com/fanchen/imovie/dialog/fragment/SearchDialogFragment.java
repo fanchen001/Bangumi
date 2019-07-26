@@ -180,8 +180,10 @@ public class SearchDialogFragment extends DialogFragment {
          */
         @Override
         public boolean onPreDraw() {
-            ivSearchSearch.getViewTreeObserver().removeOnPreDrawListener(this);
-            mCircularRevealAnim.show(ivSearchSearch, view);
+            if(mCircularRevealAnim != null && ivSearchSearch != null && view != null){
+                ivSearchSearch.getViewTreeObserver().removeOnPreDrawListener(this);
+                mCircularRevealAnim.show(ivSearchSearch, view);
+            }
             return true;
         }
 
@@ -190,7 +192,9 @@ public class SearchDialogFragment extends DialogFragment {
          */
         @Override
         public void onHideAnimationEnd() {
-            etSearchKeyword.setText("");
+            if(etSearchKeyword != null){
+                etSearchKeyword.setText("");
+            }
             dismiss();
         }
 
@@ -199,7 +203,7 @@ public class SearchDialogFragment extends DialogFragment {
          */
         @Override
         public void onShowAnimationEnd() {
-            if (isVisible()) {
+            if (isVisible() && etSearchKeyword != null) {
                 KeyBoardUtils.openKeyboard(getContext(), etSearchKeyword);
             }
         }
@@ -209,10 +213,16 @@ public class SearchDialogFragment extends DialogFragment {
             if (datas == null || datas.size() <= position || position < 0 || !(datas.get(position) instanceof ISearchWord))
                 return;
             String keyword = ((ISearchWord) datas.get(position)).getWord();
-            searchHistoryDB.deleteHistory(keyword);
-            historys.remove(keyword);
+            if(searchHistoryDB != null){
+                searchHistoryDB.deleteHistory(keyword);
+            }
+            if(historys != null){
+                historys.remove(keyword);
+            }
             checkHistorySize();
-            searchHistoryAdapter.notifyDataSetChanged();
+            if(searchHistoryAdapter != null){
+                searchHistoryAdapter.notifyDataSetChanged();
+            }
         }
 
         @Override
@@ -221,7 +231,8 @@ public class SearchDialogFragment extends DialogFragment {
                 hideAnim();
             } else if (view.getId() == R.id.iv_search_search) {
                 search();
-            } else if (view.getId() == R.id.tv_search_clean) {
+            } else if (view.getId() == R.id.tv_search_clean && searchHistoryDB != null
+            && historys != null && searchUnderline != null && searchHistoryAdapter != null) {
                 searchHistoryDB.deleteAllHistory();
                 historys.clear();
                 searchUnderline.setVisibility(View.GONE);
@@ -247,49 +258,55 @@ public class SearchDialogFragment extends DialogFragment {
     }
 
     private void hideAnim() {
-        KeyBoardUtils.closeKeyboard(getContext(), etSearchKeyword);
-        mCircularRevealAnim.hide(ivSearchSearch, view);
+        if(etSearchKeyword != null  && mCircularRevealAnim != null && ivSearchSearch != null && view != null){
+            KeyBoardUtils.closeKeyboard(getContext(), etSearchKeyword);
+            mCircularRevealAnim.hide(ivSearchSearch, view);
+        }
     }
 
     private void search() {
-        final String searchKey = etSearchKeyword.getText().toString();
-        if (TextUtils.isEmpty(searchKey.trim())) {
-            Toast.makeText(getContext(), "请输入关键字", Toast.LENGTH_SHORT).show();
-        } else {
-            if (iOnSearchClickListener != null)
-                iOnSearchClickListener.onSearchClick(new ISearchWord() {
-                    @Override
-                    public int getViewType() {
-                        return TYPE_NORMAL;
-                    }
+        if(etSearchKeyword != null && searchHistoryDB != null){
+            final String searchKey = etSearchKeyword.getText().toString();
+            if (TextUtils.isEmpty(searchKey.trim())) {
+                Toast.makeText(getContext(), "请输入关键字", Toast.LENGTH_SHORT).show();
+            } else {
+                if (iOnSearchClickListener != null)
+                    iOnSearchClickListener.onSearchClick(new ISearchWord() {
+                        @Override
+                        public int getViewType() {
+                            return TYPE_NORMAL;
+                        }
 
-                    @Override
-                    public int getType() {
-                        return ISearchWord.TYPE_WORD;
-                    }
+                        @Override
+                        public int getType() {
+                            return ISearchWord.TYPE_WORD;
+                        }
 
-                    @Override
-                    public String getWord() {
-                        return searchKey;
-                    }
-                });//接口回调
-            searchHistoryDB.insertHistory(searchKey);//插入到数据库
-            hideAnim();
+                        @Override
+                        public String getWord() {
+                            return searchKey;
+                        }
+                    });//接口回调
+                searchHistoryDB.insertHistory(searchKey);//插入到数据库
+                hideAnim();
+            }
         }
     }
 
     private void checkHistorySize() {
-        if (historys.size() < 1) {
+        if (historys != null && historys.size() < 1 && searchUnderline != null) {
             searchUnderline.setVisibility(View.GONE);
-        } else {
+        } else if(searchUnderline != null){
             searchUnderline.setVisibility(View.VISIBLE);
         }
     }
 
     private void setAllHistorys() {
-        historys.clear();
-        historys.addAll(allHistorys);
-        checkHistorySize();
+        if (historys != null &&  allHistorys != null) {
+            historys.clear();
+            historys.addAll(allHistorys);
+            checkHistorySize();
+        }
     }
 
     private void setKeyWordHistorys(String keyword) {
@@ -407,9 +424,8 @@ public class SearchDialogFragment extends DialogFragment {
         @Override
         public void onSuccess(int enqueueKey, SearchHitRoot response) {
             if (searchHistoryAdapter != null) {
-                searchHistoryAdapter.clear();
                 if (response != null && response.getG() != null) {
-                    searchHistoryAdapter.addAll(response.getG());
+                    searchHistoryAdapter.setList(response.getG());
                 }
             }
         }

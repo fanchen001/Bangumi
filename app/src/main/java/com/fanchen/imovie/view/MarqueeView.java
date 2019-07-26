@@ -1,5 +1,6 @@
 package com.fanchen.imovie.view;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -14,6 +15,7 @@ import android.widget.ViewFlipper;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.util.DisplayUtil;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 /**
@@ -125,5 +127,16 @@ public class MarqueeView extends ViewFlipper {
      */
     public interface OnItemClickListener {
         void onItemClick(int position, View view);
+    }
+
+    public void unregister(){
+        try {
+            Field mReceiver = this.getClass().getSuperclass().getDeclaredField("mReceiver");
+            mReceiver.setAccessible(true);
+            BroadcastReceiver receiver = (BroadcastReceiver) mReceiver.get(this);
+            getContext().unregisterReceiver(receiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

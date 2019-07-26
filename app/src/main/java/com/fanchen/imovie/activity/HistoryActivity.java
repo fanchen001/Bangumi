@@ -115,8 +115,7 @@ public class HistoryActivity extends BaseRecyclerActivity implements BaseAdapter
         @Override
         public void onTaskSuccess(List<VideoHistory> data) {
             if (data == null) return;
-            mHistoryAdapter.clear();
-            mHistoryAdapter.addAll(data);
+            mHistoryAdapter.setList(data);
         }
 
     };

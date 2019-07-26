@@ -85,9 +85,9 @@ public class AcgCuteFragment extends BaseRecyclerFragment {
     private RefreshRecyclerFragmentImpl<AcgRoot<AcgData>> callback = new RefreshRecyclerFragmentImpl<AcgRoot<AcgData>>() {
 
         @Override
-        public void onSuccess(AcgRoot<AcgData> response) {
+        public void onSuccess(AcgRoot<AcgData> response,boolean refresh) {
             if(mCuteAdapter == null || response.getData() == null)return;
-            mCuteAdapter.addAll(response.getData().getPosts());
+            mCuteAdapter.setList(response.getData().getPosts(),refresh);
         }
 
     };

@@ -1,14 +1,11 @@
 package com.fanchen.imovie.activity;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.design.internal.NavigationMenuView;
@@ -19,7 +16,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.Html;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -38,14 +34,10 @@ import com.fanchen.imovie.entity.AppEvent;
 import com.fanchen.imovie.entity.bmob.User;
 import com.fanchen.imovie.fragment.HomePagerFragment;
 import com.fanchen.imovie.picasso.PicassoWrap;
-import com.fanchen.imovie.util.DateUtil;
 import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.SystemUtil;
 import com.fanchen.imovie.view.CircleImageView;
-import com.fanchen.imovie.view.MarqueeView;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import butterknife.InjectView;
@@ -109,6 +101,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void initActivity(Bundle savedState, LayoutInflater inflater) {
         super.initActivity(savedState, inflater);
+
+
         disableNavigationViewScrollbars();
         //设置用户名 签名
         setLoginInfo(getLoginUser());

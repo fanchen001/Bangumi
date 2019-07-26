@@ -13,9 +13,8 @@ import com.fanchen.imovie.retrofit.service.HaliHaliService;
 public class HaliHaliPagerAdapter extends BaseFragmentAdapter{
 
     private final String[] TITLES = new String[]{"首页","动漫", "TV剧", "影视"};
-    private final String[] PATHS = new String[]{"","dongman","dianshiju", "dianying"};
+    private final String[] PATHS = new String[]{"","3","2", "1"};
     private final Boolean[] LOADS = new Boolean[]{false,true,true,true};
-    private final Boolean[] BANGUMI = new Boolean[]{true,false,false,false};
 
     public HaliHaliPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -28,7 +27,7 @@ public class HaliHaliPagerAdapter extends BaseFragmentAdapter{
 
     @Override
     public Fragment createFragment(int position) {
-        return VideoListFragment.newInstance(PATHS[position],getExtendInfo().toString(),1,2,LOADS[position],false,false,null,BANGUMI[position]);
+        return VideoListFragment.newInstance(PATHS[position],getExtendInfo().toString(),1,2,LOADS[position],false,false,null,false);
     }
 
     @Override

@@ -122,8 +122,7 @@ public class CollectFragment extends BaseRecyclerFragment implements
         @Override
         public void onTaskSuccess(List<VideoCollect> data) {
             if (data == null) return;
-            mVideoAdapter.clear();
-            mVideoAdapter.addAll(data);
+            mVideoAdapter.setList(data);
         }
 
     };
@@ -178,7 +177,7 @@ public class CollectFragment extends BaseRecyclerFragment implements
                     }
                     mVideoAdapter.clear();
                 } else {
-                    if (collects != null && collects.size() > pisotion && IMovieAppliction.app != null) {
+                    if (collects.size() > pisotion && IMovieAppliction.app != null) {
                         collects.get(pisotion).delete(IMovieAppliction.app, deleteListener);
                     }
                     mVideoAdapter.remove(data);

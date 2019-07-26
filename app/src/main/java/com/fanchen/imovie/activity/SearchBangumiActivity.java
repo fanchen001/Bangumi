@@ -162,14 +162,12 @@ public class SearchBangumiActivity extends BaseToolbarActivity implements Dropdo
         @Override
         public void onSuccess(int enqueueKey, IBangumiMoreRoot response) {
             if (response == null || !response.isSuccess() || mVideoListAdapter == null) return;
-            if (page == 1) mVideoListAdapter.clear();
             List<? extends IVideo> list = response.getList();
             if (list == null || list.size() == 0) {
                 showSnackbar(getString(R.string.not_more));
                 mVideoListAdapter.setLoad(false);
-                mVideoListAdapter.notifyDataSetChanged();
             } else {
-                mVideoListAdapter.addAll(list);
+                mVideoListAdapter.setList(list,page == 1);
                 mVideoListAdapter.setLoad(list.size() >= 10);
             }
         }

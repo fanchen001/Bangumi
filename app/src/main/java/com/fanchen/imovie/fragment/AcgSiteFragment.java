@@ -96,9 +96,9 @@ public class AcgSiteFragment extends BaseRecyclerFragment {
     private RefreshRecyclerFragmentImpl<AcgRoot<AcgData>> callback = new RefreshRecyclerFragmentImpl<AcgRoot<AcgData>>() {
 
         @Override
-        public void onSuccess(AcgRoot<AcgData> response) {
+        public void onSuccess(AcgRoot<AcgData> response,boolean refresh) {
             if(response.getData() == null || mSiteAdapter == null)return;
-            mSiteAdapter.addAll(response.getData().getPosts());
+            mSiteAdapter.setList(response.getData().getPosts(),refresh);
         }
 
     };

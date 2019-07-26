@@ -217,5 +217,16 @@ public enum JsoupSource {
      * zzyo
      * http://m.zzyo.cn/
      */
-    ZZYO
+    ZZYO,
+
+    /**
+     * 悠久影音
+     * https://m.7ccy.com/
+     */
+    CCY,
+
+    /**
+     * http://v.6.cn
+     */
+    V6
 }

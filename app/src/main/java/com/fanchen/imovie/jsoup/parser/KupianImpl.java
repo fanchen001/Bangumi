@@ -133,7 +133,7 @@ public class KupianImpl implements IVideoMoreParser {
                     }
                     if (videos.size() > 0)
                         titles.add(videoTitle);
-                    videoTitle.setMore(videoTitle.getList().size() == 6 || videoTitle.getList().size() == 3 || !TextUtils.isEmpty(topId));
+                    videoTitle.setMore(false);
                 }
             } else {
                 List<IVideo> videos = new ArrayList<>();

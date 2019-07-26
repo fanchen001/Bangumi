@@ -24,8 +24,7 @@ public class XunleiAdapter extends BaseDownloadAdapter<XLTaskWarp> {
         for (XLTaskInfo info : all) {
             list.add(new XLTaskWarp(info));
         }
-        super.clear();
-        super.addAll(list);
+        setList(list,true);
     }
 
     public void updataXLTaskInfo(List<BroadcastInfo> extra) {

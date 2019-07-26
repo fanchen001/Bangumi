@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.fanchen.imovie">
 
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
@@ -9,7 +10,8 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.READ_LOGS"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -18,7 +20,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
+        tools:ignore="ProtectedPermissions" />
 
     <uses-feature android:name="android.hardware.camera2" />
     <uses-feature android:name="android.hardware.camera" />
@@ -46,164 +49,164 @@
         </activity>
         <activity
             android:name=".activity.MainActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:theme="@style/BaseAppThemeMain"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.BangumiListActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.FeedBackActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.UserActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
 
         <activity
             android:name=".activity.HackerToolActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.CaptureActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.LoginActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.FindPassActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.RegisterActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.InputCodeActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.SetPwdActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.WebActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:process=":remote"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.RankingTabActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.TimeLineActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.ApkDetailsActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:theme="@style/BaseAppThemeAPK"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.ApkListActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.SearchBangumiActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.SettingsActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.HistoryActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.CollectTabActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.AboutActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.ShortVideoTabActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:theme="@style/BaseAppThemeMain"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.VideoPlayerActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
+            android:launchMode="singleTask"
             android:screenOrientation="sensorLandscape"
-            android:theme="@style/BaseAppThemeMain"
-            android:windowSoftInputMode="stateUnchanged|adjustPan" />
+            android:theme="@style/BaseAppThemeMain" />
         <activity
             android:name=".activity.LivePlayerActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:theme="@style/BaseAppThemeLive"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.GirlTabActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.VideoTabActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.TvLiveActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.AcgTabActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.ApkEvaluatActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.SearchVideoActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.VideoDetailsActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:label="@string/bangumi_vodeo"
             android:screenOrientation="portrait"
             android:theme="@style/BaseAppThemeVideo"
@@ -221,22 +224,22 @@
         </activity>
         <activity
             android:name=".activity.EpisodeActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.UserInfoActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.BindPhoneActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" />
         <activity
             android:name=".activity.DownloadTabActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/BaseDownloadTheme"
@@ -258,7 +261,7 @@
         </activity>
         <activity
             android:name=".activity.WebPlayerActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:hardwareAccelerated="true"
             android:process=":remote"
             android:screenOrientation="landscape"
@@ -293,7 +296,7 @@
         </activity>
         <activity
             android:name="com.umeng.qq.tencent.AssistActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
@@ -352,7 +355,7 @@
             android:exported="false"
             android:multiprocess="true" />
 
-        <provider
+      <provider
             android:name="com.xigua.p2p.XiguaProvider"
             android:authorities="${applicationId}.xigua.autosize-init-provider"
             android:exported="false"

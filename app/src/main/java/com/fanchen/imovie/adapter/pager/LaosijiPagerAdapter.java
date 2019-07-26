@@ -13,7 +13,7 @@ import com.fanchen.imovie.retrofit.service.LaosijiService;
  */
 public class LaosijiPagerAdapter extends BaseFragmentAdapter {
     private final String[] TITLES = new String[]{"首页","电视剧", "电影", "动漫","综艺","午夜"};
-    private final String[] PATHS = new String[]{"","tv", "film", "dongman","zongyi","wei"};
+    private final String[] PATHS = new String[]{"","dianshiju", "dianying", "dongman","zongyi","fuli"};
     private final Boolean[] LOADS = new Boolean[]{false,true,true,true,true,true};
     private final Boolean[] BANGUMI = new Boolean[]{true,false,false,true,false,false};
 

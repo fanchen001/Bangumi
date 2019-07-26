@@ -9,17 +9,12 @@ import android.view.MenuItem;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.adapter.pager.GirlPagerAdapter;
-import com.fanchen.imovie.base.BaseFragmentAdapter;
 import com.fanchen.imovie.base.BaseTabActivity;
-import com.fanchen.imovie.dialog.fragment.SearchDialogFragment;
-import com.fanchen.imovie.entity.face.ISearchWord;
 
 /**
  * Created by fanchen on 2017/10/13.
  */
-public class GirlTabActivity extends BaseTabActivity implements SearchDialogFragment.OnSearchClickListener {
-
-    private SearchDialogFragment mSearchFragment = SearchDialogFragment.newInstance();
+public class GirlTabActivity extends BaseTabActivity {
 
     /**
      *
@@ -35,25 +30,14 @@ public class GirlTabActivity extends BaseTabActivity implements SearchDialogFrag
     }
 
     @Override
-    protected void setListener() {
-        super.setListener();
-        mSearchFragment.setOnSearchClickListener(this);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_search, menu);
+        getMenuInflater().inflate(R.menu.menu_down, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_search:
-                if (mSearchFragment != null) {
-                    mSearchFragment.show(getSupportFragmentManager(), getClass().getSimpleName());
-                }
-                break;
             case R.id.action_download:
                 DownloadTabActivity.startActivity(this);
                 break;
@@ -71,12 +55,4 @@ public class GirlTabActivity extends BaseTabActivity implements SearchDialogFrag
         return getString(R.string.gril_live);
     }
 
-    @Override
-    public void onSearchClick(ISearchWord word) {
-        String wordString = word.getWord();
-        String clazz = ((BaseFragmentAdapter) mViewPager.getAdapter()).getExtendInfo().toString();
-        int multiple = ((BaseFragmentAdapter) mViewPager.getAdapter()).getMultiple();
-        int pageStart = ((BaseFragmentAdapter) mViewPager.getAdapter()).getPageStart();
-        SearchVideoActivity.startActivity(this,wordString, clazz,pageStart,multiple);
-    }
 }

@@ -75,9 +75,9 @@ public class RankingListFragment extends BaseRecyclerFragment {
     private RefreshRecyclerFragmentImpl<IBangumiMoreRoot> callback = new RefreshRecyclerFragmentImpl<IBangumiMoreRoot>() {
 
         @Override
-        public void onSuccess(IBangumiMoreRoot response) {
+        public void onSuccess(IBangumiMoreRoot response,boolean refresh) {
             if (!response.isSuccess() || mVideoListAdapter == null) return;
-            mVideoListAdapter.addAll(response.getList());
+            mVideoListAdapter.setList(response.getList(),refresh);
             mVideoListAdapter.setLoad(false);
             mVideoListAdapter.setLoading(false);
         }

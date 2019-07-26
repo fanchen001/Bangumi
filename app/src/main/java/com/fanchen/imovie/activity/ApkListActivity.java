@@ -157,7 +157,7 @@ public class ApkListActivity extends BaseRecyclerActivity implements SearchDialo
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (activityType != TYPE_SEARCH)
-            getMenuInflater().inflate(R.menu.menu_search, menu);
+            getMenuInflater().inflate(R.menu.menu_search_down, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -178,8 +178,7 @@ public class ApkListActivity extends BaseRecyclerActivity implements SearchDialo
         public void onSuccess(int enqueueKey, ApkRoot<ApkData<ApkItem>> response) {
             if (response == null || response.getData() == null || mApkListAdapter == null)return;
             //第一次加载或者是刷新
-            if (isRefresh()) mApkListAdapter.clear();
-            mApkListAdapter.addAll(response.getData().getList());
+            mApkListAdapter.setList(response.getData().getList(),isRefresh());
         }
 
     };

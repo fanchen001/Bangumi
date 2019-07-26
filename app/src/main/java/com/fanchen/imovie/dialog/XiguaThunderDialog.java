@@ -26,9 +26,9 @@ import com.xunlei.downloadlib.XLService;
 public class XiguaThunderDialog extends MaterialDialog implements
         OnButtonClickListener, TextWatcher {
 
-    EditText mUrlEditText;
-    EditText mFilenameEditText;
-    EditText mPathEditText;
+    private EditText mUrlEditText;
+    private EditText mFilenameEditText;
+    private EditText mPathEditText;
 
     private Uri uri;
     private String path = "";

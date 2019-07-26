@@ -16,7 +16,9 @@ import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.TucaoService;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.util.DialogUtil;
+import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.view.pager.LoopViewPager;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -109,7 +111,7 @@ public class HomeIndexFragment extends BaseRecyclerFragment implements BaseAdapt
     @Override
     public void loadData(Bundle savedInstanceState,RetrofitManager retrofit, int page) {
         if(savedInstanceState != null && ( mIBangumiRoot = savedInstanceState.getParcelable(INSTANCESTATE)) != null){
-            mRecomAdapter.setAdapterData(mIBangumiRoot);
+            mRecomAdapter.addData(mIBangumiRoot,true);
         }else{
             retrofit.enqueue(TucaoService.class, callback, "home", path);
         }
@@ -142,6 +144,7 @@ public class HomeIndexFragment extends BaseRecyclerFragment implements BaseAdapt
     public void onItemClick(List<?> datas, View v, int position) {
         if (!(datas.get(position) instanceof IVideo)) return;
         IVideo video = (IVideo) datas.get(position);
+        LogUtil.e("onItemClick","====>" + new Gson().toJson(video));
         VideoDetailsActivity.startActivity(activity,video);
     }
 
@@ -158,7 +161,7 @@ public class HomeIndexFragment extends BaseRecyclerFragment implements BaseAdapt
         @Override
         public void onSuccess(IBangumiRoot date) {
             if (!date.isSuccess() || mRecomAdapter == null) return;
-            mRecomAdapter.setAdapterData(mIBangumiRoot = date);
+            mRecomAdapter.addData(mIBangumiRoot = date,true);
         }
 
     };
@@ -166,9 +169,9 @@ public class HomeIndexFragment extends BaseRecyclerFragment implements BaseAdapt
     private RefreshRecyclerFragmentImpl<IBangumiRoot> callback = new RefreshRecyclerFragmentImpl<IBangumiRoot>() {
 
         @Override
-        public void onSuccess(IBangumiRoot response) {
+        public void onSuccess(IBangumiRoot response,boolean refresh) {
             if (!response.isSuccess() || mRecomAdapter == null) return;
-            mRecomAdapter.setAdapterData(mIBangumiRoot = response);
+            mRecomAdapter.addData(mIBangumiRoot = response,refresh);
         }
 
     };

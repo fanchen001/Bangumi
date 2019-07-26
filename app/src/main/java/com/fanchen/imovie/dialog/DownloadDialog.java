@@ -17,7 +17,6 @@ import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.retrofit.service.Dm5Service;
 import com.fanchen.imovie.util.DialogUtil;
-import com.fanchen.imovie.util.LogUtil;
 import com.xigua.p2p.P2PManager;
 import com.xunlei.XLManager;
 

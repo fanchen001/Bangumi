@@ -3,15 +3,12 @@ package com.fanchen.imovie.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.BangumiListActivity;
-import com.fanchen.imovie.activity.VideoTabActivity;
 import com.fanchen.imovie.base.BaseAdapter;
 import com.fanchen.imovie.entity.face.IBangumiTitle;
 import com.fanchen.imovie.entity.face.IHomeRoot;
@@ -20,8 +17,6 @@ import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.fragment.HomeIndexFragment;
 import com.fanchen.imovie.picasso.PicassoWrap;
 import com.fanchen.imovie.picasso.download.AgentDownloader;
-import com.fanchen.imovie.picasso.download.RefererDownloader;
-import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.view.TriangleLabelView;
 import com.squareup.picasso.Picasso;
 
@@ -88,7 +83,6 @@ public class VideoListAdapter extends BaseAdapter{
                 videoViewHolder.triangTextView.setVisibility(View.GONE);
             }
             videoViewHolder.titleTextView.setText(video.getTitle());
-            LogUtil.e("VideoListAdapter","Cover -> " + video.getCover());
             String referer = video.getCoverReferer();
             if (video.isAgent()) {
                 PicassoWrap picassoWrap = new PicassoWrap(context, new AgentDownloader(context, referer));
@@ -124,9 +118,9 @@ public class VideoListAdapter extends BaseAdapter{
     }
 
     @Override
-    public void addData(Object data) {
+    public void addData(Object data, boolean refresh) {
         if(data instanceof IHomeRoot){
-            addAll(((IHomeRoot)data).getAdapterResult());
+            setList(((IHomeRoot)data).getAdapterResult(),refresh);
         }
     }
 

@@ -48,7 +48,7 @@ public class Node {
         return list;
     }
 
-    public List<Node> listTagClass(String tag,String clazz) {
+    public List<Node> listTagClass(String tag,String... clazz) {
         List<Node> list = new LinkedList<>();
         if (element == null)
             return list;
@@ -56,8 +56,10 @@ public class Node {
         for (int i = 0 ; i < li.size() ; i ++){
             Element e = li.get(i);
             String aClass = e.attr("class").trim();
-            if(clazz.equals(aClass)){
-                list.add(new Node(e));
+            for (String claz:clazz){
+                if(claz.equals(aClass)){
+                    list.add(new Node(e));
+                }
             }
         }
         return list;

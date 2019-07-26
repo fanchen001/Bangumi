@@ -72,6 +72,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
             mRecyclerView.setAdapter(mAdapter = getAdapter(getPicasso()));
         }
         if (useLocalStorage() && savedInstanceState == null) {
+            LogUtil.e(BaseRecyclerFragment.class, "尝试加载本地数据");
             loadLocalData(AsyTaskQueue.newInstance());
         } else {
             LogUtil.e(BaseRecyclerFragment.class, "加载网络数据");
@@ -254,6 +255,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
         public Void onTaskBackground() {
             if (getLiteOrm() == null) return null;
             //保存key
+            LogUtil.e("SaveTaskListener","onTaskBackground key -> " + getSerializeKey());
             getLiteOrm().delete(new WhereBuilder(JsonSerialize.class, "key = ?", new Object[]{getSerializeKey()}));
             getLiteOrm().insert(new JsonSerialize(response, getSerializeKey()));
             return null;
@@ -343,7 +345,7 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
 
         @Override
         public void onFinish(int enqueueKey) {
-            if (mCustomEmptyView == null || mAdapter == null || mAdapter == null) return;
+            if (mCustomEmptyView == null || mAdapter == null) return;
             mSwipeRefreshLayout.setRefreshing(false);
             mAdapter.setLoading(false);
             if (mAdapter.isEmpty()) {
@@ -354,19 +356,18 @@ public abstract class BaseRecyclerFragment extends BaseFragment implements Swipe
         @Override
         public void onSuccess(int enqueueKey, T response) {
             if (response == null || mAdapter == null) return;
-            if (isRefresh()) mAdapter.clear();
             if (useLocalStorage()) {
                 //将数据序列化到本地
-                LogUtil.e(BaseRecyclerFragment.class, "序列化数据到本地");
+                LogUtil.e(BaseRecyclerFragment.class, "序列化数据到本地" + new Gson().toJson(response));
                 AsyTaskQueue.newInstance().execute(new SaveTaskListener(response));
             }
-            onSuccess(response);
+            onSuccess(response,isRefresh());
         }
 
         /**
          * @param response
          */
-        public abstract void onSuccess(T response);
+        public abstract void onSuccess(T response,boolean refresh);
     }
 
     protected abstract class TaskRecyclerFragmentImpl<T> implements AsyTaskListener<T> {

@@ -21,6 +21,10 @@ import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.K8dyService;
 import com.fanchen.imovie.util.JavaScriptUtil;
 import com.fanchen.imovie.util.LogUtil;
+import com.google.gson.Gson;
+
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -47,7 +51,10 @@ public class K8dyImpl implements IVideoMoreParser {
             home.setList(videos);
             for (Node n : node.list("ul#resize_list > li")){
                 String title = n.text("a > div > label.name");
-                String cover = n.attr("a > div > img", "src","=",1);
+                String cover = n.attr("img", "src");
+                if(cover.contains("=")){
+                    cover = cover.split("=")[1];
+                }
                 String clazz = n.textAt("div.list_info > p", 0);
                 String type = n.textAt("div.list_info > p", 1);
                 String author = n.textAt("div.list_info > p", 2);
@@ -77,14 +84,18 @@ public class K8dyImpl implements IVideoMoreParser {
         Node node = new Node(html);
         VideoHome home = new VideoHome();
         try {
-            List<Node> list = node.list("div[class^=modo_title]");
+            List<Node> list = node.listTagClass("div","modo_title top","modo_title ");
             if(list != null && list.size() > 2){
                 List<Node> ullist = node.list("ul.focusList > li.con");
                 if(ullist != null && ullist.size() > 0){
                     List<VideoBanner> banners = new ArrayList<>();
                     for (Node n : ullist){
                         VideoBanner banner = new VideoBanner();
-                        banner.setCover(n.attr("a > img","src","=",1));
+                        String cover = n.attr("img", "src");
+                        if(cover.contains("=")){
+                            cover = cover.split("=")[1];
+                        }
+                        banner.setCover(cover);
                         banner.setId(baseUrl + n.attr("a", "href"));
                         banner.setTitle(n.text("a > span"));
                         banner.setUrl(baseUrl + n.attr("a", "href"));
@@ -110,11 +121,14 @@ public class K8dyImpl implements IVideoMoreParser {
                     videoTitle.setUrl(topUrl);
                     videoTitle.setList(videos);
                     videoTitle.setServiceClass(K8dyService.class.getName());
-                    for (Node sub : new Node(n.getElement().nextElementSibling()).list("div > ul > li")){
+                    for (Node sub : new Node(n.getElement().nextElementSibling()).list("li")){
                         String title = sub.text("a > div > label.name");
                         if(TextUtils.isEmpty(title))
                             title = sub.text("h2");
-                        String cover = sub.attr("a > div > img", "data-original","=",1);
+                        String cover = sub.attr("img", "data-original");
+                        if(cover.contains("=")){
+                            cover = cover.split("=")[1];
+                        }
                         if(TextUtils.isEmpty(cover))
                             continue;
                         String hd = sub.text("a > div > label.title");
@@ -140,7 +154,10 @@ public class K8dyImpl implements IVideoMoreParser {
                 List<IVideo> videos = new ArrayList<>();
                 for (Node n : node.list("ul#resize_list > li")){
                     String title = n.text("h2");
-                    String cover = n.attr("a > div > img", "src","=",1);
+                    String cover = n.attr("img", "src");
+                    if(cover.contains("=")){
+                        cover = cover.split("=")[1];
+                    }
                     if(TextUtils.isEmpty(cover))
                         continue;
                     String hd = n.text("a > div > label.title");
@@ -164,6 +181,7 @@ public class K8dyImpl implements IVideoMoreParser {
         }catch (Exception e){
             e.printStackTrace();
         }
+        LogUtil.e("Impl","n -> " + new Gson().toJson(home));
         return home;
     }
 
@@ -176,7 +194,10 @@ public class K8dyImpl implements IVideoMoreParser {
             List<Video> videos = new ArrayList<>();
             for (Node n : node.list("ul.list_tab_img > li")){
                 String title = n.text("h2");
-                String cover = n.attr("a > div > img", "src","=",1);
+                String cover = n.attr("img", "src");
+                if(cover.contains("=")){
+                    cover = cover.split("=")[1];
+                }
                 if(TextUtils.isEmpty(cover))
                     continue;
                 String hd = n.text("a > div > label.title");

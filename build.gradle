@@ -3,12 +3,9 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
-        maven {
-            url 'http://4thline.org/m2'
-        }
-        maven {
-            url 'https://maven.google.com/'
-        }
+        maven { url 'http://4thline.org/m2' }
+        maven { url 'https://maven.google.com/' }
+        maven { url 'https://www.jitpack.io' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
@@ -22,12 +19,9 @@ allprojects {
     repositories {
         jcenter()
         mavenCentral()
-        maven {
-            url 'http://4thline.org/m2'
-        }
-        maven {
-            url 'https://maven.google.com/'
-        }
+        maven { url 'http://4thline.org/m2' }
+        maven { url 'https://maven.google.com/' }
+        maven { url 'https://www.jitpack.io' }
     }
 }
 

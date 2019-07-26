@@ -106,7 +106,7 @@ public class XiguaFragment extends BaseRecyclerFragment implements DownloadTabAc
             DeleteListener listener = new DeleteListener(info.data);
             DialogUtil.showMaterialDialog(activity, getStringFix(R.string.delete_file), listener);
         } else if (control == PLAY) {
-            VideoPlayerActivity.startActivity(activity, info.data.getXiguaUrl());
+            VideoPlayerActivity.startActivity(activity, info.getXiguaUrl());
         }
     }
 

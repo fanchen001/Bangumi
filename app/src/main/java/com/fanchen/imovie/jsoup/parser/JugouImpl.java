@@ -57,7 +57,7 @@ public class JugouImpl implements IVideoMoreParser {
                 video.setCover(style);
                 video.setTitle(n.text("h3"));
                 video.setUrl(RetrofitManager.warpUrl(baseUrl, n.attr("dl > dt > a", "href")));
-                video.setId(n.attr("dl > dt > a", "href").replace("index", "").replace(".html", ""));
+                video.setId(n.attr("dl > dt > a", "href","/",2).replace("index", "").replace(".html", ""));
                 video.setType(n.text("div.score"));
                 video.setExtras(n.textAt("ul > li", 0));
                 video.setDanmaku(n.textAt("ul > li", 1));
@@ -142,7 +142,7 @@ public class JugouImpl implements IVideoMoreParser {
                     video.setCover(n.attr("a", "src"));
                     video.setTitle(n.text("div.title"));
                     video.setUrl(RetrofitManager.warpUrl(baseUrl, n.attr("a", "href")));
-                    video.setId(n.attr("a", "href").replace("index", "").replace(".html", ""));
+                    video.setId(n.attr("a", "href","/",2).replace("index", "").replace(".html", ""));
                     video.setType(n.text("div.subtitle.text-muted.text-muted.text-overflow.hidden-xs"));
                     video.setDanmaku(n.text("a > span.score"));
                     videos.add(video);

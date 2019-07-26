@@ -70,10 +70,8 @@ public class TimeLineActivity extends BaseRecyclerActivity {
         @Override
         public void onSuccess(int enqueueKey, IBangumiTimeRoot response) {
             if (response == null || !response.isSuccess() ||mTimeLineAdapter == null || mRecyclerView == null) return;
-            if (isRefresh())
-                mTimeLineAdapter.clear();
             List<? extends IViewType> adapterList = response.getAdapterList();
-            mTimeLineAdapter.addAll(adapterList);
+            mTimeLineAdapter.setList(adapterList,isRefresh());
             mRecyclerView.scrollToPosition(response.getPosition());
             mTimeLineAdapter.setLoad(false);
             mTimeLineAdapter.setLoading(false);

@@ -164,14 +164,12 @@ public class HomeIndexAdapter extends BaseAdapter {
         return layout;
     }
 
-    /**
-     * @param index
-     */
-    public void setAdapterData(IBangumiRoot index) {
-        this.index = index;
-        clear();
-        addAll(index.getAdapterResult(), false);
-        notifyDataSetChanged();
+    @Override
+    public void addData(Object data, boolean refresh) {
+        if(data instanceof IBangumiRoot){
+            this.index = (IBangumiRoot) data;
+            setList(index.getAdapterResult(),refresh);
+        }
     }
 
     /**

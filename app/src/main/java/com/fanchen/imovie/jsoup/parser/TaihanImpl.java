@@ -110,7 +110,7 @@ public class TaihanImpl implements IVideoMoreParser {
                 if(TextUtils.isEmpty(topTitle))
                     topTitle = n.text("h2").replace("更多","");
                 String topUrl = baseUrl + n.attr("h2 > a", "href");
-                String topId = n.attr("h2 > a", "href", "/", 3).split("-")[0];
+                String topId = n.attr("h2 > small > a", "href", "/", 3).split("-")[0];
                 List<Video> videos = new ArrayList<>();
                 VideoTitle videoTitle = new VideoTitle();
                 videoTitle.setTitle(topTitle);

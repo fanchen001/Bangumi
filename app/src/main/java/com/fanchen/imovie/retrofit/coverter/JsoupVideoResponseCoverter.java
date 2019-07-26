@@ -13,6 +13,7 @@ import com.fanchen.imovie.jsoup.parser.BabayuImpl;
 import com.fanchen.imovie.jsoup.parser.BiliplusImpl;
 import com.fanchen.imovie.jsoup.parser.BobmaoImpl;
 import com.fanchen.imovie.jsoup.parser.BumimiImpl;
+import com.fanchen.imovie.jsoup.parser.CcyParser;
 import com.fanchen.imovie.jsoup.parser.DianxiumeiImpl;
 import com.fanchen.imovie.jsoup.parser.Dm5Impl;
 import com.fanchen.imovie.jsoup.parser.HaliHaliParser;
@@ -31,6 +32,7 @@ import com.fanchen.imovie.jsoup.parser.SmdyImpl;
 import com.fanchen.imovie.jsoup.parser.TaihanImpl;
 import com.fanchen.imovie.jsoup.parser.TepianImpl;
 import com.fanchen.imovie.jsoup.parser.TucaoImpl;
+import com.fanchen.imovie.jsoup.parser.V6Parser;
 import com.fanchen.imovie.jsoup.parser.VipysImpl;
 import com.fanchen.imovie.jsoup.parser.WandouImpl;
 import com.fanchen.imovie.jsoup.parser.WeilaiImpl;
@@ -38,15 +40,11 @@ import com.fanchen.imovie.jsoup.parser.XiaokanbaImpl;
 import com.fanchen.imovie.jsoup.parser.ZhandiImpl;
 import com.fanchen.imovie.jsoup.parser.ZzyoImpl;
 import com.fanchen.imovie.jsoup.parser.ZzzvzImpl;
-import com.fanchen.imovie.util.StreamUtil;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
 
-import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 
 /**
@@ -92,6 +90,8 @@ public class JsoupVideoResponseCoverter extends StringResponseConverter {
         map.put(JsoupSource.VIPYS, new VipysImpl());
         map.put(JsoupSource.WEILAI, new WeilaiImpl());
         map.put(JsoupSource.ZZYO, new ZzyoImpl());
+        map.put(JsoupSource.CCY, new CcyParser());
+        map.put(JsoupSource.V6, new V6Parser());
     }
 
     public JsoupVideoResponseCoverter(Retrofit retrofit, MethodSource method, JsoupSource jsoup) {

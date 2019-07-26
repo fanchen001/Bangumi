@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,10 +98,35 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
         return mList;
     }
 
-    public void setList(List<IViewType> mList) {
-        this.mList = mList;
-        notifyDataSetChanged();
+    public void setList(final List<? extends IViewType> mList) {
+        setList(mList,true);
     }
+
+    public void setList(final List<? extends IViewType> mList,final boolean refresh) {
+        if (Thread.currentThread().getName().equals("main")) {
+            if(refresh ||  this.mList == null){
+                this.mList = new ArrayList<>(mList);
+            }else{
+                this.mList.addAll(mList);
+            }
+            notifyDataSetChanged();
+        } else {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if(refresh ||  BaseAdapter.this.mList == null){
+                        BaseAdapter.this.mList = new ArrayList<>(mList);
+                    }else{
+                        BaseAdapter.this.mList.addAll(mList);
+                    }
+                    notifyDataSetChanged();
+                }
+            });
+        }
+
+    }
+
+
 
     @Override
     public int getItemViewType(int position) {
@@ -173,46 +197,48 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
     /**
      * @param viewType
      */
-    public void add(IViewType viewType) {
+    public void add(final IViewType viewType) {
         if (mList == null)
             mList = new ArrayList<>();
         final int size = mList.size() == 0 ? 0 : mList.size() - 1;
-        mList.add(viewType);
         if (Thread.currentThread().getName().equals("main")) {
+            mList.add(viewType);
             notifyItemRangeChanged(size, mList.size());
         } else {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    mList.add(viewType);
                     notifyItemRangeChanged(size, mList.size());
                 }
             });
         }
-
     }
 
     /**
      * @param all
      */
-    public void addAll(List<? extends IViewType> all, boolean load) {
+    public void addAll(final List<? extends IViewType> all, final boolean load) {
         if (all == null) return;
         if (mList == null)
             mList = new ArrayList<>();
         final int size = mList.size() == 0 ? 0 : mList.size() - 1;
-        mList.addAll(all);
-        if (load) {
-            if (Thread.currentThread().getName().equals("main")) {
+        if (Thread.currentThread().getName().equals("main")) {
+            mList.addAll(all);
+            if (load) {
                 notifyItemRangeChanged(size, mList.size());
-            } else {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
+            }
+        } else {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mList.addAll(all);
+                    if (load) {
                         notifyItemRangeChanged(size, mList.size());
                     }
-                });
-            }
+                }
+            });
         }
-
     }
 
     public void addAll(List<? extends IViewType> all) {
@@ -240,49 +266,50 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
     public void clear() {
         if (mList == null)
             return;
-        mList.clear();
         if (Thread.currentThread().getName().equals("main")) {
+            mList.clear();
             notifyDataSetChanged();
         } else {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    mList.clear();
                     notifyDataSetChanged();
                 }
             });
         }
-
     }
 
-    public void remove(int position) {
+    public void remove(final int position) {
         if (mList == null)
             return;
-        mList.remove(position);
         if (Thread.currentThread().getName().equals("main")) {
+            mList.remove(position);
             notifyDataSetChanged();
         } else {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    mList.remove(position);
                     notifyDataSetChanged();
                 }
             });
         }
     }
 
-    public void setLoad(boolean isLoad) {
-        this.isLoad = isLoad;
+    public void setLoad(final boolean isLoad) {
         if (Thread.currentThread().getName().equals("main")) {
+            this.isLoad = isLoad;
             notifyDataSetChanged();
         } else {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    BaseAdapter.this.isLoad = isLoad;
                     notifyDataSetChanged();
                 }
             });
         }
-
     }
 
     /**
@@ -391,7 +418,7 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
-        if (manager != null && manager instanceof GridLayoutManager) {
+        if (manager instanceof GridLayoutManager) {
             GridLayoutManager gridManager = ((GridLayoutManager) manager);
             gridManager.setSpanSizeLookup(new GridSpanSizeLookup(gridManager, this));
         }
@@ -402,7 +429,7 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
         super.onViewAttachedToWindow(holder);
         if (hasHeaderView()) {
             ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
-            if (lp != null && lp instanceof StaggeredGridLayoutManager.LayoutParams) {
+            if (lp instanceof StaggeredGridLayoutManager.LayoutParams) {
                 StaggeredGridLayoutManager.LayoutParams p = (StaggeredGridLayoutManager.LayoutParams) lp;
                 p.setFullSpan(holder.getLayoutPosition() == 0 || holder.getLayoutPosition() == getItemCount() - 1);
             }
@@ -559,7 +586,7 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
     /**
      * Override 这个方法
      */
-    public void addData(Object data) {
+    public void addData(Object data,boolean refresh) {
         if (data instanceof List) {
             addAll((List<IViewType>) data);
         }

@@ -22,7 +22,6 @@ import java.util.List;
  */
 public class TvLiveActivity extends BaseRecyclerActivity {
 
-    private String path = "zxtv/m/";
     private String classService = HlyyTvService.class.getName();
     private TvLiveAdapter mLiveAdapter;
 
@@ -56,7 +55,7 @@ public class TvLiveActivity extends BaseRecyclerActivity {
 
     @Override
     protected void loadData(RetrofitManager retrofit, int page) {
-        retrofit.enqueue(classService, callback, "liveList", path);
+        retrofit.enqueue(classService, callback, "liveList", "");
     }
 
     @Override
@@ -71,9 +70,7 @@ public class TvLiveActivity extends BaseRecyclerActivity {
         @Override
         public void onSuccess(int enqueueKey, List<IBaseVideo> response) {
             if (response == null) return;
-            //第一次加载或者是刷新
-            if (isRefresh()) mLiveAdapter.clear();
-            mLiveAdapter.addAll(response);
+            mLiveAdapter.setList(response,isRefresh());
         }
 
     };

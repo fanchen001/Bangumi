@@ -238,8 +238,7 @@ public class ApkDetailsActivity extends BaseActivity implements View.OnClickList
         mMarkTextView.setText(Html.fromHtml(details.getRecentchanges()));
         mUpdateTextView.setText(details.getUpdatetime());
         mPackageNameTextView.setText(details.getPackagename());
-        mApkScreenAdapter.clear();
-        mApkScreenAdapter.addAll(details.getScreenShots());
+        mApkScreenAdapter.setList(details.getScreenShots());
     }
 
     /**

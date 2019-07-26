@@ -104,11 +104,11 @@ public class ShortVideoFragment extends BaseRecyclerFragment{
     private RefreshRecyclerFragmentImpl<DyttRoot<List<DyttShortVideo>>> callback = new RefreshRecyclerFragmentImpl<DyttRoot<List<DyttShortVideo>>>() {
 
         @Override
-        public void onSuccess(DyttRoot<List<DyttShortVideo>> response) {
+        public void onSuccess(DyttRoot<List<DyttShortVideo>> response,boolean refresh) {
             if(mVideoAdapter == null)return;
             List<DyttShortVideo> body = response.getBody();
             if(body != null && body.size() > 0){
-                mVideoAdapter.addAll(body);
+                mVideoAdapter.setList(body,refresh);
                 mVideoAdapter.setLoad(true);
             }else{
                 showSnackbar(getStringFix(R.string.not_more));

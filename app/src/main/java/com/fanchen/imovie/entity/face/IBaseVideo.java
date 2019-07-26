@@ -7,6 +7,9 @@ import android.os.Parcelable;
  * Created by fanchen on 2017/9/18.
  */
 public interface IBaseVideo extends IViewType,Parcelable{
+
+    int SOURCE_PLAY = -100;
+
     /**
      *标题
      * @return

@@ -165,13 +165,12 @@ public class SearchVideoActivity extends BaseRecyclerActivity {
         @Override
         public void onSuccess(int enqueueKey, IBangumiMoreRoot response) {
             if(response == null || !response.isSuccess() || mListAdapter == null)return;
-            if(isRefresh()) mListAdapter.clear();
             List<? extends IVideo> list = response.getList();
             if(list == null || list.size() == 0){
                 mListAdapter.setLoad(false);
                 showToast(getString(R.string.not_more));
             }else{
-                mListAdapter.addAll(list);
+                mListAdapter.setList(list,isRefresh());
                 mListAdapter.setLoad(hasLoad);
             }
         }

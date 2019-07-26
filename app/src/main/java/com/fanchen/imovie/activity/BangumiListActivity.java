@@ -20,6 +20,7 @@ import com.fanchen.imovie.entity.face.IBangumiTitle;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.util.DialogUtil;
+import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.util.RegularUtil;
 import com.squareup.picasso.Picasso;
 
@@ -41,6 +42,7 @@ public class BangumiListActivity extends BaseRecyclerActivity {
     private String title;
     private String className;
     private boolean isLoad;
+    private boolean isSkip = false;
 
     /**
      *
@@ -125,6 +127,8 @@ public class BangumiListActivity extends BaseRecyclerActivity {
 
     @Override
     protected void loadData(RetrofitManager retrofit, int page) {
+        LogUtil.e("BangumiListActivity","url -> " + url);
+        LogUtil.e("BangumiListActivity","page -> " + page);
         retrofit.enqueue(className, callback, "more", url, Integer.valueOf(page));
     }
 
@@ -161,10 +165,8 @@ public class BangumiListActivity extends BaseRecyclerActivity {
         @Override
         public void onSuccess(int enqueueKey, IBangumiMoreRoot response) {
             if (response == null || !response.isSuccess() || mVideoListAdapter == null) return;
-            if (isRefresh()) {
-                mVideoListAdapter.clear();
-            }
-            mVideoListAdapter.addAll(response.getList());
+            mVideoListAdapter.setList(response.getList(),isRefresh() || BangumiListActivity.this.isSkip);
+            BangumiListActivity.this.isSkip = false;
             mVideoListAdapter.setLoad(isLoad);
             mVideoListAdapter.setLoading(false);
         }
@@ -177,7 +179,7 @@ public class BangumiListActivity extends BaseRecyclerActivity {
         public void onInput(EditText editText, BaseDialog<?> dialog) {
             String string = getEditTextString(editText);
             if(RegularUtil.isAllNumric(string)){
-                mVideoListAdapter.clear();
+                BangumiListActivity.this.isSkip = true;
                 setPage(Integer.valueOf(string));
                 loadData(getRetrofitManager(),getPage());
             }

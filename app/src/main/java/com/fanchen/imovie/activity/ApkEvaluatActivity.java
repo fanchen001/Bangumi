@@ -83,9 +83,7 @@ public class ApkEvaluatActivity extends BaseRecyclerActivity {
         @Override
         public void onSuccess(int enqueueKey, ApkRoot<ApkData<ApkEvaluat>> response) {
             if (response == null || response.getData() == null || mEvaluatingAdapter == null)return;
-            if(isRefresh())
-                mEvaluatingAdapter.clear();
-            mEvaluatingAdapter.addAll(response.getData().getList());
+            mEvaluatingAdapter.addAll(response.getData().getList(),isRefresh());
         }
 
     };

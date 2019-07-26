@@ -3,8 +3,6 @@ package com.fanchen.imovie.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,7 +11,6 @@ import android.widget.TextView;
 import com.fanchen.imovie.R;
 import com.fanchen.imovie.activity.BangumiListActivity;
 import com.fanchen.imovie.activity.VideoDetailsActivity;
-import com.fanchen.imovie.activity.VideoTabActivity;
 import com.fanchen.imovie.activity.WebActivity;
 import com.fanchen.imovie.base.BaseActivity;
 import com.fanchen.imovie.base.BaseAdapter;
@@ -25,8 +22,6 @@ import com.fanchen.imovie.entity.face.IViewType;
 import com.fanchen.imovie.fragment.HomeIndexFragment;
 import com.fanchen.imovie.picasso.PicassoWrap;
 import com.fanchen.imovie.picasso.download.AgentDownloader;
-import com.fanchen.imovie.picasso.download.RefererDownloader;
-import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.view.TriangleLabelView;
 import com.fanchen.imovie.view.pager.IBanner;
 import com.fanchen.imovie.view.pager.LoopViewPager;
@@ -138,7 +133,6 @@ public class VideoIndexAdapter extends BaseAdapter {
                 } else if (picasso != null) {
                     picasso.loadVertical(video.getCover(), HomeIndexFragment.class, videoViewHolder.imageView);
                 }
-                LogUtil.e("VideoIndexAdapter","Cover -> " + video.getCover());
             } else if (viewType == IViewType.TYPE_FOOTER) {
 
             }
@@ -160,16 +154,11 @@ public class VideoIndexAdapter extends BaseAdapter {
         return layout;
     }
 
-    /**
-     * @param index
-     */
     @Override
-    public void addData(Object index) {
+    public void addData(Object index, boolean refresh) {
         if (index instanceof IBangumiRoot) {
             this.index = (IBangumiRoot) index;
-            clear();
-            addAll(this.index.getAdapterResult(), false);
-            notifyDataSetChanged();
+            setList(this.index.getAdapterResult(), refresh);
         }
     }
 
@@ -261,7 +250,6 @@ public class VideoIndexAdapter extends BaseAdapter {
             } else if (picasso != null) {
                 picasso.loadHorizontal(parameter.getCover(), HomeIndexFragment.class, imageView);
             }
-            LogUtil.e("OnLoadImageViewListener","Cover -> " + parameter.getCover());
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         }
 

@@ -105,11 +105,15 @@ public class LivePlayerActivity extends BaseActivity {
         if (getIntent().hasExtra(VIDEO) && mVideo != null) {
             mSuperPlayerView.setAutoSpeend(true);
             mSuperPlayerView.setTitle(mVideo.getTitle());
-            RetrofitManager retrofit = getRetrofitManager();
-            String serviceClassName = mVideo.getServiceClass();
-            String url = RetrofitManager.REQUEST_URL = mVideo.getUrl();
-            String method = mVideo instanceof IVideo ? "playUrl" : "liveUrl";
-            retrofit.enqueue(serviceClassName, callback, method, url);
+            if (mVideo.getSource() == IVideo.SOURCE_PLAY) {
+                mSuperPlayerView.play(mVideo.getUrl());
+            } else {
+                RetrofitManager retrofit = getRetrofitManager();
+                String serviceClassName = mVideo.getServiceClass();
+                String url = RetrofitManager.REQUEST_URL = mVideo.getUrl();
+                String method = mVideo instanceof IVideo ? "playUrl" : "liveUrl";
+                retrofit.enqueue(serviceClassName, callback, method, url);
+            }
         } else {
             showToast(R.string.non_error);
             finish();

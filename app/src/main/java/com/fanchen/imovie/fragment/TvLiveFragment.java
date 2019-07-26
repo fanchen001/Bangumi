@@ -70,11 +70,10 @@ public class TvLiveFragment extends BaseRecyclerFragment {
     private RefreshRecyclerFragmentImpl<List<IBaseVideo>> callback = new RefreshRecyclerFragmentImpl<List<IBaseVideo>>() {
 
         @Override
-        public void onSuccess(List<IBaseVideo> response) {
+        public void onSuccess(List<IBaseVideo> response,boolean refresh) {
             if (response == null) return;
             //第一次加载或者是刷新
-            if (isRefresh()) mLiveAdapter.clear();
-            mLiveAdapter.addAll(response);
+            mLiveAdapter.setList(response,refresh);
         }
 
     };

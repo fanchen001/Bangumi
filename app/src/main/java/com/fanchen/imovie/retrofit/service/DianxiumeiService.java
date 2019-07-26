@@ -9,12 +9,11 @@ import com.fanchen.imovie.annotation.RetrofitType;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideoDetails;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Headers;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 /**
@@ -25,15 +24,26 @@ public interface DianxiumeiService {
 
     /**
      *
-     * @param url
-     * @param page
+     * @param path
      * @return
      */
-    @GET
+    @GET("{path}/")
     @JsoupType(JsoupSource.DIANXIUMEI)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.HOME)
-    Call<IHomeRoot> home(@Url String url, @Query("p") Integer page);
+    Call<IHomeRoot> home(@Path("path") String path);
+
+    /**
+     *
+     * @param path
+     * @param page
+     * @return
+     */
+    @GET("{path}/index-{page}.html")
+    @JsoupType(JsoupSource.DIANXIUMEI)
+    @MethodType(value = MethodSource.HOME)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
 
     /**
      *
@@ -41,11 +51,33 @@ public interface DianxiumeiService {
      * @param word
      * @return
      */
-    @GET("so/s.php")
+    @GET("search/{q}-{page}.html")
     @JsoupType(JsoupSource.DIANXIUMEI)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.SEARCH)
-    Call<IBangumiMoreRoot> search(@Query("p") Integer page, @Query("q") String word);
+    Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("q") String word);
+
+    /**
+     *
+     * @param path
+     * @param page
+     * @return
+     */
+    @GET("{path}/index-{page}.html")
+    @JsoupType(JsoupSource.DIANXIUMEI)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    @MethodType(value = MethodSource.MORE)
+    Call<IBangumiMoreRoot> more(@Path("path") String path, @Path("page") Integer page);
+
+    /**
+     * @param path
+     * @return
+     */
+    @GET("{path}")
+    @JsoupType(JsoupSource.DIANXIUMEI)
+    @MethodType(value = MethodSource.DETAILS)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    Call<IVideoDetails> details(@Path("path") String path);
 
     /**
      *
@@ -56,7 +88,6 @@ public interface DianxiumeiService {
     @JsoupType(JsoupSource.DIANXIUMEI)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     @MethodType(value = MethodSource.PLAYURL)
-    @Headers({"User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"})
     Call<IPlayUrls> playUrl(@Url String url);
 
 }

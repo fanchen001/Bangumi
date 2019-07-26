@@ -78,8 +78,7 @@ public class HomeCategoryFragment extends BaseRecyclerFragment {
         @Override
         public void run() {
             mSwipeRefreshLayout.setRefreshing(false);
-            mCategoryAdapter.clear();
-            mCategoryAdapter.addAll(IMovieAppliction.mCategorys);
+            mCategoryAdapter.setList(IMovieAppliction.mCategorys);
         }
 
     }

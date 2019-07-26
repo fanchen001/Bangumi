@@ -27,6 +27,7 @@ import com.fanchen.imovie.retrofit.callback.RefreshCallback;
 import com.fanchen.imovie.thread.AsyTaskQueue;
 import com.fanchen.imovie.util.AppUtil;
 import com.fanchen.imovie.util.DialogUtil;
+import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.view.pager.LoopViewPager;
 import com.fanchen.m3u8.M3u8Config;
 import com.fanchen.m3u8.M3u8Manager;
@@ -36,6 +37,7 @@ import com.fanchen.m3u8.listener.OnM3u8InfoListener;
 import com.fanchen.sniffing.SniffingCallback;
 import com.fanchen.sniffing.SniffingVideo;
 import com.fanchen.sniffing.x5.SniffingUtil;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
@@ -244,6 +246,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
                 VideoPlayerActivity.startActivity(activity, video);
             }
         }
+        LogUtil.e("onItemClick","====>" + new Gson().toJson(video));
     }
 
     @Override
@@ -353,7 +356,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
                 showSnackbar(getStringFix(R.string.not_more));
             } else {
                 mVideoAdapter.setLoad(true);
-                mVideoAdapter.addData(date);
+                mVideoAdapter.addData(date,true);
             }
         }
 
@@ -362,7 +365,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
     private RefreshRecyclerFragmentImpl<IHomeRoot> callback = new RefreshRecyclerFragmentImpl<IHomeRoot>() {
 
         @Override
-        public void onSuccess(IHomeRoot response) {
+        public void onSuccess(IHomeRoot response,boolean refresh) {
             if (!response.isSuccess() || mVideoAdapter == null) return;
             List<? extends IViewType> adapterResult = response.getAdapterResult();
             if (adapterResult == null || adapterResult.size() == 0) {
@@ -370,7 +373,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
                 showSnackbar(getStringFix(R.string.not_more));
             } else {
                 mVideoAdapter.setLoad(hasLoad);
-                mVideoAdapter.addData(response);
+                mVideoAdapter.addData(response,refresh);
             }
         }
 

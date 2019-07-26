@@ -28,8 +28,7 @@ public class XiguaAdapter extends BaseDownloadAdapter<XiguaDownload> {
         for (TaskVideoInfo info : all) {
             iViewTypes.add(new XiguaDownload(info));
         }
-        super.clear();
-        super.addAll(iViewTypes);
+        super.setList(iViewTypes);
     }
 
 }

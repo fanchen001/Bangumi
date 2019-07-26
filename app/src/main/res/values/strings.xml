@@ -190,13 +190,13 @@
         <item>爱看TV(推荐)</item>
         <item>华龙直播</item>
         <item>好趣直播</item>
-        <item>电影天堂</item>
+      <!--  <item>电影天堂</item>-->
     </string-array>
     <string-array name="pref_def_lives_values">
         <item>ican</item>
         <item>hlzb</item>
         <item>haoqu</item>
-        <item>dytt</item>
+     <!--   <item>dytt</item>-->
     </string-array>
     <string-array name="pref_sync_frequency_titles">
         <item>1线程</item>

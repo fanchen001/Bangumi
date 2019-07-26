@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -47,7 +48,6 @@ import com.fanchen.sniffing.DefaultFilter;
 import com.fanchen.sniffing.SniffingCallback;
 import com.fanchen.sniffing.SniffingVideo;
 import com.fanchen.sniffing.x5.SniffingUtil;
-import com.google.gson.Gson;
 import com.litesuits.orm.LiteOrm;
 import com.litesuits.orm.db.assit.QueryBuilder;
 import com.tencent.smtt.sdk.TbsVideo;
@@ -61,7 +61,6 @@ import com.xunlei.downloadlib.XLService;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.InjectView;
 import me.jessyan.autosize.internal.CustomAdapt;
@@ -362,7 +361,10 @@ public class VideoPlayerActivity extends BaseActivity implements CustomAdapt {
 
     @Override
     protected void onDestroy() {
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onDestroy();
+
+        //upload-images.jianshu.io/upload_images/1761677-b36d7483f4e225b7.gif
         unregisterReceiver(mP2pReceiver);
         NiceVideoManager.instance().release();
         P2PModule.getInstance().stopPlay();
@@ -448,15 +450,12 @@ public class VideoPlayerActivity extends BaseActivity implements CustomAdapt {
             XLManager.get(this).addAndPlay(url);
         } else if (playType == IVideoEpisode.PLAY_TYPE_WEB) {//需要 webview 解析视频链接
             String referer = playUrls.getReferer();
-
             SniffingUtil.get().activity(this).referer(referer).url(url).callback(new SniffingCallback() {
 
                 @Override
                 public void onSniffingSuccess(View webView, String url, List<SniffingVideo> videos) {
-                    LogUtil.e("VideoPlayerActivity","onSniffingSuccess -> " + videos.get(0).getUrl());
-                    if (mVideoPlayer == null || playUrls == null) return;//解析成功，播放視頻
+                    if (mVideoPlayer == null || videos == null || videos.isEmpty()) return;//解析成功，播放視頻
                     openVideo( videos.get(0).getUrl(), playUrls.getReferer(), "", "");
-
                 }
 
                 @Override
@@ -465,8 +464,6 @@ public class VideoPlayerActivity extends BaseActivity implements CustomAdapt {
                 }
 
             }).filter(new DefaultFilter()).start();
-
-
 //            ParseUrlListener parseWebUrl = new ParseUrlListener(playUrls);
 //            VideoUrlUtil init = VideoUrlUtil.getInstance().init(this, url, referer);
 //            init.setOnParseListener(parseWebUrl).startParse();

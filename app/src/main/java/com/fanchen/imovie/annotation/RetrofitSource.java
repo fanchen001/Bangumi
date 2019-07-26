@@ -236,5 +236,16 @@ public enum RetrofitSource {
      * zzyo
      * http://m.zzyo.cn/
      */
-    ZZYO_API
+    ZZYO_API,
+
+    /**
+     * 悠久影音
+     * https://m.7ccy.com/
+     */
+    CCY_API,
+
+    /**
+     * http://v.6.cn
+     */
+    V6_API
 }

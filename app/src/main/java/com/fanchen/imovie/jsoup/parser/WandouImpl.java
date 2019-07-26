@@ -46,7 +46,6 @@ public class WandouImpl implements IVideoMoreParser {
             for (Node sub : node.list("ul > li.col-md-2.col-sm-3.col-xs-4")) {
                 String title = sub.text("h2");
                 String cover = warpUrl(sub.attr("p > a > img", "data-original"),baseUrl);
-                LogUtil.e("WandouImpl","cover -> " + cover);
                 if (TextUtils.isEmpty(cover))
                     continue;
                 String hd = sub.text("h4");
@@ -91,7 +90,7 @@ public class WandouImpl implements IVideoMoreParser {
                 if(TextUtils.isEmpty(src)){
                     src = n.attr("img", "data-original");
                 }
-                banner.setCover(baseUrl + src);
+                banner.setCover(warpUrl(src,baseUrl));
                 banner.setTitle(n.text("div.carousel-caption"));
                 String href = n.attr("href");
                 if (href.startsWith("http")) {
