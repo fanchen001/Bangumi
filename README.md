@@ -20,7 +20,8 @@
 8.New 支持M3U8视频下载缓存 -> [M3u8Download](https://github.com/fanchen001/M3u8Download)<br/>
 9.New 支持下载缓存西瓜视频 -> [XiguaP2p](https://github.com/fanchen001/XiguaP2p)<br/>
 10.New 支持H264视频播放<br/>
-11.New 支持HTTP/HTTPS/FTP/ED2K/THUNDER/MAGNET下载
+11.New 支持HTTP/HTTPS/FTP/ED2K/THUNDER/MAGNET下载<br/>
+12.New 使用新的视频嗅探解析工具,支持解析更多在线视频 -> [Sniffing](https://github.com/fanchen001/Sniffing)
 
 关于新增视频播放源
 ========
