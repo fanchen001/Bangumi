@@ -19,6 +19,7 @@ import com.fanchen.imovie.jsoup.IVideoMoreParser;
 import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.KankanService;
+import com.fanchen.imovie.retrofit.service.VipysService;
 import com.fanchen.imovie.util.LogUtil;
 
 import java.util.ArrayList;
@@ -60,13 +61,13 @@ public class KankanwuImpl implements IVideoMoreParser {
         VideoHome home = new VideoHome();
         try {
             List<IVideo> videos = new ArrayList<>();
-            home.setList(videos);
             for (Node n : node.list("ul#resize_list > li")) {
                 String title = n.text("a > div > label.name");
                 if(TextUtils.isEmpty(title))
                     title = n.attr("a > div > img","alt");
                 if(TextUtils.isEmpty(title))
                     title = n.text("h2");
+                //data-original
                 String cover = n.attr("a > div > img", "data-original");
                 if(TextUtils.isEmpty(cover) || cover.contains("mstyle"))
                     cover = n.attr("a > div > img", "data-src");
@@ -90,6 +91,7 @@ public class KankanwuImpl implements IVideoMoreParser {
                 video.setType(type);
                 videos.add(video);
             }
+            home.setList(videos);
             home.setSuccess(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -170,6 +172,9 @@ public class KankanwuImpl implements IVideoMoreParser {
                     if (videos.size() > 0)
                         titles.add(videoTitle);
                     videoTitle.setMore(videoTitle.getList().size() == 6 || videoTitle.getList().size() == 3);
+                    if(VipysService.class.getName().equals(clazz)){
+                        videoTitle.setMore(false);
+                    }
                 }
             } else {
                 List<IVideo> videos = new ArrayList<>();
@@ -177,7 +182,7 @@ public class KankanwuImpl implements IVideoMoreParser {
                     String title = n.text("h2");
                     if(TextUtils.isEmpty(title))
                         title = n.text("a > div > label.name");
-                    String cover = n.attr("a > div > img", "src");
+                    String cover = n.attr("a > div > img", "data-original");
                     if(TextUtils.isEmpty(cover) || cover.contains("mstyle")){
                         cover = n.attr("a > div > img", "data-original");
                     }

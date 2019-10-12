@@ -7,39 +7,7 @@ import com.fanchen.imovie.annotation.MethodSource;
 import com.fanchen.imovie.jsoup.IBangumiParser;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
 import com.fanchen.imovie.jsoup.IVideoParser;
-import com.fanchen.imovie.jsoup.parser.A4dyImpl;
-import com.fanchen.imovie.jsoup.parser.AiSmImpl;
-import com.fanchen.imovie.jsoup.parser.BabayuImpl;
-import com.fanchen.imovie.jsoup.parser.BiliplusImpl;
-import com.fanchen.imovie.jsoup.parser.BobmaoImpl;
-import com.fanchen.imovie.jsoup.parser.BumimiImpl;
-import com.fanchen.imovie.jsoup.parser.CcyParser;
-import com.fanchen.imovie.jsoup.parser.DianxiumeiImpl;
-import com.fanchen.imovie.jsoup.parser.Dm5Impl;
-import com.fanchen.imovie.jsoup.parser.HaliHaliParser;
-import com.fanchen.imovie.jsoup.parser.IKanFanParser;
-import com.fanchen.imovie.jsoup.parser.JrenImpl;
-import com.fanchen.imovie.jsoup.parser.JugouImpl;
-import com.fanchen.imovie.jsoup.parser.K8dyImpl;
-import com.fanchen.imovie.jsoup.parser.KankanwuImpl;
-import com.fanchen.imovie.jsoup.parser.KmaoImpl;
-import com.fanchen.imovie.jsoup.parser.KupianImpl;
-import com.fanchen.imovie.jsoup.parser.LL520Impl;
-import com.fanchen.imovie.jsoup.parser.LaosijiImpl;
-import com.fanchen.imovie.jsoup.parser.MmyyImpl;
-import com.fanchen.imovie.jsoup.parser.S80Impl;
-import com.fanchen.imovie.jsoup.parser.SmdyImpl;
-import com.fanchen.imovie.jsoup.parser.TaihanImpl;
-import com.fanchen.imovie.jsoup.parser.TepianImpl;
-import com.fanchen.imovie.jsoup.parser.TucaoImpl;
-import com.fanchen.imovie.jsoup.parser.V6Parser;
-import com.fanchen.imovie.jsoup.parser.VipysImpl;
-import com.fanchen.imovie.jsoup.parser.WandouImpl;
-import com.fanchen.imovie.jsoup.parser.WeilaiImpl;
-import com.fanchen.imovie.jsoup.parser.XiaokanbaImpl;
-import com.fanchen.imovie.jsoup.parser.ZhandiImpl;
-import com.fanchen.imovie.jsoup.parser.ZzyoImpl;
-import com.fanchen.imovie.jsoup.parser.ZzzvzImpl;
+import com.fanchen.imovie.jsoup.parser.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -90,8 +58,9 @@ public class JsoupVideoResponseCoverter extends StringResponseConverter {
         map.put(JsoupSource.VIPYS, new VipysImpl());
         map.put(JsoupSource.WEILAI, new WeilaiImpl());
         map.put(JsoupSource.ZZYO, new ZzyoImpl());
-        map.put(JsoupSource.CCY, new CcyParser());
+        map.put(JsoupSource.CCY, new CcyImpl());
         map.put(JsoupSource.V6, new V6Parser());
+        map.put(JsoupSource.YDW, new YdwImpl());
     }
 
     public JsoupVideoResponseCoverter(Retrofit retrofit, MethodSource method, JsoupSource jsoup) {

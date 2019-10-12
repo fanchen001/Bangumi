@@ -135,11 +135,11 @@ public class JugouImpl implements IVideoMoreParser {
                 root.setHomeResult(titles);
             } else {
                 List<IVideo> videos = new ArrayList<>();
-                for (Node n : node.list("div.item > ul.clearfix > div")) {
+                for (Node n : node.list("ul#list1 > li")) {
                     Video video = new Video();
                     video.setHasDetails(true);
                     video.setServiceClass(JugouService.class.getName());
-                    video.setCover(n.attr("a", "src"));
+                    video.setCover(n.attr("a", "data-original"));
                     video.setTitle(n.text("div.title"));
                     video.setUrl(RetrofitManager.warpUrl(baseUrl, n.attr("a", "href")));
                     video.setId(n.attr("a", "href","/",2).replace("index", "").replace(".html", ""));

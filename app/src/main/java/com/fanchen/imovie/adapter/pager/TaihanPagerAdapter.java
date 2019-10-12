@@ -15,8 +15,7 @@ public class TaihanPagerAdapter extends BaseFragmentAdapter{
 
     private final String[] TITLES = new String[]{"首页","泰剧", "泰影", "韩剧","综艺"};
     private final String[] PATHS = new String[]{"","taiju", "taiying", "hanju","zongyi"};
-    private final Boolean[] LOADS = new Boolean[]{false,false,false,false,false};
-    private final Boolean[] BANGUMI = new Boolean[]{true,true,true,true,true};
+    private final Boolean[] LOADS = new Boolean[]{false,true,true,true,true};
 
     public TaihanPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -29,7 +28,7 @@ public class TaihanPagerAdapter extends BaseFragmentAdapter{
 
     @Override
     public Fragment createFragment(int position) {
-        return VideoListFragment.newInstance(PATHS[position], getExtendInfo().toString(), 1, LOADS[position], false, false, null, BANGUMI[position]);
+        return VideoListFragment.newInstance(PATHS[position], getExtendInfo().toString(), 1, LOADS[position], false, false, null, true);
     }
 
     @Override

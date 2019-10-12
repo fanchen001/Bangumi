@@ -41,8 +41,8 @@ public interface WeilaiService {
      * @param page
      * @return
      */
-    @GET("{path}/index{page}.html")
-    @JsoupType(JsoupSource.WEILAI)
+    @GET("list/{path}-{page}.html")
+    @JsoupType(JsoupSource.WEILAI)//list/3-1.html
     @MethodType(value = MethodSource.HOME)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
@@ -64,7 +64,7 @@ public interface WeilaiService {
      * @param page
      * @return
      */
-    @GET("{path}/index{page}.html")
+    @GET("list/{path}-{page}.html")
     @JsoupType(JsoupSource.WEILAI)
     @MethodType(value = MethodSource.MORE)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)

@@ -37,8 +37,8 @@ android {
         minSdkVersion 19
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 25
-        versionCode 20190725
-        versionName "3.7.25 beta"
+        versionCode 20191012
+        versionName "3.10.12 beta"
         javaCompileOptions {
             annotationProcessorOptions {
                 includeCompileClasspath true
@@ -78,44 +78,45 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:multidex:1.0.3'
 
-    /** *******eventbus sdk 事件总线                *********/
+    /** *******eventbus sdk 事件总线                 *********/
     compile 'org.greenrobot:eventbus:3.0.0'
 
-    /** *******butterknife sdk ioc                *********/
+    /** *******butterknife sdk ioc                 *********/
     compile 'com.jakewharton:butterknife:5.1.1'
 
-    /** *******support 支持库                *********/
+    /** *******support 支持库                 *********/
     compile 'com.android.support:design:25.4.0'
     compile 'com.android.support:gridlayout-v7:25.4.0'
     compile 'com.android.support:cardview-v7:25.4.0'
 
-    /** *******swipebackhelper 滑动返回                *********/
+    /** *******swipebackhelper 滑动返回                 *********/
     compile('com.jude:swipebackhelper:3.1.2') {
         exclude module: 'appcompat-v7'
     }
 
-    /** *******   今日头条屏幕适配方案            *********/
+    /** *******   今日头条屏幕适配方案             *********/
     compile 'me.jessyan:autosize:1.1.2'
 
-    /** *******gson json                *********/
+    /** *******gson json                 *********/
     compile 'com.google.code.gson:gson:2.8.2'
 
-    /** *******squareup 全家桶                *********/
+    /** *******squareup 全家桶                 *********/
     compile 'com.squareup.retrofit2:retrofit:2.5.0'
 
-    /** *******picasso 图片加载                *********/
+    /** *******picasso 图片加载                 *********/
     compile 'com.squareup.picasso:picasso:2.5.2'
 
-    /** *******    视频嗅探     *********/
-    compile 'com.github.fanchen001:Sniffing:1.0.1'
+    /** *******    视频嗅探      *********/
 
-    /** *******aria 下载管理框架                *********/
+    compile 'com.github.fanchen001:Sniffing:1.0.5'
+
+    /** *******aria 下载管理框架                 *********/
     annotationProcessor 'com.arialyy.aria:aria-compiler:3.5'
     compile('com.arialyy.aria:aria-core:3.5') {
         exclude module: 'appcompat-v7'
     }
 
-    /** ******* kotlin runtime           *********/
+    /** ******* kotlin runtime            *********/
     compile 'org.jetbrains.kotlin:kotlin-stdlib:1.3.31'
 
     // Cling library 用来实现投屏
@@ -127,42 +128,44 @@ dependencies {
     compile 'org.eclipse.jetty:jetty-servlet:8.1.12.v20130726'
     compile 'org.eclipse.jetty:jetty-client:8.1.12.v20130726'
 
-    /** *******zxing sdk 二维码                *********/
+    /** *******zxing sdk 二维码                 *********/
     compile files('libs/zxing.jar')
 
-    /** *******ijkplayer sdk 视频播放                *********/
+    /** *******ijkplayer sdk 视频播放                 *********/
     compile files('libs/lib_ijkplayer.jar')
 
-    /** *******SMSSDK 验证码                *********/
+    /** *******SMSSDK 验证码                 *********/
     compile files('libs/Mob_SMS_Sdk.jar')
 
-    /** *******BmobSDK 后台数据库                *********/
+    /** *******BmobSDK 后台数据库                 *********/
     compile files('libs/BmobSDK_V3.4.7_0527.jar')
 
-    /** ******* 西瓜视频 sdk                *********/
+    /** ******* 西瓜视频 sdk                 *********/
     compile files('libs/xigua.p2p.jar')
 
-    /** ******* java js引擎        *********/
+    /** ******* java js引擎         *********/
     compile files('libs/rhino-1.7.7.1.jar')
 
-    /** ******* kotlin 写的 m3u8下载器         *********/
+    /** ******* kotlin 写的 m3u8下载器          *********/
     compile files('libs/m3u8downloader_1.2.jar')
 
-    /** ******* tv_sdk   *********/
+    /** ******* tv_sdk    *********/
     compile files('libs/p2p_tv_sdk.jar')
 
-    /** ******* 迅雷下载器 支持 http https ftp ed2k thunder magnet         *********/
+    /** ******* 迅雷下载器 支持 http https ftp ed2k thunder magnet          *********/
     compile files('libs/xunlei.downloadlib.jar')
 
-    /** *******bugly 崩溃监测                *********/
+    /** *******bugly 崩溃监测                 *********/
     compile files('libs/bugly_crash_release.jar')
 
-    /** ******* lite-orm orm框架                *********/
+    /** ******* lite-orm orm框架                 *********/
     compile files('libs/lite-orm-1.9.2.jar')
 
-    /** ******* nineoldandroids 动画框架                *********/
+    /** ******* nineoldandroids 动画框架                 *********/
     compile files('libs/nineoldandroids-2.4.0.jar')
 
-    /** *******友盟sdk                *********/
+    /** *******友盟sdk                 *********/
     compile files('libs/umeng_share.jar')
+
+    //compile files('libs/sniffing-video-1.0.3.jar')
 }

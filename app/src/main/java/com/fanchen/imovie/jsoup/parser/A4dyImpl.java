@@ -59,7 +59,7 @@ public class A4dyImpl implements IVideoMoreParser {
         VideoHome home = new VideoHome();
         try {
             List<IVideo> videos = new ArrayList<>();
-            home.setList(videos);
+
             for (Node n : node.list("ul#resize_list > li")) {
                 String title = n.text("a > div > label.name");
                 String cover = n.attr("a > div > img", "data-original","=",1);
@@ -81,6 +81,7 @@ public class A4dyImpl implements IVideoMoreParser {
                 video.setExtras(type);
                 videos.add(video);
             }
+            home.setList(videos);
             home.setSuccess(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -257,60 +258,70 @@ public class A4dyImpl implements IVideoMoreParser {
             if (TextUtils.isEmpty(match)) {
                 match = JavaScriptUtil.match("unescape\\([.\\-_@|$=?/,:;\\w\\d\\(\\)\\[\\]'%]+'\\);", html, 0);
             }
+
+            LogUtil.e("A4dyImpl","from -> " + from);
+
+            LogUtil.e("A4dyImpl","match -> " + match);
+
             String jscode = "function(){ return " + match + "}";
             String callFunction = JavaScriptUtil.callFunction(jscode);
+
+            LogUtil.e("A4dyImpl","callFunction -> " + callFunction);
+
             String[] fromSplit = from.split("\\$\\$\\$");
             String[] callSplit = callFunction.split("\\$\\$\\$");
             if (fromSplit.length == callSplit.length && callSplit.length > xianlu) {
                 String[] strings = callSplit[xianlu].split("#");
                 for (int i = 0; i < strings.length; i++) {
                     if (i != count) continue;
-                    switch (fromSplit[xianlu]) {
-                        case "sohu":
-                        case "youku":
-                            url = String.format(YOUKU, strings[i].split("\\$")[1]);
-                            break;
-                        case "mgtv":
-                            url = String.format(MGTV,  strings[i].split("\\$")[1]);
-                            break;
-                        case "pptv":
-                            url = String.format(PPTV,  strings[i].split("\\$")[1]);
-                            break;
-                        case "bilibili":
-                            url = String.format(BILIBILI, fromSplit[xianlu], strings[i].split("\\$")[1]);
-                            break;
-                        case "weiyun":
-                            url = String.format(WEIYUN, fromSplit[xianlu], strings[i].split("\\$")[1]);
-                            break;
-                        case "qqtencent":
-                            url = String.format(TENCENT, strings[i].split("\\$")[1]);
-                            break;
-                        case "yunduan":
-                        case "yun":
-                            if (strings[i].split("\\$")[1].contains(".mp4")) {
-                                url = String.format(YUN, strings[i].split("\\$")[1]);
-                            } else {
-                                url = String.format(YUNDUAN, strings[i].split("\\$")[1]);
-                            }
-                            break;
-                        case "leshi":
-                            url = String.format(LESHI, strings[i].split("\\$")[1]);
-                            break;
-                        case "iqiyi":
-                            url = String.format(IQYI, strings[i].split("\\$")[1]);
-                            break;
-                        case "acfun":
-                            url = String.format(ACFUN, strings[i].split("\\$")[1]);
-                            break;
-                        default:
-                            if (strings[i].split("\\$")[1].startsWith("ftp:") || strings[i].split("\\$")[1].startsWith("xg:")) {
-                                url = strings[i].split("\\$")[1];
-                            } else {
-                                url = String.format(OTHER, fromSplit[xianlu], strings[i].split("\\$")[1]);
-                            }
-                            break;
-
-                    }
+                    url = String.format("http://h1.003ji.cn/ckplayer/%s/index.hchc?id=%s&height=449",fromSplit[xianlu],strings[i].split("\\$")[1]);
+//                    switch (fromSplit[xianlu]) {
+//
+//                        case "sohu":
+//                        case "youku":
+//                            url = String.format(YOUKU, strings[i].split("\\$")[1]);
+//                            break;
+//                        case "mgtv":
+//                            url = String.format(MGTV,  strings[i].split("\\$")[1]);
+//                            break;
+//                        case "pptv":
+//                            url = String.format(PPTV,  strings[i].split("\\$")[1]);
+//                            break;
+//                        case "bilibili":
+//                            url = String.format(BILIBILI, fromSplit[xianlu], strings[i].split("\\$")[1]);
+//                            break;
+//                        case "weiyun":
+//                            url = String.format(WEIYUN, fromSplit[xianlu], strings[i].split("\\$")[1]);
+//                            break;
+//                        case "qqtencent":
+//                            url = String.format(TENCENT, strings[i].split("\\$")[1]);
+//                            break;
+//                        case "yunduan":
+//                        case "yun":
+//                            if (strings[i].split("\\$")[1].contains(".mp4")) {
+//                                url = String.format(YUN, strings[i].split("\\$")[1]);
+//                            } else {
+//                                url = String.format(YUNDUAN, strings[i].split("\\$")[1]);
+//                            }
+//                            break;
+//                        case "leshi":
+//                            url = String.format(LESHI, strings[i].split("\\$")[1]);
+//                            break;
+//                        case "iqiyi":
+//                            url = String.format(IQYI, strings[i].split("\\$")[1]);
+//                            break;
+//                        case "acfun":
+//                            url = String.format(ACFUN, strings[i].split("\\$")[1]);
+//                            break;
+//                        default:
+//                            if (strings[i].split("\\$")[1].startsWith("ftp:") || strings[i].split("\\$")[1].startsWith("xg:")) {
+//                                url = strings[i].split("\\$")[1];
+//                            } else {
+//                                url = String.format(OTHER, fromSplit[xianlu], strings[i].split("\\$")[1]);
+//                            }
+//                            break;
+//
+//                    }
                 }
             }
         } catch (Exception e) {
@@ -320,7 +331,7 @@ public class A4dyImpl implements IVideoMoreParser {
             Map<String, String> mapUrl = new HashMap<>();
             mapUrl.put("标清", url);
             playUrl.setSuccess(true);
-            playUrl.setReferer("http://c.aaccy.com/");
+            playUrl.setReferer("http://aaqqw.com/");
             if ((url.contains(".mp4") || url.contains(".rm") || url.contains(".3gp")) && !url.contains("height=270")) {
                 playUrl.setUrlType(VideoPlayUrls.URL_FILE);
                 playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);

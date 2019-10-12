@@ -1,53 +1,54 @@
 [{
-  "cover": "http://www.775v.com/style/img/aqylogo.png",
+  "cover": "http://mv.688ing.com/static/index/img/iqiyilogo.png",
   "name": "爱奇艺视频",
   "url": "http://www.iqiyi.com/"
 }, {
-  "cover": "http://www.775v.com/style/img/youkulogo.png",
+  "cover": "http://mv.688ing.com/static/index/img/youkulogo.png",
   "name": "优酷视频",
   "url": "http://www.youku.com/"
 }, {
-  "cover": "http://www.775v.com/style/img/letvlogo.png",
-  "name": "乐视TV视频",
-  "url": "http://www.le.com/"
+  "cover": "http://mv.688ing.com/static/index/img/bilibili.png",
+  "name": "bilibili",
+  "url": "http://www.bilibili.com/"
 }, {
-  "cover": "http://www.775v.com/style/img/qqlogo.png",
+  "cover": "http://mv.688ing.com/static/index/img/qqlogo.png",
   "name": "腾讯视频",
   "url": "http://v.qq.com/"
 }, {
-  "cover": "http://www.775v.com/style/img/tudoulogo.png",
+  "cover": "http://mv.688ing.com/static/index/img/tudoulogo.png",
   "name": "土豆视频",
   "url": "http://www.tudou.com/"
 }, {
-  "cover": "http://www.775v.com/style/img/sohulogo.png",
+  "cover": "http://mv.688ing.com/static/index/img/sohulogo.png",
   "name": "搜狐视频",
   "url": "http://tv.sohu.com/"
 }, {
-  "cover": "http://www.775v.com/style/img/56logo.png",
-  "name": "56视频",
-  "url": "http://www.56.com/"
+  "cover": "http://mv.688ing.com/static/index/img/fengxing.png",
+  "name": "风行",
+  "url": "https://www.fun.tv/"
 }, {
-  "cover": "http://www.775v.com/style/img/ku6logo.png",
-  "name": "酷6视频",
-  "url": "http://www.ku6.com/"
+  "cover": "http://mv.688ing.com/static/index/img/acfun.png",
+  "name": "acfun",
+  "url": "https://www.acfun.cn/"
 }, {
-  "cover": "http://www.775v.com/style/img/wasulogo.png",
+  "cover": "http://sp288.com/static/picture/wasulogo.png",
   "name": "WASU华数视频",
   "url": "http://www.wasu.cn/"
 }, {
-  "cover": "http://www.775v.com/style/img/yinyuetailogo.png",
+  "cover": "http://sp288.com/static/picture/yinyuetailogo.png",
   "name": "音悦台MV",
   "url": "http://www.yinyuetai.com/"
 }, {
-  "cover": "http://www.775v.com/style/img/hunantvlogo.png",
+  "cover": "http://mv.688ing.com/static/index/img/hunantvlogo.png",
   "name": "芒果TV视频",
   "url": "http://www.mgtv.com/"
 }, {
-  "cover": "http://www.775v.com/style/img/sinalogo.png",
-  "name": "新浪视频",
-  "url": "http://video.sina.com.cn/"
+  "cover": "http://11136604.s21i.faiusr.com/4/ABUIABAEGAAg3N_OxgUo4L2dxQMwjgE4PA.png",
+  "name": "乐视",
+  "url": "http://www.le.com/"
 }, {
-  "cover": "http://www.775v.com/style/img/163logo.png",
-  "name": "网易视频",
-  "url": "http://v.163.com/"
-}]
+  "cover": "http://sp288.com/static/picture/56logo.png",
+  "name": "56",
+  "url": "http://v.56.com/"
+}
+  ]

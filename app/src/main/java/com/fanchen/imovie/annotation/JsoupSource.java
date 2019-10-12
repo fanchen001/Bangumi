@@ -228,5 +228,9 @@ public enum JsoupSource {
     /**
      * http://v.6.cn
      */
-    V6
+    V6,
+    /**
+     * http://yingdouwang.com
+     */
+    YDW
 }

@@ -85,11 +85,11 @@ public interface TepianService {
      * @param url
      * @return
      */
-    @GET
+    @GET("movie/{path}.html")
     @JsoupType(JsoupSource.TEPIAN)
     @MethodType(value = MethodSource.DETAILS)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IVideoDetails> details(@Url String url);
+    Call<IVideoDetails> details(@Path("path") String url);
 
     /**
      * @param url

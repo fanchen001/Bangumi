@@ -9,6 +9,7 @@ import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
+import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.BobmaoService;
 import com.fanchen.imovie.util.JavaScriptUtil;
@@ -52,6 +53,34 @@ public class BobmaoImpl implements IVideoMoreParser {
     public IPlayUrls playUrl(Retrofit retrofit, String baseUrl, String html) {
         VideoPlayUrls playUrl = new VideoPlayUrls();
         try {
+            String attr = new Node(html).attr("iframe", "src");
+            if(!TextUtils.isEmpty(attr)) {
+                Map<String, String> map = new HashMap<>();
+                if (attr.contains("=")) {
+                    String[] split = attr.split("=");
+                    String s = split[split.length - 1];
+                    if (s.contains(".m3u8")) {
+                        map.put("标清", s);
+                        playUrl.setReferer(RetrofitManager.REQUEST_URL);
+                        playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO_M3U8);
+                        playUrl.setUrlType(IPlayUrls.URL_M3U8);
+                    } else if (s.contains(".mp4") || s.contains(".wmv") || s.contains(".rm") || s.contains(".3gp") || s.contains(".avi")) {
+                        map.put("标清", s);
+                        playUrl.setReferer(RetrofitManager.REQUEST_URL);
+                        playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
+                        playUrl.setUrlType(IPlayUrls.URL_FILE);
+                    }
+                    if (map.isEmpty()) {
+                        map.put("标清", attr);
+                        playUrl.setReferer(RetrofitManager.REQUEST_URL);
+                        playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                        playUrl.setUrlType(IPlayUrls.URL_WEB);
+                    }
+                    playUrl.setUrls(map);
+                    playUrl.setSuccess(true);
+                    return playUrl;
+                }
+            }
             String match1 = JavaScriptUtil.match("base64decode\\(\"[\"%\\w\\W\\d$]+=\"\\);", html, 0, 14, 3);
             if (!TextUtils.isEmpty(match1)) {
                 LogUtil.e("BobmaoImpl", "match1 -> " + match1);

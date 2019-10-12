@@ -23,7 +23,7 @@ public interface Acg12Service {
      * @param body
      * @return
      */
-    @POST("wp-admin/admin-ajax.php?action=3a83abb58190771625479890b3035831&type=getPostsByCategory")
+    @POST("wp-admin/admin-ajax.php?action=c0bb4c20c6136e2ea6bb77713fff6675&type=getPostsByCategory")
     @Headers({"Content-type:application/x-www-form-urlencoded","Accept-Language:zh-CN,zh;q=0.8"})
     @RetrofitType(isJsonResponse = true)
     Call<AcgRoot<AcgData>> getPostsByCategory(@Body RequestBody body);
@@ -33,7 +33,7 @@ public interface Acg12Service {
      * @param body
      * @return
      */
-    @POST("wp-admin/admin-ajax.php?action=3a83abb58190771625479890b3035831&type=getCategories")
+    @POST("wp-admin/admin-ajax.php?action=c0bb4c20c6136e2ea6bb77713fff6675&type=getCategories")
     @Headers({"Content-type:application/x-www-form-urlencoded","Accept-Language:zh-CN,zh;q=0.8"})
     @RetrofitType(isJsonResponse = true)
     Call<AcgRoot<AcgData>> getCategories(@Body RequestBody body);
@@ -43,7 +43,7 @@ public interface Acg12Service {
      * @param body
      * @return
      */
-    @POST("wp-admin/admin-ajax.php?action=3a83abb58190771625479890b3035831&type=getToken")
+    @POST("wp-admin/admin-ajax.php?action=c0bb4c20c6136e2ea6bb77713fff6675&type=getToken")
     @Headers({"Content-type:application/x-www-form-urlencoded","Accept-Language:zh-CN,zh;q=0.8"})
     @RetrofitType(isJsonResponse = true)
     Call<AcgRoot<AcgToken>> getToken(@Body RequestBody body);

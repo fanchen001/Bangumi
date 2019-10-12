@@ -1,12 +1,19 @@
 package com.fanchen.imovie.jsoup.parser;
 
+import android.text.TextUtils;
+
+import com.fanchen.imovie.entity.Video;
+import com.fanchen.imovie.entity.VideoHome;
 import com.fanchen.imovie.entity.VideoPlayUrls;
 import com.fanchen.imovie.entity.face.IBangumiMoreRoot;
 import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
+import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.entity.face.IVideoEpisode;
-import com.fanchen.imovie.jsoup.IVideoMoreParser;
+import com.fanchen.imovie.jsoup.IVideoParser;
+import com.fanchen.imovie.jsoup.node.Node;
+import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.ZhandiService;
 import com.fanchen.imovie.util.JavaScriptUtil;
 import com.fanchen.imovie.util.StreamUtil;
@@ -23,9 +30,9 @@ import retrofit2.Retrofit;
  * 战地视频
  * Created by fanchen on 2017/12/23.
  */
-public class ZhandiImpl implements IVideoMoreParser {
+public class ZhandiImpl implements IVideoParser {
 
-    private SmdyImpl smdy = new SmdyImpl(ZhandiService.class.getName(),true,false);
+    private CcyImpl smdy = new CcyImpl(ZhandiService.class.getName(),true,false);
 
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {
@@ -48,50 +55,77 @@ public class ZhandiImpl implements IVideoMoreParser {
         Map<String, String> urlMap = new HashMap<>();
         urls.setReferer(baseUrl);
         urls.setUrls(urlMap);
-        try {
-            String regex = "\\{[\\w\\d`~!@#$%^&*_\\-+=<>?:\"|,.\\\\ \\/;']+\\}";
-            String match = JavaScriptUtil.match(regex, html, 0);
-            JSONObject jsonObject = new JSONObject(match);
-            String url = jsonObject.getString("url");
-            if (url.contains(".m3u8") ) {
-                urlMap.put("标清", url);
-                urls.setUrlType(VideoPlayUrls.URL_M3U8);
-                urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO_M3U8);
-                urls.setSuccess(true);
-            } else if(url.contains(".mp4") || url.contains(".wmv") || url.contains(".mkv")
-                    || url.contains(".3gp") || url.contains(".avi")){
-                urlMap.put("标清", url);
-                urls.setUrlType(VideoPlayUrls.URL_FILE);
-                urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
-                urls.setSuccess(true);
-            }else if(url.contains("share")){
-                URL base = new URL(url);
-                String s = StreamUtil.url2String(url);
-                String reg = "var main = \"[\\w\\d`~!@#$%^&*_\\-+=<>?:\"|,.\\\\ \\/;']+\";";
-                String mat = JavaScriptUtil.match(reg, s, 0, 12, 2);
-                if(mat.startsWith("http")){
-                }else if(mat.startsWith("//")){
-                    mat = base.getProtocol() + ":" + mat;
-                }else  if(mat.startsWith("/")){
-                    mat = base.getProtocol() + "://" + base.getHost()  + mat;
-                }else{
-                    mat = base.getProtocol() + "://" + base.getHost() + "/"  + mat;
+        urls.setSuccess(true);
+        String attr = new Node(html).attr("iframe","src");
+        if(!TextUtils.isEmpty(attr)){
+            if(attr.contains("=")){
+                String[] split = attr.split("=");
+                String s = split[split.length - 1];
+                if(s.contains("~")) s = s.split("~")[0];
+                if (s.contains(".m3u8")) {
+                    urlMap.put("标清", s);
+                    urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO_M3U8);
+                    urls.setUrlType(IPlayUrls.URL_M3U8);
+                } else if (s.contains(".mp4") || s.contains(".wmv") || s.contains(".rm") || s.contains(".3gp") || s.contains(".avi")) {
+                    urlMap.put("标清", s);
+                    urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
+                    urls.setUrlType(IPlayUrls.URL_FILE);
                 }
-                urlMap.put("标清", mat);
-                urls.setUrlType(VideoPlayUrls.URL_M3U8);
-                urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO_M3U8);
-                urls.setSuccess(true);
+                if (urlMap.isEmpty()) {
+                    urlMap.put("标清", RetrofitManager.warpUrl(baseUrl,attr));
+                    urls.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                    urls.setUrlType(IPlayUrls.URL_WEB);
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }else{
+            urlMap.put("标清",RetrofitManager.REQUEST_URL);
+            urls.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+            urls.setUrlType(IPlayUrls.URL_WEB);
         }
+//        try {
+//            String regex = "\\{[\\w\\d`~!@#$%^&*_\\-+=<>?:\"|,.\\\\ \\/;']+\\}";
+//            String match = JavaScriptUtil.match(regex, html, 0);
+//            JSONObject jsonObject = new JSONObject(match);
+//            String url = jsonObject.getString("url");
+//            if (url.contains(".m3u8") ) {
+//                urlMap.put("标清", url);
+//                urls.setUrlType(VideoPlayUrls.URL_M3U8);
+//                urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO_M3U8);
+//                urls.setSuccess(true);
+//            } else if(url.contains(".mp4") || url.contains(".wmv") || url.contains(".mkv")
+//                    || url.contains(".3gp") || url.contains(".avi")){
+//                urlMap.put("标清", url);
+//                urls.setUrlType(VideoPlayUrls.URL_FILE);
+//                urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
+//                urls.setSuccess(true);
+//            }else if(url.contains("share")){
+//                URL base = new URL(url);
+//                String s = StreamUtil.url2String(url);
+//                String reg = "var main = \"[\\w\\d`~!@#$%^&*_\\-+=<>?:\"|,.\\\\ \\/;']+\";";
+//                String mat = JavaScriptUtil.match(reg, s, 0, 12, 2);
+//                if(mat.startsWith("http")){
+//                }else if(mat.startsWith("//")){
+//                    mat = base.getProtocol() + ":" + mat;
+//                }else  if(mat.startsWith("/")){
+//                    mat = base.getProtocol() + "://" + base.getHost()  + mat;
+//                }else{
+//                    mat = base.getProtocol() + "://" + base.getHost() + "/"  + mat;
+//                }
+//                urlMap.put("标清", mat);
+//                urls.setUrlType(VideoPlayUrls.URL_M3U8);
+//                urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO_M3U8);
+//                urls.setSuccess(true);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         return urls;
     }
 
-    @Override
-    public IBangumiMoreRoot more(Retrofit retrofit, String baseUrl, String html) {
-        return smdy.more(retrofit, baseUrl, html);
-    }
+//    @Override
+//    public IBangumiMoreRoot more(Retrofit retrofit, String baseUrl, String html) {
+//        return smdy.more(retrofit, baseUrl, html);
+//    }
 
 //    @Override
 //    public IBangumiMoreRoot more(Retrofit retrofit, String baseUrl, String html) {

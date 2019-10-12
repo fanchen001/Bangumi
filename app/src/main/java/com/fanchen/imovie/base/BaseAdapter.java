@@ -103,6 +103,7 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
     }
 
     public void setList(final List<? extends IViewType> mList,final boolean refresh) {
+        if(mList == null) return;
         if (Thread.currentThread().getName().equals("main")) {
             if(refresh ||  this.mList == null){
                 this.mList = new ArrayList<>(mList);
@@ -494,6 +495,27 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
                     adapter.getItemViewType(position) == IViewType.TYPE_FOOTER ? gridManager.getSpanCount() : 1;
             return size;
         }
+    }
+
+    public static class StaggeredGridLayoutManagerWrapper extends StaggeredGridLayoutManager{
+
+        public StaggeredGridLayoutManagerWrapper(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+            super(context, attrs, defStyleAttr, defStyleRes);
+        }
+
+        public StaggeredGridLayoutManagerWrapper(int spanCount, int orientation) {
+            super(spanCount, orientation);
+        }
+
+        @Override
+        public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+            try {
+                super.onLayoutChildren(recycler, state);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     public static class LinearLayoutManagerWrapper extends LinearLayoutManager {

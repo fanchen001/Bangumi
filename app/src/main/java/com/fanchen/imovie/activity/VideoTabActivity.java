@@ -42,6 +42,7 @@ import com.fanchen.imovie.adapter.pager.WandouPagerAdapter;
 import com.fanchen.imovie.adapter.pager.WeilaiPagerAdapter;
 import com.fanchen.imovie.adapter.pager.XiaokabaPagerAdapter;
 import com.fanchen.imovie.adapter.pager.DianxiumeiPagerAdapter;
+import com.fanchen.imovie.adapter.pager.YdwPagerAdapter;
 import com.fanchen.imovie.adapter.pager.ZhandiPagerAdapter;
 import com.fanchen.imovie.adapter.pager.ZzyoPagerAdapter;
 import com.fanchen.imovie.adapter.pager.ZzzvzPagerAdapter;
@@ -92,6 +93,7 @@ public class VideoTabActivity extends BaseTabActivity implements SearchDialogFra
     public static final int FEIFAN = 28;
     public static final int ZZYO = 29;
     public static final int CCY = 30;
+    public static final int YDW = 31;
 
     public static final String TYPE = "type";
     public static final String TITLE = "title";
@@ -237,6 +239,8 @@ public class VideoTabActivity extends BaseTabActivity implements SearchDialogFra
             mPagerAdapter = new ICanTvPagerAdapter(fm);
         } else if (type == ZZYO) {
             mPagerAdapter = new ZzyoPagerAdapter(fm);
+        }else if (type == YDW) {
+            mPagerAdapter = new YdwPagerAdapter(fm);
         }
         return mPagerAdapter;
     }

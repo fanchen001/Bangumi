@@ -8,6 +8,7 @@ public class DialogBanner extends BmobObj{
 
     private String cover;
     private int bannerInt ;
+    private int bannerEnd ;
     private String title;
     private String baseJson;
     private String introduce;
@@ -50,5 +51,13 @@ public class DialogBanner extends BmobObj{
 
     public void setIntroduce(String introduce) {
         this.introduce = introduce;
+    }
+
+    public int getBannerEnd() {
+        return bannerEnd;
+    }
+
+    public void setBannerEnd(int bannerEnd) {
+        this.bannerEnd = bannerEnd;
     }
 }

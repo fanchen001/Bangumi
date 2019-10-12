@@ -14,11 +14,11 @@ public class ZhandiPagerAdapter extends BaseFragmentAdapter {
 
     private final String[] TITLES = new String[]{"首页", "电影", "电视剧", "动漫", "综艺"};
     //    private final String[] PATHS = new String[]{"","dianying", "dianshiju", "Dm","Zy"};
-    private final String[] PATHS = new String[]{"", "Movie", "Tv", "Cartoon", "Variety"};
-    private final Boolean[] LOADS = new Boolean[]{false, false, false, true, true};
-
+    private final String[] PATHS = new String[]{"", "movie", "tv", "Animation", "Arts"};
+    private final Boolean[] LOADS = new Boolean[]{false, true, true, true, true};
+    private final Boolean[] BANGUMI = new Boolean[]{true,false,false,false,false};
     //    private final String REFERER = "http://m.zhandi.cc/";
-    private final String REFERER = "https://m.ywt.cc/";
+    private final String REFERER = "http://www.mfyingyuan.com/";
 
     public ZhandiPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -31,7 +31,7 @@ public class ZhandiPagerAdapter extends BaseFragmentAdapter {
 
     @Override
     public Fragment createFragment(int position) {
-        return VideoListFragment.newInstance(PATHS[position], getExtendInfo().toString(), 1, 2, LOADS[position], false, false, REFERER, false);
+        return VideoListFragment.newInstance(PATHS[position], getExtendInfo().toString(), 1, 2, LOADS[position], false, false, REFERER, BANGUMI[position]);
     }
 
     @Override

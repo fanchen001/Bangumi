@@ -5,9 +5,8 @@ import com.fanchen.imovie.entity.face.IHomeRoot;
 import com.fanchen.imovie.entity.face.IPlayUrls;
 import com.fanchen.imovie.entity.face.IVideoDetails;
 import com.fanchen.imovie.jsoup.IVideoMoreParser;
+import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.retrofit.service.LL520Service;
-import com.fanchen.imovie.util.LogUtil;
-import com.google.gson.Gson;
 
 import retrofit2.Retrofit;
 
@@ -18,6 +17,7 @@ import retrofit2.Retrofit;
 public class LL520Impl implements IVideoMoreParser {
 
     private SmdyImpl impl = new SmdyImpl(LL520Service.class.getName());
+    private CcyImpl impl2 = new CcyImpl(LL520Service.class.getName());
 
     @Override
     public IBangumiMoreRoot more(Retrofit retrofit, String baseUrl, String html) {
@@ -26,13 +26,14 @@ public class LL520Impl implements IVideoMoreParser {
 
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {
-        IBangumiMoreRoot search = impl.search(retrofit, baseUrl, html);
-        LogUtil.e("LL520Impl","" + new Gson().toJson(search));
         return impl.search(retrofit,baseUrl,html);
     }
 
     @Override
     public IHomeRoot home(Retrofit retrofit, String baseUrl, String html) {
+        if(new Node(html).list("div.stui-pannel_hd").size() > 2){
+            return impl2.home(retrofit,baseUrl,html);
+        }
         return impl.home(retrofit,baseUrl,html);
     }
 

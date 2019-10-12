@@ -28,7 +28,7 @@
     "position": 4,
     "title": "战地视频",
     "type": 5,
-    "url":"https://m.ywt.cc/"
+    "url":"http://www.wxsuqi.com/"
   },
   {
     "position": 5,
@@ -61,7 +61,7 @@
     "title": "K8影视",
     "type": 10,
     "hot": true,
-    "url":"http://m.4g33.com/"
+    "url":"https://www.poxiaotv.com/"
   },
   {
     "position": 10,
@@ -133,7 +133,7 @@
     "title": "泰韩剧啦",
     "hot": true,
     "type": 21,
-    "url":"https://www.taiju.la/"
+    "url":"https://www.taijumi.cc/"
   },
   {
     "position": 21,
@@ -157,7 +157,7 @@
     "position": 24,
     "title": "小石影院",
     "type": 25,
-    "url":"http://m.smdy88.com/"
+    "url":"https://m.smdy88.com/"
   },
   {
     "position": 25,
@@ -175,7 +175,7 @@
     "position": 27,
     "title": "未来影视",
     "type": 28,
-    "url":"https://www.55vcd.com/"
+    "url":"https://www.55evd.com/"
   },
   {
     "position": 28,
@@ -188,5 +188,11 @@
     "title": "悠久影音",
     "type": 30,
     "url":"https://m.7ccy.com/"
+  },
+  {
+    "position": 30,
+    "title": "影动网",
+    "type": 31,
+    "url":"http://yingdouwang.com/"
   }
 ]

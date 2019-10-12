@@ -26,6 +26,7 @@ import com.arialyy.aria.core.download.DownloadReceiver;
 import com.arialyy.aria.core.download.DownloadTask;
 import com.arialyy.aria.core.inf.IEntity;
 import com.fanchen.imovie.entity.VideoCategory;
+import com.fanchen.imovie.hook.FuckHuaweiLoadedApk;
 import com.fanchen.imovie.picasso.PicassoListener;
 import com.fanchen.imovie.picasso.download.HttpRedirectDownLoader;
 import com.fanchen.imovie.service.EmptyService;
@@ -117,7 +118,8 @@ public class IMovieAppliction extends XLAppliction implements QbSdk.PreInitCallb
     @Override
     public void onCreate() {
         super.onCreate();
-        com.fanchen.sniffing.LogUtil.E = false;
+        FuckHuaweiLoadedApk.hookHuaWeiVerifier(this);
+        com.fanchen.sniffing.LogUtil.E = true;
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(app = this);
         multithreading = getMultithreading(mSharedPreferences);
         boolean swith_mode = mSharedPreferences.getBoolean("swith_mode", true);

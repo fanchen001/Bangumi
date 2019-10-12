@@ -22,7 +22,7 @@ import com.fanchen.imovie.util.DateUtil;
 import com.fanchen.imovie.view.video.SuperPlayerView;
 import com.fanchen.sniffing.SniffingCallback;
 import com.fanchen.sniffing.SniffingVideo;
-import com.fanchen.sniffing.x5.SniffingUtil;
+import com.fanchen.sniffing.web.SniffingUtil;
 import com.litesuits.orm.db.assit.QueryBuilder;
 import com.tencent.smtt.sdk.TbsVideo;
 
@@ -145,7 +145,7 @@ public class LivePlayerActivity extends BaseActivity {
         if (mSuperPlayerView != null) {
             mSuperPlayerView.onDestroy();
         }
-        SniffingUtil.get().releaseAll();
+//        SniffingUtil.get().releaseAll();
 //        VideoUrlUtil.getInstance().setParserTime(VideoUrlUtil.PARSER_TIME);
 //        VideoUrlUtil.getInstance().setTimeOut(VideoUrlUtil.DEFAULT_TIME);
 //        VideoUrlUtil.getInstance().destroy();
@@ -273,7 +273,7 @@ public class LivePlayerActivity extends BaseActivity {
                         }
                     } else if (playType == IVideoEpisode.PLAY_TYPE_WEB) {
                         String referer = mIPlayUrls.getReferer();
-                        SniffingUtil.get().activity(LivePlayerActivity.this).url(value).referer(referer).callback(new SniffingCallback() {
+                        SniffingUtil.get().autoRelease(true).activity(LivePlayerActivity.this).url(value).referer(referer).callback(new SniffingCallback() {
 
                             @Override
                             public void onSniffingSuccess(View webView, String url, List<SniffingVideo> videos) {

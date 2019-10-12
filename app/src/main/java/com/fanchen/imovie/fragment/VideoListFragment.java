@@ -36,7 +36,7 @@ import com.fanchen.m3u8.bean.M3u8File;
 import com.fanchen.m3u8.listener.OnM3u8InfoListener;
 import com.fanchen.sniffing.SniffingCallback;
 import com.fanchen.sniffing.SniffingVideo;
-import com.fanchen.sniffing.x5.SniffingUtil;
+import com.fanchen.sniffing.web.SniffingUtil;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
@@ -171,7 +171,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
     public void onDestroy() {
         super.onDestroy();
         M3u8Manager.INSTANCE.unregisterInfoListeners(this);
-        SniffingUtil.get().releaseAll();
+//        SniffingUtil.get().releaseAll();
     }
 
     @Override
@@ -443,7 +443,7 @@ public class VideoListFragment extends BaseRecyclerFragment implements BaseAdapt
                     m3u8File.setM3u8VideoName(String.format("%s.mp4", mVideo.getTitle()));
                     M3u8Manager.INSTANCE.download(m3u8File);
                 }else if(response.getPlayType() == IVideoEpisode.PLAY_TYPE_WEB || response.getPlayType() == IVideoEpisode.PLAY_TYPE_VIDEO_WEB){
-                    SniffingUtil.get().activity(activity).url(value).referer(response.getReferer()).callback(VideoListFragment.this).start();
+                    SniffingUtil.get().autoRelease(true).activity(activity).url(value).referer(response.getReferer()).callback(VideoListFragment.this).start();
                 } else {
                     showSnackbar(getStringFix(R.string.error_download_type));
                     DialogUtil.closeProgressDialog();

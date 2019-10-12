@@ -44,7 +44,6 @@ public class KmaoImpl implements IVideoMoreParser {
         VideoHome home = new VideoHome();
         try {
             List<IVideo> videos = new ArrayList<>();
-            home.setList(videos);
             for (Node n : node.list("ul#resize_list > li")) {
                 String title = n.text("a > div > label.name");
                 String cover = n.attr("a > div > img", "src");
@@ -64,6 +63,7 @@ public class KmaoImpl implements IVideoMoreParser {
                 video.setType(type);
                 videos.add(video);
             }
+            home.setList(videos);
             home.setSuccess(true);
         } catch (Exception e) {
             e.printStackTrace();

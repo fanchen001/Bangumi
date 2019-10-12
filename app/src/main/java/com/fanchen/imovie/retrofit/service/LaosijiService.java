@@ -51,7 +51,7 @@ public interface LaosijiService {
      * @param keyword
      * @return
      */
-    @GET("vod-search-wd-{wd}-p-{page}.html")
+    @GET("so/{wd}----------{page}---.html")
     @JsoupType(JsoupSource.LAOSIJI)
     @MethodType(value = MethodSource.SEARCH)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
@@ -73,7 +73,7 @@ public interface LaosijiService {
      * @param path
      * @return
      */
-    @GET("shiping/{path}.html")
+    @GET("Movie/{path}.html")
     @JsoupType(JsoupSource.LAOSIJI)
     @MethodType(value = MethodSource.DETAILS)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)

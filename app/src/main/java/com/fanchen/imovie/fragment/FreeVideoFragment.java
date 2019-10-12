@@ -22,7 +22,7 @@ import com.fanchen.imovie.util.DialogUtil;
 import com.fanchen.imovie.util.StreamUtil;
 import com.fanchen.sniffing.SniffingUICallback;
 import com.fanchen.sniffing.SniffingVideo;
-import com.fanchen.sniffing.x5.SniffingUtil;
+import com.fanchen.sniffing.web.SniffingUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tencent.smtt.sdk.TbsVideo;
@@ -105,7 +105,7 @@ public class FreeVideoFragment extends BaseFragment implements
                     if (/*mVideoUrlUtil == null || */luxians.length <= position) return;
                     String videoUrl = String.format(luxians[position], url);
                     String referer = "http://movie.vr-seesee.com/vip";
-                    SniffingUtil.get().activity(activity).url(videoUrl).referer(referer).callback(new SniffingUICallback() {
+                    SniffingUtil.get().autoRelease(true).activity(activity).url(videoUrl).referer(referer).callback(new SniffingUICallback() {
 
                         @Override
                         public void onSniffingStart(View webView, String url) {
@@ -148,7 +148,7 @@ public class FreeVideoFragment extends BaseFragment implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        SniffingUtil.get().releaseAll();
+//        SniffingUtil.get().releaseAll();
 //        if (mVideoUrlUtil != null) mVideoUrlUtil.destroy();
 //        mVideoUrlUtil = null;
     }

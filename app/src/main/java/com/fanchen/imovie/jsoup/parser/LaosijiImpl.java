@@ -15,7 +15,7 @@ import retrofit2.Retrofit;
  */
 public class LaosijiImpl implements IVideoMoreParser {
 
-    private SmdyImpl smdy = new SmdyImpl(LaosijiService.class.getName(),true,false);
+    private CcyImpl smdy = new CcyImpl(LaosijiService.class.getName(),true,false);
 
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {

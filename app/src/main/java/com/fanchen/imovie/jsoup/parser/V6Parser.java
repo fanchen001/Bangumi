@@ -21,7 +21,7 @@ import retrofit2.Retrofit;
 
 public class V6Parser implements IVideoParser {
 
-    private static String[] URLS = {"http://124-232-150-42.6rooms.com/v%s/playlist.m3u8","http://124-232-150-43.6rooms.com/v%s/playlist.m3u8","http://124-232-150-44.6rooms.com/v%s/playlist.m3u8"};
+    private static String[] URLS = {"http://124-232-150-42.6rooms.com/%s/playlist.m3u8","http://124-232-150-43.6rooms.com/%s/playlist.m3u8","http://124-232-150-44.6rooms.com/%s/playlist.m3u8"};
 
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {
@@ -61,7 +61,7 @@ public class V6Parser implements IVideoParser {
                     video.setUrlReferer(baseUrl);
                     video.setDanmaku(object.optString("recTagName"));
                     video.setTitle(object.optString("userMood"));
-                    video.setUrl(getUrl(object.optString("uid")));
+                    video.setUrl(getUrl(object.optString("flvtitle")));
                     video.setType(object.optString("username"));
                     videos.add(video);
                 }

@@ -34,109 +34,142 @@ import retrofit2.Retrofit;
  */
 public class TepianImpl implements IVideoMoreParser {
 
+    private CcyImpl impl = new CcyImpl(TepianService.class.getName());
+
     @Override
     public IBangumiMoreRoot more(Retrofit retrofit, String baseUrl, String html) {
-       return search(retrofit,baseUrl,html);
+       return impl.more(retrofit,baseUrl,html);
     }
 
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {
-        return (IBangumiMoreRoot)home(retrofit, baseUrl, html);
+        return impl.search(retrofit, baseUrl, html);
     }
 
     @Override
     public IHomeRoot home(Retrofit retrofit, String baseUrl, String html) {
-        Node node = new Node(html);
-        VideoHome home = new VideoHome();
-        try {
-            List<IVideo> videos = new ArrayList<>();
-            for (Node n : node.list("ul.globalPicList.threeList.clearfix > li")) {
-                String title = n.attr("div > a > img", "alt");
-                String cover = n.attr("div > a > img", "src");
-                if (TextUtils.isEmpty(cover))  continue;
-                String hd = n.text("div > a > span");
-                String area = n.text("div > span.sDes");
-                String url = baseUrl + n.attr("div > a", "href");
-                Video video = new Video();
-                video.setServiceClass(TepianService.class.getName());
-                video.setHasDetails(true);
-                video.setCover(cover);
-                video.setId(url);
-                video.setDanmaku(area);
-                video.setTitle(title);
-                video.setUrl(url);
-                video.setExtras(hd);
-                videos.add(video);
-            }
-            home.setList(videos);
-            home.setSuccess(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return home;
+        return impl.home(retrofit, baseUrl, html);
+//        Node node = new Node(html);
+//        VideoHome home = new VideoHome();
+//        try {
+//            List<IVideo> videos = new ArrayList<>();
+//            for (Node n : node.list("ul.globalPicList.threeList.clearfix > li")) {
+//                String title = n.attr("div > a > img", "alt");
+//                String cover = n.attr("div > a > img", "src");
+//                if (TextUtils.isEmpty(cover))  continue;
+//                String hd = n.text("div > a > span");
+//                String area = n.text("div > span.sDes");
+//                String url = baseUrl + n.attr("div > a", "href");
+//                Video video = new Video();
+//                video.setServiceClass(TepianService.class.getName());
+//                video.setHasDetails(true);
+//                video.setCover(cover);
+//                video.setId(url);
+//                video.setDanmaku(area);
+//                video.setTitle(title);
+//                video.setUrl(url);
+//                video.setExtras(hd);
+//                videos.add(video);
+//            }
+//            home.setList(videos);
+//            home.setSuccess(true);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return home;
     }
 
     @Override
     public IVideoDetails details(Retrofit retrofit, String baseUrl, String html) {
-        Node node = new Node(html);
-        VideoDetails details = new VideoDetails();
-        details.setServiceClass(TepianService.class.getName());
-        try {
-            List<VideoEpisode> episodes = new ArrayList<>();
-            List<Video> videos = new ArrayList<>();
-            for (Node n : node.list("ul.picTxtA.guessLike.clearfix > li")) {
-                String title = n.attr("div > img", "alt");
-                String cover = n.attr("div > img", "src");
-                if (TextUtils.isEmpty(cover))  continue;
-                String hd = n.text("div > span.sName");
-                String score = n.text("div > span.sDes");
-                String url = baseUrl + n.attr("a", "href");
-                Video video = new Video();
-                video.setCover(cover);
-                video.setServiceClass(TepianService.class.getName());
-                video.setId(url);
-                video.setTitle(title);
-                video.setUrl(url);
-                video.setDanmaku(score);
-                video.setExtras(hd);
-                videos.add(video);
-            }
-            int count = 0;
-            List<Node> list = node.list("div#play > div.tabList");
-            for (Node n : node.list("div#play > div > span")) {
-                for (Node sub : n.list("li")) {
-                    VideoEpisode episode = new VideoEpisode();
-                    episode.setServiceClass(TepianService.class.getName());
-                    episode.setId(baseUrl + sub.attr("a", "href"));
-                    episode.setUrl(baseUrl + sub.attr("a", "href"));
-                    if (list.size() > count) {
-                        episode.setTitle(list.get(count).text().replace("高清云播线路，无广告、无插件【推荐】，[支持手机]","") + "_" + sub.text());
-                    } else {
-                        episode.setTitle(sub.text());
-                    }
-                    episodes.add(episode);
-                }
-                count++;
-            }
-            details.setCover(node.attr("a#detail_play_pic", "src"));
-            details.setLast(node.textAt("span.sDes", 1));
-            details.setExtras(node.textAt("span.sDes",0));
-            details.setDanmaku(node.text("span.sSource"));
-            details.setTitle(node.text("span.sName"));
-            details.setIntroduce(node.text("p.pIntroTxt"));
-            details.setEpisodes(episodes);
-            details.setRecomm(videos);
-            details.setSuccess(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return details;
+        return impl.details(retrofit, baseUrl, html);
+//        Node node = new Node(html);
+//        VideoDetails details = new VideoDetails();
+//        details.setServiceClass(TepianService.class.getName());
+//        try {
+//            List<VideoEpisode> episodes = new ArrayList<>();
+//            List<Video> videos = new ArrayList<>();
+//            for (Node n : node.list("ul.picTxtA.guessLike.clearfix > li")) {
+//                String title = n.attr("div > img", "alt");
+//                String cover = n.attr("div > img", "src");
+//                if (TextUtils.isEmpty(cover))  continue;
+//                String hd = n.text("div > span.sName");
+//                String score = n.text("div > span.sDes");
+//                String url = baseUrl + n.attr("a", "href");
+//                Video video = new Video();
+//                video.setCover(cover);
+//                video.setServiceClass(TepianService.class.getName());
+//                video.setId(url);
+//                video.setTitle(title);
+//                video.setUrl(url);
+//                video.setDanmaku(score);
+//                video.setExtras(hd);
+//                videos.add(video);
+//            }
+//            int count = 0;
+//            List<Node> list = node.list("div#play > div.tabList");
+//            for (Node n : node.list("div#play > div > span")) {
+//                for (Node sub : n.list("li")) {
+//                    VideoEpisode episode = new VideoEpisode();
+//                    episode.setServiceClass(TepianService.class.getName());
+//                    episode.setId(baseUrl + sub.attr("a", "href"));
+//                    episode.setUrl(baseUrl + sub.attr("a", "href"));
+//                    if (list.size() > count) {
+//                        episode.setTitle(list.get(count).text().replace("高清云播线路，无广告、无插件【推荐】，[支持手机]","") + "_" + sub.text());
+//                    } else {
+//                        episode.setTitle(sub.text());
+//                    }
+//                    episodes.add(episode);
+//                }
+//                count++;
+//            }
+//            details.setCover(node.attr("a#detail_play_pic", "src"));
+//            details.setLast(node.textAt("span.sDes", 1));
+//            details.setExtras(node.textAt("span.sDes",0));
+//            details.setDanmaku(node.text("span.sSource"));
+//            details.setTitle(node.text("span.sName"));
+//            details.setIntroduce(node.text("p.pIntroTxt"));
+//            details.setEpisodes(episodes);
+//            details.setRecomm(videos);
+//            details.setSuccess(true);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return details;
     }
 
     @Override
     public IPlayUrls playUrl(Retrofit retrofit, String baseUrl, String html) {
         VideoPlayUrls playUrl = new VideoPlayUrls();
+        Map<String,String> map = new HashMap<>();
+        playUrl.setUrls(map);
         try {//[]
+            int start = html.indexOf("var now=");
+            if(start != -1){
+                String substring = html.substring(start + 9);
+                int end = substring.indexOf("\";");
+                if(end != -1){
+                    String substring1 = substring.substring(0, end);
+                    if (substring1.contains(".m3u8")) {
+                        map.put("标清",substring1);
+                        playUrl.setReferer(RetrofitManager.REQUEST_URL);
+                        playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO_M3U8);
+                        playUrl.setUrlType(IPlayUrls.URL_M3U8);
+                    } else if (substring1.contains(".mp4") || substring1.contains(".wmv") || substring1.contains(".rm") || substring1.contains(".3gp") || substring1.contains(".avi")) {
+                        map.put("标清",substring1);
+                        playUrl.setReferer(RetrofitManager.REQUEST_URL);
+                        playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
+                        playUrl.setUrlType(IPlayUrls.URL_FILE);
+                    }
+                    if(map.isEmpty()){
+                        map.put("标清",substring1);
+                        playUrl.setReferer(RetrofitManager.REQUEST_URL);
+                        playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                        playUrl.setUrlType(IPlayUrls.URL_WEB);
+                    }
+                    playUrl.setSuccess(true);
+                    return playUrl;
+                }
+            }
             String match = JavaScriptUtil.match("VideoInfoList=\"[$.:/\\w\\d#\\u4e00-\\u9fa5\\-]+\"", html, 0, 15, 1);
             LogUtil.e("playUrl","match => " + match);
             String[] split = match.split("\\$\\$\\$");
@@ -148,7 +181,7 @@ public class TepianImpl implements IVideoMoreParser {
                     for (int k = 0; k < ids.length; k++) {
                         if (k == Integer.valueOf(splitUrl[2].replace(".html", ""))) {
                             String[] strings = ids[k].split("\\$");
-                            Map<String,String> map = new HashMap<>();
+
                             if(strings[1].startsWith("ftp:") || strings[1].startsWith("xg:")){
                                 map.put(strings[0],strings[1]);
                                 playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_XIGUA);
@@ -176,7 +209,6 @@ public class TepianImpl implements IVideoMoreParser {
                                 playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
                                 playUrl.setUrlType(IPlayUrls.URL_WEB);
                             }
-                            playUrl.setUrls(map);
                             playUrl.setSuccess(true);
                         }
                     }

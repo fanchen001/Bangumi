@@ -170,9 +170,10 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                     if (TextUtils.isEmpty(href1))
                         href1 = n.attr("a", "href");
                     String[] split1 = href1.split("/");
-                    if(WeilaiService.class.getName().equals(serviceName) && split1.length == 3){
-                        title.setMore(!moreKeys.contains(split1[1]));
-                        title.setId(split1[1]);
+                    if(WeilaiService.class.getName().equals(serviceName) && split1.length >= 3){
+                        String[] split = split1[2].split("\\.");
+                        title.setMore(!moreKeys.contains(split[0]));
+                        title.setId(split[0]);
                         title.setPageStart(2);
                     }else if (href1.startsWith(".") && split1.length == 2) {
                         title.setMore(!moreKeys.contains(split1[1]));
@@ -370,7 +371,10 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                         episode.setTitle("播放源" + source + ":" + sub.text());
                     }
                     String href = sub.attr("href");
-                    if(href.startsWith(".")){
+                    if(serviceName.contains(WeilaiService.class.getName())){
+                        episode.setUrl(baseUrl + href);
+                        episode.setId(baseUrl + href);
+                    }else if(href.startsWith(".")){
                         episode.setUrl(baseUrl + href.substring(1));
                         episode.setId(href.split("/")[1]);
                     }else if(href.startsWith("/play")){
@@ -386,6 +390,7 @@ public class XiaokanbaImpl implements IVideoMoreParser {
                         episode.setUrl(href);
                         episode.setId(href);
                     }
+
                     episodes.add(episode);
                 }
                 source++;

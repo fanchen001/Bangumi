@@ -70,7 +70,7 @@ public class AcgMationFragment extends BaseRecyclerFragment {
             token = IMovieAppliction.app.mAcg12Token;
         }
         if(TextUtils.isEmpty(token)){
-            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=UTF-8"),"appSecure=3wk9khscjfk&appId=4q6wnmmdzd");
+            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=UTF-8"),"appId=lakmkcsu3l&appSecret=dlvlcmrq6y7");
             retrofit.enqueue(Acg12Service.class,stringCallback,"getToken",requestBody);
         }else{
             loadPosts(retrofit, page, token);
@@ -147,7 +147,6 @@ public class AcgMationFragment extends BaseRecyclerFragment {
 
         @Override
         public void onFinish(int enqueueKey) {
-            showToast(getStringFix(R.string.success_token));
         }
 
         @Override
@@ -159,9 +158,14 @@ public class AcgMationFragment extends BaseRecyclerFragment {
 
         @Override
         public void onSuccess(int enqueueKey, AcgRoot<AcgToken> response) {
-            if(response == null || response.getData() == null || activity == null)return;
-            activity.appliction.mAcg12Token = response.getData().getToken();
-            loadPosts(getRetrofitManager(), 1, response.getData().getToken());
+            if(response == null || activity == null)return;
+            if(response.getData() == null || TextUtils.isEmpty(response.getData().getToken())){
+                showToast(getStringFix(R.string.error_token));
+            }else{
+                showToast(getStringFix(R.string.success_token));
+                activity.appliction.mAcg12Token = response.getData().getToken();
+                loadPosts(getRetrofitManager(), 1, response.getData().getToken());
+            }
         }
 
     };

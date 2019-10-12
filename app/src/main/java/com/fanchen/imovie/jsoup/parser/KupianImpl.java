@@ -44,7 +44,7 @@ public class KupianImpl implements IVideoMoreParser {
         VideoHome home = new VideoHome();
         try {
             List<IVideo> videos = new ArrayList<>();
-            home.setList(videos);
+
             for (Node n : node.list("ul#resize_list > li")) {
                 String title = n.text("a > div > label.name");
                 if (TextUtils.isEmpty(title))
@@ -68,6 +68,7 @@ public class KupianImpl implements IVideoMoreParser {
                 video.setExtras(type);
                 videos.add(video);
             }
+            home.setList(videos);
             home.setSuccess(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -266,6 +267,7 @@ public class KupianImpl implements IVideoMoreParser {
                         JSONArray Data = object.getJSONArray("Data");
                         JSONObject jsonObject = Data.getJSONObject(Integer.valueOf(split2[0].replace(".html", "")));
                         if (jsonObject.has("playurls")) {
+                            String playname = jsonObject.optString("playname");
                             JSONArray jsonArray = jsonObject.getJSONArray("playurls");
                             JSONArray urlArray = jsonArray.getJSONArray(Integer.valueOf(split2[1].replace(".html", "")) - 1);
                             String url = urlArray.getString(1);
@@ -280,7 +282,7 @@ public class KupianImpl implements IVideoMoreParser {
                                 playUrl.setUrlType(IPlayUrls.URL_FILE);
                                 playUrl.setSuccess(true);
                             } else {
-                                mapUrl.put("标清", "http://api.sstq32.cn/dplay/super.php?id=" + url);
+                                mapUrl.put("标清", "http://api.apiimg.com/dplay/"+playname+".php?id=" + url);
                                 playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
                                 playUrl.setUrlType(IPlayUrls.URL_WEB);
                                 playUrl.setSuccess(true);

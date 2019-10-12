@@ -26,7 +26,7 @@ import retrofit2.Retrofit;
  */
 public class HaliHaliParser implements IVideoMoreParser {
 
-    private CcyParser impl = new CcyParser(HaliHaliService.class.getName());
+    private CcyImpl impl = new CcyImpl(HaliHaliService.class.getName());
 
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {

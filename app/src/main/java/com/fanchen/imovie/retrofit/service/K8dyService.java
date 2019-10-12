@@ -33,18 +33,18 @@ public interface K8dyService {
     @MethodType(value = MethodSource.HOME)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IHomeRoot> home(@Path("path") String path);
-
-    /**
-     *
-     * @param path1
-     * @param path2
-     * @return
-     */
-    @GET("{path1}/{path2}")
-    @JsoupType(JsoupSource.K8DY)
-    @MethodType(value = MethodSource.HOME)
-    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IHomeRoot> home(@Path("path1") String path1, @Path("path2") String path2);
+//
+//    /**
+//     *
+//     * @param path1
+//     * @param path2
+//     * @return
+//     */
+//    @GET("vodshow/{path1}--------{path2}---/name/ee.html")
+//    @JsoupType(JsoupSource.K8DY)
+//    @MethodType(value = MethodSource.HOME)
+//    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+//    Call<IHomeRoot> home(@Path("path1") String path1, @Path("path2") String path2);
 
     /**
      *
@@ -52,7 +52,7 @@ public interface K8dyService {
      * @param page
      * @return
      */
-    @GET("list/{path}_{page}.html")
+    @GET("vodshow/{path}--------{page}---/name/ee.html")
     @JsoupType(JsoupSource.K8DY)
     @MethodType(value = MethodSource.HOME)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
@@ -64,33 +64,33 @@ public interface K8dyService {
      * @param keyword
      * @return
      */
-    @GET("search.php")
+    @GET("vodsearch/{searchword}----------{page}---.html")
     @JsoupType(JsoupSource.K8DY)
     @MethodType(value = MethodSource.SEARCH)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IBangumiMoreRoot> search(@Query("page") Integer page, @Query("searchword") String keyword);
-
-    /**
-     *
-     * @param pid
-     * @param page
-     * @return
-     */
-    @GET("list/{path}_{page}.html")
-    @JsoupType(JsoupSource.K8DY)
-    @MethodType(value = MethodSource.MORE)
-    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IBangumiMoreRoot> more(@Path("path") String pid, @Path("page") Integer page);
+    Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("searchword") String keyword);
+//
+//    /**
+//     *
+//     * @param pid
+//     * @param page
+//     * @return
+//     */
+//    @GET("list/{path}_{page}.html")
+//    @JsoupType(JsoupSource.K8DY)
+//    @MethodType(value = MethodSource.MORE)
+//    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+//    Call<IBangumiMoreRoot> more(@Path("path") String pid, @Path("page") Integer page);
 
     /**
      * @param url
      * @return
      */
-    @GET
+    @GET("vodhtml/{path}.html")
     @JsoupType(JsoupSource.K8DY)
     @MethodType(value = MethodSource.DETAILS)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IVideoDetails> details(@Url String url);
+    Call<IVideoDetails> details(@Path("path") String url);
 
     /**
      * @param url

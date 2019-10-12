@@ -13,8 +13,6 @@ import com.fanchen.imovie.jsoup.IVideoMoreParser;
 import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.retrofit.RetrofitManager;
 import com.fanchen.imovie.retrofit.service.DianxiumeiService;
-import com.fanchen.imovie.util.LogUtil;
-import com.fanchen.imovie.util.StreamUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +25,7 @@ import retrofit2.Retrofit;
  */
 public class DianxiumeiImpl implements IVideoMoreParser {
 
-    private CcyParser impl = new CcyParser(DianxiumeiService.class.getName());
+    private CcyImpl impl = new CcyImpl(DianxiumeiService.class.getName());
 
     @Override
     public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {

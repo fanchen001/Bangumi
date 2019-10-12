@@ -13,6 +13,7 @@ import com.fanchen.imovie.entity.face.IVideoDetails;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -30,6 +31,8 @@ public interface Dm5Service {
     @JsoupType(JsoupSource.DM5)
     @MethodType(value = MethodSource.HOME)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    @Headers({"User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
+            "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3"})
     Call<IHomeRoot> home(@Path("path") String path);
 
     /**
@@ -41,6 +44,8 @@ public interface Dm5Service {
     @JsoupType(JsoupSource.DM5)
     @MethodType(value = MethodSource.HOME)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    @Headers({"User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
+            "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3"})
     Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
 
     /**
@@ -52,6 +57,8 @@ public interface Dm5Service {
     @JsoupType(JsoupSource.DM5)
     @MethodType(value = MethodSource.SEARCH)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    @Headers({"User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
+            "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3"})
     Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Query("s") String word);
 
     /**
@@ -62,6 +69,8 @@ public interface Dm5Service {
     @JsoupType(JsoupSource.DM5)
     @MethodType(value = MethodSource.DETAILS)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    @Headers({"User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
+            "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3"})
     Call<IVideoDetails> details(@Path("path") String path);
 
     /**
@@ -73,6 +82,8 @@ public interface Dm5Service {
     @JsoupType(JsoupSource.DM5)
     @MethodType(value = MethodSource.PLAYURL)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    @Headers({"User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
+            "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3"})
     Call<IPlayUrls> playUrl(@Path("path") String path, @Query("link") String link);
 
     /**
@@ -84,5 +95,7 @@ public interface Dm5Service {
     @JsoupType(JsoupSource.DM5)
     @MethodType(value = MethodSource.MORE)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    @Headers({"User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36",
+            "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3"})
     Call<IBangumiMoreRoot> more(@Path("pid") String pid, @Path("page") Integer page);
 }

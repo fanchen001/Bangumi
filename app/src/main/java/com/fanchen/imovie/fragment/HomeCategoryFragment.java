@@ -34,7 +34,7 @@ public class HomeCategoryFragment extends BaseRecyclerFragment {
 
     @Override
     public RecyclerView.LayoutManager getLayoutManager() {
-        return new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
+        return new BaseAdapter.StaggeredGridLayoutManagerWrapper(4, StaggeredGridLayoutManager.VERTICAL);
     }
 
     @Override

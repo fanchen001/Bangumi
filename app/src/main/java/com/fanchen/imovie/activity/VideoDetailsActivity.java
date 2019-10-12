@@ -56,7 +56,7 @@ import com.fanchen.m3u8.listener.OnM3u8InfoListener;
 import com.fanchen.sniffing.LogUtil;
 import com.fanchen.sniffing.SniffingCallback;
 import com.fanchen.sniffing.SniffingVideo;
-import com.fanchen.sniffing.x5.SniffingUtil;
+import com.fanchen.sniffing.web.SniffingUtil;
 import com.google.gson.Gson;
 import com.litesuits.orm.db.assit.QueryBuilder;
 import com.xigua.p2p.P2PManager;
@@ -251,7 +251,7 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
     protected void onDestroy() {
         super.onDestroy();
         M3u8Manager.INSTANCE.unregisterInfoListeners(this);
-        SniffingUtil.get().releaseAll();
+//        SniffingUtil.get().releaseAll();
     }
 
     @Override
@@ -306,7 +306,7 @@ public class VideoDetailsActivity extends BaseActivity implements View.OnClickLi
             m3u8File.setM3u8VideoName(String.format("%s_%s.mp4", details.getTitle(), temp.episode.getTitle()));
             M3u8Manager.INSTANCE.download(m3u8File);
         } else if (this.mDownload.type == DownloadDialog.DownloadTemp.TYPE_URL) {
-            SniffingUtil.get().activity(this).url(temp.url).referer(temp.referer).callback(this).start();
+            SniffingUtil.get().autoRelease(true).activity(this).url(temp.url).referer(temp.referer).callback(this).start();
 //            mVideoUrlUtil.setLoadUrl(temp.url, temp.referer);
 //            mVideoUrlUtil.setOnParseListener(this);
 //            mVideoUrlUtil.startParse();

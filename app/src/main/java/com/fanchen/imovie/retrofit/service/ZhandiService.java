@@ -37,15 +37,15 @@ public interface ZhandiService {
 
     /**
      *
-     * @param path
+     * @param type
      * @param page
      * @return
      */
-    @GET("{path}/index-{page}.html")
+    @GET("{type}/index-{pageno}.html")
     @JsoupType(JsoupSource.ZHANDI)//index1.html
     @MethodType(value = MethodSource.HOME)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IHomeRoot> home(@Path("path") String path, @Path("page") Integer page);
+    Call<IHomeRoot> home(@Path("type") String type, @Path("pageno") Integer page);
 
     /**
      *
@@ -59,27 +59,27 @@ public interface ZhandiService {
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
     Call<IBangumiMoreRoot> search(@Path("page") Integer page, @Path("wd") String keyword);
 
-    /**
-     *
-     * @param pid
-     * @param page
-     * @return
-     */
-    @GET("{path}/index-{page}.html")
-    @JsoupType(JsoupSource.ZHANDI)
-    @MethodType(value = MethodSource.MORE)
-    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IBangumiMoreRoot> more(@Path("path") String pid, @Path("page") Integer page);
+//    /**
+//     *
+//     * @param pid
+//     * @param page
+//     * @return
+//     */
+//    @GET("{path}/index-{page}.html")
+//    @JsoupType(JsoupSource.ZHANDI)
+//    @MethodType(value = MethodSource.MORE)
+//    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+//    Call<IBangumiMoreRoot> more(@Path("path") String pid, @Path("page") Integer page);
 
     /**
      * @param path
      * @return
      */
-    @GET("video/{path}.html")
+    @GET
     @JsoupType(JsoupSource.ZHANDI)
     @MethodType(value = MethodSource.DETAILS)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
-    Call<IVideoDetails> details(@Path("path") String path);
+    Call<IVideoDetails> details(@Url String path);
 
     /**
      * @param path

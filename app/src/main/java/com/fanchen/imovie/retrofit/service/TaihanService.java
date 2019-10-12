@@ -40,11 +40,28 @@ public interface TaihanService {
     Call<IHomeRoot> home(@Path("path") String path);
 
     /**
+     * @param path
+     * @return
+     */
+    @GET("taijutype/{path}-{page}/")
+    @JsoupType(JsoupSource.TAIHAN)
+    @MethodType(value = MethodSource.HOME)
+    @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
+    @Headers({
+            "User-Agent: Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Mobile Safari/537.36",
+            "Connection: keep-alive",
+            "Upgrade-Insecure-Requests: 1",
+            "Accept-Encoding:gzip,deflate,br",
+            "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
+            "Accept-Language: zh-CN,zh;q=0.9"})
+    Call<IHomeRoot> home(@Path("path") String path,@Path("page") Integer page);
+
+    /**
      * @param page
      * @param keyword
      * @return
      */
-    @GET("vod-search-name-{wd}-p-{page}.html")
+    @GET("taijusearch/{wd}----------{page}---/")
     @JsoupType(JsoupSource.TAIHAN)
     @MethodType(value = MethodSource.SEARCH)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
@@ -62,7 +79,7 @@ public interface TaihanService {
      * @param page
      * @return
      */
-    @GET("video/type/{path}------addtime-{page}.html")
+    @GET("taijutype/{path}-{page}/")
     @JsoupType(JsoupSource.TAIHAN)
     @MethodType(value = MethodSource.MORE)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
@@ -79,7 +96,7 @@ public interface TaihanService {
      * @param path
      * @return
      */
-    @GET("taijula/{path}")
+    @GET("taijudetail/{path}/")
     @JsoupType(JsoupSource.TAIHAN)
     @MethodType(value = MethodSource.DETAILS)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)
@@ -96,7 +113,7 @@ public interface TaihanService {
      * @param path
      * @return
      */
-    @GET("taijula/play/{path}")
+    @GET("taijuplay/{path}/")
     @JsoupType(JsoupSource.TAIHAN)
     @MethodType(value = MethodSource.PLAYURL)
     @RetrofitType(isJsoupResponse = JsoupSource.TYPE_VIDEO)

@@ -47,8 +47,8 @@ import butterknife.InjectView;
  */
 public class WebPlayerActivity extends BaseActivity {
 
-    public static final String[] LUXIANS = {"https://api.47ks.com/webcloud/?v=%s","http://api.bbbbbb.me/playm3u8/?url=%s",
-            "http://jx.daheiyun.com/?url=%s","https://api.daidaitv.com/index/?url=%s","http://mv.688ing.com/player?url=%s"};
+    public static final String[] LUXIANS = {"https://api.47ks.com/webcloud/?v=%s","https://jx.yatongle.com/vip/?url=%s",
+            "http://jx.drgxj.com/v/3.php?url=%s","http://ak.vipsli.com/ak/index.php?url=%s","http://vip.jlsprh.com/v/6.php?url=%s"};
 
     public static final String URL = "url";
     public static final String LUXIAN = "luxian";

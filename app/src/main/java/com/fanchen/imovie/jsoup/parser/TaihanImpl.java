@@ -23,6 +23,7 @@ import com.fanchen.imovie.util.JavaScriptUtil;
 import com.fanchen.imovie.util.LogUtil;
 
 import org.json.JSONObject;
+import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,17 +40,22 @@ public class TaihanImpl implements IVideoMoreParser {
 
     @Override
     public IBangumiMoreRoot more(Retrofit retrofit, String baseUrl, String html) {
+        return (IBangumiMoreRoot)home(retrofit,baseUrl,html);
+    }
+
+    @Override
+    public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {
         Node node = new Node(html);
         VideoHome home = new VideoHome();
         try{
             List<IVideo> videos = new ArrayList<>();
-            for (Node sub : node.list("ul > li.col-md-2.col-sm-3.col-xs-4")){
-                String title = sub.text("h2");
-                String cover = baseUrl + sub.attr("p > a > img", "data-original");
+            for (Node sub : node.list("dl.fed-deta-info.fed-deta-padding.fed-line-top.fed-margin.fed-part-rows.fed-part-over")){
+                String title = sub.text("h1.fed-part-eone.fed-font-xvi");
+                String cover = baseUrl + sub.attr("dt > a.fed-list-pics.fed-lazy.fed-part-2by3", "data-original");
                 if (TextUtils.isEmpty(cover))
                     continue;
-                String hd = sub.text("h4");
-                String continu = sub.text("p > a > span.continu");
+                String hd = sub.text("span.fed-list-remarks.fed-font-xii.fed-text-white.fed-text-center");
+                String continu = sub.text("span.fed-list-score.fed-font-xii.fed-back-green");
                 String url = baseUrl + sub.attr("a", "href");
                 Video video = new Video();
                 video.setHasDetails(true);
@@ -71,23 +77,18 @@ public class TaihanImpl implements IVideoMoreParser {
     }
 
     @Override
-    public IBangumiMoreRoot search(Retrofit retrofit, String baseUrl, String html) {
-        return more(retrofit, baseUrl, html);
-    }
-
-    @Override
     public IHomeRoot home(Retrofit retrofit, String baseUrl, String html) {
 
         Node node = new Node(html);
         VideoHome home = new VideoHome();
         try {
-            List<Node> ullist = node.list("div.carousel-inner > div > a");
+            List<Node> ullist = node.list("ul.fed-swip-wrapper.fed-font-size > li > a");
             List<VideoBanner> banners = new ArrayList<>();
             for (Node n : ullist) {
                 VideoBanner banner = new VideoBanner();
                 banner.setServiceClass(TaihanService.class.getName());
-                banner.setCover(baseUrl + n.attr("img", "src"));
-                banner.setTitle(n.text("div.carousel-caption"));
+                banner.setCover(baseUrl + n.attr("data-background"));
+                banner.setTitle(n.text("div > span.fed-part-eone.fed-font-xviii.fed-swip-head"));
                 String href = n.attr("href");
                 if(href.startsWith("http")){
                     banner.setUrl(href);
@@ -105,12 +106,12 @@ public class TaihanImpl implements IVideoMoreParser {
             int count = 0;
             List<VideoTitle> titles = new ArrayList<>();
             home.setHomeResult(titles);
-            for (Node n : node.list("div.page-header")) {
+            for (Node n : node.list("div.fed-list-head.fed-part-rows.fed-padding")) {
                 String topTitle = n.text("h2 > a");
                 if(TextUtils.isEmpty(topTitle))
                     topTitle = n.text("h2").replace("更多","");
                 String topUrl = baseUrl + n.attr("h2 > a", "href");
-                String topId = n.attr("h2 > small > a", "href", "/", 3).split("-")[0];
+                String topId = n.attr("a.fed-more", "href", "/", 2);
                 List<Video> videos = new ArrayList<>();
                 VideoTitle videoTitle = new VideoTitle();
                 videoTitle.setTitle(topTitle);
@@ -119,13 +120,22 @@ public class TaihanImpl implements IVideoMoreParser {
                 videoTitle.setUrl(topUrl);
                 videoTitle.setList(videos);
                 videoTitle.setServiceClass(TaihanService.class.getName());
-                for (Node sub : new Node(n.getElement().nextElementSibling()).list("ul > li")) {
-                    String title = sub.text("h2");
-                    String cover = baseUrl + sub.attr("p > a > img", "data-original");
+//                Element element = n.getElement().nextElementSibling();
+//
+//                        //
+//                LogUtil.e("IHomeRoot","tagName => " + element.tagName());
+//                LogUtil.e("IHomeRoot","tagName => " + element.nextElementSibling());
+//                if(element != null && !element.tagName().equals("ul")){
+//                    element = element.nextElementSibling().children().first();
+//                }
+                //fed-list-info fed-part-rows
+                for (Node sub : new Node(n.getElement().parent()).list("ul.fed-list-info.fed-part-rows > li")) {
+                    String title = sub.text("a.fed-list-title.fed-font-xiv.fed-text-center.fed-text-sm-left.fed-visible.fed-part-eone");
+                    String cover = baseUrl + sub.attr("a", "data-original");
                     if (TextUtils.isEmpty(cover))
                         continue;
-                    String hd = sub.text("h4");
-                    String continu = sub.text("p > a > span.continu");
+                    String hd = sub.text("span.fed-list-remarks.fed-font-xii.fed-text-white.fed-text-center");
+                    String continu = sub.text("span.fed-list-score.fed-font-xii.fed-back-green");
                     String url = baseUrl + sub.attr("a", "href");
                     Video video = new Video();
                     video.setHasDetails(true);
@@ -140,7 +150,10 @@ public class TaihanImpl implements IVideoMoreParser {
                 }
                 if (videos.size() > 0)
                     titles.add(videoTitle);
-                videoTitle.setMore(videoTitle.getList().size() != 10);
+                videoTitle.setMore(true);
+            }
+            if(!titles.isEmpty()){
+                titles.get(0).setMore(false);
             }
             home.setSuccess(true);
         } catch (Exception e) {
@@ -156,13 +169,13 @@ public class TaihanImpl implements IVideoMoreParser {
         try {
             List<VideoEpisode> episodes = new ArrayList<>();
             List<Video> videos = new ArrayList<>();
-            for (Node sub : node.list("li.col-md-2.col-sm-3.col-xs-4")) {
-                String title = sub.text("h2");
-                String cover = baseUrl + sub.attr("p > a > img", "data-original");
+            for (Node sub : node.list("ul.fed-list-info.fed-part-rows > li")) {
+                String title = sub.text("a.fed-list-title.fed-font-xiv.fed-text-center.fed-text-sm-left.fed-visible.fed-part-eone");
+                String cover = baseUrl + sub.attr("a", "data-original");
                 if (TextUtils.isEmpty(cover))
                     continue;
-                String hd = sub.text("h4");
-                String continu = sub.text("p > a > span.continu");
+                String hd = sub.text("span.fed-list-remarks.fed-font-xii.fed-text-white.fed-text-center");
+                String continu = sub.text("span.fed-list-score.fed-font-xii.fed-back-green");
                 String url = baseUrl + sub.attr("a", "href");
                 Video video = new Video();
                 video.setHasDetails(true);
@@ -176,12 +189,13 @@ public class TaihanImpl implements IVideoMoreParser {
                 videos.add(video);
             }
             int count = 0;
-            List<Node> list = node.list("ul.nav.nav-tabs.ff-playurl-tab > li");
-            for (Node n : node.list("div.container.ff-bg > div.tab-content.ff-playurl-tab > ul")) {
-                for (Node sub : n.list("li")) {
+            List<Node> list = node.list("div.fed-drop-boxs.fed-drop-tops.fed-matp-v > ul.fed-part-rows > li.fed-drop-btns.fed-padding.fed-col-xs3.fed-col-md2");
+            for (Node n : node.list("div.fed-drop-boxs.fed-drop-btms.fed-matp-v > div.fed-play-item.fed-drop-item.fed-visible > ul.fed-part-rows")) {
+                boolean flag = false;
+                for (Node sub : n.list("li.fed-padding.fed-col-xs3.fed-col-md2.fed-col-lg1")) {
                     VideoEpisode episode = new VideoEpisode();
                     episode.setServiceClass(TaihanService.class.getName());
-                    episode.setId(sub.attr("a", "href","/",3));
+                    episode.setId(sub.attr("a", "href","/",2));
                     episode.setUrl(baseUrl + sub.attr("a", "href"));
                     if (list.size() > count) {
                         episode.setTitle(list.get(count).text() + "_" + sub.text());
@@ -189,16 +203,17 @@ public class TaihanImpl implements IVideoMoreParser {
                         episode.setTitle(sub.text());
                     }
                     episodes.add(episode);
+                    flag = true;
                 }
-                count++;
+                if(flag)count++;
             }
-            details.setCover(baseUrl + node.attr("div.media-left > a > img", "data-original"));
-            details.setLast(node.textAt("dl.dl-horizontal > dd", 0));
-            details.setExtras(node.textAt("dl.dl-horizontal > dd", 1));
-            details.setDanmaku(node.textAt("dl.dl-horizontal > dd", 2));
-            details.setUpdate(node.textAt("dl.dl-horizontal > dd", 3));
-            details.setTitle(node.text("div.media-body > h2"));
-            details.setIntroduce(node.text("div.media-body > div.hidden-xs.hidden-sm"));
+            details.setCover(baseUrl + node.attr("a.fed-list-pics.fed-lazy.fed-part-2by3", "data-original"));
+            details.setLast(node.text("span.fed-list-remarks.fed-font-xii.fed-text-white.fed-text-center"));
+            details.setExtras(node.textAt("li.fed-col-xs12.fed-col-md6.fed-part-eone", 0));
+            details.setDanmaku(node.textAt("li.fed-col-xs12.fed-col-md6.fed-part-eone", 1));
+            details.setUpdate(node.textAt("li.fed-col-xs12.fed-col-md6.fed-part-eone", 2));
+            details.setTitle(node.text("h1.fed-part-eone.fed-font-xvi"));
+            details.setIntroduce(node.text("p.fed-padding.fed-part-both.fed-text-muted"));
             details.setEpisodes(episodes);
             details.setRecomm(videos);
             details.setServiceClass(TaihanService.class.getName());
@@ -213,40 +228,40 @@ public class TaihanImpl implements IVideoMoreParser {
         VideoPlayUrls urls = new VideoPlayUrls();
         Map<String, String> stringMap = new HashMap<>();
         try{
-            String match = JavaScriptUtil.match("\\{[\\{\\}\\[\\]\\\"\\w\\d第集`~!@#$%^&*_\\-+=<>?:|,.\\\\ \\/;']+\\};", html, 0,0,1);
-            LogUtil.e("TaihanImpl","match = -> " + match);
-            if(JavaScriptUtil.isJson(match)){
-                JSONObject object = new JSONObject(match);
-                if( object.has("url")  &&  object.has("jiexi")){
-                    String url = object.getString("url");
-                    String jiexi = object.getString("jiexi");
-                    urls.setSuccess(true);
-                    if (url.startsWith("http") && url.contains(".m3u")) {
-                        stringMap.put("标清", url);
-                        urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO_M3U8);
-                        urls.setUrlType(IPlayUrls.URL_M3U8);
-                    } else if (url.startsWith("http") && (url.contains(".mp4") || url.contains(".avi") || url.contains(".rm") || url.contains("wmv"))) {
-                        stringMap.put("标清", url);
-                        urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
-                        urls.setUrlType(IPlayUrls.URL_FILE);
-                    } else if (!TextUtils.isEmpty(jiexi) && jiexi.startsWith("http")) {
-                        stringMap.put("标清", jiexi + url);
-                        urls.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
-                        urls.setUrlType(IPlayUrls.URL_WEB);
-                    } else {
-                        urls.setSuccess(false);
-                    }
-                    urls.setUrls(stringMap);
-                    urls.setReferer(RetrofitManager.REQUEST_URL);
-                }
-            }
-            if (stringMap.isEmpty()) {
+//            String match = JavaScriptUtil.match("\\{[\\{\\}\\[\\]\\\"\\w\\d第集`~!@#$%^&*_\\-+=<>?:|,.\\\\ \\/;']+\\};", html, 0,0,1);
+//            LogUtil.e("TaihanImpl","match = -> " + match);
+//            if(JavaScriptUtil.isJson(match)){
+//                JSONObject object = new JSONObject(match);
+//                if( object.has("url")  &&  object.has("jiexi")){
+//                    String url = object.getString("url");
+//                    String jiexi = object.getString("jiexi");
+//                    urls.setSuccess(true);
+//                    if (url.startsWith("http") && url.contains(".m3u")) {
+//                        stringMap.put("标清", url);
+//                        urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO_M3U8);
+//                        urls.setUrlType(IPlayUrls.URL_M3U8);
+//                    } else if (url.startsWith("http") && (url.contains(".mp4") || url.contains(".avi") || url.contains(".rm") || url.contains("wmv"))) {
+//                        stringMap.put("标清", url);
+//                        urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
+//                        urls.setUrlType(IPlayUrls.URL_FILE);
+//                    } else if (!TextUtils.isEmpty(jiexi) && jiexi.startsWith("http")) {
+//                        stringMap.put("标清", jiexi + url);
+//                        urls.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+//                        urls.setUrlType(IPlayUrls.URL_WEB);
+//                    } else {
+//                        urls.setSuccess(false);
+//                    }
+//                    urls.setUrls(stringMap);
+//                    urls.setReferer(RetrofitManager.REQUEST_URL);
+//                }
+//            }
+//            if (stringMap.isEmpty()) {
                 stringMap.put("标清", RetrofitManager.REQUEST_URL);
                 urls.setUrls(stringMap);
                 urls.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
                 urls.setUrlType(IPlayUrls.URL_WEB);
                 urls.setSuccess(true);
-            }
+//            }
         }catch (Exception e){
             e.printStackTrace();
         }

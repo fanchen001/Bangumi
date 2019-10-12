@@ -29,7 +29,7 @@ import com.fanchen.imovie.view.ContextMenuTitleView;
 import com.fanchen.imovie.view.webview.SwipeWebView;
 import com.fanchen.sniffing.SniffingUICallback;
 import com.fanchen.sniffing.SniffingVideo;
-import com.fanchen.sniffing.x5.SniffingUtil;
+import com.fanchen.sniffing.web.SniffingUtil;
 import com.tencent.smtt.export.external.interfaces.JsResult;
 import com.tencent.smtt.export.external.interfaces.SslError;
 import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
@@ -177,11 +177,11 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        SniffingUtil.get().releaseAll();
-    }
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        SniffingUtil.get().releaseAll();
+//    }
 
     @Override
     public void onClick(View v) {
@@ -286,6 +286,8 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
+            if(mRunnable != null)
+                mWebview.removeCallbacks(mRunnable);
             TextView titleView = getTitleView();
             if (isFinishing() || titleView == null || mWebview == null) return;
             String stringExtra = getIntent().getStringExtra(TITLE);
@@ -325,7 +327,7 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
             }
             mWebview.getWebView().getSettings().setBlockNetworkImage(false);
             mWebview.removeCallbacks(mRunnable);
-            mWebview.postDelayed(mRunnable = new DelayedRunnable(), 4000);
+            mWebview.postDelayed(mRunnable = new DelayedRunnable(), 1500);
         }
 
         // 当load有ssl层的https页面时，如果这个网站的安全证书在Android无法得到认证，
@@ -401,7 +403,7 @@ public class WebActivity extends BaseToolbarActivity implements View.OnClickList
             String url = mWebview.getWebView().getUrl();
             String parserUrl = String.format(WebPlayerActivity.LUXIANS[position], url);
             String referer = "http://movie.vr-seesee.com/vip";
-            SniffingUtil.get().activity(WebActivity.this).referer(referer).url(parserUrl).callback(WebActivity.this).start();
+            SniffingUtil.get().autoRelease(true).activity(WebActivity.this).referer(referer).url(parserUrl).callback(WebActivity.this).start();
         }
 
     };

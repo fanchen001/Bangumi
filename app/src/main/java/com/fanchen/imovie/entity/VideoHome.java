@@ -9,7 +9,9 @@ import com.fanchen.imovie.entity.face.IBangumiTitle;
 import com.fanchen.imovie.entity.face.IVideo;
 import com.fanchen.imovie.entity.face.IVideoBanner;
 import com.fanchen.imovie.entity.face.IViewType;
+import com.fanchen.imovie.util.LogUtil;
 import com.fanchen.imovie.view.pager.IBanner;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,11 +129,10 @@ public class VideoHome implements IBangumiRoot, IBangumiMoreRoot, Parcelable {
         return list;
     }
 
-    public void setList(List<IVideo> list) {
+    public void setList(List<IVideo> newList) {
         try {
-            if(this.list == null)
-                this.list = new ArrayList<>();
-            for (IVideo video : list){
+            if(this.list == null) this.list = new ArrayList<>();
+            for (IVideo video : newList){
                 this.list.add((Video)video);
             }
         } catch (Throwable e) {

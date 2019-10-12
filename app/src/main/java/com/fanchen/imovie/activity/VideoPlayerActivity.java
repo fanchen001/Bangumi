@@ -47,7 +47,7 @@ import com.fanchen.imovie.view.video_new.TxVideoPlayerController;
 import com.fanchen.sniffing.DefaultFilter;
 import com.fanchen.sniffing.SniffingCallback;
 import com.fanchen.sniffing.SniffingVideo;
-import com.fanchen.sniffing.x5.SniffingUtil;
+import com.fanchen.sniffing.web.SniffingUtil;
 import com.litesuits.orm.LiteOrm;
 import com.litesuits.orm.db.assit.QueryBuilder;
 import com.tencent.smtt.sdk.TbsVideo;
@@ -369,7 +369,7 @@ public class VideoPlayerActivity extends BaseActivity implements CustomAdapt {
         NiceVideoManager.instance().release();
         P2PModule.getInstance().stopPlay();
 
-        SniffingUtil.get().releaseAll();
+//        SniffingUtil.get().releaseAll();
 
 //        VideoUrlUtil.getInstance().destroy();
         if (mPlayerController != null) mPlayerController.release();
@@ -450,17 +450,19 @@ public class VideoPlayerActivity extends BaseActivity implements CustomAdapt {
             XLManager.get(this).addAndPlay(url);
         } else if (playType == IVideoEpisode.PLAY_TYPE_WEB) {//需要 webview 解析视频链接
             String referer = playUrls.getReferer();
-            SniffingUtil.get().activity(this).referer(referer).url(url).callback(new SniffingCallback() {
+            SniffingUtil.get().readTimeOut(35 * 1000).connTimeOut(25 * 1000).activity(this).autoRelease(true).referer(referer).url(url).callback(new SniffingCallback() {
 
                 @Override
                 public void onSniffingSuccess(View webView, String url, List<SniffingVideo> videos) {
-                    if (mVideoPlayer == null || videos == null || videos.isEmpty()) return;//解析成功，播放視頻
-                    openVideo( videos.get(0).getUrl(), playUrls.getReferer(), "", "");
+                    if (mVideoPlayer == null || videos == null || videos.isEmpty())
+                        return;//解析成功，播放視頻
+                    openVideo(videos.get(0).getUrl(), playUrls.getReferer(), "", "");
                 }
 
                 @Override
                 public void onSniffingError(View webView, String url, int errorCode) {
-                    LogUtil.e("VideoPlayerActivity","onSniffingError -> " + errorCode);
+                    showToast("视频连接解析失败");
+                    finish();
                 }
 
             }).filter(new DefaultFilter()).start();
@@ -540,7 +542,7 @@ public class VideoPlayerActivity extends BaseActivity implements CustomAdapt {
         public void onReceive(Context context, Intent intent) {
             if (mPlayerController == null) return;
             String action = intent.getAction();
-            LogUtil.e("=====","action -> " + action);
+            LogUtil.e("=====", "action -> " + action);
             try {
                 if (XLService.GET_PLAY_URL.equals(action) && intent.hasExtra(XLService.GET_PLAY_URL)) {
                     String extra = intent.getStringExtra(XLService.DATA);
@@ -611,7 +613,7 @@ public class VideoPlayerActivity extends BaseActivity implements CustomAdapt {
 
     }
 
-//    /**
+    //    /**
 //     * webview解析視頻鏈接的回掉
 //     * ParseUrlListener
 //     */

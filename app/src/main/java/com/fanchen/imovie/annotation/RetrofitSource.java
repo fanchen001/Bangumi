@@ -247,5 +247,10 @@ public enum RetrofitSource {
     /**
      * http://v.6.cn
      */
-    V6_API
+    V6_API,
+
+    /**
+     * http://yingdouwang.com/
+     */
+    YDW_API
 }

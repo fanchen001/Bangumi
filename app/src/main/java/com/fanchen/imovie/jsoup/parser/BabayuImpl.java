@@ -20,6 +20,7 @@ import com.fanchen.imovie.jsoup.node.Node;
 import com.fanchen.imovie.retrofit.service.BabayuService;
 import com.fanchen.imovie.util.JavaScriptUtil;
 import com.fanchen.imovie.util.LogUtil;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +41,6 @@ public class BabayuImpl implements IVideoMoreParser {
         VideoHome home = new VideoHome();
         try {
             List<IVideo> videos = new ArrayList<>();
-            home.setList(videos);
             for (Node n : node.list("ul#resize_list > li")) {
                 String title = n.text("a > div > label.name");
                 String cover = n.attr("a > div > img", "data-original");
@@ -60,10 +60,12 @@ public class BabayuImpl implements IVideoMoreParser {
                 video.setExtras(type);
                 videos.add(video);
             }
+            home.setList(videos);
             home.setSuccess(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        LogUtil.e("BabayuImpl","json -> " + new Gson().toJson(home));
         return home;
     }
 
@@ -243,7 +245,15 @@ public class BabayuImpl implements IVideoMoreParser {
                 playUrl.setSuccess(true);
             } else {
                 String attr = new Node(html).attr("iframe", "src");
-                if (!TextUtils.isEmpty(attr)) {
+                if (!TextUtils.isEmpty(attr) && attr.contains(".m3u8")) {
+                    String newUrl = attr.contains("=") ?  attr.split("=")[1] : attr;
+                    mapUrl.put("标清", newUrl);
+                    playUrl.setUrlType(IPlayUrls.URL_M3U8);
+                    playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO_M3U8);
+                    playUrl.setUrls(mapUrl);
+                    playUrl.setReferer(baseUrl);
+                    playUrl.setSuccess(true);
+                }else  if (!TextUtils.isEmpty(attr)) {
                     mapUrl.put("标清", attr);
                     playUrl.setUrlType(IPlayUrls.URL_WEB);
                     playUrl.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);

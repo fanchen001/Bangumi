@@ -22,7 +22,10 @@ import com.fanchen.imovie.retrofit.service.SmdyService;
 import com.fanchen.imovie.retrofit.service.ZhandiService;
 import com.fanchen.imovie.retrofit.service.ZzyoService;
 import com.fanchen.imovie.retrofit.service.ZzzvzService;
+import com.fanchen.imovie.util.JavaScriptUtil;
 import com.fanchen.imovie.util.LogUtil;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -280,11 +283,11 @@ public class SmdyImpl implements IVideoMoreParser {
             List<Node> list = node.list("div.play-title > span[id]");
             for (Node n : node.list("div.play-box > ul")) {
                 for (Node sub : n.list("li")) {
-                    if (list.size() > count) {
-                        if (clazz.equals(SmdyService.class.getName()) && !list.get(count).text().contains("西瓜")) {
-                            continue;
-                        }
-                    }
+//                    if (list.size() > count) {
+//                        if (clazz.equals(SmdyService.class.getName()) && !list.get(count).text().contains("西瓜")) {
+//                            continue;
+//                        }
+//                    }
                     VideoEpisode episode = new VideoEpisode();
                     episode.setServiceClass(clazz);
                     episode.setId(RetrofitManager.warpUrl(baseUrl,sub.attr("a", "href")));
@@ -324,6 +327,26 @@ public class SmdyImpl implements IVideoMoreParser {
         Map<String, String> url = new HashMap<>();
         urls.setUrls(url);
         try {
+            String match = JavaScriptUtil.match("var zanpiancms_player = [\\u4e00-\\u9fa5\\(\\)\\{\\}\\[\\]\\\"\\w\\d`~！!@#$%^&*_\\-+=<>?:|,.\\\\ \\/;']+;", html, 0, 24, 1);
+            if(!TextUtils.isEmpty(match)){
+                JSONObject jsonObject = new JSONObject(match);
+                String name = jsonObject.optString("name");
+                String url1 = jsonObject.optString("url");
+                url.put(name, url1);
+                urls.setUrls(url);
+                if(name.contains("m3u")){
+                    urls.setUrlType(IPlayUrls.URL_WEB);
+                    urls.setPlayType(IVideoEpisode.PLAY_TYPE_WEB);
+                }else if(name.contains("ftp")){
+                    urls.setUrlType(IPlayUrls.URL_XIGUA);
+                    urls.setPlayType(IVideoEpisode.PLAY_TYPE_XIGUA);
+                }else{
+                    urls.setUrlType(IPlayUrls.URL_FILE);
+                    urls.setPlayType(IVideoEpisode.PLAY_TYPE_VIDEO);
+                }
+                urls.setSuccess(true);
+                return urls;
+            }
             int start = html.indexOf("ftp:");
             String playerUrl = new Node(html).attr("iframe", "src");
             String tempHtml = "";

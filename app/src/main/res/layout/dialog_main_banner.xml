@@ -1,37 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tv_pager"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:layout_gravity="center" />
 
-        <TextView
-            android:id="@+id/tv_banner_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="10dp"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:textColor="@color/black_333333"
-            android:textSize="20sp" />
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_banner"
+        android:layout_width="match_parent"
+        android:layout_height="240dp"/>
 
-        <ImageView
-            android:id="@+id/iv_banner_image"
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/image_load_pre" />
+</LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_banner_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:textColor="@color/black_444444"
-            android:textSize="14sp" />
-    </LinearLayout>
-</ScrollView>
